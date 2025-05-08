@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Ofertas com descontos reais nas principais lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliado seguros e atualizados." />
+  <meta property="og:title" content="Centro de Compras - Ofertas e Descontos">
+  <meta property="og:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliados seguros e atualizados!">
+  <meta property="og:image" content="logos/centrodecompras.jpg">
+  <meta property="og:url" content="https://seu-site.com">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Centro de Compras - Ofertas e Descontos">
+  <meta name="twitter:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliados seguros e atualizados!">
+  <meta name="twitter:image" content="logos/centrodecompras.jpg">
+  <title>Centro de Compras - Ofertas do Dia</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Estilos para o modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      max-width: 90%;
+      max-height: 90%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      /* Forçar tamanho mínimo para imagens pequenas */
+      min-width: 300px;
+      min-height: 300px;
+    }
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #FFA500;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    /* Garantir que imagens do carrossel não sejam restritas no modal */
+    .modal-content.carrossel-imagens img {
+      width: auto;
+      height: auto;
+      max-width: 100%;
+      max-height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="logo-container">
+      <a href="#">
+        <img src="logos/centrodecompras.jpg" alt="Centro de Compras" loading="lazy" />
+      </a>
+    </div>
+    <div class="header-text">
+      <h1>Centro de Compras</h1>
+      <p>O maior portal de ofertas do Brasil! Descubra as melhores oportunidades nos maiores sites de venda, com links diretos para sua compra.</p>
+    </div>
+  </header>
+
+  <nav>
+    <a href="index.html">Promoções</a>
+    <a href="cupom.html">Cupom de desconto</a>
+    <a href="sobre.html">Sobre</a>
+    <a href="contato.html">Contato</a>
+    <a href="adicionar-produtos.html">Adicionar Produtos</a>
+  </nav>
+
+  <div class="container">
+    <aside class="sidebar-categorias">
+      <h3>Categorias</h3>
+      <ul>
+        <li class="categoria-item ativa" data-categoria="todas" onclick="filtrarPorCategoria('todas')" role="button" aria-label="Filtrar por Todas as Categorias">Todas as Categorias</li>
+        <li class="categoria-item" data-categoria="eletronicos" onclick="filtrarPorCategoria('eletronicos')" role="button" aria-label="Filtrar por Eletrônicos">Eletrônicos</li>
+        <li class="categoria-item" data-categoria="moda" onclick="filtrarPorCategoria('moda')" role="button" aria-label="Filtrar por Moda">Moda</li>
+        <li class="categoria-item" data-categoria="fitness" onclick="filtrarPorCategoria('fitness')" role="button" aria-label="Filtrar por Fitness">Fitness</li>
+        <li class="categoria-item" data-categoria="casa" onclick="filtrarPorCategoria('casa')" role="button" aria-label="Filtrar por Casa e Decoração">Casa e Decoração</li>
+        <li class="categoria-item" data-categoria="beleza" onclick="filtrarPorCategoria('beleza')" role="button" aria-label="Filtrar por Beleza">Beleza</li>
+        <li class="categoria-item" data-categoria="esportes" onclick="filtrarPorCategoria('esportes')" role="button" aria-label="Filtrar por Esportes">Esportes</li>
+        <li class="categoria-item" data-categoria="livros" onclick="filtrarPorCategoria('livros')" role="button" aria-label="Filtrar por Livros">Livros</li>
+        <li class="categoria-item" data-categoria="infantil" onclick="filtrarPorCategoria('infantil')" role="button" aria-label="Filtrar por Infantil">Infantil</li>
+        <li class="categoria-item" data-categoria="Celulares" onclick="filtrarPorCategoria('Celulares')" role="button" aria-label="Filtrar por Celulares">Celulares</li>
+        <li class="categoria-item" data-categoria="Eletrodomésticos" onclick="filtrarPorCategoria('Eletrodomésticos')" role="button" aria-label="Filtrar por Eletrodomésticos">Eletrodomésticos</li>
+      </ul>
+    </aside>
+
+    <main>
+      <section id="ofertas-section">
+        <h2 id="ofertas-titulo">🛍️ Ofertas do Dia</h2>
+        <div class="lojas-parceiras">
+          <h3>🌟 Lojas Parceiras</h3>
+          <div class="grid-lojas">
+            <div class="loja-todas ativa" onclick="filtrarPorLoja('todas')" role="button" aria-label="Filtrar por Todas as Lojas">
+              <span>Todas as Lojas</span>
+            </div>
+            <div class="loja" data-loja="amazon" onclick="filtrarPorLoja('amazon')" role="button" aria-label="Filtrar por Amazon">
+              <img src="logos/amazon.png" alt="Logo da Amazon" loading="lazy">
+              <span class="amazon">Amazon</span>
+            </div>
+            <div class="loja" data-loja="magalu" onclick="filtrarPorLoja('magalu')" role="button" aria-label="Filtrar por Magalu">
+              <img src="logos/magalu.png" alt="Logo da Magalu" loading="lazy">
+              <span class="magalu">Magalu</span>
+            </div>
+            <div class="loja" data-loja="shein" onclick="filtrarPorLoja('shein')" role="button" aria-label="Filtrar por Shein">
+              <img src="logos/shein.png" alt="Logo da Shein" loading="lazy">
+              <span class="shein">Shein</span>
+            </div>
+            <div class="loja" data-loja="shopee" onclick="filtrarPorLoja('shopee')" role="button" aria-label="Filtrar por Shopee">
+              <img src="logos/shopee.png" alt="Logo da Shopee" loading="lazy">
+              <span class="shopee">Shopee</span>
+            </div>
+            <div class="loja" data-loja="mercadolivre" onclick="filtrarPorLoja('mercadolivre')" role="button" aria-label="Filtrar por Mercado Livre">
+              <img src="logos/mercadolivre.jpg" alt="Logo do Mercado Livre" loading="lazy">
+              <span class="mercadolivre">Mercado Livre</span>
+            </div>
+            <div class="loja" data-loja="alibaba" onclick="filtrarPorLoja('alibaba')" role="button" aria-label="Filtrar por Alibaba">
+              <img src="logos/alibaba.png" alt="Logo da Alibaba" loading="lazy">
+              <span class="alibaba">Alibaba</span>
+            </div>
+          </div>
+        </div>
+        <input type="text" id="busca" placeholder="Busque por produtos..." class="barra-busca" aria-label="Buscar produtos" aria-describedby="busca-instrucao">
+        <span id="busca-instrucao" style="display: none;">Digite o nome do produto para filtrar os resultados.</span>
+        <div id="busca-feedback" class="busca-feedback">Buscando...</div>
+        <div class="loading-spinner" id="loading-spinner"></div>
+        <div class="grid-lojas" id="grid-produtos"></div>
+        <p class="mensagem-vazia" id="mensagem-vazia">Nenhum produto encontrado.</p>
+      </section>
+
+      <a class="whatsapp" href="https://wa.me/5521975179737" target="_blank">📲 Atendimento via WhatsApp</a>
+      <a class="telegram" href="https://t.me/boost/centraldecomprascdc" target="_blank">📢 Canal no Telegram</a>
+
+      <div class="social-links">
+        <a href="https://www.tiktok.com/@cdc.centraldecompas?_t=ZM-8vYQlF9u1dH&_r=1" target="_blank">
+          <div class="icon">
+            <img src="logos/tiktok.png" alt="Ícone do TikTok" loading="lazy">
+          </div>
+          <span>TikTok</span>
+        </a>
+        <a href="https://www.instagram.com/cdccentrodecompras/?utm_source=qr&r=nametag" target="_blank">
+          <div class="icon">
+            <img src="logos/instagram.png" alt="Ícone do Instagram" loading="lazy">
+          </div>
+          <span>Instagram</span>
+        </a>
+        <a href="https://x.com/ComprasCdc" target="_blank">
+          <div class="icon">
+            <img src="logos/x.png" alt="Ícone do X" loading="lazy">
+          </div>
+          <span>X</span>
+        </a>
+        <a href="https://www.youtube.com/channel/UCaKHlI-hWqwdAXS6Xsv3ZzA" target="_blank">
+          <div class="icon">
+            <img src="logos/youtube.png" alt="Ícone do YouTube" loading="lazy">
+          </div>
+          <span>YouTube</span>
+        </a>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal para exibir imagem -->
+  <div class="modal" id="imageModal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <img class="modal-content" id="modalImage" src="" alt="Imagem ampliada">
+  </div>
+
+  <footer>
+    <p>🔧 Todos os direitos reservados <strong>Grupo Centro de Compra "CdC"</strong> © <span id="year"></span></p>
+  </footer>
+
+  <div class="robo-assistente">
+    <a href="https://wa.me/5521975179737" target="_blank">
+      <img src="imagens/robo.jpg" alt="Robô Assistente" class="robo-imagem">
+      <div class="robo-texto">Posso ajudar?</div>
+    </a>
+  </div>
+
+  <script>
+    // Atualizar ano no footer
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Carregar produtos do localStorage
+    function carregarProdutos(filtroCategoria = 'todas', filtroLoja = 'todas', termoBusca = '') {
+      const produtos = JSON.parse(localStorage.getItem('produtos')) || [];
+      const gridProdutos = document.getElementById('grid-produtos');
+      const mensagemVazia = document.getElementById('mensagem-vazia');
+      const loadingSpinner = document.getElementById('loading-spinner');
+
+      loadingSpinner.style.display = 'block';
+      gridProdutos.innerHTML = ''; // Limpar o grid
+
+      // Filtrar produtos
+      const produtosFiltrados = produtos.filter(produto => {
+        const matchesCategoria = filtroCategoria === 'todas' || produto.categoria.toLowerCase() === filtroCategoria.toLowerCase();
+        const matchesLoja = filtroLoja === 'todas' || produto.loja.toLowerCase() === filtroLoja.toLowerCase();
+        const matchesBusca = termoBusca === '' || produto.nome.toLowerCase().includes(termoBusca.toLowerCase());
+        return matchesCategoria && matchesLoja && matchesBusca;
+      });
+
+      if (produtosFiltrados.length === 0) {
+        mensagemVazia.style.display = 'block';
+        gridProdutos.style.display = 'none';
+      } else {
+        mensagemVazia.style.display = 'none';
+        gridProdutos.style.display = 'grid';
+        produtosFiltrados.forEach((produto, produtoIndex) => {
+          const produtoDiv = document.createElement('div');
+          produtoDiv.classList.add('produto-card', 'visible');
+          produtoDiv.setAttribute('data-categoria', produto.categoria.toLowerCase());
+          produtoDiv.setAttribute('data-loja', produto.loja.toLowerCase());
+
+          // Gerar HTML do carrossel
+          const imagens = produto.imagens && produto.imagens.length > 0 ? produto.imagens : ['imagens/placeholder.jpg'];
+          const carrosselId = `carrossel-${produtoIndex}`;
+          produtoDiv.innerHTML = `
+            <div class="carrossel" id="${carrosselId}">
+              <div class="carrossel-imagens">
+                ${imagens.map(img => `<img src="${img}" alt="${produto.nome}" loading="lazy" onclick="openModal('${img}')">`).join('')}
+              </div>
+              ${imagens.length > 1 ? `
+                <button class="carrossel-prev" onclick="moveCarrossel('${carrosselId}', -1)">◄</button>
+                <button class="carrossel-next" onclick="moveCarrossel('${carrosselId}', 1)">►</button>
+                <div class="carrossel-dots">
+                  ${imagens.map((_, i) => `<span class="carrossel-dot ${i === 0 ? 'ativo' : ''}" onclick="setCarrosselImage('${carrosselId}', ${i})"></span>`).join('')}
+                </div>
+              ` : ''}
+            </div>
+            <span>${produto.nome}</span>
+            <span class="descricao">Loja: ${produto.loja}</span>
+            <a href="${produto.link}" target="_blank" class="ver-na-loja ${produto.loja.toLowerCase()}">Comprar</a>
+          `;
+          gridProdutos.appendChild(produtoDiv);
+        });
+      }
+
+      loadingSpinner.style.display = 'none';
+    }
+
+    // Funções do carrossel
+    function moveCarrossel(carrosselId, direction) {
+      const carrossel = document.getElementById(carrosselId);
+      const imagens = carrossel.querySelector('.carrossel-imagens');
+      const dots = carrossel.querySelectorAll('.carrossel-dot');
+      let currentIndex = parseInt(imagens.dataset.index || 0);
+      const totalImagens = imagens.children.length;
+
+      currentIndex = (currentIndex + direction + totalImagens) % totalImagens;
+      imagens.style.transform = `translateX(-${currentIndex * 100}%)`;
+      imagens.dataset.index = currentIndex;
+
+      // Atualizar dots
+      dots.forEach((dot, i) => dot.classList.toggle('ativo', i === currentIndex));
+    }
+
+    function setCarrosselImage(carrosselId, index) {
+      const carrossel = document.getElementById(carrosselId);
+      const imagens = carrossel.querySelector('.carrossel-imagens');
+      const dots = carrossel.querySelectorAll('.carrossel-dot');
+
+      imagens.style.transform = `translateX(-${index * 100}%)`;
+      imagens.dataset.index = index;
+
+      // Atualizar dots
+      dots.forEach((dot, i) => dot.classList.toggle('ativo', i === index));
+    }
+
+    // Funções do modal
+    function openModal(imageSrc) {
+      const modal = document.getElementById('imageModal');
+      const modalImage = document.getElementById('modalImage');
+      modalImage.src = imageSrc;
+      modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('imageModal');
+      modal.style.display = 'none';
+    }
+
+    // Fechar modal ao clicar fora da imagem
+    document.getElementById('imageModal').addEventListener('click', e => {
+      if (e.target === e.currentTarget) closeModal();
+    });
+
+    // Filtrar por categoria
+    function filtrarPorCategoria(categoria) {
+      const itensCategoria = document.querySelectorAll('.categoria-item');
+      itensCategoria.forEach(item => item.classList.remove('ativa'));
+      document.querySelector(`.categoria-item[data-categoria="${categoria}"]`).classList.add('ativa');
+
+      const termoBusca = document.getElementById('busca').value;
+      const filtroLoja = document.querySelector('.loja.ativa, .loja-todas.ativa')?.dataset.loja || 'todas';
+      carregarProdutos(categoria, filtroLoja, termoBusca);
+    }
+
+    // Filtrar por loja
+    function filtrarPorLoja(loja) {
+      const itensLoja = document.querySelectorAll('.loja, .loja-todas');
+      itensLoja.forEach(item => item.classList.remove('ativa'));
+      document.querySelector(`[data-loja="${loja}"]`).classList.add('ativa');
+
+      const termoBusca = document.getElementById('busca').value;
+      const filtroCategoria = document.querySelector('.categoria-item.ativa')?.dataset.categoria || 'todas';
+      carregarProdutos(filtroCategoria, loja, termoBusca);
+    }
+
+    // Busca por termo
+    document.getElementById('busca').addEventListener('input', e => {
+      const termoBusca = e.target.value;
+      const filtroCategoria = document.querySelector('.categoria-item.ativa')?.dataset.categoria || 'todas';
+      const filtroLoja = document.querySelector('.loja.ativa, .loja-todas.ativa')?.dataset.loja || 'todas';
+      carregarProdutos(filtroCategoria, filtroLoja, termoBusca);
+    });
+
+    // Carregar produtos ao iniciar a página
+    document.addEventListener('DOMContentLoaded', () => {
+      carregarProdutos();
+    });
+  </script>
+</body>
+</html>
