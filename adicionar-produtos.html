@@ -180,49 +180,55 @@
 
       try {
         // Validar o JSON antes de enviar
-        JSON.parse(jsonText); // Garante que o jsonText é válido
+        const parsedJson = JSON.parse(jsonText);
+        if (!Array.isArray(parsedJson)) {
+          throw new Error('JSON inválido! Deve ser uma lista de produtos.');
+        }
 
-        // Obter o arquivo produtos.json atual para pegar o SHA
+        // Obter o SHA atual do produtos.json (se existir)
+        let sha = null;
         const getResponse = await fetch('https://api.github.com/repos/bingaby/centrodecompra/contents/produtos.json', {
+          method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
-            'Accept': 'application/vnd.github.v3+json'
+            'Accept': 'application/vnd.github.v3+json',
+            'Content-Type': 'application/json'
           }
         });
 
-        let sha = null;
         if (getResponse.ok) {
           const fileData = await getResponse.json();
           sha = fileData.sha;
         } else if (getResponse.status !== 404) {
           const errorData = await getResponse.json();
-          throw new Error(errorData.message || 'Erro ao verificar produtos.json');
+          throw new Error(`Erro ao verificar produtos.json: ${errorData.message || getResponse.statusText}`);
         }
 
         // Codificar o conteúdo em base64
         const content = btoa(unescape(encodeURIComponent(jsonText)));
 
         // Atualizar ou criar produtos.json
-        const response = await fetch('https://api.github.com/repos/bingaby/centrodecompra/contents/produtos.json', {
+        const updateResponse = await fetch('https://api.github.com/repos/bingaby/centrodecompra/contents/produtos.json', {
           method: 'PUT',
           headers: {
             'Authorization': `Bearer ${token}`,
-            'Accept': 'application/vnd.github.v3+json'
+            'Accept': 'application/vnd.github.v3+json',
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({
             message: 'Atualiza produtos.json via adicionar-produtos.html',
             content: content,
-            sha: sha, // Se sha for null, cria um novo arquivo
+            sha: sha, // Pode ser null se o arquivo não existe
             branch: 'main'
           })
         });
 
-        if (response.ok) {
-          mensagem.textContent = 'produtos.json atualizado no GitHub! Os produtos agora estão visíveis na página principal.';
+        if (updateResponse.ok) {
+          mensagem.textContent = 'produtos.json atualizado no GitHub! Os produtos devem aparecer na página principal em alguns minutos.';
           erro.textContent = '';
         } else {
-          const errorData = await response.json();
-          throw new Error(errorData.message || 'Erro ao atualizar produtos.json');
+          const errorData = await updateResponse.json();
+          throw new Error(`Erro ao atualizar produtos.json: ${errorData.message || updateResponse.statusText}`);
         }
       } catch (error) {
         console.error('Erro ao sincronizar com o GitHub:', error);
