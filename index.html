@@ -15,8 +15,53 @@
   <title>Centro de Compras - Ofertas do Dia</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* Estilos para o modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      max-width: 90%;
+      max-height: 90%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      /* Forçar tamanho mínimo para imagens pequenas */
+      min-width: 300px;
+      min-height: 300px;
+    }
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #FFA500;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    /* Garantir que imagens do carrossel não sejam restritas no modal */
+    .modal-content.carrossel-imagens img {
+      width: auto;
+      height: auto;
+      max-width: 100%;
+      max-height: 100%;
+    }
+  </style>
 </head>
-
 <body>
   <header class="site-header">
     <div class="logo-container">
@@ -35,6 +80,7 @@
     <a href="cupom.html">Cupom de desconto</a>
     <a href="sobre.html">Sobre</a>
     <a href="contato.html">Contato</a>
+    <a href="adicionar-produtos.html">Adicionar Produtos</a>
   </nav>
 
   <div class="container">
@@ -58,7 +104,6 @@
     <main>
       <section id="ofertas-section">
         <h2 id="ofertas-titulo">🛍️ Ofertas do Dia</h2>
-
         <div class="lojas-parceiras">
           <h3>🌟 Lojas Parceiras</h3>
           <div class="grid-lojas">
@@ -91,10 +136,8 @@
             </div>
           </div>
         </div>
-
         <input type="text" id="busca" placeholder="Busque por produtos..." class="barra-busca" aria-label="Buscar produtos" aria-describedby="busca-instrucao">
         <span id="busca-instrucao" style="display: none;">Digite o nome do produto para filtrar os resultados.</span>
-
         <div id="busca-feedback" class="busca-feedback">Buscando...</div>
         <div class="loading-spinner" id="loading-spinner"></div>
         <div class="grid-lojas" id="grid-produtos"></div>
@@ -133,8 +176,14 @@
     </main>
   </div>
 
+  <!-- Modal para exibir imagem -->
+  <div class="modal" id="imageModal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <img class="modal-content" id="modalImage" src="" alt="Imagem ampliada">
+  </div>
+
   <footer>
-    <p>🔧 Todos os direitos reservados <strong>Grupo Centro de Compras "CdC"</strong> © <span id="year"></span></p>
+    <p>🔧 Todos os direitos reservados <strong>Grupo Centro de Compra "CdC"</strong> © <span id="year"></span></p>
   </footer>
 
   <div class="robo-assistente">
@@ -144,32 +193,147 @@
     </a>
   </div>
 
-  <script src="script.js"></script>
   <script>
+    // Atualizar ano no footer
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Fetch produtos da API e renderiza na página
-    fetch('/produtos')
-      .then(response => response.json())
-      .then(data => {
-        const gridProdutos = document.getElementById('grid-produtos');
-        data.forEach(produto => {
-          const divProduto = document.createElement('div');
-          divProduto.classList.add('produto');
+    // Carregar produtos do localStorage
+    function carregarProdutos(filtroCategoria = 'todas', filtroLoja = 'todas', termoBusca = '') {
+      const produtos = JSON.parse(localStorage.getItem('produtos')) || [];
+      const gridProdutos = document.getElementById('grid-produtos');
+      const mensagemVazia = document.getElementById('mensagem-vazia');
+      const loadingSpinner = document.getElementById('loading-spinner');
 
-          divProduto.innerHTML = `
-            <img src="${produto.imagem}" alt="${produto.nome}" loading="lazy" />
-            <h3>${produto.nome}</h3>
-            <p>${produto.descricao}</p>
-            <a href="${produto.linkAfiliado}" target="_blank">Comprar</a>
-          `;
+      loadingSpinner.style.display = 'block';
+      gridProdutos.innerHTML = ''; // Limpar o grid
 
-          gridProdutos.appendChild(divProduto);
-        });
-      })
-      .catch(err => {
-        console.error('Erro ao buscar produtos:', err);
+      // Filtrar produtos
+      const produtosFiltrados = produtos.filter(produto => {
+        const matchesCategoria = filtroCategoria === 'todas' || produto.categoria.toLowerCase() === filtroCategoria.toLowerCase();
+        const matchesLoja = filtroLoja === 'todas' || produto.loja.toLowerCase() === filtroLoja.toLowerCase();
+        const matchesBusca = termoBusca === '' || produto.nome.toLowerCase().includes(termoBusca.toLowerCase());
+        return matchesCategoria && matchesLoja && matchesBusca;
       });
+
+      if (produtosFiltrados.length === 0) {
+        mensagemVazia.style.display = 'block';
+        gridProdutos.style.display = 'none';
+      } else {
+        mensagemVazia.style.display = 'none';
+        gridProdutos.style.display = 'grid';
+        produtosFiltrados.forEach((produto, produtoIndex) => {
+          const produtoDiv = document.createElement('div');
+          produtoDiv.classList.add('produto-card', 'visible');
+          produtoDiv.setAttribute('data-categoria', produto.categoria.toLowerCase());
+          produtoDiv.setAttribute('data-loja', produto.loja.toLowerCase());
+
+          // Gerar HTML do carrossel
+          const imagens = produto.imagens && produto.imagens.length > 0 ? produto.imagens : ['imagens/placeholder.jpg'];
+          const carrosselId = `carrossel-${produtoIndex}`;
+          produtoDiv.innerHTML = `
+            <div class="carrossel" id="${carrosselId}">
+              <div class="carrossel-imagens">
+                ${imagens.map(img => `<img src="${img}" alt="${produto.nome}" loading="lazy" onclick="openModal('${img}')">`).join('')}
+              </div>
+              ${imagens.length > 1 ? `
+                <button class="carrossel-prev" onclick="moveCarrossel('${carrosselId}', -1)">◄</button>
+                <button class="carrossel-next" onclick="moveCarrossel('${carrosselId}', 1)">►</button>
+                <div class="carrossel-dots">
+                  ${imagens.map((_, i) => `<span class="carrossel-dot ${i === 0 ? 'ativo' : ''}" onclick="setCarrosselImage('${carrosselId}', ${i})"></span>`).join('')}
+                </div>
+              ` : ''}
+            </div>
+            <span>${produto.nome}</span>
+            <span class="descricao">Loja: ${produto.loja}</span>
+            <a href="${produto.link}" target="_blank" class="ver-na-loja ${produto.loja.toLowerCase()}">Comprar</a>
+          `;
+          gridProdutos.appendChild(produtoDiv);
+        });
+      }
+
+      loadingSpinner.style.display = 'none';
+    }
+
+    // Funções do carrossel
+    function moveCarrossel(carrosselId, direction) {
+      const carrossel = document.getElementById(carrosselId);
+      const imagens = carrossel.querySelector('.carrossel-imagens');
+      const dots = carrossel.querySelectorAll('.carrossel-dot');
+      let currentIndex = parseInt(imagens.dataset.index || 0);
+      const totalImagens = imagens.children.length;
+
+      currentIndex = (currentIndex + direction + totalImagens) % totalImagens;
+      imagens.style.transform = `translateX(-${currentIndex * 100}%)`;
+      imagens.dataset.index = currentIndex;
+
+      // Atualizar dots
+      dots.forEach((dot, i) => dot.classList.toggle('ativo', i === currentIndex));
+    }
+
+    function setCarrosselImage(carrosselId, index) {
+      const carrossel = document.getElementById(carrosselId);
+      const imagens = carrossel.querySelector('.carrossel-imagens');
+      const dots = carrossel.querySelectorAll('.carrossel-dot');
+
+      imagens.style.transform = `translateX(-${index * 100}%)`;
+      imagens.dataset.index = index;
+
+      // Atualizar dots
+      dots.forEach((dot, i) => dot.classList.toggle('ativo', i === index));
+    }
+
+    // Funções do modal
+    function openModal(imageSrc) {
+      const modal = document.getElementById('imageModal');
+      const modalImage = document.getElementById('modalImage');
+      modalImage.src = imageSrc;
+      modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('imageModal');
+      modal.style.display = 'none';
+    }
+
+    // Fechar modal ao clicar fora da imagem
+    document.getElementById('imageModal').addEventListener('click', e => {
+      if (e.target === e.currentTarget) closeModal();
+    });
+
+    // Filtrar por categoria
+    function filtrarPorCategoria(categoria) {
+      const itensCategoria = document.querySelectorAll('.categoria-item');
+      itensCategoria.forEach(item => item.classList.remove('ativa'));
+      document.querySelector(`.categoria-item[data-categoria="${categoria}"]`).classList.add('ativa');
+
+      const termoBusca = document.getElementById('busca').value;
+      const filtroLoja = document.querySelector('.loja.ativa, .loja-todas.ativa')?.dataset.loja || 'todas';
+      carregarProdutos(categoria, filtroLoja, termoBusca);
+    }
+
+    // Filtrar por loja
+    function filtrarPorLoja(loja) {
+      const itensLoja = document.querySelectorAll('.loja, .loja-todas');
+      itensLoja.forEach(item => item.classList.remove('ativa'));
+      document.querySelector(`[data-loja="${loja}"]`).classList.add('ativa');
+
+      const termoBusca = document.getElementById('busca').value;
+      const filtroCategoria = document.querySelector('.categoria-item.ativa')?.dataset.categoria || 'todas';
+      carregarProdutos(filtroCategoria, loja, termoBusca);
+    }
+
+    // Busca por termo
+    document.getElementById('busca').addEventListener('input', e => {
+      const termoBusca = e.target.value;
+      const filtroCategoria = document.querySelector('.categoria-item.ativa')?.dataset.categoria || 'todas';
+      const filtroLoja = document.querySelector('.loja.ativa, .loja-todas.ativa')?.dataset.loja || 'todas';
+      carregarProdutos(filtroCategoria, filtroLoja, termoBusca);
+    });
+
+    // Carregar produtos ao iniciar a página
+    document.addEventListener('DOMContentLoaded', () => {
+      carregarProdutos();
+    });
   </script>
 </body>
 </html>
