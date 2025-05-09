@@ -1,0 +1,18 @@
+[
+  {
+    "nome": "Smartphone Exemplo",
+    "categoria": "Celulares",
+    "loja": "amazon",
+    "link": "https://example.com",
+    "imagens": ["imagens/placeholder.jpg"],
+    "descricao": "Smartphone de teste"
+  },
+  {
+    "nome": "Fone de Ouvido",
+    "categoria": "eletronicos",
+    "loja": "shopee",
+    "link": "https://example.com",
+    "imagens": ["imagens/placeholder.jpg"],
+    "descricao": "Fone sem fio"
+  }
+]
