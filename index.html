@@ -57,6 +57,11 @@
       max-width: 100%;
       max-height: 100%;
     }
+    .error-message {
+      color: red;
+      text-align: center;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
@@ -139,6 +144,7 @@
         <div class="loading-spinner" id="loading-spinner"></div>
         <div class="grid-lojas" id="grid-produtos"></div>
         <p class="mensagem-vazia" id="mensagem-vazia">Nenhum produto encontrado.</p>
+        <p class="error-message" id="error-message" style="display: none;"></p>
       </section>
 
       <a class="whatsapp" href="https://wa.me/5521975179737" target="_blank">📲 Atendimento via WhatsApp</a>
@@ -197,15 +203,25 @@
     async function carregarProdutos(filtroCategoria = 'todas', filtroLoja = 'todas', termoBusca = '') {
       const gridProdutos = document.getElementById('grid-produtos');
       const mensagemVazia = document.getElementById('mensagem-vazia');
+      const errorMessage = document.getElementById('error-message');
       const loadingSpinner = document.getElementById('loading-spinner');
 
       loadingSpinner.style.display = 'block';
       gridProdutos.innerHTML = ''; // Limpar o grid
+      mensagemVazia.style.display = 'none';
+      errorMessage.style.display = 'none';
 
       try {
-        const response = await fetch('/produtos.json');
-        if (!response.ok) throw new Error('Não encontrou produtos.json');
+        // Usar /produtos.json para funcionar com domínio personalizado ou GitHub Pages
+        const response = await fetch('/produtos.json', { cache: 'no-store' });
+        if (!response.ok) {
+          throw new Error(`Erro ao carregar produtos.json: ${response.status} ${response.statusText}`);
+        }
         const produtos = await response.json();
+
+        if (!Array.isArray(produtos)) {
+          throw new Error('produtos.json não é uma lista válida');
+        }
 
         const produtosFiltrados = produtos.filter(produto => {
           const matchesCategoria = filtroCategoria === 'todas' || produto.categoria.toLowerCase() === filtroCategoria.toLowerCase();
@@ -250,7 +266,9 @@
         }
       } catch (error) {
         console.error('Erro ao carregar produtos:', error);
-        mensagemVazia.style.display = 'block';
+        errorMessage.textContent = 'Erro ao carregar os produtos. Tente novamente mais tarde.';
+        errorMessage.style.display = 'block';
+        mensagemVazia.style.display = 'none';
         gridProdutos.style.display = 'none';
       }
 
