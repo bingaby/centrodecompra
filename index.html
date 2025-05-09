@@ -1,5 +1,5 @@
 
-     <!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
@@ -8,7 +8,7 @@
   <meta property="og:title" content="Centro de Compras - Ofertas e Descontos">
   <meta property="og:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliados seguros e atualizados!">
   <meta property="og:image" content="logos/centrodecompras.jpg">
-  <meta property="og:url" content="https://bingaby.github.io/centrodecompra/">
+  <meta property="og:url" content="https://centrodecompra.com.br/">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Centro de Compras - Ofertas e Descontos">
   <meta name="twitter:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliados seguros e atualizados!">
@@ -69,7 +69,7 @@
   <header class="site-header">
     <div class="logo-container">
       <a href="#">
-        <img src="logos/centrodecompras.jpg" alt="Centro de Compras" loading="lazy" />
+        <img src="logos/centrodecompras.jpg" alt="Centro de Compras" loading="lazy" id="site-logo" />
       </a>
     </div>
     <div class="header-text">
@@ -198,6 +198,23 @@
   <script>
     // Atualizar ano no footer
     document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Detectar triplo clique no logotipo para redirecionar para admin-xyz-123.html
+    const logo = document.getElementById('site-logo');
+    let clickCount = 0;
+    let clickTimer = null;
+    logo.addEventListener('click', () => {
+      clickCount++;
+      if (clickCount === 1) {
+        clickTimer = setTimeout(() => {
+          clickCount = 0;
+        }, 500); // 500ms para detectar cliques rápidos
+      } else if (clickCount === 3) {
+        clearTimeout(clickTimer);
+        window.location.href = 'admin-xyz-123.html';
+        clickCount = 0;
+      }
+    });
 
     // Carregar produtos do arquivo produtos.json
     async function carregarProdutos(filtroCategoria = 'todas', filtroLoja = 'todas', termoBusca = '') {
