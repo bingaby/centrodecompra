@@ -1,4 +1,8 @@
-<!DOCTYPE html>
+
+      
+            
+         
+        <!DOCTYPE html>
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
@@ -30,6 +34,83 @@
     #logout-button { margin: 20px auto; max-width: 500px; text-align: center; }
     #logout-button button { background-color: #6c757d; }
     #logout-button button:hover { background-color: #5a6268; }
+    /* Estilos para miniaturas na tabela */
+    .thumbnail { width: 50px; height: 50px; object-fit: cover; margin: 2px; cursor: pointer; border-radius: 4px; }
+    /* Estilos para o modal e carrossel */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      position: relative;
+      max-width: 90%;
+      max-height: 90%;
+      width: auto;
+      height: auto;
+    }
+    .modal-content .carrossel-imagens {
+      display: flex;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+    }
+    .modal-content .carrossel-imagens img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      flex: 0 0 100%;
+      transition: transform 0.3s ease;
+    }
+    .modal-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #ff6200;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .carrossel-prev, .carrossel-next {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+      font-size: 18px;
+      border-radius: 4px;
+    }
+    .carrossel-prev { left: 10px; }
+    .carrossel-next { right: 10px; }
+    .carrossel-dots {
+      position: absolute;
+      bottom: 10px;
+      width: 100%;
+      text-align: center;
+    }
+    .carrossel-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      background: #ccc;
+      border-radius: 50%;
+      margin: 0 5px;
+      cursor: pointer;
+    }
+    .carrossel-dot.ativo { background: #ff6200; }
   </style>
 </head>
 <body>
@@ -106,9 +187,21 @@
     </div>
   </div>
 
+  <div class="modal" id="imageModal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-content" id="modalCarrossel">
+      <div class="carrossel-imagens" id="modalCarrosselImagens"></div>
+      <button class="carrossel-prev" onclick="moveModalCarrossel(-1)">◄</button>
+      <button class="carrossel-next" onclick="moveModalCarrossel(1)">►</button>
+      <div class="carrossel-dots" id="modalCarrosselDots"></div>
+    </div>
+  </div>
+
   <script>
     const SENHA_CORRETA = "comprasempre@098457"; // Mude para a senha que você quiser
     let produtos = JSON.parse(localStorage.getItem('produtos')) || [];
+    let currentImages = [];
+    let currentImageIndex = 0;
 
     // Verificar autenticação ao carregar a página
     function verificarAutenticacao() {
@@ -254,17 +347,67 @@
       }
       produtos.forEach((produto, index) => {
         const tr = document.createElement('tr');
+        const imagens = produto.imagens && produto.imagens.length > 0 ? produto.imagens : [];
         tr.innerHTML = `
           <td>${produto.nome}</td>
           <td>${produto.categoria}</td>
           <td>${produto.loja}</td>
           <td><a href="${produto.link}" target="_blank">Link</a></td>
-          <td>${produto.imagens ? produto.imagens.length : 0}</td>
+          <td>
+            ${imagens.length > 0 ? imagens.map((img, i) => `<img src="${img}" alt="Imagem ${i + 1}" class="thumbnail" onclick="openModal(${index}, ${i})">`).join('') : 'Nenhuma imagem'}
+          </td>
           <td><button class="excluir" onclick="excluirProduto(${index})">Excluir</button></td>
         `;
         listaProdutos.appendChild(tr);
       });
     }
+
+    function openModal(produtoIndex, imageIndex) {
+      const modal = document.getElementById('imageModal');
+      const carrosselImagens = document.getElementById('modalCarrosselImagens');
+      const carrosselDots = document.getElementById('modalCarrosselDots');
+      currentImages = produtos[produtoIndex].imagens || [];
+      currentImageIndex = imageIndex;
+
+      if (currentImages.length === 0) return;
+
+      carrosselImagens.innerHTML = currentImages.map(img => `<img src="${img}" alt="Imagem ampliada">`).join('');
+      carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+
+      carrosselDots.innerHTML = currentImages.map((_, i) => `<span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})"></span>`).join('');
+
+      modal.style.display = 'flex';
+    }
+
+    function moveModalCarrossel(direction) {
+      const carrosselImagens = document.getElementById('modalCarrosselImagens');
+      const carrosselDots = document.getElementById('modalCarrosselDots').children;
+      const totalImagens = currentImages.length;
+
+      currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
+      carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+
+      Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
+    }
+
+    function setModalCarrosselImage(index) {
+      const carrosselImagens = document.getElementById('modalCarrosselImagens');
+      const carrosselDots = document.getElementById('modalCarrosselDots').children;
+      currentImageIndex = index;
+      carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+      Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('imageModal');
+      modal.style.display = 'none';
+      currentImages = [];
+      currentImageIndex = 0;
+    }
+
+    document.getElementById('imageModal').addEventListener('click', e => {
+      if (e.target === e.currentTarget) closeModal();
+    });
 
     function excluirProduto(index) {
       produtos.splice(index, 1);
