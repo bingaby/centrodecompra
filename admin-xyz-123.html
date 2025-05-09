@@ -97,7 +97,6 @@
       <input type="password" id="github-token" placeholder="GitHub Personal Access Token" required>
       <textarea id="json-text" readonly></textarea>
       <button onclick="atualizarGitHub()">Atualizar produtos.json no GitHub</button>
-      <button onclick="copiarJSON()">Copiar JSON</button>
       <textarea id="import-json" placeholder="Cole o JSON para importar"></textarea>
       <button onclick="importarJSON()">Importar JSON</button>
     </div>
@@ -274,13 +273,6 @@
       atualizarListaProdutos();
       document.getElementById('mensagem').textContent = 'Produto excluído! Clique em "Atualizar produtos.json no GitHub" para sincronizar.';
       document.getElementById('erro').textContent = '';
-    }
-
-    function copiarJSON() {
-      const jsonText = document.getElementById('json-text');
-      jsonText.select();
-      document.execCommand('copy');
-      alert('JSON copiado! Você pode colá-lo manualmente no produtos.json ou usar "Atualizar produtos.json no GitHub".');
     }
 
     async function atualizarGitHub() {
