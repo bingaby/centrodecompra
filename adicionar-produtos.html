@@ -167,7 +167,7 @@
     }
 
     async function atualizarGitHub() {
-      const token = document.getElementById('github-token').value;
+      const token = document.getElementById('github-token').value.trim();
       const jsonText = document.getElementById('json-text').value;
       const mensagem = document.getElementById('mensagem');
       const erro = document.getElementById('erro');
@@ -179,10 +179,13 @@
       }
 
       try {
+        // Validar o JSON antes de enviar
+        JSON.parse(jsonText); // Garante que o jsonText é válido
+
         // Obter o arquivo produtos.json atual para pegar o SHA
         const getResponse = await fetch('https://api.github.com/repos/bingaby/centrodecompra/contents/produtos.json', {
           headers: {
-            'Authorization': `token ${token}`,
+            'Authorization': `Bearer ${token}`,
             'Accept': 'application/vnd.github.v3+json'
           }
         });
@@ -192,7 +195,8 @@
           const fileData = await getResponse.json();
           sha = fileData.sha;
         } else if (getResponse.status !== 404) {
-          throw new Error('Erro ao verificar produtos.json');
+          const errorData = await getResponse.json();
+          throw new Error(errorData.message || 'Erro ao verificar produtos.json');
         }
 
         // Codificar o conteúdo em base64
@@ -202,7 +206,7 @@
         const response = await fetch('https://api.github.com/repos/bingaby/centrodecompra/contents/produtos.json', {
           method: 'PUT',
           headers: {
-            'Authorization': `token ${token}`,
+            'Authorization': `Bearer ${token}`,
             'Accept': 'application/vnd.github.v3+json'
           },
           body: JSON.stringify({
@@ -221,6 +225,7 @@
           throw new Error(errorData.message || 'Erro ao atualizar produtos.json');
         }
       } catch (error) {
+        console.error('Erro ao sincronizar com o GitHub:', error);
         erro.textContent = error.message || 'Erro ao sincronizar com o GitHub. Verifique o token e tente novamente.';
         mensagem.textContent = '';
       }
