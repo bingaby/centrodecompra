@@ -1,8 +1,4 @@
-
-      
-            
-         
-        <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
@@ -12,26 +8,22 @@
   <style>
     body { font-family: 'Roboto', Arial, sans-serif; padding: 20px; background-color: #f5f5f5; }
     h1, h3 { text-align: center; color: #333; }
-    form { max-width: 500px; margin: auto; display: flex; flex-direction: column; gap: 10px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
-    input, select, button, textarea { padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; }
+    form { max-width: 400px; margin: auto; display: flex; flex-direction: column; gap: 8px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+    input, select, button { padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
     button { background-color: #ff6200; color: white; border: none; cursor: pointer; font-weight: bold; }
     button:hover { background-color: #e55a00; }
     #mensagem { margin-top: 10px; color: green; text-align: center; }
     #erro { margin-top: 10px; color: red; text-align: center; }
-    #github-sync { margin-top: 20px; max-width: 500px; margin: auto; background: white; padding: 10px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
-    #github-sync textarea { width: 100%; height: 100px; resize: vertical; }
-    #github-sync input { margin-bottom: 10px; }
-    #github-sync button { margin-top: 10px; width: 100%; }
     #produtos-cadastrados { margin: 20px auto; max-width: 800px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
     #produtos-cadastrados table { width: 100%; border-collapse: collapse; }
     #produtos-cadastrados th, #produtos-cadastrados td { padding: 10px; border: 1px solid #ddd; text-align: left; }
     #produtos-cadastrados th { background-color: #f9f9f9; }
     #produtos-cadastrados button.excluir { background-color: #dc3545; padding: 5px 10px; font-size: 14px; }
     #produtos-cadastrados button.excluir:hover { background-color: #c82333; }
-    #auth-section { max-width: 400px; margin: 50px auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+    #auth-section { max-width: 350px; margin: 50px auto; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
     #main-content { display: none; }
     #auth-error { color: red; text-align: center; margin-top: 10px; }
-    #logout-button { margin: 20px auto; max-width: 500px; text-align: center; }
+    #logout-button { margin: 20px auto; max-width: 400px; text-align: center; }
     #logout-button button { background-color: #6c757d; }
     #logout-button button:hover { background-color: #5a6268; }
     /* Estilos para miniaturas na tabela */
@@ -173,15 +165,6 @@
       </table>
     </div>
 
-    <div id="github-sync">
-      <h3>Sincronizar com GitHub</h3>
-      <input type="password" id="github-token" placeholder="GitHub Personal Access Token" required>
-      <textarea id="json-text" readonly></textarea>
-      <button onclick="atualizarGitHub()">Atualizar produtos.json no GitHub</button>
-      <textarea id="import-json" placeholder="Cole o JSON para importar"></textarea>
-      <button onclick="importarJSON()">Importar JSON</button>
-    </div>
-
     <div id="logout-button">
       <button onclick="logout()">Sair</button>
     </div>
@@ -209,7 +192,6 @@
       if (isAutenticado) {
         document.getElementById('auth-section').style.display = 'none';
         document.getElementById('main-content').style.display = 'block';
-        atualizarJSON();
         atualizarListaProdutos();
       } else {
         document.getElementById('auth-section').style.display = 'block';
@@ -227,7 +209,6 @@
         sessionStorage.setItem('autenticado', 'true');
         document.getElementById('auth-section').style.display = 'none';
         document.getElementById('main-content').style.display = 'block';
-        atualizarJSON();
         atualizarListaProdutos();
         authError.textContent = '';
       } else {
@@ -321,10 +302,9 @@
         const novoProduto = { nome, categoria, loja, link, imagens: imagensArray };
         produtos.push(novoProduto);
         localStorage.setItem('produtos', JSON.stringify(produtos));
-        atualizarJSON();
         atualizarListaProdutos();
 
-        mensagem.textContent = 'Produto adicionado! Clique em "Atualizar produtos.json no GitHub" para sincronizar.';
+        mensagem.textContent = 'Produto adicionado!';
         erro.textContent = '';
         e.target.reset();
       } catch (error) {
@@ -333,15 +313,10 @@
       }
     });
 
-    function atualizarJSON() {
-      const jsonText = document.getElementById('json-text');
-      jsonText.value = JSON.stringify(produtos, null, 2);
-    }
-
     function atualizarListaProdutos() {
       const listaProdutos = document.getElementById('lista-produtos');
-      listaProdutos.innerHTML = '';
-      if (produtos.length === 0) {
+      listaProdutos.innerHTML = ''; // Limpa a tabela antes de renderizar
+      if (!produtos || produtos.length === 0) {
         listaProdutos.innerHTML = '<tr><td colspan="6">Nenhum produto cadastrado.</td></tr>';
         return;
       }
@@ -366,7 +341,7 @@
       const modal = document.getElementById('imageModal');
       const carrosselImagens = document.getElementById('modalCarrosselImagens');
       const carrosselDots = document.getElementById('modalCarrosselDots');
-      currentImages = produtos[produtoIndex].imagens || [];
+      currentImages = produtos[produtoIndex]?.imagens || [];
       currentImageIndex = imageIndex;
 
       if (currentImages.length === 0) return;
@@ -410,99 +385,19 @@
     });
 
     function excluirProduto(index) {
-      produtos.splice(index, 1);
-      localStorage.setItem('produtos', JSON.stringify(produtos));
-      atualizarJSON();
-      atualizarListaProdutos();
-      document.getElementById('mensagem').textContent = 'Produto excluído! Clique em "Atualizar produtos.json no GitHub" para sincronizar.';
-      document.getElementById('erro').textContent = '';
-    }
-
-    async function atualizarGitHub() {
-      const token = document.getElementById('github-token').value.trim();
-      const jsonText = document.getElementById('json-text').value;
-      const mensagem = document.getElementById('mensagem');
-      const erro = document.getElementById('erro');
-
-      if (!token) {
-        erro.textContent = 'Por favor, insira o GitHub Personal Access Token!';
-        mensagem.textContent = '';
-        return;
-      }
-
       try {
-        const parsedJson = JSON.parse(jsonText);
-        if (!Array.isArray(parsedJson)) {
-          throw new Error('JSON inválido! Deve ser uma lista de produtos.');
+        if (!produtos || index < 0 || index >= produtos.length) {
+          throw new Error('Produto inválido ou não encontrado.');
         }
-
-        let sha = null;
-        const getResponse = await fetch('https://api.github.com/repos/bingaby/centrodecompra/contents/produtos.json', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Accept': 'application/vnd.github.v3+json',
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (getResponse.ok) {
-          const fileData = await getResponse.json();
-          sha = fileData.sha;
-        } else if (getResponse.status !== 404) {
-          const errorData = await getResponse.json();
-          throw new Error(`Erro ao verificar produtos.json: ${errorData.message || getResponse.statusText}`);
-        }
-
-        const content = btoa(unescape(encodeURIComponent(jsonText)));
-
-        const updateResponse = await fetch('https://api.github.com/repos/bingaby/centrodecompra/contents/produtos.json', {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Accept': 'application/vnd.github.v3+json',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            message: 'Atualiza produtos.json via admin',
-            content: content,
-            sha: sha,
-            branch: 'main'
-          })
-        });
-
-        if (updateResponse.ok) {
-          mensagem.textContent = 'produtos.json atualizado no GitHub! Os produtos devem aparecer na página principal em alguns minutos.';
-          erro.textContent = '';
-        } else {
-          const errorData = await updateResponse.json();
-          throw new Error(`Erro ao atualizar produtos.json: ${errorData.message || updateResponse.statusText}`);
-        }
-      } catch (error) {
-        console.error('Erro ao sincronizar com o GitHub:', error);
-        erro.textContent = error.message || 'Erro ao sincronizar com o GitHub. Verifique o token e tente novamente.';
-        mensagem.textContent = '';
-      }
-    }
-
-    function importarJSON() {
-      const importText = document.getElementById('import-json').value;
-      const mensagem = document.getElementById('mensagem');
-      const erro = document.getElementById('erro');
-
-      try {
-        const importedProdutos = JSON.parse(importText);
-        if (!Array.isArray(importedProdutos)) throw new Error('JSON inválido! Deve ser uma lista de produtos.');
-        produtos = importedProdutos;
+        produtos.splice(index, 1);
         localStorage.setItem('produtos', JSON.stringify(produtos));
-        atualizarJSON();
         atualizarListaProdutos();
-        mensagem.textContent = 'Produtos importados com sucesso! Clique em "Atualizar produtos.json no GitHub" para sincronizar.';
-        erro.textContent = '';
-        document.getElementById('import-json').value = '';
+        document.getElementById('mensagem').textContent = 'Produto excluído!';
+        document.getElementById('erro').textContent = '';
       } catch (error) {
-        erro.textContent = error.message || 'Erro ao importar JSON. Verifique o formato e tente novamente.';
-        mensagem.textContent = '';
+        document.getElementById('erro').textContent = error.message || 'Erro ao excluir o produto. Tente novamente.';
+        document.getElementById('mensagem').textContent = '';
+        console.error('Erro ao excluir produto:', error);
       }
     }
 
