@@ -1,0 +1,126 @@
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cupons Promocionais</title>
+  <link rel="stylesheet" href="style-calmo.css" />
+  <style>
+    .cupons-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .cupons-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .cupom-card {
+      background: #fff;
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .cupom-card img {
+      max-width: 120px;
+      height: auto;
+      margin-bottom: 10px;
+    }
+
+    .cupom-codigo {
+      background-color: #ff9800;
+      color: white;
+      font-weight: bold;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 16px;
+      margin-bottom: 10px;
+      display: inline-block;
+    }
+
+    .btn-copiar {
+      background-color: #25d366;
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s ease;
+    }
+
+    .btn-copiar:hover {
+      background-color: #1ebe5c;
+    }
+
+    h1 {
+      margin-top: 20px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <main class="cupons-container">
+    <h1>🎟️ Cupons Promocionais</h1>
+    <p>Use os cupons abaixo nos sites oficiais e aproveite descontos exclusivos!</p>
+
+    <div class="cupons-grid">
+      <div class="cupom-card">
+        <img src="logos/amazon.png" alt="Amazon">
+        <div class="cupom-codigo" id="cupom1">AMAZON10</div>
+        <button class="btn-copiar" onclick="copiarCupom('cupom1')">Copiar Cupom</button>
+      </div>
+
+      <div class="cupom-card">
+        <img src="logos/shein.png" alt="Shein">
+        <div class="cupom-codigo" id="cupom2">SHEIN15</div>
+        <button class="btn-copiar" onclick="copiarCupom('cupom2')">Copiar Cupom</button>
+      </div>
+
+      <div class="cupom-card">
+        <img src="logos/magalu.png" alt="Magalu">
+        <div class="cupom-codigo" id="cupom3">MAGALU5</div>
+        <button class="btn-copiar" onclick="copiarCupom('cupom3')">Copiar Cupom</button>
+      </div>
+
+      <div class="cupom-card">
+        <img src="logos/mercadolivre.jpg" alt="Mercado Livre">
+        <div class="cupom-codigo" id="cupom4">MLCUPOM20</div>
+        <button class="btn-copiar" onclick="copiarCupom('cupom4')">Copiar Cupom</button>
+      </div>
+
+      <div class="cupom-card">
+        <img src="logos/shopee.png" alt="Shopee">
+        <div class="cupom-codigo" id="cupom5">SHOPEE10</div>
+        <button class="btn-copiar" onclick="copiarCupom('cupom5')">Copiar Cupom</button>
+      </div>
+
+      <div class="cupom-card">
+        <img src="logos/aliexpress.png" alt="AliExpress">
+        <div class="cupom-codigo" id="cupom6">ALI20BR</div>
+        <button class="btn-copiar" onclick="copiarCupom('cupom6')">Copiar Cupom</button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function copiarCupom(cupomId) {
+      const cupom = document.getElementById(cupomId);
+      const range = document.createRange();
+      range.selectNode(cupom);
+      window.getSelection().removeAllRanges();  // Limpa as seleções anteriores
+      window.getSelection().addRange(range);    // Seleciona o texto do cupom
+      document.execCommand('copy');             // Copia o conteúdo selecionado
+      window.getSelection().removeAllRanges();  // Limpa a seleção
+
+      alert('Cupom copiado: ' + cupom.innerText);
+    }
+  </script>
+</body>
+</html>
