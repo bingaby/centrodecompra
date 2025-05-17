@@ -1,11 +1,11 @@
 [
   {
-    "id": "1747483408954",
+    "id": "1747491190818",
     "nome": "teste",
     "descricao": "",
-    "categoria": "beleza",
-    "loja": "amazon",
+    "categoria": "fitness",
+    "loja": "magalu",
     "link": "https://www.centrodecompra.com.br/gerenciar-produtos.html",
-    "imagens": "produtos/produto_1747483408954_0.jpg,produtos/produto_1747483408952_1.jpg"
+    "imagens": "produtos/produto_1747491190818_0.jpg"
   }
 ]
