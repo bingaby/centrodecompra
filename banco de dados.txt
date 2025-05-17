@@ -1,6 +1,6 @@
 -- Criar Banco de Dados
-CREATE DATABASE centro_de_compras;
-USE centro_de_compras;
+CREATE DATABASE centro_de_compra;
+USE centro_de_compra;
 
 -- Tabela para Categorias
 CREATE TABLE categories (
