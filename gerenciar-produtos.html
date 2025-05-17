@@ -12,11 +12,14 @@
     <input type="text" id="name" required><br>
     <label>Preço (R$):</label><br>
     <input type="number" id="price" step="0.01" required><br>
-    <label>Imagem (URL):</label><br>
+    <label>Imagem Principal (URL):</label><br>
     <input type="url" id="image" required><br>
+    <label>Imagens do Carrossel (URLs, separadas por vírgula):</label><br>
+    <input type="text" id="images" placeholder="https://exemplo.com/img1.jpg,https://exemplo.com/img2.jpg"><br>
+    <label>Descrição:</label><br>
+    <textarea id="description"></textarea><br>
     <label>Categoria:</label><br>
     <select id="category" required>
-      <option value="todas">Todas</option>
       <option value="eletronicos">Eletrônicos</option>
       <option value="moda">Moda</option>
       <option value="fitness">Fitness</option>
@@ -46,36 +49,44 @@
     document.getElementById('productForm').addEventListener('submit', async function(event) {
       event.preventDefault();
 
+      const imagesInput = document.getElementById('images').value;
+      const images = imagesInput ? imagesInput.split(',').map(url => url.trim()) : [];
+
       const product = {
         name: document.getElementById('name').value,
         price: parseFloat(document.getElementById('price').value),
         image: document.getElementById('image').value,
+        images: images.length > 0 ? images : undefined,
+        description: document.getElementById('description').value || undefined,
         category: document.getElementById('category').value,
         store: document.getElementById('store').value,
         link: document.getElementById('link').value
       };
 
-      // Substitua pelo seu token e informações do repositório
-      const token = 'ghp_seuTokenAqui'; // Crie um token em Settings > Developer settings
+      // Configurações da API do GitHub
+      const token = 'ghp_seuTokenAqui'; // Substitua pelo seu token
       const repo = 'seu-usuario/nome-do-repositorio';
       const path = 'data/produtos.json';
 
       try {
-        // Obter o conteúdo atual do JSON
+        // Obter JSON atual
         const response = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
           headers: {
             'Authorization': `token ${token}`,
             'Accept': 'application/vnd.github.v3+json'
           }
         });
+        if (!response.ok) {
+          throw new Error(`Erro ao obter produtos.json: ${response.status}`);
+        }
         const data = await response.json();
         const currentProducts = JSON.parse(atob(data.content));
 
-        // Adicionar o novo produto
+        // Adicionar novo produto
         currentProducts.push(product);
 
-        // Atualizar o arquivo no GitHub
-        await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+        // Atualizar JSON
+        const updateResponse = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
           method: 'PUT',
           headers: {
             'Authorization': `token ${token}`,
@@ -87,6 +98,10 @@
             sha: data.sha
           })
         });
+
+        if (!updateResponse.ok) {
+          throw new Error(`Erro ao atualizar produtos.json: ${updateResponse.status}`);
+        }
 
         alert('Produto adicionado com sucesso! Pode demorar alguns minutos para aparecer na página principal.');
         document.getElementById('productForm').reset();
