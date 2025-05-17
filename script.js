@@ -1,151 +1,454 @@
-// Função para carregar e exibir produtos
-async function loadProducts() {
-  try {
-    // Exibir spinner de carregamento
-    document.querySelector('.loading-spinner').style.display = 'block';
-    document.getElementById('mensagem-vazia').style.display = 'none';
-
-    // Carregar o JSON
-    const response = await fetch('data/produtos.json'); // Ajuste o caminho se necessário
-    if (!response.ok) {
-      throw new Error('Erro ao carregar produtos.json');
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Gerenciar Produtos</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .product-list {
+      margin-top: 20px;
+      max-width: 100%;
+      overflow-x: auto;
     }
-    const products = await response.json();
+    .product-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+    }
+    .product-table th, .product-table td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .product-table th {
+      background: #f9f9f9;
+      font-weight: bold;
+      color: #444;
+    }
+    .product-table img {
+      max-width: 50px;
+      height: auto;
+    }
+    .product-table button {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-right: 5px;
+    }
+    .edit-btn {
+      background: #FFA500;
+      color: #fff;
+    }
+    .edit-btn:hover {
+      background: #FF8C00;
+    }
+    .delete-btn {
+      background: #E02020;
+      color: #fff;
+    }
+    .delete-btn:hover {
+      background: #CC1B1B;
+    }
+    .form-section {
+      background: #fff;
+      padding: 20px;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      margin-bottom: 20px;
+    }
+    .form-section h2 {
+      margin-bottom: 15px;
+      color: #444;
+    }
+    .form-section label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: bold;
+      color: #333;
+    }
+    .form-section input, .form-section select, .form-section textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    .form-section input[type="file"] {
+      padding: 3px;
+    }
+    .form-section textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    .form-section button[type="submit"] {
+      background: #2E8B57;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    .form-section button[type="submit"]:hover {
+      background: #257A49;
+    }
+    .form-section .cancel-btn {
+      background: #666;
+      margin-left: 10px;
+    }
+    .form-section .cancel-btn:hover {
+      background: #555;
+    }
+    .image-preview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 5px;
+    }
+    .image-preview img {
+      max-width: 100px;
+      height: auto;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    @media (max-width: 768px) {
+      .product-table th, .product-table td {
+        font-size: 12px;
+        padding: 8px;
+      }
+      .product-table img {
+        max-width: 40px;
+      }
+      .product-table button {
+        padding: 4px 8px;
+        font-size: 12px;
+      }
+      .image-preview img {
+        max-width: 80px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <main>
+      <section class="form-section">
+        <h2 id="form-title">Adicionar Novo Produto</h2>
+        <form id="productForm">
+          <input type="hidden" id="editIndex">
+          <label for="name">Nome do Produto:</label>
+          <input type="text" id="name" required>
+          <label for="image">Imagem Principal:</label>
+          <input type="file" id="image" accept="image/jpeg,image/png,image/webp" required>
+          <div class="image-preview" id="imagePreview"></div>
+          <label for="images">Imagens do Carrossel:</label>
+          <input type="file" id="images" accept="image/jpeg,image/png,image/webp" multiple>
+          <div class="image-preview" id="imagesPreview"></div>
+          <label for="description">Descrição:</label>
+          <textarea id="description"></textarea>
+          <label for="category">Categoria:</label>
+          <select id="category" required>
+            <option value="eletronicos">Eletrônicos</option>
+            <option value="moda">Moda</option>
+            <option value="fitness">Fitness</option>
+            <option value="casa">Casa e Decoração</option>
+            <option value="beleza">Beleza</option>
+            <option value="esportes">Esportes</option>
+            <option value="livros">Livros</option>
+            <option value="infantil">Infantil</option>
+            <option value="Celulares">Celulares</option>
+            <option value="Eletrodomésticos">Eletrodomésticos</option>
+          </select>
+          <label for="store">Loja:</label>
+          <select id="store" required>
+            <option value="amazon">Amazon</option>
+            <option value="magalu">Magalu</option>
+            <option value="shein">Shein</option>
+            <option value="shopee">Shopee</option>
+            <option value="mercadolivre">Mercado Livre</option>
+            <option value="alibaba">Alibaba</option>
+          </select>
+          <label for="link">Link de Afiliado:</label>
+          <input type="url" id="link" required>
+          <button type="submit">Salvar Produto</button>
+          <button type="button" class="cancel-btn" id="cancelEdit" style="display: none;">Cancelar</button>
+        </form>
+      </section>
 
-    // Armazenar produtos globalmente para filtros
-    window.allProducts = products;
+      <section class="product-list">
+        <h2>Produtos Cadastrados</h2>
+        <table class="product-table">
+          <thead>
+            <tr>
+              <th>Imagem</th>
+              <th>Nome</th>
+              <th>Categoria</th>
+              <th>Loja</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="productTableBody"></tbody>
+        </table>
+      </section>
 
-    // Exibir todos os produtos inicialmente
-    displayProducts(products);
+      <a href="index.html">Voltar para a Página Principal</a>
+    </main>
+  </div>
+  <script>
+    const form = document.getElementById('productForm');
+    const cancelBtn = document.getElementById('cancelEdit');
+    const formTitle = document.getElementById('form-title');
+    const productTableBody = document.getElementById('productTableBody');
+    const imageInput = document.getElementById('image');
+    const imagesInput = document.getElementById('images');
+    const imagePreview = document.getElementById('imagePreview');
+    const imagesPreview = document.getElementById('imagesPreview');
 
-    // Esconder spinner
-    document.querySelector('.loading-spinner').style.display = 'none';
-  } catch (error) {
-    console.error('Erro:', error);
-    document.querySelector('.loading-spinner').style.display = 'none';
-    document.getElementById('mensagem-vazia').style.display = 'block';
-    document.getElementById('mensagem-vazia').textContent = 'Erro ao carregar produtos.';
-  }
-}
+    // Configurações da API do GitHub
+    const token = 'ghp_seuTokenAqui'; // Substitua pelo seu token
+    const repo = 'seu-usuario/nome-do-repositorio';
+    const baseUrl = 'https://seu-usuario.github.io/nome-do-repositorio'; // URL base do GitHub Pages
 
-// Função para exibir produtos no grid
-function displayProducts(products) {
-  const gridProdutos = document.getElementById('grid-produtos');
-  gridProdutos.innerHTML = ''; // Limpar o grid
+    // Pré-visualizar imagens selecionadas
+    function previewImages(input, previewDiv) {
+      previewDiv.innerHTML = '';
+      const files = input.files;
+      for (const file of files) {
+        if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+          alert(`Arquivo ${file.name} não é uma imagem válida (JPEG, PNG ou WebP).`);
+          input.value = '';
+          continue;
+        }
+        if (file.size > 5 * 1024 * 1024) { // Limite de 5MB
+          alert(`Arquivo ${file.name} excede o limite de 5MB.`);
+          input.value = '';
+          continue;
+        }
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        img.alt = file.name;
+        img.loading = 'lazy';
+        previewDiv.appendChild(img);
+      }
+    }
 
-  if (products.length === 0) {
-    document.getElementById('mensagem-vazia').style.display = 'block';
-    document.getElementById('mensagem-vazia').textContent = 'Nenhum produto encontrado.';
-    return;
-  }
+    imageInput.addEventListener('change', () => previewImages(imageInput, imagePreview));
+    imagesInput.addEventListener('change', () => previewImages(imagesInput, imagesPreview));
 
-  products.forEach(product => {
-    const productDiv = document.createElement('div');
-    productDiv.className = 'produto';
-    productDiv.innerHTML = `
-      <img src="${product.image}" alt="${product.name}" loading="lazy" onerror="this.src='imagens/placeholder.jpg'" />
-      <h3>${product.name}</h3>
-      <p class="preco">R$${product.price.toFixed(2)}</p>
-      <p class="loja">${product.store}</p>
-      <a href="${product.link}" target="_blank" class="botao-comprar">Comprar</a>
-    `;
-    gridProdutos.appendChild(productDiv);
-  });
-}
+    // Fazer upload de uma imagem para o GitHub
+    async function uploadImage(file) {
+      const fileName = `imagens/uploads/${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+      const content = await new Promise(resolve => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]); // Base64 sem prefixo
+        reader.readAsDataURL(file);
+      });
 
-// Função para filtrar por categoria
-function filtrarPorCategoria(categoria) {
-  // Atualizar estilo dos itens de categoria
-  document.querySelectorAll('.categoria-item').forEach(item => {
-    item.classList.toggle('ativa', item.dataset.categoria === categoria);
-  });
+      try {
+        const response = await fetch(`https://api.github.com/repos/${repo}/contents/${fileName}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `token ${token}`,
+            'Accept': 'application/vnd.github.v3+json'
+          },
+          body: JSON.stringify({
+            message: `Upload imagem ${file.name}`,
+            content: content
+          })
+        });
+        if (!response.ok) {
+          throw new Error(`Erro ao fazer upload da imagem: ${response.status}`);
+        }
+        return `${baseUrl}/${fileName}`;
+      } catch (error) {
+        console.error('Erro ao fazer upload:', error);
+        throw error;
+      }
+    }
 
-  // Filtrar produtos
-  let filteredProducts = window.allProducts || [];
-  if (categoria !== 'todas') {
-    filteredProducts = filteredProducts.filter(product => product.category.toLowerCase() === categoria.toLowerCase());
-  }
+    // Carregar produtos
+    async function loadProducts() {
+      try {
+        const response = await fetch(`https://api.github.com/repos/${repo}/contents/data/produtos.json`, {
+          headers: {
+            'Authorization': `token ${token}`,
+            'Accept': 'application/vnd.github.v3+json'
+          }
+        });
+        if (!response.ok) {
+          throw new Error(`Erro ao carregar produtos: ${response.status}`);
+        }
+        const data = await response.json();
+        const products = JSON.parse(atob(data.content));
+        window.products = products;
+        window.productsSha = data.sha;
+        displayProducts(products);
+      } catch (error) {
+        console.error('Erro ao carregar produtos:', error);
+        alert('Erro ao carregar produtos. Verifique o console.');
+      }
+    }
 
-  // Aplicar filtro de loja ativo (se houver)
-  const lojaAtiva = document.querySelector('.loja.ativa, .loja-todas.ativa')?.dataset.loja || 'todas';
-  if (lojaAtiva !== 'todas') {
-    filteredProducts = filteredProducts.filter(product => product.store.toLowerCase() === lojaAtiva.toLowerCase());
-  }
+    // Exibir produtos na tabela
+    function displayProducts(products) {
+      productTableBody.innerHTML = '';
+      if (!products || products.length === 0) {
+        productTableBody.innerHTML = '<tr><td colspan="5">Nenhum produto cadastrado.</td></tr>';
+        return;
+      }
+      products.forEach((product, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><img src="${product.image}" alt="${product.name}" loading="lazy" onerror="this.src='imagens/placeholder.jpg'"></td>
+          <td>${product.name}</td>
+          <td>${product.category}</td>
+          <td>${product.store}</td>
+          <td>
+            <button class="edit-btn" data-index="${index}">Editar</button>
+            <button class="delete-btn" data-index="${index}">Excluir</button>
+          </td>
+        `;
+        productTableBody.appendChild(row);
+      });
+    }
 
-  // Aplicar busca (se houver)
-  const busca = document.getElementById('busca').value.trim().toLowerCase();
-  if (busca) {
-    filteredProducts = filteredProducts.filter(product => product.name.toLowerCase().includes(busca));
-  }
+    // Preencher formulário para edição
+    function fillFormForEdit(index) {
+      const product = window.products[index];
+      document.getElementById('editIndex').value = index;
+      document.getElementById('name').value = product.name;
+      document.getElementById('image').removeAttribute('required');
+      imagePreview.innerHTML = `<img src="${product.image}" alt="Imagem atual" loading="lazy">`;
+      document.getElementById('images').removeAttribute('required');
+      imagesPreview.innerHTML = product.images ? product.images.map(img => `<img src="${img}" alt="Imagem carrossel" loading="lazy">`).join('') : '';
+      document.getElementById('description').value = product.description || '';
+      document.getElementById('category').value = product.category;
+      document.getElementById('store').value = product.store;
+      document.getElementById('link').value = product.link;
+      formTitle.textContent = 'Editar Produto';
+      cancelBtn.style.display = 'inline-block';
+    }
 
-  displayProducts(filteredProducts);
-}
+    // Limpar formulário
+    function resetForm() {
+      form.reset();
+      document.getElementById('editIndex').value = '';
+      imageInput.setAttribute('required', '');
+      imagesInput.setAttribute('required', '');
+      imagePreview.innerHTML = '';
+      imagesPreview.innerHTML = '';
+      formTitle.textContent = 'Adicionar Novo Produto';
+      cancelBtn.style.display = 'none';
+    }
 
-// Função para filtrar por loja
-function filtrarPorLoja(loja) {
-  // Atualizar estilo dos itens de loja
-  document.querySelectorAll('.loja, .loja-todas').forEach(item => {
-    item.classList.toggle('ativa', item.dataset.loja === loja);
-  });
+    // Atualizar JSON no GitHub
+    async function updateJson(products) {
+      try {
+        const response = await fetch(`https://api.github.com/repos/${repo}/contents/data/produtos.json`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `token ${token}`,
+            'Accept': 'application/vnd.github.v3+json'
+          },
+          body: JSON.stringify({
+            message: 'Atualizar produtos',
+            content: btoa(JSON.stringify(products, null, 2)),
+            sha: window.productsSha
+          })
+        });
+        if (!response.ok) {
+          throw new Error(`Erro ao atualizar produtos.json: ${response.status}`);
+        }
+        const data = await response.json();
+        window.productsSha = data.content.sha;
+        return true;
+      } catch (error) {
+        console.error('Erro ao atualizar JSON:', error);
+        alert('Erro ao atualizar produtos. Verifique o console.');
+        return false;
+      }
+    }
 
-  // Filtrar produtos
-  let filteredProducts = window.allProducts || [];
-  if (loja !== 'todas') {
-    filteredProducts = filteredProducts.filter(product => product.store.toLowerCase() === loja.toLowerCase());
-  }
+    // Manipular envio do formulário
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
 
-  // Aplicar filtro de categoria ativo (se houver)
-  const categoriaAtiva = document.querySelector('.categoria-item.ativa')?.dataset.categoria || 'todas';
-  if (categoriaAtiva !== 'todas') {
-    filteredProducts = filteredProducts.filter(product => product.category.toLowerCase() === categoriaAtiva.toLowerCase());
-  }
+      try {
+        // Fazer upload da imagem principal
+        let imageUrl = document.getElementById('image').files[0] ? await uploadImage(document.getElementById('image').files[0]) : (document.getElementById('editIndex').value !== '' ? window.products[document.getElementById('editIndex').value].image : '');
 
-  // Aplicar busca (se houver)
-  const busca = document.getElementById('busca').value.trim().toLowerCase();
-  if (busca) {
-    filteredProducts = filteredProducts.filter(product => product.name.toLowerCase().includes(busca));
-  }
+        // Fazer upload das imagens do carrossel
+        const carouselFiles = document.getElementById('images').files;
+        let carouselUrls = [];
+        if (carouselFiles.length > 0) {
+          for (const file of carouselFiles) {
+            const url = await uploadImage(file);
+            carouselUrls.push(url);
+          }
+        } else if (document.getElementById('editIndex').value !== '') {
+          carouselUrls = window.products[document.getElementById('editIndex').value].images || [];
+        }
 
-  displayProducts(filteredProducts);
-}
+        const product = {
+          name: document.getElementById('name').value,
+          image: imageUrl,
+          images: carouselUrls.length > 0 ? carouselUrls : undefined,
+          description: document.getElementById('description').value || undefined,
+          category: document.getElementById('category').value,
+          store: document.getElementById('store').value,
+          link: document.getElementById('link').value
+        };
 
-// Função para busca
-function buscarProdutos() {
-  const busca = document.getElementById('busca').value.trim().toLowerCase();
-  let filteredProducts = window.allProducts || [];
+        const editIndex = document.getElementById('editIndex').value;
+        let products = [...window.products];
 
-  // Aplicar filtro de categoria ativo
-  const categoriaAtiva = document.querySelector('.categoria-item.ativa')?.dataset.categoria || 'todas';
-  if (categoriaAtiva !== 'todas') {
-    filteredProducts = filteredProducts.filter(product => product.category.toLowerCase() === categoriaAtiva.toLowerCase());
-  }
+        if (editIndex !== '') {
+          products[parseInt(editIndex)] = product;
+        } else {
+          products.push(product);
+        }
 
-  // Aplicar filtro de loja ativo
-  const lojaAtiva = document.querySelector('.loja.ativa, .loja-todas.ativa')?.dataset.loja || 'todas';
-  if (lojaAtiva !== 'todas') {
-    filteredProducts = filteredProducts.filter(product => product.store.toLowerCase() === lojaAtiva.toLowerCase());
-  }
+        if (await updateJson(products)) {
+          window.products = products;
+          displayProducts(products);
+          resetForm();
+          alert(editIndex !== '' ? 'Produto editado com sucesso!' : 'Produto adicionado com sucesso!');
+        }
+      } catch (error) {
+        alert('Erro ao salvar produto. Verifique o console.');
+      }
+    });
 
-  // Aplicar busca
-  if (busca) {
-    filteredProducts = filteredProducts.filter(product => product.name.toLowerCase().includes(busca));
-    document.getElementById('busca-feedback').style.display = 'block';
-    document.getElementById('busca-feedback').textContent = `Resultados para "${busca}"`;
-  } else {
-    document.getElementById('busca-feedback').style.display = 'none';
-  }
+    // Manipular ações de editar/excluir
+    productTableBody.addEventListener('click', async (event) => {
+      const index = event.target.dataset.index;
+      if (!index) return;
 
-  displayProducts(filteredProducts);
-}
+      if (event.target.classList.contains('edit-btn')) {
+        fillFormForEdit(index);
+      } else if (event.target.classList.contains('delete-btn')) {
+        if (confirm('Tem certeza que deseja excluir este produto?')) {
+          let products = [...window.products];
+          products.splice(index, 1);
+          if (await updateJson(products)) {
+            window.products = products;
+            displayProducts(products);
+            alert('Produto excluído com sucesso!');
+          }
+        }
+      }
+    });
 
-// Configurar eventos
-document.addEventListener('DOMContentLoaded', () => {
-  // Carregar produtos ao iniciar
-  loadProducts();
+    // Cancelar edição
+    cancelBtn.addEventListener('click', resetForm);
 
-  // Evento de busca
-  document.getElementById('busca').addEventListener('input', buscarProdutos);
-
-  // Atualizar ano no footer
-  document.getElementById('year').textContent = new Date().getFullYear();
-});
+    // Carregar produtos ao iniciar
+    loadProducts();
+  </script>
+</body>
+</html>
