@@ -116,6 +116,12 @@
       border: 1px solid #ccc;
       border-radius: 4px;
     }
+    .error-message {
+      color: #E02020;
+      font-size: 14px;
+      margin-top: 10px;
+      display: none;
+    }
     @media (max-width: 768px) {
       .product-table th, .product-table td {
         font-size: 12px;
@@ -177,6 +183,7 @@
           <input type="url" id="link" required>
           <button type="submit">Salvar Produto</button>
           <button type="button" class="cancel-btn" id="cancelEdit" style="display: none;">Cancelar</button>
+          <div class="error-message" id="errorMessage"></div>
         </form>
       </section>
 
@@ -208,11 +215,21 @@
     const imagesInput = document.getElementById('images');
     const imagePreview = document.getElementById('imagePreview');
     const imagesPreview = document.getElementById('imagesPreview');
+    const errorMessage = document.getElementById('errorMessage');
 
     // Configurações da API do GitHub
     const token = 'ghp_seuTokenAqui'; // Substitua pelo seu token
-    const repo = 'seu-usuario/nome-do-repositorio';
+    const repo = 'seu-usuario/nome-do-repositorio'; // Substitua pelo seu repositório
     const baseUrl = 'https://seu-usuario.github.io/nome-do-repositorio'; // URL base do GitHub Pages
+
+    // Mostrar mensagem de erro
+    function showError(message) {
+      errorMessage.textContent = message;
+      errorMessage.style.display = 'block';
+      setTimeout(() => {
+        errorMessage.style.display = 'none';
+      }, 5000);
+    }
 
     // Pré-visualizar imagens selecionadas
     function previewImages(input, previewDiv) {
@@ -220,12 +237,12 @@
       const files = input.files;
       for (const file of files) {
         if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-          alert(`Arquivo ${file.name} não é uma imagem válida (JPEG, PNG ou WebP).`);
+          showError(`Arquivo ${file.name} não é uma imagem válida (JPEG, PNG ou WebP).`);
           input.value = '';
           continue;
         }
-        if (file.size > 5 * 1024 * 1024) { // Limite de 5MB
-          alert(`Arquivo ${file.name} excede o limite de 5MB.`);
+        if (file.size > 5 * 1024 * 1024) {
+          showError(`Arquivo ${file.name} excede o limite de 5MB.`);
           input.value = '';
           continue;
         }
@@ -245,10 +262,11 @@
       const fileName = `imagens/uploads/${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
       const content = await new Promise(resolve => {
         const reader = new FileReader();
-        reader.onload = () => resolve(reader.result.split(',')[1]); // Base64 sem prefixo
+        reader.onload = () => resolve(reader.result.split(',')[1]);
         reader.readAsDataURL(file);
       });
 
+      console.log(`Iniciando upload da imagem: ${fileName}`);
       try {
         const response = await fetch(`https://api.github.com/repos/${repo}/contents/${fileName}`, {
           method: 'PUT',
@@ -262,8 +280,11 @@
           })
         });
         if (!response.ok) {
-          throw new Error(`Erro ao fazer upload da imagem: ${response.status}`);
+          const errorData = await response.json();
+          throw new Error(`Erro ao fazer upload da imagem: ${response.status} - ${errorData.message}`);
         }
+        const data = await response.json();
+        console.log(`Imagem enviada com sucesso: ${data.content.download_url}`);
         return `${baseUrl}/${fileName}`;
       } catch (error) {
         console.error('Erro ao fazer upload:', error);
@@ -273,6 +294,7 @@
 
     // Carregar produtos
     async function loadProducts() {
+      console.log('Carregando produtos...');
       try {
         const response = await fetch(`https://api.github.com/repos/${repo}/contents/data/produtos.json`, {
           headers: {
@@ -281,16 +303,18 @@
           }
         });
         if (!response.ok) {
-          throw new Error(`Erro ao carregar produtos: ${response.status}`);
+          const errorData = await response.json();
+          throw new Error(`Erro ao carregar produtos: ${response.status} - ${errorData.message}`);
         }
         const data = await response.json();
         const products = JSON.parse(atob(data.content));
         window.products = products;
         window.productsSha = data.sha;
+        console.log('Produtos carregados:', products);
         displayProducts(products);
       } catch (error) {
         console.error('Erro ao carregar produtos:', error);
-        alert('Erro ao carregar produtos. Verifique o console.');
+        showError('Erro ao carregar produtos. Verifique o console para detalhes.');
       }
     }
 
@@ -344,10 +368,12 @@
       imagesPreview.innerHTML = '';
       formTitle.textContent = 'Adicionar Novo Produto';
       cancelBtn.style.display = 'none';
+      errorMessage.style.display = 'none';
     }
 
     // Atualizar JSON no GitHub
     async function updateJson(products) {
+      console.log('Atualizando produtos.json:', products);
       try {
         const response = await fetch(`https://api.github.com/repos/${repo}/contents/data/produtos.json`, {
           method: 'PUT',
@@ -362,21 +388,23 @@
           })
         });
         if (!response.ok) {
-          throw new Error(`Erro ao atualizar produtos.json: ${response.status}`);
+          const errorData = await response.json();
+          throw new Error(`Erro ao atualizar produtos.json: ${response.status} - ${errorData.message}`);
         }
         const data = await response.json();
         window.productsSha = data.content.sha;
+        console.log('produtos.json atualizado com sucesso, novo SHA:', window.productsSha);
         return true;
       } catch (error) {
         console.error('Erro ao atualizar JSON:', error);
-        alert('Erro ao atualizar produtos. Verifique o console.');
-        return false;
+        throw error;
       }
     }
 
     // Manipular envio do formulário
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
+      errorMessage.style.display = 'none';
 
       try {
         // Fazer upload da imagem principal
@@ -420,7 +448,7 @@
           alert(editIndex !== '' ? 'Produto editado com sucesso!' : 'Produto adicionado com sucesso!');
         }
       } catch (error) {
-        alert('Erro ao salvar produto. Verifique o console.');
+        showError(`Erro ao salvar produto: ${error.message}`);
       }
     });
 
@@ -433,12 +461,16 @@
         fillFormForEdit(index);
       } else if (event.target.classList.contains('delete-btn')) {
         if (confirm('Tem certeza que deseja excluir este produto?')) {
-          let products = [...window.products];
-          products.splice(index, 1);
-          if (await updateJson(products)) {
-            window.products = products;
-            displayProducts(products);
-            alert('Produto excluído com sucesso!');
+          try {
+            let products = [...window.products];
+            products.splice(index, 1);
+            if (await updateJson(products)) {
+              window.products = products;
+              displayProducts(products);
+              alert('Produto excluído com sucesso!');
+            }
+          } catch (error) {
+            showError(`Erro ao excluir produto: ${error.message}`);
           }
         }
       }
