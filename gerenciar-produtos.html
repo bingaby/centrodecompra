@@ -5,6 +5,7 @@
   <title>Gerenciar Produtos</title>
   <link rel="stylesheet" href="style.css">
   <style>
+    /* Estilos mantidos como no original */
     .product-list {
       margin-top: 15px;
       max-width: 100%;
@@ -197,6 +198,8 @@
           </select>
           <label for="link">Link de Afiliado:</label>
           <input type="url" id="link" required>
+          <label for="price">Preço (R$):</label>
+          <input type="number" id="price" step="0.01" min="0" required>
           <button type="submit">Salvar Produto</button>
           <button type="button" class="cancel-btn" id="cancelEdit" style="display: none;">Cancelar</button>
           <div class="error-message" id="errorMessage"></div>
@@ -212,6 +215,7 @@
               <th>Nome</th>
               <th>Categoria</th>
               <th>Loja</th>
+              <th>Preço</th>
               <th>Ações</th>
             </tr>
           </thead>
@@ -234,9 +238,31 @@
     const errorMessage = document.getElementById('errorMessage');
 
     // Configurações da API do GitHub
-    const token = 'ghp_seuTokenAqui'; // Substitua pelo seu token
-    const repo = 'seu-usuario/nome-do-repositorio'; // Substitua pelo seu repositório
-    const baseUrl = 'https://seu-usuario.github.io/nome-do-repositorio'; // URL base do GitHub Pages
+    const repo = 'bingaby/centrodecompra';
+    const baseUrl = 'https://bingaby.github.io/centrodecompra';
+    let token = localStorage.getItem('githubToken');
+
+    // Solicitar token na primeira vez
+    if (!token) {
+      token = prompt('Digite seu token do GitHub (necessário para gerenciar produtos):');
+      if (token) {
+        localStorage.setItem('githubToken', token);
+      } else {
+        alert('Token necessário para acessar esta página.');
+        window.location.href = 'index.html';
+      }
+    }
+
+    // Proteger acesso à página
+    if (!localStorage.getItem('adminAccess')) {
+      const password = prompt('Digite a senha administrativa:');
+      if (password !== 'sua-senha-secreta') {
+        alert('Acesso negado.');
+        window.location.href = 'index.html';
+      } else {
+        localStorage.setItem('adminAccess', 'true');
+      }
+    }
 
     // Mostrar mensagem de erro
     function showError(message) {
@@ -338,7 +364,7 @@
     function displayProducts(products) {
       productTableBody.innerHTML = '';
       if (!products || products.length === 0) {
-        productTableBody.innerHTML = '<tr><td colspan="5">Nenhum produto cadastrado.</td></tr>';
+        productTableBody.innerHTML = '<tr><td colspan="6">Nenhum produto cadastrado.</td></tr>';
         return;
       }
       products.forEach((product, index) => {
@@ -348,6 +374,7 @@
           <td>${product.name}</td>
           <td>${product.category}</td>
           <td>${product.store}</td>
+          <td>${product.price ? 'R$' + parseFloat(product.price).toFixed(2) : 'N/A'}</td>
           <td>
             <button class="edit-btn" data-index="${index}">Editar</button>
             <button class="delete-btn" data-index="${index}">Excluir</button>
@@ -370,6 +397,7 @@
       document.getElementById('category').value = product.category;
       document.getElementById('store').value = product.store;
       document.getElementById('link').value = product.link;
+      document.getElementById('price').value = product.price || '';
       formTitle.textContent = 'Editar Produto';
       cancelBtn.style.display = 'inline-block';
     }
@@ -391,7 +419,6 @@
     async function updateJson(products) {
       console.log('Atualizando produtos.json:', products);
       try {
-        // Recarregar SHA para evitar conflitos
         const shaResponse = await fetch(`https://api.github.com/repos/${repo}/contents/data/produtos.json`, {
           headers: {
             'Authorization': `token ${token}`,
@@ -437,10 +464,8 @@
       errorMessage.style.display = 'none';
 
       try {
-        // Fazer upload da imagem principal
         let imageUrl = document.getElementById('image').files[0] ? await uploadImage(document.getElementById('image').files[0]) : (document.getElementById('editIndex').value !== '' ? window.products[document.getElementById('editIndex').value].image : '');
 
-        // Fazer upload das imagens do carrossel
         const carouselFiles = document.getElementById('images').files;
         let carouselUrls = [];
         if (carouselFiles.length > 0) {
@@ -459,7 +484,8 @@
           description: document.getElementById('description').value || undefined,
           category: document.getElementById('category').value,
           store: document.getElementById('store').value,
-          link: document.getElementById('link').value
+          link: document.getElementById('link').value,
+          price: parseFloat(document.getElementById('price').value)
         };
 
         const editIndex = document.getElementById('editIndex').value;
