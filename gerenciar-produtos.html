@@ -2,483 +2,99 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Gerenciar Produtos - Centro de Compras</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <title>Gerenciar Produtos</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="site-header">
-    <div class="logo-container">
-      <a href="index.html">
-        <img src="logos/centrodecompras.jpg" alt="Centro de Compras" loading="lazy" />
-      </a>
-    </div>
-    <div class="header-text">
-      <h1>Gerenciar Produtos</h1>
-      <p>Adicione, edite ou remova produtos do Centro de Compras</p>
-    </div>
-  </header>
-
-  <div id="auth-section">
-    <h2>Autenticação</h2>
-    <form id="auth-form">
-      <input type="password" id="auth-password" placeholder="Digite a senha" required>
-      <button type="submit">Entrar</button>
-    </form>
-    <div id="auth-error"></div>
-  </div>
-
-  <div id="main-content">
-    <div class="container">
-      <main>
-        <section>
-          <h2>Adicionar Produto</h2>
-          <form id="form-produto" enctype="multipart/form-data">
-            <input type="text" name="nome" placeholder="Nome do produto" required>
-            <textarea name="descricao" placeholder="Descrição do produto (opcional)" rows="4"></textarea>
-            <select name="categoria" required>
-              <option value="" disabled selected>Selecione uma categoria</option>
-              <option value="eletronicos">Eletrônicos</option>
-              <option value="moda">Moda</option>
-              <option value="fitness">Fitness</option>
-              <option value="casa">Casa e Decoração</option>
-              <option value="beleza">Beleza</option>
-              <option value="esportes">Esportes</option>
-              <option value="livros">Livros</option>
-              <option value="infantil">Infantil</option>
-              <option value="Celulares">Celulares</option>
-              <option value="Eletrodomésticos">Eletrodomésticos</option>
-            </select>
-            <select name="loja" required>
-              <option value="" disabled selected>Selecione uma loja</option>
-              <option value="amazon">Amazon</option>
-              <option value="magalu">Magalu</option>
-              <option value="shein">Shein</option>
-              <option value="shopee">Shopee</option>
-              <option value="mercadolivre">Mercado Livre</option>
-              <option value="alibaba">Alibaba</option>
-            </select>
-            <input type="url" name="link" placeholder="Link do produto (https://...)" required pattern="https?://.+">
-            <input type="file" name="imagens" accept="image/*" multiple>
-            <button type="submit">Adicionar</button>
-          </form>
-          <div id="mensagem"></div>
-          <div id="erro"></div>
-          <div class="loading-spinner" id="form-spinner" style="display: none;"><div class="spinner"></div></div>
-        </section>
-
-        <section id="produtos-cadastrados">
-          <h3>Produtos Cadastrados</h3>
-          <table id="tabela-produtos">
-            <thead>
-              <tr>
-                <th>Nome</th>
-                <th>Descrição</th>
-                <th>Categoria</th>
-                <th>Loja</th>
-                <th>Link</th>
-                <th>Imagens</th>
-                <th>Ação</th>
-              </tr>
-            </thead>
-            <tbody id="lista-produtos"></tbody>
-          </table>
-        </section>
-
-        <section id="github-sync">
-          <h3>Sincronizar com GitHub</h3>
-          <input type="password" id="github-token" placeholder="GitHub Personal Access Token">
-          <textarea id="json-produtos" readonly></textarea>
-          <button onclick="atualizarGitHub()">Atualizar produtos.json no GitHub</button>
-          <textarea id="import-json" placeholder="Cole o JSON para importar"></textarea>
-          <button onclick="importarJSON()">Importar JSON</button>
-          <div class="loading-spinner" id="github-spinner" style="display: none;"><div class="spinner"></div></div>
-        </section>
-
-        <div id="logout-button">
-          <button onclick="logout()">Sair</button>
-        </div>
-      </main>
-    </div>
-  </div>
-
-  <div class="modal" id="imageModal" tabindex="-1">
-    <button class="modal-close" onclick="closeModal()">✕</button>
-    <div class="modal-content" id="modalCarrossel">
-      <div class="carrossel-imagens" id="modalCarrosselImagens"></div>
-      <button class="carrossel-prev" onclick="moveModalCarrossel(-1)" tabindex="0">◄</button>
-      <button class="carrossel-next" onclick="moveModalCarrossel(1)" tabindex="0">►</button>
-      <div class="carrossel-dots" id="modalCarrosselDots"></div>
-    </div>
-  </div>
-
-  <footer>
-    <p>🔧 Todos os direitos reservados <strong>Grupo Centro de Compra "CdC"</strong> © <span id="year"></span></p>
-  </footer>
-
+  <h1>Adicionar Novo Produto</h1>
+  <form id="productForm">
+    <label>Nome do Produto:</label><br>
+    <input type="text" id="name" required><br>
+    <label>Preço (R$):</label><br>
+    <input type="number" id="price" step="0.01" required><br>
+    <label>Imagem (URL):</label><br>
+    <input type="url" id="image" required><br>
+    <label>Categoria:</label><br>
+    <select id="category" required>
+      <option value="todas">Todas</option>
+      <option value="eletronicos">Eletrônicos</option>
+      <option value="moda">Moda</option>
+      <option value="fitness">Fitness</option>
+      <option value="casa">Casa e Decoração</option>
+      <option value="beleza">Beleza</option>
+      <option value="esportes">Esportes</option>
+      <option value="livros">Livros</option>
+      <option value="infantil">Infantil</option>
+      <option value="Celulares">Celulares</option>
+      <option value="Eletrodomésticos">Eletrodomésticos</option>
+    </select><br>
+    <label>Loja:</label><br>
+    <select id="store" required>
+      <option value="amazon">Amazon</option>
+      <option value="magalu">Magalu</option>
+      <option value="shein">Shein</option>
+      <option value="shopee">Shopee</option>
+      <option value="mercadolivre">Mercado Livre</option>
+      <option value="alibaba">Alibaba</option>
+    </select><br>
+    <label>Link de Afiliado:</label><br>
+    <input type="url" id="link" required><br>
+    <button type="submit">Adicionar Produto</button>
+  </form>
+  <a href="index.html">Voltar para a Página Principal</a>
   <script>
-    // TODO: Replace with secure backend authentication (e.g., Firebase, JWT)
-    const SENHA_CORRETA = "comprasempre@098457";
-    let produtos = JSON.parse(localStorage.getItem('produtos')) || [];
-    let currentImages = [];
-    let currentImageIndex = 0;
+    document.getElementById('productForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
 
-    // Set current year in footer
-    document.getElementById('year').textContent = new Date().getFullYear();
+      const product = {
+        name: document.getElementById('name').value,
+        price: parseFloat(document.getElementById('price').value),
+        image: document.getElementById('image').value,
+        category: document.getElementById('category').value,
+        store: document.getElementById('store').value,
+        link: document.getElementById('link').value
+      };
 
-    function verificarAutenticacao() {
-      const isAutenticado = sessionStorage.getItem('autenticado') === 'true';
-      const authSection = document.getElementById('auth-section');
-      const mainContent = document.getElementById('main-content');
-      if (isAutenticado) {
-        authSection.style.display = 'none';
-        mainContent.style.display = 'block';
-        atualizarListaProdutos();
-        atualizarJSON();
-        const savedToken = localStorage.getItem('github-token');
-        if (savedToken) document.getElementById('github-token').value = savedToken;
-      } else {
-        authSection.style.display = 'block';
-        mainContent.style.display = 'none';
-      }
-    }
+      // Substitua pelo seu token e informações do repositório
+      const token = 'ghp_seuTokenAqui'; // Crie um token em Settings > Developer settings
+      const repo = 'seu-usuario/nome-do-repositorio';
+      const path = 'data/produtos.json';
 
-    document.getElementById('auth-form').addEventListener('submit', async e => {
-      e.preventDefault();
-      const password = document.getElementById('auth-password').value;
-      const authError = document.getElementById('auth-error');
-      if (password === SENHA_CORRETA) {
-        sessionStorage.setItem('autenticado', 'true');
-        document.getElementById('auth-section').style.display = 'none';
-        document.getElementById('main-content').style.display = 'block';
-        atualizarListaProdutos();
-        atualizarJSON();
-        const savedToken = localStorage.getItem('github-token');
-        if (savedToken) document.getElementById('github-token').value = savedToken;
-        authError.textContent = '';
-        document.getElementById('auth-password').value = '';
-      } else {
-        authError.textContent = 'Senha incorreta!';
-        document.getElementById('auth-password').value = '';
-      }
-    });
-
-    function logout() {
-      sessionStorage.removeItem('autenticado');
-      document.getElementById('auth-section').style.display = 'block';
-      document.getElementById('main-content').style.display = 'none';
-      document.getElementById('auth-password').value = '';
-      document.getElementById('auth-error').textContent = '';
-    }
-
-    async function resizeImage(file, maxWidth, maxHeight) {
-      if (file.size > 2 * 1024 * 1024) throw new Error('Imagem muito grande. Máximo 2 MB.');
-      if (!['image/jpeg', 'image/png'].includes(file.type)) throw new Error('Formato de imagem inválido. Use JPEG ou PNG.');
-      return new Promise((resolve) => {
-        const img = new Image();
-        img.src = URL.createObjectURL(file);
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          let width = img.width;
-          let height = img.height;
-          if (width > height) {
-            if (width > maxWidth) {
-              height = Math.round((height * maxWidth) / width);
-              width = maxWidth;
-            }
-          } else {
-            if (height > maxHeight) {
-              width = Math.round((width * maxHeight) / height);
-              height = maxHeight;
-            }
-          }
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
-          canvas.toBlob(blob => resolve(blob), 'image/jpeg', 0.8);
-        };
-      });
-    }
-
-    document.getElementById('form-produto').addEventListener('submit', async e => {
-      e.preventDefault();
-      const mensagem = document.getElementById('mensagem');
-      const erro = document.getElementById('erro');
-      const spinner = document.getElementById('form-spinner');
-      const nome = e.target.querySelector('input[name="nome"]').value.trim();
-      const descricao = e.target.querySelector('textarea[name="descricao"]').value.trim();
-      const categoria = e.target.querySelector('select[name="categoria"]').value;
-      const loja = e.target.querySelector('select[name="loja"]').value;
-      const link = e.target.querySelector('input[name="link"]').value;
-      const imagens = e.target.querySelector('input[name="imagens"]').files;
-
-      if (!nome || !categoria || !loja || !link) {
-        erro.textContent = 'Todos os campos obrigatórios devem ser preenchidos!';
-        mensagem.textContent = '';
-        return;
-      }
-      if (imagens.length === 0) {
-        erro.textContent = 'Pelo menos uma imagem deve ser escolhida!';
-        mensagem.textContent = '';
-        return;
-      }
-      if (imagens.length > 3) {
-        erro.textContent = 'Máximo de 3 imagens por produto!';
-        mensagem.textContent = '';
-        return;
-      }
-
-      spinner.style.display = 'block';
       try {
-        const imagensArray = await Promise.all(
-          Array.from(imagens).map(async (file, i) => {
-            const resizedBlob = await resizeImage(file, 300, 300);
-            // TODO: Replace with actual backend upload (e.g., Firebase Storage, AWS S3)
-            const fileName = `produto_${Date.now()}_${i}.jpg`;
-            // Simulate upload by returning a path
-            return `produtos/${fileName}`;
-          })
-        );
-
-        const novoProduto = {
-          id: Date.now().toString(),
-          nome: nome.replace(/</g, '&lt;').replace(/>/g, '&gt;'), // Sanitize
-          descricao,
-          categoria,
-          loja,
-          link,
-          imagens: imagensArray.join(',')
-        };
-        produtos.push(novoProduto);
-        localStorage.setItem('produtos', JSON.stringify(produtos));
-        atualizarListaProdutos();
-        atualizarJSON();
-
-        await atualizarGitHub();
-
-        mensagem.textContent = 'Produto adicionado com sucesso!';
-        erro.textContent = '';
-        e.target.reset();
-        setTimeout(() => mensagem.textContent = '', 5000);
-      } catch (error) {
-        erro.textContent = error.message || 'Erro ao processar o produto. Tente novamente.';
-        mensagem.textContent = '';
-        setTimeout(() => erro.textContent = '', 5000);
-      } finally {
-        spinner.style.display = 'none';
-      }
-    });
-
-    function atualizarListaProdutos() {
-      const listaProdutos = document.getElementById('lista-produtos');
-      listaProdutos.innerHTML = '';
-      if (!produtos || produtos.length === 0) {
-        listaProdutos.innerHTML = '<tr><td colspan="7">Nenhum produto cadastrado.</td></tr>';
-        return;
-      }
-      produtos.forEach((produto, index) => {
-        const imagens = produto.imagens ? produto.imagens.split(',').map(img => img.trim()) : [];
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${produto.nome}</td>
-          <td>${produto.descricao || '-'}</td>
-          <td>${produto.categoria}</td>
-          <td>${produto.loja}</td>
-          <td><a href="${produto.link}" target="_blank">Link</a></td>
-          <td>
-            ${imagens.length > 0 ? imagens.map((img, i) => `<img src="${img}" alt="Imagem ${i + 1}" class="thumbnail" onclick="openModal(${index}, ${i})">`).join('') : 'Nenhuma imagem'}
-          </td>
-          <td><button class="excluir" onclick="excluirProduto(${index})">Excluir</button></td>
-        `;
-        listaProdutos.appendChild(tr);
-      });
-    }
-
-    function atualizarJSON() {
-      const jsonProdutos = document.getElementById('json-produtos');
-      jsonProdutos.value = JSON.stringify(produtos, null, 2);
-    }
-
-    async function atualizarGitHub() {
-      const token = document.getElementById('github-token').value;
-      const mensagem = document.getElementById('mensagem');
-      const erro = document.getElementById('erro');
-      const spinner = document.getElementById('github-spinner');
-
-      if (!token) {
-        erro.textContent = 'Por favor, insira o GitHub Personal Access Token!';
-        mensagem.textContent = '';
-        return false;
-      }
-
-      spinner.style.display = 'block';
-      try {
-        // TODO: Store token securely in backend
-        localStorage.setItem('github-token', token);
-        const response = await fetch('https://api.github.com/repos/bingaby/centrodecompra/contents/produtos.json', {
+        // Obter o conteúdo atual do JSON
+        const response = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
           headers: {
-            Authorization: `token ${token}`,
-            Accept: 'application/vnd.github.v3+json'
+            'Authorization': `token ${token}`,
+            'Accept': 'application/vnd.github.v3+json'
           }
         });
-        let sha = '';
-        if (response.ok) {
-          const data = await response.json();
-          sha = data.sha;
-        } else if (response.status !== 404) {
-          throw new Error('Erro ao verificar o arquivo no GitHub.');
-        }
+        const data = await response.json();
+        const currentProducts = JSON.parse(atob(data.content));
 
-        const content = btoa(unescape(encodeURIComponent(JSON.stringify(produtos, null, 2))));
-        const updateResponse = await fetch('https://api.github.com/repos/bingaby/centrodecompra/contents/produtos.json', {
+        // Adicionar o novo produto
+        currentProducts.push(product);
+
+        // Atualizar o arquivo no GitHub
+        await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
           method: 'PUT',
           headers: {
-            Authorization: `token ${token}`,
-            Accept: 'application/vnd.github.v3+json'
+            'Authorization': `token ${token}`,
+            'Accept': 'application/vnd.github.v3+json'
           },
           body: JSON.stringify({
-            message: 'Atualiza produtos.json',
-            content,
-            sha: sha || undefined
+            message: 'Adicionar novo produto',
+            content: btoa(JSON.stringify(currentProducts, null, 2)),
+            sha: data.sha
           })
         });
 
-        if (updateResponse.ok) {
-          mensagem.textContent = 'produtos.json atualizado no GitHub!';
-          erro.textContent = '';
-          setTimeout(() => mensagem.textContent = '', 5000);
-          return true;
-        } else {
-          throw new Error('Erro ao atualizar o arquivo no GitHub.');
-        }
+        alert('Produto adicionado com sucesso! Pode demorar alguns minutos para aparecer na página principal.');
+        document.getElementById('productForm').reset();
       } catch (error) {
-        erro.textContent = error.message || 'Erro ao sincronizar com o GitHub. Verifique o token.';
-        mensagem.textContent = '';
-        setTimeout(() => erro.textContent = '', 5000);
-        return false;
-      } finally {
-        spinner.style.display = 'none';
+        console.error('Erro ao adicionar produto:', error);
+        alert('Erro ao adicionar produto. Verifique o console para detalhes.');
       }
-    }
-
-    function importarJSON() {
-      const importJson = document.getElementById('import-json').value;
-      const mensagem = document.getElementById('mensagem');
-      const erro = document.getElementById('erro');
-      try {
-        const novosProdutos = JSON.parse(importJson);
-        if (!Array.isArray(novosProdutos)) throw new Error('JSON inválido. Deve ser uma lista de produtos.');
-        // Sanitize product names
-        novosProdutos.forEach(produto => {
-          if (produto.nome) produto.nome = produto.nome.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        });
-        produtos = novosProdutos;
-        localStorage.setItem('produtos', JSON.stringify(produtos));
-        atualizarListaProdutos();
-        atualizarJSON();
-        mensagem.textContent = 'JSON importado com sucesso!';
-        erro.textContent = '';
-        document.getElementById('import-json').value = '';
-        setTimeout(() => mensagem.textContent = '', 5000);
-      } catch (error) {
-        erro.textContent = error.message || 'Erro ao importar JSON. Verifique o formato.';
-        mensagem.textContent = '';
-        setTimeout(() => erro.textContent = '', 5000);
-      }
-    }
-
-    function openModal(produtoIndex, imageIndex) {
-      const modal = document.getElementById('imageModal');
-      const carrosselImagens = document.getElementById('modalCarrosselImagens');
-      const carrosselDots = document.getElementById('modalCarrosselDots');
-      currentImages = produtos[produtoIndex]?.imagens?.split(',').map(img => img.trim()) || [];
-      currentImageIndex = imageIndex;
-
-      if (currentImages.length === 0) return;
-
-      carrosselImagens.innerHTML = currentImages.map(img => `<img src="${img}" alt="Imagem ampliada">`).join('');
-      carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
-
-      carrosselDots.innerHTML = currentImages.map((_, i) => `<span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})"></span>`).join('');
-
-      modal.style.display = 'flex';
-      modal.focus();
-    }
-
-    function moveModalCarrossel(direction) {
-      const carrosselImagens = document.getElementById('modalCarrosselImagens');
-      const carrosselDots = document.getElementById('modalCarrosselDots').children;
-      const totalImagens = currentImages.length;
-
-      currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
-      carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
-
-      Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
-    }
-
-    function setModalCarrosselImage(index) {
-      const carrosselImagens = document.getElementById('modalCarrosselImagens');
-      const carrosselDots = document.getElementById('modalCarrosselDots').children;
-      currentImageIndex = index;
-      carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
-      Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
-    }
-
-    function closeModal() {
-      const modal = document.getElementById('imageModal');
-      modal.style.display = 'none';
-      currentImages = [];
-      currentImageIndex = 0;
-    }
-
-    // Close modal on Esc key
-    document.getElementById('imageModal').addEventListener('keydown', e => {
-      if (e.key === 'Escape') closeModal();
-      if (e.key === 'ArrowLeft') moveModalCarrossel(-1);
-      if (e.key === 'ArrowRight') moveModalCarrossel(1);
     });
-
-    // Close modal on click outside
-    document.getElementById('imageModal').addEventListener('click', e => {
-      if (e.target === e.currentTarget) closeModal();
-    });
-
-    async function excluirProduto(index) {
-      const mensagem = document.getElementById('mensagem');
-      const erro = document.getElementById('erro');
-      const spinner = document.getElementById('form-spinner');
-      if (!produtos || index < 0 || index >= produtos.length) {
-        erro.textContent = 'Produto inválido ou não encontrado.';
-        mensagem.textContent = '';
-        return;
-      }
-      const produtoNome = produtos[index].nome;
-      spinner.style.display = 'block';
-      try {
-        produtos.splice(index, 1);
-        localStorage.setItem('produtos', JSON.stringify(produtos));
-        atualizarListaProdutos();
-        atualizarJSON();
-
-        const sucesso = await atualizarGitHub();
-        mensagem.textContent = sucesso
-          ? `Produto "${produtoNome}" excluído e sincronizado com o GitHub!`
-          : `Produto "${produtoNome}" excluído localmente, mas falha na sincronização com o GitHub.`;
-        erro.textContent = '';
-        setTimeout(() => mensagem.textContent = '', 5000);
-      } catch (error) {
-        erro.textContent = error.message || 'Erro ao excluir o produto. Tente novamente.';
-        mensagem.textContent = '';
-        setTimeout(() => erro.textContent = '', 5000);
-      } finally {
-        spinner.style.display = 'none';
-      }
-    }
-
-    // Initialize
-    verificarAutenticacao();
   </script>
 </body>
 </html>
