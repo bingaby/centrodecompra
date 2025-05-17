@@ -5,7 +5,6 @@
   <title>Gerenciar Produtos</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    /* Estilos mantidos como no original */
     .product-list {
       margin-top: 15px;
       max-width: 100%;
@@ -126,6 +125,33 @@
       margin-top: 8px;
       display: none;
     }
+    #tokenForm {
+      background: #fff;
+      padding: 15px;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      margin-bottom: 15px;
+    }
+    #tokenForm input {
+      width: 100%;
+      padding: 6px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      font-size: 12px;
+    }
+    #tokenForm button {
+      background: #2E8B57;
+      color: #fff;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+    #tokenForm button:hover {
+      background: #257A49;
+    }
     @media (max-width: 768px) {
       .product-table th, .product-table td {
         font-size: 10px;
@@ -138,16 +164,16 @@
         padding: 3px 6px;
         font-size: 10px;
       }
-      .form-section {
+      .form-section, #tokenForm {
         padding: 10px;
       }
       .form-section h2 {
         font-size: 14px;
       }
-      .form-section label {
+      .form-section label, #tokenForm label {
         font-size: 11px;
       }
-      .form-section input, .form-section select, .form-section textarea {
+      .form-section input, .form-section select, .form-section textarea, #tokenForm input {
         padding: 5px;
         font-size: 11px;
       }
@@ -160,7 +186,17 @@
 <body>
   <div class="container">
     <main>
-      <section class="form-section">
+      <section class="form-section" id="tokenForm">
+        <h2>Autenticação</h2>
+        <form id="tokenForm">
+          <label for="githubToken">Token do GitHub:</label>
+          <input type="password" id="githubToken" required placeholder="Digite seu token do GitHub">
+          <button type="submit">Salvar Token</button>
+          <div class="error-message" id="tokenError"></div>
+        </form>
+      </section>
+
+      <section class="form-section" id="productFormSection" style="display: none;">
         <h2 id="form-title">Adicionar Novo Produto</h2>
         <form id="productForm">
           <input type="hidden" id="editIndex">
@@ -206,7 +242,7 @@
         </form>
       </section>
 
-      <section class="product-list">
+      <section class="product-list" id="productList" style="display: none;">
         <h2>Produtos Cadastrados</h2>
         <table class="product-table">
           <thead>
@@ -227,7 +263,11 @@
     </main>
   </div>
   <script>
-    const form = document.getElementById('productForm');
+    const tokenForm = document.getElementById('tokenForm');
+    const tokenError = document.getElementById('tokenError');
+    const productForm = document.getElementById('productForm');
+    const productFormSection = document.getElementById('productFormSection');
+    const productList = document.getElementById('productList');
     const cancelBtn = document.getElementById('cancelEdit');
     const formTitle = document.getElementById('form-title');
     const productTableBody = document.getElementById('productTableBody');
@@ -242,17 +282,6 @@
     const baseUrl = 'https://bingaby.github.io/centrodecompra';
     let token = localStorage.getItem('githubToken');
 
-    // Solicitar token na primeira vez
-    if (!token) {
-      token = prompt('Digite seu token do GitHub (necessário para gerenciar produtos):');
-      if (token) {
-        localStorage.setItem('githubToken', token);
-      } else {
-        alert('Token necessário para acessar esta página.');
-        window.location.href = 'index.html';
-      }
-    }
-
     // Proteger acesso à página
     if (!localStorage.getItem('adminAccess')) {
       const password = prompt('Digite a senha administrativa:');
@@ -263,6 +292,67 @@
         localStorage.setItem('adminAccess', 'true');
       }
     }
+
+    // Verificar token
+    if (token) {
+      validateToken(token).then(isValid => {
+        if (isValid) {
+          tokenForm.style.display = 'none';
+          productFormSection.style.display = 'block';
+          productList.style.display = 'block';
+          loadProducts();
+        } else {
+          localStorage.removeItem('githubToken');
+          tokenForm.style.display = 'block';
+          productFormSection.style.display = 'none';
+          productList.style.display = 'none';
+          tokenError.textContent = 'Token anterior inválido. Digite um novo token.';
+          tokenError.style.display = 'block';
+        }
+      });
+    } else {
+      tokenForm.style.display = 'block';
+      productFormSection.style.display = 'none';
+      productList.style.display = 'none';
+    }
+
+    // Validar token
+    async function validateToken(testToken) {
+      try {
+        const response = await fetch(`https://api.github.com/repos/${repo}/contents/data/produtos.json`, {
+          headers: {
+            'Authorization': `token ${testToken}`,
+            'Accept': 'application/vnd.github.v3+json'
+          }
+        });
+        return response.ok;
+      } catch (error) {
+        return false;
+      }
+    }
+
+    // Salvar token
+    tokenForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      token = document.getElementById('githubToken').value.trim();
+      if (!token) {
+        tokenError.textContent = 'Digite um token válido.';
+        tokenError.style.display = 'block';
+        return;
+      }
+      const isValid = await validateToken(token);
+      if (isValid) {
+        localStorage.setItem('githubToken', token);
+        tokenForm.style.display = 'none';
+        productFormSection.style.display = 'block';
+        productList.style.display = 'block';
+        tokenError.style.display = 'none';
+        loadProducts();
+      } else {
+        tokenError.textContent = 'Token inválido. Verifique e tente novamente.';
+        tokenError.style.display = 'block';
+      }
+    });
 
     // Mostrar mensagem de erro
     function showError(message) {
@@ -356,7 +446,7 @@
         displayProducts(products);
       } catch (error) {
         console.error('Erro ao carregar produtos:', error);
-        showError('Erro ao carregar produtos. Verifique o console para detalhes.');
+        showError('Erro ao carregar produtos. Verifique o token ou o console.');
       }
     }
 
@@ -404,7 +494,7 @@
 
     // Limpar formulário
     function resetForm() {
-      form.reset();
+      productForm.reset();
       document.getElementById('editIndex').value = '';
       imageInput.setAttribute('required', '');
       imagesInput.setAttribute('required', '');
@@ -459,7 +549,7 @@
     }
 
     // Manipular envio do formulário
-    form.addEventListener('submit', async (event) => {
+    productForm.addEventListener('submit', async (event) => {
       event.preventDefault();
       errorMessage.style.display = 'none';
 
@@ -534,9 +624,6 @@
 
     // Cancelar edição
     cancelBtn.addEventListener('click', resetForm);
-
-    // Carregar produtos ao iniciar
-    loadProducts();
   </script>
 </body>
 </html>
