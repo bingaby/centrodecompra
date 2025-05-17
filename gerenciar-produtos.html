@@ -143,8 +143,6 @@
           <input type="hidden" id="editIndex">
           <label for="name">Nome do Produto:</label>
           <input type="text" id="name" required>
-          <label for="price">Preço (R$):</label>
-          <input type="number" id="price" step="0.01" required>
           <label for="image">Imagem Principal:</label>
           <input type="file" id="image" accept="image/jpeg,image/png,image/webp" required>
           <div class="image-preview" id="imagePreview"></div>
@@ -189,7 +187,6 @@
             <tr>
               <th>Imagem</th>
               <th>Nome</th>
-              <th>Preço</th>
               <th>Categoria</th>
               <th>Loja</th>
               <th>Ações</th>
@@ -301,7 +298,7 @@
     function displayProducts(products) {
       productTableBody.innerHTML = '';
       if (!products || products.length === 0) {
-        productTableBody.innerHTML = '<tr><td colspan="6">Nenhum produto cadastrado.</td></tr>';
+        productTableBody.innerHTML = '<tr><td colspan="5">Nenhum produto cadastrado.</td></tr>';
         return;
       }
       products.forEach((product, index) => {
@@ -309,7 +306,6 @@
         row.innerHTML = `
           <td><img src="${product.image}" alt="${product.name}" loading="lazy" onerror="this.src='imagens/placeholder.jpg'"></td>
           <td>${product.name}</td>
-          <td>R$${product.price.toFixed(2)}</td>
           <td>${product.category}</td>
           <td>${product.store}</td>
           <td>
@@ -326,8 +322,7 @@
       const product = window.products[index];
       document.getElementById('editIndex').value = index;
       document.getElementById('name').value = product.name;
-      document.getElementById('price').value = product.price;
-      document.getElementById('image').removeAttribute('required'); // Não exigir nova imagem ao editar
+      document.getElementById('image').removeAttribute('required');
       imagePreview.innerHTML = `<img src="${product.image}" alt="Imagem atual" loading="lazy">`;
       document.getElementById('images').removeAttribute('required');
       imagesPreview.innerHTML = product.images ? product.images.map(img => `<img src="${img}" alt="Imagem carrossel" loading="lazy">`).join('') : '';
@@ -401,7 +396,6 @@
 
         const product = {
           name: document.getElementById('name').value,
-          price: parseFloat(document.getElementById('price').value),
           image: imageUrl,
           images: carouselUrls.length > 0 ? carouselUrls : undefined,
           description: document.getElementById('description').value || undefined,
