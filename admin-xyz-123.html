@@ -136,53 +136,143 @@
     let currentImages = [];
     let currentImageIndex = 0;
 
-    // Inicializar produtos do localStorage com verificação
+    // Initialize products from localStorage
     try {
       const storedProdutos = localStorage.getItem('produtos');
       produtos = storedProdutos ? JSON.parse(storedProdutos) : [];
       if (!Array.isArray(produtos)) produtos = [];
     } catch (e) {
-      console.error('Erro ao carregar produtos do localStorage:', e);
+      console.error('Error loading products from localStorage:', e);
       produtos = [];
     }
 
     function verificarAutenticacao() {
+      const authSection = document.getElementById('auth-section');
+      const mainContent = document.getElementById('main-content');
+      if (!authSection || !mainContent) {
+        console.error('DOM elements not found: #auth-section or #main-content');
+        return;
+      }
       const isAutenticado = sessionStorage.getItem('autenticado') === 'true';
       if (isAutenticado) {
-        document.getElementById('auth-section').style.display = 'none';
-        document.getElementById('main-content').style.display = 'block';
+        authSection.style.display = 'none';
+        mainContent.style.display = 'block';
         atualizarJSON();
         atualizarListaProdutos();
       } else {
-        document.getElementById('auth-section').style.display = 'block';
-        document.getElementById('main-content').style.display = 'none';
+        authSection.style.display = 'block';
+        mainContent.style.display = 'none';
       }
     }
 
-    document.getElementById('auth-form').addEventListener('submit', e => {
-      e.preventDefault();
-      const password = document.getElementById('auth-password').value;
-      const authError = document.getElementById('auth-error');
-      console.log('Tentativa de login com senha:', password); // Para depuração
-      if (password === SENHA_CORRETA) {
-        sessionStorage.setItem('autenticado', 'true');
-        document.getElementById 'auth-section').style.display = 'none';
-        document.getElementById('main-content').style.display = 'block';
-        atualizarJSON();
-        atualizarListaProdutos();
-        authError.textContent = '';
-      } else {
-        authError.textContent = 'Senha incorreta! Tente novamente.';
-        document.getElementById('auth-password').value = '';
+    function configurarEventos() {
+      const authForm = document.getElementById('auth-form');
+      if (!authForm) {
+        console.error('DOM element not found: #auth-form');
+        return;
       }
-    });
+      authForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        e.stopPropagation(); // Prevent extensions like MetaMask from intercepting
+        const passwordInput = document.getElementById('auth-password');
+        const authError = document.getElementById('auth-error');
+        if (!passwordInput || !authError) {
+          console.error('DOM elements not found: #auth-password or #auth-error');
+          return;
+        }
+        const password = passwordInput.value;
+        console.log('Login attempt with password:', password);
+        if (password === SENHA_CORRETA) {
+          sessionStorage.setItem('autenticado', 'true');
+          document.getElementById('auth-section').style.display = 'none';
+          document.getElementById('main-content').style.display = 'block';
+          atualizarJSON();
+          atualizarListaProdutos();
+          authError.textContent = '';
+        } else {
+          authError.textContent = 'Senha incorreta! Tente novamente.';
+          passwordInput.value = '';
+        }
+      });
 
-    function logout() {
-      sessionStorage.removeItem('autenticado');
-      document.getElementById('auth-section').style.display = 'block';
-      document.getElementById('main-content').style.display = 'none';
-      document.getElementById('auth-password').value = '';
-      document.getElementById('auth-error').textContent = '';
+      const formProduto = document.getElementById('form-produto');
+      if (!formProduto) {
+        console.error('DOM element not found: #form-produto');
+        return;
+      }
+      formProduto.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const mensagem = document.getElementById('mensagem');
+        const erro = document.getElementById('erro');
+        if (!mensagem || !erro) {
+          console.error('DOM elements not found: #mensagem or #erro');
+          return;
+        }
+        const nome = e.target.querySelector('input[name="nome"]').value;
+        const categoria = e.target.querySelector('select[name="categoria"]').value;
+        const loja = e.target.querySelector('select[name="loja"]').value;
+        const link = e.target.querySelector('input[name="link"]').value;
+        const preco = e.target.querySelector('input[name="preco"]').value;
+        const imagens = e.target.querySelector('input[name="imagens"]').files;
+
+        if (!nome || !categoria || !loja || !link || !preco) {
+          erro.textContent = 'Todos os campos são obrigatórios!';
+          mensagem.textContent = '';
+          return;
+        }
+        if (parseFloat(preco) < 0) {
+          erro.textContent = 'O preço deve ser um valor positivo!';
+          mensagem.textContent = '';
+          return;
+        }
+        if (imagens.length === 0) {
+          erro.textContent = 'Pelo menos uma imagem deve ser escolhida!';
+          mensagem.textContent = '';
+          return;
+        }
+        if (imagens.length > 3) {
+          erro.textContent = 'Máximo de 3 imagens por produto!';
+          mensagem.textContent = '';
+          return;
+        }
+
+        try {
+          const imagensArray = await Promise.all(
+            Array.from(imagens).map(async (file) => {
+              const resizedBlob = await resizeImage(file, 300, 300);
+              return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = () => reject(new Error('Erro ao ler imagem.'));
+                reader.readAsDataURL(resizedBlob);
+              });
+            })
+          );
+
+          const novoProduto = { nome, categoria, loja, link, preco, imagens: imagensArray };
+          produtos.push(novoProduto);
+          localStorage.setItem('produtos', JSON.stringify(produtos));
+          atualizarJSON();
+          atualizarListaProdutos();
+          mensagem.textContent = 'Produto adicionado! Clique em "Atualizar produtos.json no GitHub" para sincronizar.';
+          erro.textContent = '';
+          e.target.reset();
+        } catch (error) {
+          console.error('Error adding product:', error);
+          erro.textContent = error.message || 'Erro ao processar as imagens. Tente novamente.';
+          mensagem.textContent = '';
+        }
+      });
+
+      const imageModal = document.getElementById('imageModal');
+      if (!imageModal) {
+        console.error('DOM element not found: #imageModal');
+        return;
+      }
+      imageModal.addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) closeModal();
+      });
     }
 
     async function resizeImage(file, maxWidth, maxHeight) {
@@ -212,84 +302,33 @@
           canvas.height = height;
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
-          canvas.toBlob(blob => resolve(blob), 'image/jpeg', 0.8);
+          canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.8);
         };
         img.onerror = () => reject(new Error('Erro ao carregar imagem.'));
       });
     }
 
-    document.getElementById('form-produto').addEventListener('submit', async e => {
-      e.preventDefault();
-      const mensagem = document.getElementById('mensagem');
-      const erro = document.getElementById('erro');
-      const nome = e.target.querySelector('input[name="nome"]').value;
-      const categoria = e.target.querySelector('select[name="categoria"]').value;
-      const loja = e.target.querySelector('select[name="loja"]').value;
-      const link = e.target.querySelector('input[name="link"]').value;
-      const preco = e.target.querySelector('input[name="preco"]').value;
-      const imagens = e.target.querySelector('input[name="imagens"]').files;
-
-      if (!nome || !categoria || !loja || !link || !preco) {
-        erro.textContent = 'Todos os campos são obrigatórios!';
-        mensagem.textContent = '';
-        return;
-      }
-      if (parseFloat(preco) < 0) {
-        erro.textContent = 'O preço deve ser um valor positivo!';
-        mensagem.textContent = '';
-        return;
-      }
-      if (imagens.length === 0) {
-        erro.textContent = 'Pelo menos uma imagem deve ser escolhida!';
-        mensagem.textContent = '';
-        return;
-      }
-      if (imagens.length > 3) {
-        erro.textContent = 'Máximo de 3 imagens por produto!';
-        mensagem.textContent = '';
-        return;
-      }
-
-      try {
-        const imagensArray = await Promise.all(
-          Array.from(imagens).map(async file => {
-            const resizedBlob = await resizeImage(file, 300, 300);
-            return new Promise((resolve, reject) => {
-              const reader = new FileReader();
-              reader.onload = () => resolve(reader.result);
-              reader.onerror = () => reject(new Error('Erro ao ler imagem.'));
-              reader.readAsDataURL(resizedBlob);
-            });
-          })
-        );
-
-        const novoProduto = { nome, categoria, loja, link, preco, imagens: imagensArray };
-        produtos.push(novoProduto);
-        localStorage.setItem('produtos', JSON.stringify(produtos));
-        atualizarJSON();
-        atualizarListaProdutos();
-        mensagem.textContent = 'Produto adicionado! Clique em "Atualizar produtos.json no GitHub" para sincronizar.';
-        erro.textContent = '';
-        e.target.reset();
-      } catch (error) {
-        console.error('Erro ao adicionar produto:', error);
-        erro.textContent = error.message || 'Erro ao processar as imagens. Tente novamente.';
-        mensagem.textContent = '';
-      }
-    });
-
     function atualizarJSON() {
+      const jsonText = document.getElementById('json-text');
+      if (!jsonText) {
+        console.error('DOM element not found: #json-text');
+        return;
+      }
       try {
-        const jsonText = document.getElementById('json-text');
         jsonText.value = JSON.stringify(produtos, null, 2);
       } catch (e) {
-        console.error('Erro ao atualizar JSON:', e);
-        document.getElementById('erro').textContent = 'Erro ao gerar JSON. Tente novamente.';
+        console.error('Error updating JSON:', e);
+        const erro = document.getElementById('erro');
+        if (erro) erro.textContent = 'Erro ao gerar JSON. Tente novamente.';
       }
     }
 
     function atualizarListaProdutos() {
       const listaProdutos = document.getElementById('lista-produtos');
+      if (!listaProdutos) {
+        console.error('DOM element not found: #lista-produtos');
+        return;
+      }
       listaProdutos.innerHTML = '';
       if (produtos.length === 0) {
         listaProdutos.innerHTML = '<tr><td colspan="7">Nenhum produto cadastrado.</td></tr>';
@@ -316,12 +355,16 @@
       const modal = document.getElementById('imageModal');
       const carrosselImagens = document.getElementById('modalCarrosselImagens');
       const carrosselDots = document.getElementById('modalCarrosselDots');
+      if (!modal || !carrosselImagens || !carrosselDots) {
+        console.error('DOM elements not found for modal');
+        return;
+      }
       currentImages = produtos[produtoIndex].imagens || [];
       currentImageIndex = imageIndex;
 
       if (currentImages.length === 0) return;
 
-      carrosselImagens.innerHTML = currentImages.map(img => `<img src="${img}" alt="Imagem ampliada">`).join('');
+      carrosselImagens.innerHTML = currentImages.map((img) => `<img src="${img}" alt="Imagem ampliada">`).join('');
       carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
       carrosselDots.innerHTML = currentImages.map((_, i) => `<span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})"></span>`).join('');
       modal.style.display = 'flex';
@@ -330,6 +373,10 @@
     function moveModalCarrossel(direction) {
       const carrosselImagens = document.getElementById('modalCarrosselImagens');
       const carrosselDots = document.getElementById('modalCarrosselDots').children;
+      if (!carrosselImagens || !carrosselDots) {
+        console.error('DOM elements not found for carousel');
+        return;
+      }
       const totalImagens = currentImages.length;
       currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
       carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
@@ -339,6 +386,10 @@
     function setModalCarrosselImage(index) {
       const carrosselImagens = document.getElementById('modalCarrosselImagens');
       const carrosselDots = document.getElementById('modalCarrosselDots').children;
+      if (!carrosselImagens || !carrosselDots) {
+        console.error('DOM elements not found for carousel');
+        return;
+      }
       currentImageIndex = index;
       carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
       Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
@@ -346,35 +397,44 @@
 
     function closeModal() {
       const modal = document.getElementById('imageModal');
+      if (!modal) {
+        console.error('DOM element not found: #imageModal');
+        return;
+      }
       modal.style.display = 'none';
       currentImages = [];
       currentImageIndex = 0;
     }
 
-    document.getElementById('imageModal').addEventListener('click', e => {
-      if (e.target === e.currentTarget) closeModal();
-    });
-
     function excluirProduto(index) {
+      const mensagem = document.getElementById('mensagem');
+      const erro = document.getElementById('erro');
+      if (!mensagem || !erro) {
+        console.error('DOM elements not found: #mensagem or #erro');
+        return;
+      }
       try {
         produtos.splice(index, 1);
         localStorage.setItem('produtos', JSON.stringify(produtos));
         atualizarJSON();
         atualizarListaProdutos();
-        document.getElementById('mensagem').textContent = 'Produto excluído! Clique em "Atualizar produtos.json no GitHub" para sincronizar.';
-        document.getElementById('erro').textContent = '';
+        mensagem.textContent = 'Produto excluído! Clique em "Atualizar produtos.json no GitHub" para sincronizar.';
+        erro.textContent = '';
       } catch (e) {
-        console.error('Erro ao excluir produto:', e);
-        document.getElementById('erro').textContent = 'Erro ao excluir produto. Tente novamente.';
+        console.error('Error deleting product:', e);
+        erro.textContent = 'Erro ao excluir produto. Tente novamente.';
       }
     }
 
     async function atualizarGitHub() {
-      const token = document.getElementById('github-token').value.trim();
-      const jsonText = document.getElementById('json-text').value;
+      const token = document.getElementById('github-token')?.value.trim();
+      const jsonText = document.getElementById('json-text')?.value;
       const mensagem = document.getElementById('mensagem');
       const erro = document.getElementById('erro');
-
+      if (!mensagem || !erro) {
+        console.error('DOM elements not found: #mensagem or #erro');
+        return;
+      }
       if (!token) {
         erro.textContent = 'Por favor, insira o GitHub Personal Access Token!';
         mensagem.textContent = '';
@@ -429,17 +489,20 @@
           throw new Error(`Erro ao atualizar produtos.json: ${errorData.message || updateResponse.statusText}`);
         }
       } catch (error) {
-        console.error('Erro ao sincronizar com o GitHub:', error);
+        console.error('Error syncing with GitHub:', error);
         erro.textContent = error.message || 'Erro ao sincronizar com o GitHub. Verifique o token e tente novamente.';
         mensagem.textContent = '';
       }
     }
 
     function importarJSON() {
-      const importText = document.getElementById('import-json').value;
+      const importText = document.getElementById('import-json')?.value;
       const mensagem = document.getElementById('mensagem');
       const erro = document.getElementById('erro');
-
+      if (!mensagem || !erro) {
+        console.error('DOM elements not found: #mensagem or #erro');
+        return;
+      }
       try {
         const importedProdutos = JSON.parse(importText);
         if (!Array.isArray(importedProdutos)) throw new Error('JSON inválido! Deve ser uma lista de produtos.');
@@ -451,13 +514,39 @@
         erro.textContent = '';
         document.getElementById('import-json').value = '';
       } catch (error) {
-        console.error('Erro ao importar JSON:', error);
+        console.error('Error importing JSON:', error);
         erro.textContent = error.message || 'Erro ao importar JSON. Verifique o formato e tente novamente.';
         mensagem.textContent = '';
       }
     }
 
-    verificarAutenticacao();
+    function logout() {
+      const authSection = document.getElementById('auth-section');
+      const mainContent = document.getElementById('main-content');
+      const passwordInput = document.getElementById('auth-password');
+      const authError = document.getElementById('auth-error');
+      if (!authSection || !mainContent || !passwordInput || !authError) {
+        console.error('DOM elements not found for logout');
+        return;
+      }
+      sessionStorage.removeItem('autenticado');
+      authSection.style.display = 'block';
+      mainContent.style.display = 'none';
+      passwordInput.value = '';
+      authError.textContent = '';
+    }
+
+    // Run initialization after DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('DOM fully loaded, initializing...');
+      const criticalElements = ['auth-form', 'form-produto', 'imageModal'].map((id) => document.getElementById(id));
+      if (criticalElements.some((el) => !el)) {
+        console.error('Critical DOM elements missing:', criticalElements);
+        return;
+      }
+      configurarEventos();
+      verificarAutenticacao();
+    });
   </script>
 </body>
 </html>
