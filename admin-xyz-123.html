@@ -39,6 +39,8 @@
     .loading { display: none; text-align: center; margin-top: 10px; }
     .loading::after { content: 'Carregando...'; animation: dots 1s infinite; }
     @keyframes dots { 0%, 20% { content: 'Carregando.'; } 40% { content: 'Carregando..'; } 60% { content: 'Carregando...'; } }
+    .preco-link { color: #ff6200; text-decoration: none; font-weight: bold; } /* Novo estilo para o preço */
+    .preco-link:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
@@ -69,7 +71,7 @@
         <option value="alibaba">Alibaba</option>
       </select>
       <input type="url" name="link" placeholder="Link do produto (https://...)" required pattern="https?://.+" aria-required="true">
-      <input type="number" name="preco" placeholder="Preço do produto (ex.: 99.99)" step="0.01" min="0" required aria-required="true">
+      <input type="number" name="preco" placeholder="Preço do produto (ex.: 99.99)" step="0.01" min="0" max="100000" required aria-required="true">
       <input type="file" name="imagens" accept="image/jpeg,image/png" multiple aria-required="true">
       <button type="submit">Adicionar</button>
     </form>
@@ -106,7 +108,7 @@
     </div>
   </div>
 
-  <div class="modal" id="imageModal">
+  <div class    <div class="modal" id="imageModal">
     <button class="modal-close" onclick="closeModal()">✕</button>
     <div class="modal-content" id="modalCarrossel">
       <div class="carrossel-imagens" id="modalCarrosselImagens"></div>
@@ -117,18 +119,17 @@
   </div>
 
   <script>
-    const VERSION = "1.0.1"; // Para depuração
+    const VERSION = "1.0.2"; // Atualizado para depuração
     let produtos = [];
     let currentImages = [];
     let currentImageIndex = 0;
 
-    // Desativar MetaMask para evitar inpage.js
+    // Desativar MetaMask
     if (window.ethereum) {
       console.log("MetaMask detectado, desativando temporariamente");
       window.ethereum = null;
     }
 
-    // Inicializar produtos do localStorage
     function inicializarProdutos() {
       try {
         const storedProdutos = localStorage.getItem('produtos');
@@ -140,7 +141,6 @@
       }
     }
 
-    // Carregar token do localStorage
     function carregarToken() {
       const token = localStorage.getItem('github_token');
       const githubTokenInput = document.getElementById('github-token');
@@ -149,7 +149,6 @@
       }
     }
 
-    // Salvar token no localStorage
     function salvarToken() {
       const githubTokenInput = document.getElementById('github-token');
       const mensagem = document.getElementById('mensagem');
@@ -181,7 +180,7 @@
 
       formProduto.addEventListener('submit', async (e) => {
         e.preventDefault();
-        e.stopPropagation(); // Evitar interferência do MetaMask
+        e.stopPropagation();
         mensagem.textContent = '';
         erro.textContent = '';
         loading.style.display = 'block';
@@ -193,14 +192,19 @@
         const preco = parseFloat(e.target.querySelector('input[name="preco"]').value);
         const imagens = e.target.querySelector('input[name="imagens"]').files;
 
-        // Validação
+        // Validações
         if (!nome || !categoria || !loja || !link || isNaN(preco)) {
           erro.textContent = 'Todos os campos são obrigatórios!';
           loading.style.display = 'none';
           return;
         }
-        if (preco < 0) {
-          erro.textContent = 'O preço deve ser um valor positivo!';
+        if (preco < 0 || preco > 100000) { // Nova validação de preço máximo
+          erro.textContent = 'O preço deve estar entre R$ 0,00 e R$ 100.000,00!';
+          loading.style.display = 'none';
+          return;
+        }
+        if (!link.match(/^https:\/\/.*\?.+=.+/)) { // Nova validação de link de afiliado
+          erro.textContent = 'Insira um link de afiliado válido com parâmetros (ex.: ?aff=123 ou tag=)!';
           loading.style.display = 'none';
           return;
         }
@@ -245,7 +249,6 @@
           atualizarJSON();
           atualizarListaProdutos();
 
-          // Sincronizar automaticamente com o GitHub
           await atualizarGitHub(true);
 
           mensagem.textContent = 'Produto cadastrado e sincronizado com o GitHub! Pode demorar alguns minutos para aparecer na página principal.';
@@ -308,7 +311,7 @@
     function atualizarJSON() {
       const jsonText = document.getElementById('json-text');
       if (!jsonText) {
-        console.error('Elemento DOM não encontrado: #json-text');
+        console.error('Elemento DOM Avec un peu de chance, je pourrais répondre en français ! 😄 Voulez-vous que je traduise quelque chose ou que je continue avec l'analyse du code ?');
         return;
       }
       try {
@@ -340,7 +343,7 @@
           <td>${produto.categoria}</td>
           <td>${produto.loja}</td>
           <td><a href="${produto.link}" target="_blank">Link</a></td>
-          <td>${precoFormatado}</td>
+          <td><a href="${produto.link}" target="_blank" class="preco-link" aria-label="Ver preço de ${produto.nome} na loja">${precoFormatado}</a></td> <!-- Preço como link -->
           <td>${imagens.length > 0 ? imagens.map((img, i) => `<img src="${img}" alt="Imagem ${i + 1}" class="thumbnail" onclick="openModal(${index}, ${i})">`).join('') : 'Nenhuma imagem'}</td>
           <td><button class="excluir" onclick="excluirProduto(${index})">Excluir</button></td>
         `;
@@ -493,7 +496,6 @@
         if (updateResponse.ok) {
           mensagem.textContent = 'produtos.json atualizado no GitHub! Pode demorar alguns minutos para aparecer na página principal.';
           erro.textContent = '';
-          // Atualizar cache da index.html
           localStorage.setItem('produtos_cache', jsonText);
         } else {
           const errorData = await updateResponse.json();
@@ -527,6 +529,12 @@
         if (!Array.isArray(importedProdutos)) {
           throw new Error('JSON inválido! Deve ser uma lista de produtos.');
         }
+        // Validar estrutura dos produtos importados
+        for (const produto of importedProdutos) {
+          if (!produto.nome || !produto.categoria || !produto.loja || !produto.link || isNaN(produto.preco) || !Array.isArray(produto.imagens)) {
+            throw new Error('Estrutura inválida em um ou mais produtos. Verifique nome, categoria, loja, link, preço e imagens.');
+          }
+        }
         produtos = importedProdutos;
         localStorage.setItem('produtos', JSON.stringify(produtos));
         atualizarJSON();
@@ -542,7 +550,6 @@
       loading.style.display = 'none';
     }
 
-    // Inicializar após o DOM estar carregado
     document.addEventListener('DOMContentLoaded', () => {
       console.log(`Iniciando admin-xyz-123.html v${VERSION}`);
       const criticalElements = ['form-produto', 'imageModal', 'lista-produtos', 'json-text', 'import-json', 'mensagem', 'erro', 'loading'];
