@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "nome": "Produto Exemplo",
+    "categoria": "Eletrônicos",
+    "loja": "Amazon",
+    "link": "https://...",
+    "preco": 99.99,
+    "imagens": ["url1", "url2"
+      }
+    ]
+  
+  
