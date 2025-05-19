@@ -39,7 +39,7 @@
     .loading { display: none; text-align: center; margin-top: 10px; }
     .loading::after { content: 'Carregando...'; animation: dots 1s infinite; }
     @keyframes dots { 0%, 20% { content: 'Carregando.'; } 40% { content: 'Carregando..'; } 60% { content: 'Carregando...'; } }
-    .preco-link { color: #ff6200; text-decoration: none; font-weight: bold; } /* Novo estilo para o preço */
+    .preco-link { color: #ff6200; text-decoration: none; font-weight: bold; }
     .preco-link:hover { text-decoration: underline; }
   </style>
 </head>
@@ -73,6 +73,7 @@
       <input type="url" name="link" placeholder="Link do produto (https://...)" required pattern="https?://.+" aria-required="true">
       <input type="number" name="preco" placeholder="Preço do produto (ex.: 99.99)" step="0.01" min="0" max="100000" required aria-required="true">
       <input type="file" name="imagens" accept="image/jpeg,image/png" multiple aria-required="true">
+      <p style="font-size: 14px; color: #666;">Nota: O preço será usado apenas na área administrativa e não será exibido na página principal.</p>
       <button type="submit">Adicionar</button>
     </form>
     <div id="mensagem" aria-live="polite"></div>
@@ -108,7 +109,7 @@
     </div>
   </div>
 
-  <div class    <div class="modal" id="imageModal">
+  <div class="modal" id="imageModal">
     <button class="modal-close" onclick="closeModal()">✕</button>
     <div class="modal-content" id="modalCarrossel">
       <div class="carrossel-imagens" id="modalCarrosselImagens"></div>
@@ -119,12 +120,11 @@
   </div>
 
   <script>
-    const VERSION = "1.0.2"; // Atualizado para depuração
+    const VERSION = "1.0.2";
     let produtos = [];
     let currentImages = [];
     let currentImageIndex = 0;
 
-    // Desativar MetaMask
     if (window.ethereum) {
       console.log("MetaMask detectado, desativando temporariamente");
       window.ethereum = null;
@@ -192,18 +192,17 @@
         const preco = parseFloat(e.target.querySelector('input[name="preco"]').value);
         const imagens = e.target.querySelector('input[name="imagens"]').files;
 
-        // Validações
         if (!nome || !categoria || !loja || !link || isNaN(preco)) {
           erro.textContent = 'Todos os campos são obrigatórios!';
           loading.style.display = 'none';
           return;
         }
-        if (preco < 0 || preco > 100000) { // Nova validação de preço máximo
+        if (preco < 0 || preco > 100000) {
           erro.textContent = 'O preço deve estar entre R$ 0,00 e R$ 100.000,00!';
           loading.style.display = 'none';
           return;
         }
-        if (!link.match(/^https:\/\/.*\?.+=.+/)) { // Nova validação de link de afiliado
+        if (!link.match(/^https:\/\/.*\?.+=.+/)) {
           erro.textContent = 'Insira um link de afiliado válido com parâmetros (ex.: ?aff=123 ou tag=)!';
           loading.style.display = 'none';
           return;
@@ -311,7 +310,7 @@
     function atualizarJSON() {
       const jsonText = document.getElementById('json-text');
       if (!jsonText) {
-        console.error('Elemento DOM Avec un peu de chance, je pourrais répondre en français ! 😄 Voulez-vous que je traduise quelque chose ou que je continue avec l'analyse du code ?');
+        console.error('Elemento DOM não encontrado: #json-text');
         return;
       }
       try {
@@ -343,7 +342,7 @@
           <td>${produto.categoria}</td>
           <td>${produto.loja}</td>
           <td><a href="${produto.link}" target="_blank">Link</a></td>
-          <td><a href="${produto.link}" target="_blank" class="preco-link" aria-label="Ver preço de ${produto.nome} na loja">${precoFormatado}</a></td> <!-- Preço como link -->
+          <td><a href="${produto.link}" target="_blank" class="preco-link" aria-label="Ver preço de ${produto.nome} na loja">${precoFormatado}</a></td>
           <td>${imagens.length > 0 ? imagens.map((img, i) => `<img src="${img}" alt="Imagem ${i + 1}" class="thumbnail" onclick="openModal(${index}, ${i})">`).join('') : 'Nenhuma imagem'}</td>
           <td><button class="excluir" onclick="excluirProduto(${index})">Excluir</button></td>
         `;
@@ -529,7 +528,6 @@
         if (!Array.isArray(importedProdutos)) {
           throw new Error('JSON inválido! Deve ser uma lista de produtos.');
         }
-        // Validar estrutura dos produtos importados
         for (const produto of importedProdutos) {
           if (!produto.nome || !produto.categoria || !produto.loja || !produto.link || isNaN(produto.preco) || !Array.isArray(produto.imagens)) {
             throw new Error('Estrutura inválida em um ou mais produtos. Verifique nome, categoria, loja, link, preço e imagens.');
