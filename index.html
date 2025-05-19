@@ -6,7 +6,7 @@
     <meta name="description" content="Ofertas com descontos reais nas principais lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliado seguros e atualizados.">
     <meta property="og:title" content="Centro de Compras - Ofertas e Descontos">
     <meta property="og:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliados seguros e atualizados!">
-    <meta property="og:image" content="logos/centrodecompras.jpg">
+    <meta property="og:image"也好
     <meta property="og:url" content="https://centrodecompra.com.br/">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Centro de Compras - Ofertas e Descontos">
@@ -52,7 +52,7 @@
             position: absolute;
             top: 10px;
             right: 10px;
-            background: #FFA500;
+            background: #ff6200;
             color: #fff;
             border: none;
             padding: 8px 12px;
@@ -73,12 +73,8 @@
             font-size: 18px;
             border-radius: 4px;
         }
-        .carrossel-prev {
-            left: 10px;
-        }
-        .carrossel-next {
-            right: 10px;
-        }
+        .carrossel-prev { left: 10px; }
+        .carrossel-next { right: 10px; }
         .carrossel-dots {
             position: absolute;
             bottom: 10px;
@@ -94,27 +90,30 @@
             margin: 0 5px;
             cursor: pointer;
         }
-        .carrossel-dot.ativo {
-            background: #FFA500;
-        }
+        .carrossel-dot.ativo { background: #ff6200; }
         .error-message {
             color: red;
             text-align: center;
             margin-top: 10px;
         }
         .preco {
-            color: red;
+            color: #333;
             font-weight: bold;
-            margin-top: 5px;
+            margin: 10px 0 5px;
             display: block;
         }
-        .preco a {
-            color: red;
+        .tarja-preco {
+            display: inline-block;
+            background: #ff6200;
+            color: white;
+            padding: 8px 12px;
+            margin: 0 10px 10px;
+            border-radius: 4px;
             text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
         }
-        .preco a:hover {
-            text-decoration: underline;
-        }
+        .tarja-preco:hover { background: #e55a00; }
         #load-more {
             display: none;
             margin: 20px auto;
@@ -126,9 +125,9 @@
             cursor: pointer;
             font-size: 16px;
         }
-        #load-more:hover {
-            background: #e55a00;
-        }
+        #load-more:hover { background: #e55a00; }
+        .produto-card { transition: transform 0.2s; }
+        .produto-card:hover { transform: translateY(-5px); }
     </style>
 </head>
 <body>
@@ -183,7 +182,7 @@
                 <span id="busca-instrucao" style="display: none;">Digite o nome do produto para filtrar os resultados.</span>
                 <div id="busca-feedback" class="busca-feedback">Buscando...</div>
                 <div class="loading-spinner" id="loading-spinner"></div>
-                <div class="grid-lojas" id="grid-produtos"></div>
+                <div class="grid-produtos" id="grid-produtos"></div>
                 <button id="load-more" onclick="carregarMaisProdutos()">Carregar Mais</button>
                 <p class="mensagem-vazia" id="mensagem-vazia" aria-live="polite">Nenhum produto encontrado.</p>
                 <p class="error-message" id="error-message" style="display: none;" aria-live="assertive"></p>
@@ -217,10 +216,10 @@
         </a>
     </div>
     <script>
-        const VERSION = "1.0.0"; // Para depuração
+        const VERSION = "1.0.1"; // Para depuração
         let currentImages = [], currentImageIndex = 0;
-        let currentPage = 1, productsPerPage = 12; // Paginação
-        let allProducts = []; // Armazenar produtos carregados
+        let currentPage = 1, productsPerPage = 12;
+        let allProducts = [];
 
         // Atualizar ano no footer
         document.getElementById("year").textContent = new Date().getFullYear();
@@ -229,7 +228,7 @@
         const logo = document.getElementById("site-logo");
         let clickCount = 0, clickTimeout = null;
         logo.addEventListener("click", (e) => {
-            e.stopPropagation(); // Evitar interferência de extensões
+            e.stopPropagation();
             clickCount++;
             if (clickCount === 1) {
                 clickTimeout = setTimeout(() => { clickCount = 0; }, 500);
@@ -246,7 +245,7 @@
             const errorMessage = document.getElementById("error-message");
             const loadingSpinner = document.getElementById("loading-spinner");
             if (!gridProdutos || !mensagemVazia || !errorMessage || !loadingSpinner) {
-                console.error("Elementos DOM não encontrados:", { gridProdutos, mensagemVazia, errorMessage, loadingSpinner });
+                console.error("Elementos DOM não encontrados");
                 return;
             }
 
@@ -256,16 +255,14 @@
             errorMessage.style.display = "none";
 
             try {
-                // Tentar carregar do localStorage primeiro
                 let produtos = JSON.parse(localStorage.getItem("produtos_cache")) || [];
                 if (!produtos.length) {
                     const response = await fetch("https://raw.githubusercontent.com/bingaby/centrodecompra/main/produtos.json", { cache: "no-store" });
-                    if (!response.ok) throw new Error(`Erro ao carregar produtos.json: ${response.status} ${response.statusText}`);
+                    if (!response.ok) throw new Error(`Erro ao carregar produtos.json: ${response.status}`);
                     produtos = await response.json();
                     if (!Array.isArray(produtos)) throw new Error("produtos.json não é uma lista válida");
                     localStorage.setItem("produtos_cache", JSON.stringify(produtos));
                 }
-                console.log("Produtos carregados:", produtos.length);
 
                 allProducts = produtos.filter(p =>
                     (categoria === "todas" || p.categoria.toLowerCase() === categoria.toLowerCase()) &&
@@ -306,14 +303,13 @@
                             </div>
                             <span>${produto.nome}</span>
                             <span class="descricao">Loja: ${produto.loja}</span>
-                            ${produto.preco ? `<span class="preco">R$ ${parseFloat(produto.preco).toFixed(2).replace(".", ",")} <a href="${produto.link}" target="_blank">Veja o preço</a></span>` : ""}
-                            <a href="${produto.link}" target="_blank" class="ver-na-loja ${produto.loja.toLowerCase()}">Comprar</a>
+                            ${produto.preco ? `<span class="preco">Preço: R$ ${parseFloat(produto.preco).toFixed(2).replace(".", ",")}</span>` : ""}
+                            ${produto.link ? `<a href="${produto.link}" target="_blank" class="tarja-preco" aria-label="Clique para ver o preço de ${produto.nome}">Clique para ver o preço</a>` : ""}
                         `;
                         gridProdutos.appendChild(card);
                     });
                 }
 
-                // Mostrar botão "Carregar Mais" se houver mais produtos
                 const loadMoreButton = document.getElementById("load-more");
                 loadMoreButton.style.display = end < allProducts.length ? "block" : "none";
             } catch (error) {
@@ -405,7 +401,7 @@
             }
             currentImageIndex = index;
             carrosselImagens.style.transform = `translateX(-${index * 100}%)`;
-            Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle("ativo", i === index));
+            Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle("ativo", i === currentImageIndex));
         }
 
         function closeModal() {
@@ -419,7 +415,6 @@
             currentImageIndex = 0;
         }
 
-        // Eventos com stopPropagation para evitar MetaMask
         document.getElementById("imageModal")?.addEventListener("click", (e) => {
             e.stopPropagation();
             if (e.target === e.currentTarget) closeModal();
@@ -427,10 +422,6 @@
 
         function filtrarPorCategoria(categoria) {
             const items = document.querySelectorAll(".categoria-item");
-            if (!items.length) {
-                console.error("Itens de categoria não encontrados");
-                return;
-            }
             items.forEach(item => item.classList.remove("ativa"));
             const item = document.querySelector(`.categoria-item[data-categoria="${categoria}"]`);
             if (item) item.classList.add("ativa");
@@ -442,10 +433,6 @@
 
         function filtrarPorLoja(loja) {
             const lojas = document.querySelectorAll(".loja, .loja-todas");
-            if (!lojas.length) {
-                console.error("Itens de loja não encontrados");
-                return;
-            }
             lojas.forEach(item => item.classList.remove("ativa"));
             const item = document.querySelector(`[data-loja="${loja}"]`);
             if (item) item.classList.add("ativa");
@@ -464,7 +451,6 @@
             carregarProdutos(categoria, loja, busca, currentPage);
         });
 
-        // Desativar MetaMask temporariamente (opcional)
         if (window.ethereum) {
             console.log("MetaMask detectado, desativando temporariamente");
             window.ethereum = null;
