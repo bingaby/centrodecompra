@@ -36,14 +36,17 @@
     .carrossel-dots { position: absolute; bottom: 10px; width: 100%; text-align: center; }
     .carrossel-dot { display: inline-block; width: 10px; height: 10px; background: #ccc; border-radius: 50%; margin: 0 5px; cursor: pointer; }
     .carrossel-dot.ativo { background: #ff6200; }
+    .loading { display: none; text-align: center; margin-top: 10px; }
+    .loading::after { content: 'Carregando...'; animation: dots 1s infinite; }
+    @keyframes dots { 0%, 20% { content: 'Carregando.'; } 40% { content: 'Carregando..'; } 60% { content: 'Carregando...'; } }
   </style>
 </head>
 <body>
   <div id="main-content">
     <h1>Adicionar Produto</h1>
     <form id="form-produto" enctype="multipart/form-data">
-      <input type="text" name="nome" placeholder="Nome do produto" required>
-      <select name="categoria" required>
+      <input type="text" name="nome" placeholder="Nome do produto" required aria-required="true">
+      <select name="categoria" required aria-required="true">
         <option value="" disabled selected>Selecione uma categoria</option>
         <option value="eletronicos">Eletrônicos</option>
         <option value="moda">Moda</option>
@@ -56,7 +59,7 @@
         <option value="Celulares">Celulares</option>
         <option value="Eletrodomésticos">Eletrodomésticos</option>
       </select>
-      <select name="loja" required>
+      <select name="loja" required aria-required="true">
         <option value="" disabled selected>Selecione uma loja</option>
         <option value="amazon">Amazon</option>
         <option value="magalu">Magalu</option>
@@ -65,13 +68,14 @@
         <option value="mercadolivre">Mercado Livre</option>
         <option value="alibaba">Alibaba</option>
       </select>
-      <input type="url" name="link" placeholder="Link do produto (https://...)" required pattern="https?://.+">
-      <input type="number" name="preco" placeholder="Preço do produto (ex.: 99.99)" step="0.01" min="0" required>
-      <input type="file" name="imagens" accept="image/*" multiple>
+      <input type="url" name="link" placeholder="Link do produto (https://...)" required pattern="https?://.+" aria-required="true">
+      <input type="number" name="preco" placeholder="Preço do produto (ex.: 99.99)" step="0.01" min="0" required aria-required="true">
+      <input type="file" name="imagens" accept="image/jpeg,image/png" multiple aria-required="true">
       <button type="submit">Adicionar</button>
     </form>
-    <div id="mensagem"></div>
-    <div id="erro"></div>
+    <div id="mensagem" aria-live="polite"></div>
+    <div id="erro" aria-live="assertive"></div>
+    <div id="loading" class="loading"></div>
 
     <div id="produtos-cadastrados">
       <h3>Produtos Cadastrados</h3>
@@ -93,7 +97,8 @@
 
     <div id="github-sync">
       <h3>Sincronizar com GitHub</h3>
-      <input type="password" id="github-token" placeholder="GitHub Personal Access Token" required>
+      <input type="password" id="github-token" placeholder="GitHub Personal Access Token" aria-label="Token de acesso pessoal do GitHub">
+      <button onclick="salvarToken()">Salvar Token</button>
       <textarea id="json-text" readonly></textarea>
       <button onclick="atualizarGitHub()">Atualizar produtos.json no GitHub</button>
       <textarea id="import-json" placeholder="Cole o JSON para importar"></textarea>
@@ -112,105 +117,165 @@
   </div>
 
   <script>
+    const VERSION = "1.0.1"; // Para depuração
     let produtos = [];
     let currentImages = [];
     let currentImageIndex = 0;
 
+    // Desativar MetaMask para evitar inpage.js
+    if (window.ethereum) {
+      console.log("MetaMask detectado, desativando temporariamente");
+      window.ethereum = null;
+    }
+
     // Inicializar produtos do localStorage
-    try {
-      const storedProdutos = localStorage.getItem('produtos');
-      produtos = storedProdutos ? JSON.parse(storedProdutos) : [];
-      if (!Array.isArray(produtos)) produtos = [];
-    } catch (e) {
-      console.error('Erro ao carregar produtos do localStorage:', e);
-      produtos = [];
+    function inicializarProdutos() {
+      try {
+        const storedProdutos = localStorage.getItem('produtos');
+        produtos = storedProdutos ? JSON.parse(storedProdutos) : [];
+        if (!Array.isArray(produtos)) produtos = [];
+      } catch (e) {
+        console.error('Erro ao carregar produtos do localStorage:', e);
+        produtos = [];
+      }
+    }
+
+    // Carregar token do localStorage
+    function carregarToken() {
+      const token = localStorage.getItem('github_token');
+      const githubTokenInput = document.getElementById('github-token');
+      if (token && githubTokenInput) {
+        githubTokenInput.value = token;
+      }
+    }
+
+    // Salvar token no localStorage
+    function salvarToken() {
+      const githubTokenInput = document.getElementById('github-token');
+      const mensagem = document.getElementById('mensagem');
+      const erro = document.getElementById('erro');
+      if (!githubTokenInput || !mensagem || !erro) {
+        console.error('Elementos DOM não encontrados');
+        return;
+      }
+      const token = githubTokenInput.value.trim();
+      if (!token) {
+        erro.textContent = 'Por favor, insira um token válido!';
+        mensagem.textContent = '';
+        return;
+      }
+      localStorage.setItem('github_token', token);
+      mensagem.textContent = 'Token salvo com sucesso!';
+      erro.textContent = '';
     }
 
     function configurarEventos() {
       const formProduto = document.getElementById('form-produto');
-      if (!formProduto) {
-        console.error('Elemento DOM não encontrado: #form-produto');
+      const mensagem = document.getElementById('mensagem');
+      const erro = document.getElementById('erro');
+      const loading = document.getElementById('loading');
+      if (!formProduto || !mensagem || !erro || !loading) {
+        console.error('Elementos DOM não encontrados');
         return;
       }
+
       formProduto.addEventListener('submit', async (e) => {
         e.preventDefault();
-        e.stopPropagation(); // Evitar interferência de extensões como MetaMask
-        const mensagem = document.getElementById('mensagem');
-        const erro = document.getElementById('erro');
-        if (!mensagem || !erro) {
-          console.error('Elementos DOM não encontrados: #mensagem ou #erro');
-          return;
-        }
-        const nome = e.target.querySelector('input[name="nome"]').value;
+        e.stopPropagation(); // Evitar interferência do MetaMask
+        mensagem.textContent = '';
+        erro.textContent = '';
+        loading.style.display = 'block';
+
+        const nome = e.target.querySelector('input[name="nome"]').value.trim();
         const categoria = e.target.querySelector('select[name="categoria"]').value;
         const loja = e.target.querySelector('select[name="loja"]').value;
-        const link = e.target.querySelector('input[name="link"]').value;
-        const preco = e.target.querySelector('input[name="preco"]').value;
+        const link = e.target.querySelector('input[name="link"]').value.trim();
+        const preco = parseFloat(e.target.querySelector('input[name="preco"]').value);
         const imagens = e.target.querySelector('input[name="imagens"]').files;
 
-        if (!nome || !categoria || !loja || !link || !preco) {
+        // Validação
+        if (!nome || !categoria || !loja || !link || isNaN(preco)) {
           erro.textContent = 'Todos os campos são obrigatórios!';
-          mensagem.textContent = '';
+          loading.style.display = 'none';
           return;
         }
-        if (parseFloat(preco) < 0) {
+        if (preco < 0) {
           erro.textContent = 'O preço deve ser um valor positivo!';
-          mensagem.textContent = '';
+          loading.style.display = 'none';
           return;
         }
         if (imagens.length === 0) {
           erro.textContent = 'Pelo menos uma imagem deve ser escolhida!';
-          mensagem.textContent = '';
+          loading.style.display = 'none';
           return;
         }
         if (imagens.length > 3) {
           erro.textContent = 'Máximo de 3 imagens por produto!';
-          mensagem.textContent = '';
+          loading.style.display = 'none';
           return;
         }
 
         try {
-          const imagensArray = await Promise.all(
-            Array.from(imagens).map(async (file) => {
+          const imagensArray = [];
+          for (const file of imagens) {
+            try {
               const resizedBlob = await resizeImage(file, 300, 300);
-              return new Promise((resolve, reject) => {
+              const dataUrl = await new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = () => resolve(reader.result);
-                reader.onerror = () => reject(new Error('Erro ao ler imagem.'));
+                reader.onerror = () => reject(new Error(`Erro ao ler imagem: ${file.name}`));
                 reader.readAsDataURL(resizedBlob);
               });
-            })
-          );
+              imagensArray.push(dataUrl);
+            } catch (imgError) {
+              console.warn(`Imagem ${file.name} ignorada: ${imgError.message}`);
+              erro.textContent += `Aviso: Imagem ${file.name} ignorada devido a erro. `;
+            }
+          }
+
+          if (imagensArray.length === 0) {
+            erro.textContent = 'Nenhuma imagem válida foi processada!';
+            loading.style.display = 'none';
+            return;
+          }
 
           const novoProduto = { nome, categoria, loja, link, preco, imagens: imagensArray };
           produtos.push(novoProduto);
           localStorage.setItem('produtos', JSON.stringify(produtos));
           atualizarJSON();
           atualizarListaProdutos();
-          mensagem.textContent = 'Produto adicionado! Clique em "Atualizar produtos.json no GitHub" para sincronizar.';
+
+          // Sincronizar automaticamente com o GitHub
+          await atualizarGitHub(true);
+
+          mensagem.textContent = 'Produto cadastrado e sincronizado com o GitHub! Pode demorar alguns minutos para aparecer na página principal.';
           erro.textContent = '';
           e.target.reset();
         } catch (error) {
           console.error('Erro ao adicionar produto:', error);
-          erro.textContent = error.message || 'Erro ao processar as imagens. Tente novamente.';
+          erro.textContent = error.message || 'Erro ao processar o cadastro. Tente novamente.';
           mensagem.textContent = '';
         }
+        loading.style.display = 'none';
       });
 
       const imageModal = document.getElementById('imageModal');
-      if (!imageModal) {
-        console.error('Elemento DOM não encontrado: #imageModal');
-        return;
+      if (imageModal) {
+        imageModal.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (e.target === e.currentTarget) closeModal();
+        });
       }
-      imageModal.addEventListener('click', (e) => {
-        if (e.target === e.currentTarget) closeModal();
-      });
     }
 
     async function resizeImage(file, maxWidth, maxHeight) {
       return new Promise((resolve, reject) => {
         if (file.size > 2 * 1024 * 1024) {
           reject(new Error('Imagem muito grande. Máximo 2 MB.'));
+          return;
+        }
+        if (!['image/jpeg', 'image/png'].includes(file.type)) {
+          reject(new Error('Formato de imagem não suportado. Use JPEG ou PNG.'));
           return;
         }
         const img = new Image();
@@ -293,9 +358,7 @@
       }
       currentImages = produtos[produtoIndex].imagens || [];
       currentImageIndex = imageIndex;
-
       if (currentImages.length === 0) return;
-
       carrosselImagens.innerHTML = currentImages.map((img) => `<img src="${img}" alt="Imagem ampliada">`).join('');
       carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
       carrosselDots.innerHTML = currentImages.map((_, i) => `<span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})"></span>`).join('');
@@ -304,7 +367,7 @@
 
     function moveModalCarrossel(direction) {
       const carrosselImagens = document.getElementById('modalCarrosselImagens');
-      const carrosselDots = document.getElementById('modalCarrosselDots').children;
+      const carrosselDots = document.getElementById('modalCarrosselDots')?.children;
       if (!carrosselImagens || !carrosselDots) {
         console.error('Elementos DOM não encontrados para o carrossel');
         return;
@@ -317,13 +380,13 @@
 
     function setModalCarrosselImage(index) {
       const carrosselImagens = document.getElementById('modalCarrosselImagens');
-      const carrosselDots = document.getElementById('modalCarrosselDots').children;
+      const carrosselDots = document.getElementById('modalCarrosselDots')?.children;
       if (!carrosselImagens || !carrosselDots) {
         console.error('Elementos DOM não encontrados para o carrossel');
         return;
       }
       currentImageIndex = index;
-      carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+      carrosselImagens.style.transform = `translateX(-${index * 100}%)`;
       Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
     }
 
@@ -338,47 +401,56 @@
       currentImageIndex = 0;
     }
 
-    function excluirProduto(index) {
+    async function excluirProduto(index) {
       const mensagem = document.getElementById('mensagem');
       const erro = document.getElementById('erro');
-      if (!mensagem || !erro) {
-        console.error('Elementos DOM não encontrados: #mensagem ou #erro');
+      const loading = document.getElementById('loading');
+      if (!mensagem || !erro || !loading) {
+        console.error('Elementos DOM não encontrados');
         return;
       }
       try {
+        loading.style.display = 'block';
         produtos.splice(index, 1);
         localStorage.setItem('produtos', JSON.stringify(produtos));
         atualizarJSON();
         atualizarListaProdutos();
-        mensagem.textContent = 'Produto excluído! Clique em "Atualizar produtos.json no GitHub" para sincronizar.';
+        await atualizarGitHub(true);
+        mensagem.textContent = 'Produto excluído e sincronizado com o GitHub!';
         erro.textContent = '';
       } catch (e) {
         console.error('Erro ao excluir produto:', e);
-        erro.textContent = 'Erro ao excluir produto. Tente novamente.';
+        erro.textContent = e.message || 'Erro ao excluir produto. Tente novamente.';
+        mensagem.textContent = '';
       }
+      loading.style.display = 'none';
     }
 
-    async function atualizarGitHub() {
-      const token = document.getElementById('github-token')?.value.trim();
+    async function atualizarGitHub(auto = false) {
+      const token = localStorage.getItem('github_token') || document.getElementById('github-token')?.value.trim();
       const jsonText = document.getElementById('json-text')?.value;
       const mensagem = document.getElementById('mensagem');
       const erro = document.getElementById('erro');
-      if (!mensagem || !erro) {
-        console.error('Elementos DOM não encontrados: #mensagem ou #erro');
+      const loading = document.getElementById('loading');
+      if (!mensagem || !erro || !loading) {
+        console.error('Elementos DOM não encontrados');
         return;
       }
       if (!token) {
-        erro.textContent = 'Por favor, insira o GitHub Personal Access Token!';
+        erro.textContent = 'Por favor, insira e salve o GitHub Personal Access Token!';
         mensagem.textContent = '';
+        if (!auto) loading.style.display = 'none';
         return;
       }
       if (!jsonText) {
         erro.textContent = 'JSON dos produtos não encontrado!';
         mensagem.textContent = '';
+        if (!auto) loading.style.display = 'none';
         return;
       }
 
       try {
+        loading.style.display = 'block';
         const parsedJson = JSON.parse(jsonText);
         if (!Array.isArray(parsedJson)) {
           throw new Error('JSON inválido! Deve ser uma lista de produtos.');
@@ -419,8 +491,10 @@
         });
 
         if (updateResponse.ok) {
-          mensagem.textContent = 'produtos.json atualizado no GitHub! Os produtos devem aparecer na página principal em alguns minutos.';
+          mensagem.textContent = 'produtos.json atualizado no GitHub! Pode demorar alguns minutos para aparecer na página principal.';
           erro.textContent = '';
+          // Atualizar cache da index.html
+          localStorage.setItem('produtos_cache', jsonText);
         } else {
           const errorData = await updateResponse.json();
           throw new Error(`Erro ao atualizar produtos.json: ${errorData.message || updateResponse.statusText}`);
@@ -430,14 +504,16 @@
         erro.textContent = error.message || 'Erro ao sincronizar com o GitHub. Verifique o token e tente novamente.';
         mensagem.textContent = '';
       }
+      if (!auto) loading.style.display = 'none';
     }
 
     function importarJSON() {
       const importText = document.getElementById('import-json')?.value;
       const mensagem = document.getElementById('mensagem');
       const erro = document.getElementById('erro');
-      if (!mensagem || !erro) {
-        console.error('Elementos DOM não encontrados: #mensagem ou #erro');
+      const loading = document.getElementById('loading');
+      if (!mensagem || !erro || !loading) {
+        console.error('Elementos DOM não encontrados');
         return;
       }
       if (!importText) {
@@ -446,8 +522,11 @@
         return;
       }
       try {
+        loading.style.display = 'block';
         const importedProdutos = JSON.parse(importText);
-        if      if (!Array.isArray(importedProdutos)) throw new Error('JSON inválido! Deve ser uma lista de produtos.');
+        if (!Array.isArray(importedProdutos)) {
+          throw new Error('JSON inválido! Deve ser uma lista de produtos.');
+        }
         produtos = importedProdutos;
         localStorage.setItem('produtos', JSON.stringify(produtos));
         atualizarJSON();
@@ -460,17 +539,20 @@
         erro.textContent = error.message || 'Erro ao importar JSON. Verifique o formato e tente novamente.';
         mensagem.textContent = '';
       }
+      loading.style.display = 'none';
     }
 
     // Inicializar após o DOM estar carregado
     document.addEventListener('DOMContentLoaded', () => {
-      console.log('DOM carregado, inicializando admin-xyz-123.html');
-      const criticalElements = ['form-produto', 'imageModal', 'lista-produtos', 'json-text', 'import-json'];
+      console.log(`Iniciando admin-xyz-123.html v${VERSION}`);
+      const criticalElements = ['form-produto', 'imageModal', 'lista-produtos', 'json-text', 'import-json', 'mensagem', 'erro', 'loading'];
       const missingElements = criticalElements.filter((id) => !document.getElementById(id));
       if (missingElements.length > 0) {
         console.error('Elementos DOM críticos não encontrados:', missingElements);
         return;
       }
+      inicializarProdutos();
+      carregarToken();
       configurarEventos();
       atualizarJSON();
       atualizarListaProdutos();
