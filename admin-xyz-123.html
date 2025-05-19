@@ -8,102 +8,39 @@
   <style>
     body { font-family: 'Roboto', Arial, sans-serif; padding: 20px; background-color: #f5f5f5; }
     h1, h3 { text-align: center; color: #333; }
-    form { max-width: 500px; margin: auto; display: flex; flex-direction: column; gap: 10px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+    form { max-width: 500px; margin: auto; display: flex; flex-direction: column; gap: 10px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     input, select, button, textarea { padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; }
     button { background-color: #ff6200; color: white; border: none; cursor: pointer; font-weight: bold; }
     button:hover { background-color: #e55a00; }
     #mensagem { margin-top: 10px; color: green; text-align: center; }
     #erro { margin-top: 10px; color: red; text-align: center; }
-    #github-sync { margin-top: 20px; max-width: 500px; margin: auto; background: white; padding: 10px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+    #github-sync { margin-top: 20px; max-width: 500px; margin: auto; background: white; padding: 10px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     #github-sync textarea { width: 100%; height: 100px; resize: vertical; }
     #github-sync input { margin-bottom: 10px; }
     #github-sync button { margin-top: 10px; width: 100%; }
-    #produtos-cadastrados { margin: 20px auto; max-width: 800px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+    #produtos-cadastrados { margin: 20px auto; max-width: 800px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     #produtos-cadastrados table { width: 100%; border-collapse: collapse; }
     #produtos-cadastrados th, #produtos-cadastrados td { padding: 10px; border: 1px solid #ddd; text-align: left; }
     #produtos-cadastrados th { background-color: #f9f9f9; }
     #produtos-cadastrados button.excluir { background-color: #dc3545; padding: 5px 10px; font-size: 14px; }
     #produtos-cadastrados button.excluir:hover { background-color: #c82333; }
-    #auth-section { max-width: 400px; margin: 50px auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+    #auth-section { max-width: 400px; margin: 50px auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     #main-content { display: none; }
     #auth-error { color: red; text-align: center; margin-top: 10px; }
     #logout-button { margin: 20px auto; max-width: 500px; text-align: center; }
     #logout-button button { background-color: #6c757d; }
     #logout-button button:hover { background-color: #5a6268; }
     .thumbnail { width: 50px; height: 50px; object-fit: cover; margin: 2px; cursor: pointer; border-radius: 4px; }
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.8);
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
-    }
-    .modal-content {
-      position: relative;
-      max-width: 90%;
-      max-height: 90%;
-      width: auto;
-      height: auto;
-    }
-    .modal-content .carrossel-imagens {
-      display: flex;
-      overflow: hidden;
-      width: 100%;
-      height: 100%;
-    }
-    .modal-content .carrossel-imagens img {
-      width: 100%;
-      height: auto;
-      object-fit: contain;
-      flex: 0 0 100%;
-      transition: transform 0.3s ease;
-    }
-    .modal-close {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: #ff6200;
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    .carrossel-prev, .carrossel-next {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background: rgba(0, 0, 0, 0.5);
-      color: white;
-      border: none;
-      padding: 10px;
-      cursor: pointer;
-      font-size: 18px;
-      border-radius: 4px;
-    }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
+    .modal-content { position: relative; max-width: 90%; max-height: 90%; width: auto; height: auto; }
+    .modal-content .carrossel-imagens { display: flex; overflow: hidden; width: 100%; height: 100%; }
+    .modal-content .carrossel-imagens img { width: 100%; height: auto; object-fit: contain; flex: 0 0 100%; transition: transform 0.3s ease; }
+    .modal-close { position: absolute; top: 10px; right: 10px; background: #ff6200; color: white; border: none; padding: 8px 12px; border-radius: 50%; cursor: pointer; font-size: 16px; }
+    .carrossel-prev, .carrossel-next { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; padding: 10px; cursor: pointer; font-size: 18px; border-radius: 4px; }
     .carrossel-prev { left: 10px; }
     .carrossel-next { right: 10px; }
-    .carrossel-dots {
-      position: absolute;
-      bottom: 10px;
-      width: 100%;
-      text-align: center;
-    }
-    .carrossel-dot {
-      display: inline-block;
-      width: 10px;
-      height: 10px;
-      background: #ccc;
-      border-radius: 50%;
-      margin: 0 5px;
-      cursor: pointer;
-    }
+    .carrossel-dots { position: absolute; bottom: 10px; width: 100%; text-align: center; }
+    .carrossel-dot { display: inline-block; width: 10px; height: 10px; background: #ccc; border-radius: 50%; margin: 0 5px; cursor: pointer; }
     .carrossel-dot.ativo { background: #ff6200; }
   </style>
 </head>
@@ -195,9 +132,19 @@
 
   <script>
     const SENHA_CORRETA = "comprasempre@098457";
-    let produtos = JSON.parse(localStorage.getItem('produtos')) || [];
+    let produtos = [];
     let currentImages = [];
     let currentImageIndex = 0;
+
+    // Inicializar produtos do localStorage com verificação
+    try {
+      const storedProdutos = localStorage.getItem('produtos');
+      produtos = storedProdutos ? JSON.parse(storedProdutos) : [];
+      if (!Array.isArray(produtos)) produtos = [];
+    } catch (e) {
+      console.error('Erro ao carregar produtos do localStorage:', e);
+      produtos = [];
+    }
 
     function verificarAutenticacao() {
       const isAutenticado = sessionStorage.getItem('autenticado') === 'true';
@@ -216,16 +163,16 @@
       e.preventDefault();
       const password = document.getElementById('auth-password').value;
       const authError = document.getElementById('auth-error');
-      
+      console.log('Tentativa de login com senha:', password); // Para depuração
       if (password === SENHA_CORRETA) {
         sessionStorage.setItem('autenticado', 'true');
-        document.getElementById('auth-section').style.display = 'none';
+        document.getElementById 'auth-section').style.display = 'none';
         document.getElementById('main-content').style.display = 'block';
         atualizarJSON();
         atualizarListaProdutos();
         authError.textContent = '';
       } else {
-        authError.textContent = 'Senha incorreta!';
+        authError.textContent = 'Senha incorreta! Tente novamente.';
         document.getElementById('auth-password').value = '';
       }
     });
@@ -242,6 +189,7 @@
       return new Promise((resolve, reject) => {
         if (file.size > 2 * 1024 * 1024) {
           reject(new Error('Imagem muito grande. Máximo 2 MB.'));
+          return;
         }
         const img = new Image();
         img.src = URL.createObjectURL(file);
@@ -264,11 +212,9 @@
           canvas.height = height;
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
-          canvas.toBlob(blob => {
-            resolve(blob);
-          }, 'image/jpeg', 0.8);
+          canvas.toBlob(blob => resolve(blob), 'image/jpeg', 0.8);
         };
-        img.onerror = reject;
+        img.onerror = () => reject(new Error('Erro ao carregar imagem.'));
       });
     }
 
@@ -281,110 +227,237 @@
       const loja = e.target.querySelector('select[name="loja"]').value;
       const link = e.target.querySelector('input[name="link"]').value;
       const preco = e.target.querySelector('input[name="preco"]').value;
-      Pseudomonas aeruginosa, a Gram-negative bacillus, is a significant opportunistic pathogen notorious for its intrinsic and acquired resistance to multiple antibiotics, making it a critical challenge in healthcare settings. Its ability to form biofilms and persist in diverse environments, including hospital equipment and water systems, contributes to its role in nosocomial infections, particularly in immunocompromised patients, burn victims, and those with cystic fibrosis. Below is a detailed overview of *P. aeruginosa* infections, their clinical significance, treatment challenges, and management strategies.
+      const imagens = e.target.querySelector('input[name="imagens"]').files;
 
----
+      if (!nome || !categoria || !loja || !link || !preco) {
+        erro.textContent = 'Todos os campos são obrigatórios!';
+        mensagem.textContent = '';
+        return;
+      }
+      if (parseFloat(preco) < 0) {
+        erro.textContent = 'O preço deve ser um valor positivo!';
+        mensagem.textContent = '';
+        return;
+      }
+      if (imagens.length === 0) {
+        erro.textContent = 'Pelo menos uma imagem deve ser escolhida!';
+        mensagem.textContent = '';
+        return;
+      }
+      if (imagens.length > 3) {
+        erro.textContent = 'Máximo de 3 imagens por produto!';
+        mensagem.textContent = '';
+        return;
+      }
 
-### **Epidemiology**
-- **Prevalence**: *P. aeruginosa* is ubiquitous in soil, water, and moist environments, making it a common cause of hospital-acquired infections (HAIs). It accounts for approximately 10-20% of HAIs, including ventilator-associated pneumonia (VAP), catheter-associated urinary tract infections (CAUTIs), and surgical site infections.
-- **High-Risk Populations**:
-  - Patients in intensive care units (ICUs).
-  - Individuals with cystic fibrosis (CF), where chronic lung infections are a leading cause of morbidity and mortality.
-  - Burn patients, due to compromised skin barriers.
-  - Immunocompromised individuals (e.g., cancer patients, transplant recipients).
-- **Transmission**: Spread occurs via contaminated water, medical devices, hands of healthcare workers, or direct contact with colonized surfaces. It can also colonize the respiratory or gastrointestinal tracts of hospitalized patients.
+      try {
+        const imagensArray = await Promise.all(
+          Array.from(imagens).map(async file => {
+            const resizedBlob = await resizeImage(file, 300, 300);
+            return new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(reader.result);
+              reader.onerror = () => reject(new Error('Erro ao ler imagem.'));
+              reader.readAsDataURL(resizedBlob);
+            });
+          })
+        );
 
----
+        const novoProduto = { nome, categoria, loja, link, preco, imagens: imagensArray };
+        produtos.push(novoProduto);
+        localStorage.setItem('produtos', JSON.stringify(produtos));
+        atualizarJSON();
+        atualizarListaProdutos();
+        mensagem.textContent = 'Produto adicionado! Clique em "Atualizar produtos.json no GitHub" para sincronizar.';
+        erro.textContent = '';
+        e.target.reset();
+      } catch (error) {
+        console.error('Erro ao adicionar produto:', error);
+        erro.textContent = error.message || 'Erro ao processar as imagens. Tente novamente.';
+        mensagem.textContent = '';
+      }
+    });
 
-### **Pathogenesis**
-*P. aeruginosa* employs a range of virulence factors that enhance its pathogenicity:
-- **Biofilm Formation**: Enables adherence to surfaces (e.g., catheters, endotracheal tubes) and resistance to antibiotics and immune responses.
-- **Exotoxins and Enzymes**:
-  - **Exotoxin A**: Inhibits protein synthesis, causing tissue necrosis.
-  - **Elastase and Proteases**: Degrade host tissues and immune components.
-  - **Pyocyanin**: A pigment that generates reactive oxygen species, damaging host cells.
-- **Type III Secretion System**: Injects toxins directly into host cells, impairing immune function.
-- **Quorum Sensing**: Regulates gene expression for virulence factors and biofilm production, enhancing coordinated attack.
-- **Antibiotic Resistance Mechanisms**:
-  - **Intrinsic Resistance**: Low outer membrane permeability and efflux pumps (e.g., MexAB-OprM).
-  - **Acquired Resistance**: Mutations or horizontal gene transfer leading to β-lactamase production (e.g., extended-spectrum β-lactamases, carbapenemases).
-  - **Adaptive Resistance**: Upregulation of resistance genes in response to environmental stressors or subtherapeutic antibiotic exposure.
+    function atualizarJSON() {
+      try {
+        const jsonText = document.getElementById('json-text');
+        jsonText.value = JSON.stringify(produtos, null, 2);
+      } catch (e) {
+        console.error('Erro ao atualizar JSON:', e);
+        document.getElementById('erro').textContent = 'Erro ao gerar JSON. Tente novamente.';
+      }
+    }
 
----
+    function atualizarListaProdutos() {
+      const listaProdutos = document.getElementById('lista-produtos');
+      listaProdutos.innerHTML = '';
+      if (produtos.length === 0) {
+        listaProdutos.innerHTML = '<tr><td colspan="7">Nenhum produto cadastrado.</td></tr>';
+        return;
+      }
+      produtos.forEach((produto, index) => {
+        const tr = document.createElement('tr');
+        const imagens = produto.imagens && produto.imagens.length > 0 ? produto.imagens : [];
+        const precoFormatado = produto.preco ? `R$ ${parseFloat(produto.preco).toFixed(2).replace('.', ',')}` : 'R$ 0,00';
+        tr.innerHTML = `
+          <td>${produto.nome}</td>
+          <td>${produto.categoria}</td>
+          <td>${produto.loja}</td>
+          <td><a href="${produto.link}" target="_blank">Link</a></td>
+          <td>${precoFormatado}</td>
+          <td>${imagens.length > 0 ? imagens.map((img, i) => `<img src="${img}" alt="Imagem ${i + 1}" class="thumbnail" onclick="openModal(${index}, ${i})">`).join('') : 'Nenhuma imagem'}</td>
+          <td><button class="excluir" onclick="excluirProduto(${index})">Excluir</button></td>
+        `;
+        listaProdutos.appendChild(tr);
+      });
+    }
 
-### **Clinical Manifestations**
-*P. aeruginosa* causes a wide range of infections, varying from localized to systemic:
-1. **Pulmonary Infections**:
-   - **Cystic Fibrosis**: Chronic lung colonization leads to recurrent exacerbations, progressive lung damage, and respiratory failure.
-   - **Ventilator-Associated Pneumonia (VAP)**: High mortality rates (20-50%) in ICU patients.
-   - **Community-Acquired Pneumonia**: Rare, typically in patients with underlying lung disease.
-2. **Bloodstream Infections**:
-   - Often secondary to primary infections (e.g., catheter-related or urinary tract infections).
-   - Associated Goddamn high mortality (up to 60-70% in severe cases).
-3. **Urinary Tract Infections (UTIs)**:
-   - Common in catheterized patients, leading to pyelonephritis or urosepsis if untreated.
-4. **Skin and Soft Tissue Infections**:
-   - Burn wound infections, ecthyma gangrenosum (hemorrhagic skin lesions indicative of bacteremia).
-5. **Other Infections**:
-   - Endocarditis, osteomyelitis, otitis externa (swimmer’s ear), keratitis (contact lens-related corneal infections).
+    function openModal(produtoIndex, imageIndex) {
+      const modal = document.getElementById('imageModal');
+      const carrosselImagens = document.getElementById('modalCarrosselImagens');
+      const carrosselDots = document.getElementById('modalCarrosselDots');
+      currentImages = produtos[produtoIndex].imagens || [];
+      currentImageIndex = imageIndex;
 
----
+      if (currentImages.length === 0) return;
 
-### **Diagnosis**
-- **Microbiological Culture**: Gold standard, using samples from blood, sputum, urine, or wound swabs. *P. aeruginosa* grows readily on standard media and is identified by its characteristic metallic sheen and grape-like odor.
-- **Antimicrobial Susceptibility Testing**: Essential due to high resistance rates. Disk diffusion, E-test, or automated systems (e.g., VITEK) are used.
-- **Molecular Methods**: PCR-based assays for rapid detection in critical cases or for resistance genes (e.g., carbapenemases like KPC, NDM).
-- **Imaging**: Chest X-ray/CT for pneumonia, ultrasound/MRI for deep-seated infections.
+      carrosselImagens.innerHTML = currentImages.map(img => `<img src="${img}" alt="Imagem ampliada">`).join('');
+      carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+      carrosselDots.innerHTML = currentImages.map((_, i) => `<span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})"></span>`).join('');
+      modal.style.display = 'flex';
+    }
 
----
+    function moveModalCarrossel(direction) {
+      const carrosselImagens = document.getElementById('modalCarrosselImagens');
+      const carrosselDots = document.getElementById('modalCarrosselDots').children;
+      const totalImagens = currentImages.length;
+      currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
+      carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+      Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
+    }
 
-### **Treatment Challenges**
-*P. aeruginosa* infections are notoriously difficult to treat due to:
-- **Multidrug Resistance (MDR)**: Resistance to β-lactams, aminoglycosides, fluoroquinolones, and carbapenems is common. Extensively drug-resistant (XDR) and pandrug-resistant (PDR) strains are emerging.
-- **Biofilm Formation**: Reduces antibiotic penetration, requiring higher doses or combination therapy.
-- **Limited New Antibiotics**: Few novel agents are effective against *P. aeruginosa*, and development is slow due to economic and scientific barriers.
+    function setModalCarrosselImage(index) {
+      const carrosselImagens = document.getElementById('modalCarrosselImagens');
+      const carrosselDots = document.getElementById('modalCarrosselDots').children;
+      currentImageIndex = index;
+      carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+      Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
+    }
 
----
+    function closeModal() {
+      const modal = document.getElementById('imageModal');
+      modal.style.display = 'none';
+      currentImages = [];
+      currentImageIndex = 0;
+    }
 
-### **Treatment Strategies**
-1. **Antibiotic Therapy**:
-   - **Empiric Therapy**: Broad-spectrum agents (e.g., piperacillin-tazobactam, ceftazidime, or meropenem) are used in suspected cases, often combined with an aminoglycoside (e.g., tobramycin) or fluoroquinolone (e.g., ciprofloxacin) for synergy.
-   - **Definitive Therapy**: Guided by susceptibility testing. Monotherapy may suffice for mild infections, but combination therapy (e.g., β-lactam + aminoglycoside) is preferred for severe infections or MDR strains.
-   - **Newer Agents**:
-     - **Ceftolozane-tazobactam**: Effective against MDR *P. aeruginosa*, approved for complicated UTIs and intra-abdominal infections.
-     - **Ceftazidime-avibactam**: Active against some carbapenem-resistant strains.
-     - **Imipenem-relebactam**: Restores activity against some carbapenemases.
-   - **Inhaled Antibiotics**: Tobramycin or colistin for cystic fibrosis or chronic lung infections.
-   - **Duration**: Typically 7-14 days, longer (4-6 weeks) for deep-seated infections like osteomyelitis or endocarditis.
-2. **Source Control**:
-   - Removal of infected devices (e.g., catheters, endotracheal tubes).
-   - Surgical debridement for wound infections or abscesses.
-3. **Supportive Care**:
-   - Fluid resuscitation, vasopressors for septic shock.
-   - Oxygen or mechanical ventilation for severe pneumonia.
+    document.getElementById('imageModal').addEventListener('click', e => {
+      if (e.target === e.currentTarget) closeModal();
+    });
 
----
+    function excluirProduto(index) {
+      try {
+        produtos.splice(index, 1);
+        localStorage.setItem('produtos', JSON.stringify(produtos));
+        atualizarJSON();
+        atualizarListaProdutos();
+        document.getElementById('mensagem').textContent = 'Produto excluído! Clique em "Atualizar produtos.json no GitHub" para sincronizar.';
+        document.getElementById('erro').textContent = '';
+      } catch (e) {
+        console.error('Erro ao excluir produto:', e);
+        document.getElementById('erro').textContent = 'Erro ao excluir produto. Tente novamente.';
+      }
+    }
 
-### **Prevention and Control**
-- **Infection Control**:
-  - Hand hygiene, contact precautions, and environmental cleaning to reduce transmission in hospitals.
-  - Sterilization of medical equipment and water systems.
-  - Surveillance for MDR strains with routine cultures in high-risk units.
-- **Antimicrobial Stewardship**:
-  - Avoid overuse of broad-spectrum antibiotics to prevent resistance development.
-  - Use susceptibility data to de-escalate therapy when possible.
-- **Vaccines and Novel Therapies**:
-  - No licensed vaccine exists, but candidates targeting outer membrane proteins or flagella are in development.
-  - Phage therapy and anti-virulence drugs are experimental but promising.
+    async function atualizarGitHub() {
+      const token = document.getElementById('github-token').value.trim();
+      const jsonText = document.getElementById('json-text').value;
+      const mensagem = document.getElementById('mensagem');
+      const erro = document.getElementById('erro');
 
----
+      if (!token) {
+        erro.textContent = 'Por favor, insira o GitHub Personal Access Token!';
+        mensagem.textContent = '';
+        return;
+      }
 
-### **Prognosis**
-- **Mild Infections**: Good outcomes with prompt treatment (e.g., otitis externa, uncomplicated UTIs).
-- **Severe Infections**: High mortality in bacteremia (20-50%), VAP, or infections in immunocompromised patients.
-- **Cystic Fibrosis**: Chronic infections lead to progressive lung decline, with variable survival based on resistance patterns and treatment adherence.
+      try {
+        const parsedJson = JSON.parse(jsonText);
+        if (!Array.isArray(parsedJson)) {
+          throw new Error('JSON inválido! Deve ser uma lista de produtos.');
+        }
 
----
+        let sha = null;
+        const getResponse = await fetch('https://api.github.com/repos/bingaby/centrodecompra/contents/produtos.json', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'Content-Type': 'application/json'
+          }
+        });
 
-### **Conclusion**
-*Pseudomonas aeruginosa* remains a formidable pathogen due to its environmental resilience, virulence, and antibiotic resistance. Effective management requires rapid diagnosis, tailored antimicrobial therapy, source control, and robust infection prevention strategies. Ongoing research into novel antibiotics, vaccines, and alternative therapies is critical to combat the rising threat of MDR and XDR strains. Clinicians must balance aggressive treatment with stewardship to preserve the efficacy of available agents.
+        if (getResponse.ok) {
+          const fileData = await getResponse.json();
+          sha = fileData.sha;
+        } else if (getResponse.status !== 404) {
+          const errorData = await getResponse.json();
+          throw new Error(`Erro ao verificar produtos.json: ${errorData.message || getResponse.statusText}`);
+        }
+
+        const content = btoa(unescape(encodeURIComponent(jsonText)));
+        const updateResponse = await fetch('https://api.github.com/repos/bingaby/centrodecompra/contents/produtos.json', {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            message: 'Atualiza produtos.json via admin',
+            content: content,
+            sha: sha,
+            branch: 'main'
+          })
+        });
+
+        if (updateResponse.ok) {
+          mensagem.textContent = 'produtos.json atualizado no GitHub! Os produtos devem aparecer na página principal em alguns minutos.';
+          erro.textContent = '';
+        } else {
+          const errorData = await updateResponse.json();
+          throw new Error(`Erro ao atualizar produtos.json: ${errorData.message || updateResponse.statusText}`);
+        }
+      } catch (error) {
+        console.error('Erro ao sincronizar com o GitHub:', error);
+        erro.textContent = error.message || 'Erro ao sincronizar com o GitHub. Verifique o token e tente novamente.';
+        mensagem.textContent = '';
+      }
+    }
+
+    function importarJSON() {
+      const importText = document.getElementById('import-json').value;
+      const mensagem = document.getElementById('mensagem');
+      const erro = document.getElementById('erro');
+
+      try {
+        const importedProdutos = JSON.parse(importText);
+        if (!Array.isArray(importedProdutos)) throw new Error('JSON inválido! Deve ser uma lista de produtos.');
+        produtos = importedProdutos;
+        localStorage.setItem('produtos', JSON.stringify(produtos));
+        atualizarJSON();
+        atualizarListaProdutos();
+        mensagem.textContent = 'Produtos importados com sucesso! Clique em "Atualizar produtos.json no GitHub" para sincronizar.';
+        erro.textContent = '';
+        document.getElementById('import-json').value = '';
+      } catch (error) {
+        console.error('Erro ao importar JSON:', error);
+        erro.textContent = error.message || 'Erro ao importar JSON. Verifique o formato e tente novamente.';
+        mensagem.textContent = '';
+      }
+    }
+
+    verificarAutenticacao();
+  </script>
+</body>
+</html>
