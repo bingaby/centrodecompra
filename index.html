@@ -6,7 +6,7 @@
     <meta name="description" content="Ofertas com descontos reais nas principais lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliado seguros e atualizados.">
     <meta property="og:title" content="Centro de Compras - Ofertas e Descontos">
     <meta property="og:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliados seguros e atualizados!">
-    <meta property="og:image"也好
+    <meta property="og:image" content="logos/centrodecompras.jpg">
     <meta property="og:url" content="https://centrodecompra.com.br/">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Centro de Compras - Ofertas e Descontos">
@@ -96,18 +96,12 @@
             text-align: center;
             margin-top: 10px;
         }
-        .preco {
-            color: #333;
-            font-weight: bold;
-            margin: 10px 0 5px;
-            display: block;
-        }
         .tarja-preco {
             display: inline-block;
             background: #ff6200;
             color: white;
             padding: 8px 12px;
-            margin: 0 10px 10px;
+            margin: 10px 0;
             border-radius: 4px;
             text-decoration: none;
             font-weight: bold;
@@ -216,15 +210,13 @@
         </a>
     </div>
     <script>
-        const VERSION = "1.0.1"; // Para depuração
+        const VERSION = "1.0.2"; // Atualizado para depuração
         let currentImages = [], currentImageIndex = 0;
         let currentPage = 1, productsPerPage = 12;
         let allProducts = [];
 
-        // Atualizar ano no footer
         document.getElementById("year").textContent = new Date().getFullYear();
 
-        // Acesso ao admin com clique triplo
         const logo = document.getElementById("site-logo");
         let clickCount = 0, clickTimeout = null;
         logo.addEventListener("click", (e) => {
@@ -303,8 +295,7 @@
                             </div>
                             <span>${produto.nome}</span>
                             <span class="descricao">Loja: ${produto.loja}</span>
-                            ${produto.preco ? `<span class="preco">Preço: R$ ${parseFloat(produto.preco).toFixed(2).replace(".", ",")}</span>` : ""}
-                            ${produto.link ? `<a href="${produto.link}" target="_blank" class="tarja-preco" aria-label="Clique para ver o preço de ${produto.nome}">Clique para ver o preço</a>` : ""}
+                            <a href="${produto.link}" target="_blank" class="tarja-preco" aria-label="Clique para ver o preço de ${produto.nome} na loja">Clique para ver o preço</a>
                         `;
                         gridProdutos.appendChild(card);
                     });
