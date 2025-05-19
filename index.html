@@ -44,6 +44,8 @@
         .modal-content .carrossel-imagens img {
             width: 100%;
             height: auto;
+            max-width: 800px; /* Limita a resolução para evitar travamentos */
+            max-height: 600px; /* Limita a altura */
             object-fit: contain;
             flex: 0 0 100%;
             transition: transform 0.3s ease;
@@ -72,11 +74,11 @@
             cursor: pointer;
             font-size: 18px;
             border-radius: 4px;
-            display: none; /* Escondido por padrão, mostrado apenas se houver múltiplas imagens */
+            display: none;
         }
         .carrossel-prev.visible,
         .carrossel-next.visible {
-            display: block; /* Mostrar quando há mais de uma imagem */
+            display: block;
         }
         .carrossel-prev { left: 10px; }
         .carrossel-next { right: 10px; }
@@ -96,6 +98,12 @@
             cursor: pointer;
         }
         .carrossel-dot.ativo { background: #ff6200; }
+        .modal-error {
+            color: red;
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+        }
         .error-message {
             color: red;
             text-align: center;
@@ -178,6 +186,10 @@
             }
             .produto-card span {
                 font-size: 12px;
+            }
+            .modal-content .carrossel-imagens img {
+                max-width: 100%; /* Ajusta para telas menores */
+                max-height: 400px;
             }
         }
     </style>
@@ -269,7 +281,7 @@
         </a>
     </div>
     <script>
-        const VERSION = "1.0.5"; // Atualizado para depuração
+        const VERSION = "1.0.6"; // Atualizado para depuração
         let currentImages = [];
         let currentImageIndex = 0;
         let currentPage = 1;
@@ -423,27 +435,55 @@
                 return;
             }
 
-            console.log("Abrindo modal para produto:", index, "Imagem inicial:", imageIndex); // Log
+            console.log("Abrindo modal para produto:", index, "Imagem inicial:", imageIndex);
+            modalError.style.display = "none";
+            carrosselImagens.innerHTML = "";
+            carrosselDots.innerHTML = "";
+            prevButton.classList.remove("visible");
+            nextButton.classList.remove("visible");
+
             try {
                 currentImages = allProducts[index]?.imagens && allProducts[index].imagens.length > 0 ? allProducts[index].imagens : ["imagens/placeholder.jpg"];
-                console.log("Imagens carregadas:", currentImages); // Log
+                console.log("Imagens disponíveis:", currentImages);
 
                 if (!currentImages.length) {
-                    console.warn("Nenhuma imagem válida encontrada");
                     modalError.textContent = "Nenhuma imagem disponível para este produto.";
                     modalError.style.display = "block";
-                    carrosselImagens.innerHTML = "";
-                    carrosselDots.innerHTML = "";
-                    prevButton.classList.remove("visible");
-                    nextButton.classList.remove("visible");
                     modal.style.display = "flex";
                     return;
                 }
 
-                currentImageIndex = Math.max(0, Math.min(imageIndex, currentImages.length - 1));
-                console.log("Índice inicial ajustado:", currentImageIndex); // Log
+                // Pré-carregar imagens para evitar travamentos
+                const loadPromises = currentImages.map((src, idx) => {
+                    return new Promise((resolve, reject) => {
+                        const img = new Image();
+                        img.src = src;
+                        img.onload = () => {
+                            console.log(`Imagem ${idx + 1} carregada: ${src}`);
+                            resolve();
+                        };
+                        img.onerror = () => {
+                            console.error(`Erro ao carregar imagem ${idx + 1}: ${src}`);
+                            reject(`Imagem ${idx + 1} falhou`);
+                        };
+                    });
+                });
 
-                carrosselImagens.innerHTML = currentImages.map((img, idx) => `<img src="${img}" alt="Imagem ${idx + 1}" loading="lazy">`).join("");
+                await Promise.allSettled(loadPromises).then(results => {
+                    const failed = results.filter(r => r.status === "rejected");
+                    if (failed.length > 0) {
+                        console.warn("Algumas imagens falharam:", failed);
+                        currentImages = currentImages.filter((_, i) => results[i].status === "fulfilled");
+                        if (!currentImages.length) {
+                            throw new Error("Nenhuma imagem carregada com sucesso");
+                        }
+                    }
+                });
+
+                currentImageIndex = Math.max(0, Math.min(imageIndex, currentImages.length - 1));
+                console.log("Índice inicial ajustado:", currentImageIndex);
+
+                carrosselImagens.innerHTML = currentImages.map((img, idx) => `<img src="${img}" alt="Imagem ${idx + 1}" loading="lazy" onerror="this.style.display='none'; console.error('Erro ao renderizar imagem ${idx + 1}: ${img}')">`).join("");
                 carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
 
                 carrosselDots.innerHTML = currentImages.map((_, i) => `<span class="carrossel-dot ${i === currentImageIndex ? "ativo" : ""}" onclick="setModalCarrosselImage(${i})" aria-label="Selecionar imagem ${i + 1}"></span>`).join("");
@@ -451,17 +491,12 @@
                 prevButton.classList.toggle("visible", currentImages.length > 1);
                 nextButton.classList.toggle("visible", currentImages.length > 1);
 
-                modalError.style.display = "none";
                 modal.style.display = "flex";
-                console.log("Modal aberto com sucesso"); // Log
+                console.log("Modal aberto com sucesso, total de imagens:", currentImages.length);
             } catch (error) {
                 console.error("Erro ao abrir modal:", error);
-                modalError.textContent = "Erro ao carregar as imagens. Tente novamente.";
+                modalError.textContent = "Erro ao carregar as imagens. Algumas imagens podem estar corrompidas ou indisponíveis.";
                 modalError.style.display = "block";
-                carrosselImagens.innerHTML = "";
-                carrosselDots.innerHTML = "";
-                prevButton.classList.remove("visible");
-                nextButton.classList.remove("visible");
                 modal.style.display = "flex";
             }
         }
@@ -478,7 +513,7 @@
                 return;
             }
 
-            console.log("Navegando carrossel, direção:", direction, "Índice atual:", currentImageIndex); // Log
+            console.log("Navegando carrossel, direção:", direction, "Índice atual:", currentImageIndex);
             const total = currentImages.length;
             currentImageIndex = (currentImageIndex + direction + total) % total;
             if (currentImageIndex < 0 || currentImageIndex >= total) {
@@ -486,7 +521,7 @@
                 currentImageIndex = Math.max(0, Math.min(currentImageIndex, total - 1));
             }
 
-            console.log("Novo índice:", currentImageIndex); // Log
+            console.log("Novo índice:", currentImageIndex);
             carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
             Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle("ativo", i === currentImageIndex));
         }
@@ -503,7 +538,7 @@
                 return;
             }
 
-            console.log("Definindo imagem do carrossel:", index); // Log
+            console.log("Definindo imagem do carrossel:", index);
             currentImageIndex = index;
             carrosselImagens.style.transform = `translateX(-${index * 100}%)`;
             Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle("ativo", i === index));
@@ -520,7 +555,7 @@
             modalError.style.display = "none";
             currentImages = [];
             currentImageIndex = 0;
-            console.log("Modal fechado"); // Log
+            console.log("Modal fechado");
         }
 
         function filtrarPorCategoria(categoria) {
@@ -571,6 +606,12 @@
                 imageModal.addEventListener("click", (e) => {
                     if (e.target === e.currentTarget) closeModal();
                 });
+            }
+
+            // Desativar MetaMask temporariamente para evitar interferências
+            if (window.ethereum) {
+                console.log("MetaMask detectado, desativando temporariamente");
+                window.ethereum = null;
             }
         });
     </script>
