@@ -296,7 +296,7 @@ footer {
   width: auto;
   object-fit: contain;
   margin: 0 auto;
-  cursor: pointer; /* Indica que a imagem é clicável */
+  cursor: pointer;
 }
 
 .produto-card span {
