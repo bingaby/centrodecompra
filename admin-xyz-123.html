@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Gerenciar Produtos</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
   <style>
     body { font-family: 'Roboto', Arial, sans-serif; padding: 20px; background-color: #f5f5f5; }
     h1, h3 { text-align: center; color: #333; }
@@ -48,6 +49,7 @@
     <h1>Adicionar Produto</h1>
     <form id="form-produto" enctype="multipart/form-data">
       <input type="text" name="nome" placeholder="Nome do produto" required aria-required="true">
+      <textarea name="descricao" placeholder="Descrição do produto" required aria-required="true"></textarea>
       <select name="categoria" required aria-required="true">
         <option value="" disabled selected>Selecione uma categoria</option>
         <option value="eletronicos">Eletrônicos</option>
@@ -86,6 +88,7 @@
         <thead>
           <tr>
             <th>Nome</th>
+            <th>Descrição</th>
             <th>Categoria</th>
             <th>Loja</th>
             <th>Link</th>
@@ -120,47 +123,20 @@
   </div>
 
   <script>
-    const VERSION = "1.0.3"; // Atualizado para depuração
+    const VERSION = "1.0.4";
     let produtos = [];
     let currentImages = [];
     let currentImageIndex = 0;
 
-    // Desativar MetaMask
-    if (window.ethereum) {
-      console.log("MetaMask detectado, desativando temporariamente");
-      window.ethereum = null;
-    }
-
-    function inicializarProdutos() {
-      try {
-        const storedProdutos = localStorage.getItem('produtos');
-        produtos = storedProdutos ? JSON.parse(storedProdutos) : [];
-        if (!Array.isArray(produtos)) produtos = [];
-        console.log("Produtos inicializados:", produtos.length); // Log inicial
-      } catch (e) {
-        console.error('Erro ao carregar produtos do localStorage:', e);
-        produtos = [];
-      }
-    }
-
     function carregarToken() {
       const token = localStorage.getItem('github_token');
-      const githubTokenInput = document.getElementById('github-token');
-      if (token && githubTokenInput) {
-        githubTokenInput.value = token;
-      }
-      console.log("Token carregado:", !!token); // Log do token
+      if (token) document.getElementById('github-token').value = token;
     }
 
     function salvarToken() {
-      const githubTokenInput = document.getElementById('github-token');
+      const token = document.getElementById('github-token').value.trim();
       const mensagem = document.getElementById('mensagem');
       const erro = document.getElementById('erro');
-      if (!githubTokenInput || !mensagem || !erro) {
-        console.error('Elementos DOM não encontrados em salvarToken');
-        return;
-      }
-      const token = githubTokenInput.value.trim();
       if (!token) {
         erro.textContent = 'Por favor, insira um token válido!';
         mensagem.textContent = '';
@@ -169,159 +145,12 @@
       localStorage.setItem('github_token', token);
       mensagem.textContent = 'Token salvo com sucesso!';
       erro.textContent = '';
-      console.log("Token salvo"); // Log
-    }
-
-    function configurarEventos() {
-      const formProduto = document.getElementById('form-produto');
-      const mensagem = document.getElementById('mensagem');
-      const erro = document.getElementById('erro');
-      const loading = document.getElementById('loading');
-      if (!formProduto || !mensagem || !erro || !loading) {
-        console.error('Elementos DOM não encontrados em configurarEventos:', { formProduto, mensagem, erro, loading });
-        erro.textContent = 'Erro interno: Elementos da página não encontrados!';
-        return;
-      }
-
-      formProduto.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        console.log("Formulário submetido"); // Log inicial
-        mensagem.textContent = '';
-        erro.textContent = '';
-        loading.style.display = 'block';
-
-        try {
-          console.log("Coletando dados do formulário"); // Log
-          const nome = e.target.querySelector('input[name="nome"]').value.trim();
-          const categoria = e.target.querySelector('select[name="categoria"]').value;
-          const loja = e.target.querySelector('select[name="loja"]').value;
-          const link = e.target.querySelector('input[name="link"]').value.trim();
-          const preco = parseFloat(e.target.querySelector('input[name="preco"]').value);
-          const imagens = e.target.querySelector('input[name="imagens"]').files;
-
-          console.log("Dados coletados:", { nome, categoria, loja, link, preco, imagens: imagens.length }); // Log
-
-          // Validações
-          if (!nome || !categoria || !loja || !link || isNaN(preco)) {
-            console.warn("Validação falhou: Campos obrigatórios"); // Log
-            erro.textContent = 'Todos os campos são obrigatórios!';
-            loading.style.display = 'none';
-            return;
-          }
-          if (preco < 0 || preco > 100000) {
-            console.warn("Validação falhou: Preço inválido"); // Log
-            erro.textContent = 'O preço deve estar entre R$ 0,00 e R$ 100.000,00!';
-            loading.style.display = 'none';
-            return;
-          }
-          // Validação do link relaxada para testes
-          if (!link.match(/^https?:\/\/.+/)) {
-            console.warn("Validação falhou: Link inválido"); // Log
-            erro.textContent = 'Insira um link válido (ex.: https://...)!';
-            loading.style.display = 'none';
-            return;
-          }
-          if (imagens.length === 0) {
-            console.warn("Validação falhou: Sem imagens"); // Log
-            erro.textContent = 'Pelo menos uma imagem deve ser escolhida!';
-            loading.style.display = 'none';
-            return;
-          }
-          if (imagens.length > 3) {
-            console.warn("Validação falhou: Muitas imagens"); // Log
-            erro.textContent = 'Máximo de 3 imagens por produto!';
-            loading.style.display = 'none';
-            return;
-          }
-
-          console.log("Processando imagens"); // Log
-          const imagensArray = [];
-          for (const file of imagens) {
-            try {
-              console.log("Redimensionando imagem:", file.name); // Log
-              const resizedBlob = await resizeImage(file, 300, 300);
-              const dataUrl = await new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = () => reject(new Error(`Erro ao ler imagem: ${file.name}`));
-                reader.readAsDataURL(resizedBlob);
-              });
-              imagensArray.push(dataUrl);
-              console.log("Imagem processada:", file.name); // Log
-            } catch (imgError) {
-              console.warn(`Imagem ${file.name} ignorada: ${imgError.message}`); // Log
-              erro.textContent += `Aviso: Imagem ${file.name} ignorada devido a erro. `;
-            }
-          }
-
-          if (imagensArray.length === 0) {
-            console.warn("Nenhuma imagem válida processada"); // Log
-            erro.textContent = 'Nenhuma imagem válida foi processada!';
-            loading.style.display = 'none';
-            return;
-          }
-
-          console.log("Criando novo produto"); // Log
-          const novoProduto = { nome, categoria, loja, link, preco, imagens: imagensArray };
-          produtos.push(novoProduto);
-
-          // Verificar localStorage
-          try {
-            console.log("Salvando no localStorage"); // Log
-            localStorage.setItem('produtos', JSON.stringify(produtos));
-          } catch (storageError) {
-            console.error("Erro ao salvar no localStorage:", storageError); // Log
-            erro.textContent = 'Erro ao salvar no armazenamento local. Limpe o cache e tente novamente!';
-            loading.style.display = 'none';
-            return;
-          }
-
-          console.log("Atualizando JSON e lista"); // Log
-          atualizarJSON();
-          atualizarListaProdutos();
-
-          // Tentar sincronizar com GitHub, mas não bloquear o cadastro
-          console.log("Tentando sincronizar com GitHub"); // Log
-          try {
-            await atualizarGitHub(true);
-            mensagem.textContent = 'Produto cadastrado e sincronizado com o GitHub! Pode demorar alguns minutos para aparecer na página principal.';
-          } catch (gitError) {
-            console.warn("Erro na sincronização com GitHub:", gitError); // Log
-            mensagem.textContent = 'Produto cadastrado localmente, mas falha na sincronização com o GitHub. Verifique o token!';
-            erro.textContent = gitError.message || 'Erro ao sincronizar com o GitHub.';
-          }
-
-          console.log("Cadastro concluído"); // Log
-          e.target.reset();
-        } catch (error) {
-          console.error('Erro ao adicionar produto:', error); // Log
-          erro.textContent = error.message || 'Erro ao processar o cadastro. Verifique os dados e tente novamente.';
-          mensagem.textContent = '';
-        }
-        loading.style.display = 'none';
-      });
-
-      const imageModal = document.getElementById('imageModal');
-      if (imageModal) {
-        imageModal.addEventListener('click', (e) => {
-          e.stopPropagation();
-          if (e.target === e.currentTarget) closeModal();
-        });
-      }
     }
 
     async function resizeImage(file, maxWidth, maxHeight) {
       return new Promise((resolve, reject) => {
-        console.log("Verificando imagem:", file.name, file.size, file.type); // Log
-        if (file.size > 2 * 1024 * 1024) {
-          reject(new Error('Imagem muito grande. Máximo 2 MB.'));
-          return;
-        }
-        if (!['image/jpeg', 'image/png'].includes(file.type)) {
-          reject(new Error('Formato de imagem não suportado. Use JPEG ou PNG.'));
-          return;
-        }
+        if (file.size > 2 * 1024 * 1024) reject(new Error('Imagem muito grande. Máximo 2 MB.'));
+        if (!['image/jpeg', 'image/png'].includes(file.type)) reject(new Error('Formato de imagem não suportado. Use JPEG ou PNG.'));
         const img = new Image();
         img.src = URL.createObjectURL(file);
         img.onload = () => {
@@ -349,167 +178,101 @@
       });
     }
 
+    async function adicionarProduto(formData) {
+      const response = await fetch('/produtos', {
+        method: 'POST',
+        body: formData
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Erro ao adicionar produto');
+      }
+      return await response.json();
+    }
+
     function atualizarJSON() {
       const jsonText = document.getElementById('json-text');
-      if (!jsonText) {
-        console.error('Elemento DOM não encontrado: #json-text');
-        return;
-      }
-      try {
-        jsonText.value = JSON.stringify(produtos, null, 2);
-        console.log("JSON atualizado"); // Log
-      } catch (e) {
-        console.error('Erro ao atualizar JSON:', e);
-        const erro = document.getElementById('erro');
-        if (erro) erro.textContent = 'Erro ao gerar JSON. Tente novamente.';
-      }
+      fetch('/produtos')
+        .then(response => response.json())
+        .then(data => {
+          jsonText.value = JSON.stringify(data, null, 2);
+        })
+        .catch(error => {
+          console.error('Erro ao atualizar JSON:', error);
+          document.getElementById('erro').textContent = 'Erro ao carregar JSON.';
+        });
     }
 
     function atualizarListaProdutos() {
       const listaProdutos = document.getElementById('lista-produtos');
-      if (!listaProdutos) {
-        console.error('Elemento DOM não encontrado: #lista-produtos');
-        return;
-      }
-      listaProdutos.innerHTML = '';
-      if (produtos.length === 0) {
-        listaProdutos.innerHTML = '<tr><td colspan="7">Nenhum produto cadastrado.</td></tr>';
-        return;
-      }
-      produtos.forEach((produto, index) => {
-        const tr = document.createElement('tr');
-        const imagens = produto.imagens && produto.imagens.length > 0 ? produto.imagens : [];
-        const precoFormatado = produto.preco ? `R$ ${parseFloat(produto.preco).toFixed(2).replace('.', ',')}` : 'R$ 0,00';
-        tr.innerHTML = `
-          <td>${produto.nome}</td>
-          <td>${produto.categoria}</td>
-          <td>${produto.loja}</td>
-          <td><a href="${produto.link}" target="_blank">Link</a></td>
-          <td><a href="${produto.link}" target="_blank" class="preco-link" aria-label="Ver preço de ${produto.nome} na loja">${precoFormatado}</a></td>
-          <td>${imagens.length > 0 ? imagens.map((img, i) => `<img src="${img}" alt="Imagem ${i + 1}" class="thumbnail" onclick="openModal(${index}, ${i})">`).join('') : 'Nenhuma imagem'}</td>
-          <td><button class="excluir" onclick="excluirProduto(${index})">Excluir</button></td>
-        `;
-        listaProdutos.appendChild(tr);
-      });
-      console.log("Lista de produtos atualizada"); // Log
+      fetch('/produtos')
+        .then(response => response.json())
+        .then(data => {
+          produtos = data;
+          listaProdutos.innerHTML = '';
+          if (produtos.length === 0) {
+            listaProdutos.innerHTML = '<tr><td colspan="8">Nenhum produto cadastrado.</td></tr>';
+            return;
+          }
+          produtos.forEach((produto, index) => {
+            const tr = document.createElement('tr');
+            const imagens = produto.imagens || [];
+            const precoFormatado = produto.preco ? `R$ ${parseFloat(produto.preco).toFixed(2).replace('.', ',')}` : 'R$ 0,00';
+            tr.innerHTML = `
+              <td>${produto.nome}</td>
+              <td>${produto.descricao}</td>
+              <td>${produto.categoria}</td>
+              <td>${produto.loja}</td>
+              <td><a href="${produto.link}" target="_blank">Link</a></td>
+              <td><a href="${produto.link}" target="_blank" class="preco-link">${precoFormatado}</a></td>
+              <td>${imagens.length > 0 ? imagens.map((img, i) => `<img src="${img}" alt="Imagem ${i + 1}" class="thumbnail" onclick="openModal(${index}, ${i})">`).join('') : 'Nenhuma imagem'}</td>
+              <td><button class="excluir" onclick="excluirProduto('${produto._id}')">Excluir</button></td>
+            `;
+            listaProdutos.appendChild(tr);
+          });
+        })
+        .catch(error => {
+          console.error('Erro ao carregar produtos:', error);
+          document.getElementById('erro').textContent = 'Erro ao carregar produtos.';
+        });
     }
 
-    function openModal(produtoIndex, imageIndex) {
-      const modal = document.getElementById('imageModal');
-      const carrosselImagens = document.getElementById('modalCarrosselImagens');
-      const carrosselDots = document.getElementById('modalCarrosselDots');
-      if (!modal || !carrosselImagens || !carrosselDots) {
-        console.error('Elementos DOM não encontrados para o modal');
-        return;
-      }
-      currentImages = produtos[produtoIndex].imagens || [];
-      currentImageIndex = imageIndex;
-      if (currentImages.length === 0) return;
-      carrosselImagens.innerHTML = currentImages.map((img) => `<img src="${img}" alt="Imagem ampliada">`).join('');
-      carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
-      carrosselDots.innerHTML = currentImages.map((_, i) => `<span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})"></span>`).join('');
-      modal.style.display = 'flex';
-      console.log("Modal aberto"); // Log
-    }
-
-    function moveModalCarrossel(direction) {
-      const carrosselImagens = document.getElementById('modalCarrosselImagens');
-      const carrosselDots = document.getElementById('modalCarrosselDots')?.children;
-      if (!carrosselImagens || !carrosselDots) {
-        console.error('Elementos DOM não encontrados para o carrossel');
-        return;
-      }
-      const totalImagens = currentImages.length;
-      currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
-      carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
-      Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
-    }
-
-    function setModalCarrosselImage(index) {
-      const carrosselImagens = document.getElementById('modalCarrosselImagens');
-      const carrosselDots = document.getElementById('modalCarrosselDots')?.children;
-      if (!carrosselImagens || !carrosselDots) {
-        console.error('Elementos DOM não encontrados para o carrossel');
-        return;
-      }
-      currentImageIndex = index;
-      carrosselImagens.style.transform = `translateX(-${index * 100}%)`;
-      Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
-    }
-
-    function closeModal() {
-      const modal = document.getElementById('imageModal');
-      if (!modal) {
-        console.error('Elemento DOM não encontrado: #imageModal');
-        return;
-      }
-      modal.style.display = 'none';
-      currentImages = [];
-      currentImageIndex = 0;
-      console.log("Modal fechado"); // Log
-    }
-
-    async function excluirProduto(index) {
+    async function excluirProduto(id) {
       const mensagem = document.getElementById('mensagem');
       const erro = document.getElementById('erro');
       const loading = document.getElementById('loading');
-      if (!mensagem || !erro || !loading) {
-        console.error('Elementos DOM não encontrados em excluirProduto');
-        return;
-      }
       try {
         loading.style.display = 'block';
-        console.log("Excluindo produto:", index); // Log
-        produtos.splice(index, 1);
-        localStorage.setItem('produtos', JSON.stringify(produtos));
+        const response = await fetch(`/produtos/${id}`, { method: 'DELETE' });
+        if (!response.ok) throw new Error('Erro ao excluir produto');
+        mensagem.textContent = 'Produto excluído com sucesso!';
+        erro.textContent = '';
         atualizarJSON();
         atualizarListaProdutos();
         await atualizarGitHub(true);
-        mensagem.textContent = 'Produto excluído e sincronizado com o GitHub!';
-        erro.textContent = '';
       } catch (e) {
-        console.error('Erro ao excluir produto:', e);
-        erro.textContent = e.message || 'Erro ao excluir produto. Tente novamente.';
+        erro.textContent = e.message || 'Erro ao excluir produto.';
         mensagem.textContent = '';
       }
       loading.style.display = 'none';
     }
 
     async function atualizarGitHub(auto = false) {
-      const token = localStorage.getItem('github_token') || document.getElementById('github-token')?.value.trim();
-      const jsonText = document.getElementById('json-text')?.value;
+      const token = localStorage.getItem('github_token') || document.getElementById('github-token').value.trim();
+      const jsonText = document.getElementById('json-text').value;
       const mensagem = document.getElementById('mensagem');
       const erro = document.getElementById('erro');
       const loading = document.getElementById('loading');
-      if (!mensagem || !erro || !loading) {
-        console.error('Elementos DOM não encontrados em atualizarGitHub');
-        return;
-      }
       if (!token) {
-        console.warn("GitHub: Token não encontrado"); // Log
         erro.textContent = 'Por favor, insira e salve o GitHub Personal Access Token!';
         mensagem.textContent = '';
         if (!auto) loading.style.display = 'none';
         return;
       }
-      if (!jsonText) {
-        console.warn("GitHub: JSON não encontrado"); // Log
-        erro.textContent = 'JSON dos produtos não encontrado!';
-        mensagem.textContent = '';
-        if (!auto) loading.style.display = 'none';
-        return;
-      }
-
       try {
-        console.log("Iniciando sincronização com GitHub"); // Log
         loading.style.display = 'block';
         const parsedJson = JSON.parse(jsonText);
-        if (!Array.isArray(parsedJson)) {
-          throw new Error('JSON inválido! Deve ser uma lista de produtos.');
-        }
-
         let sha = null;
-        console.log("Verificando produtos.json no GitHub"); // Log
         const getResponse = await fetch('https://api.github.com/repos/bingaby/centrodecompra/contents/produtos.json', {
           method: 'GET',
           headers: {
@@ -518,17 +281,10 @@
             'Content-Type': 'application/json'
           }
         });
-
         if (getResponse.ok) {
           const fileData = await getResponse.json();
           sha = fileData.sha;
-          console.log("SHA obtido:", sha); // Log
-        } else if (getResponse.status !== 404) {
-          const errorData = await getResponse.json();
-          throw new Error(`Erro ao verificar produtos.json: ${errorData.message || getResponse.statusText}`);
         }
-
-        console.log("Enviando atualização para o GitHub"); // Log
         const content = btoa(unescape(encodeURIComponent(jsonText)));
         const updateResponse = await fetch('https://api.github.com/repos/bingaby/centrodecompra/contents/produtos.json', {
           method: 'PUT',
@@ -544,81 +300,124 @@
             branch: 'main'
           })
         });
-
         if (updateResponse.ok) {
-          console.log("GitHub atualizado com sucesso"); // Log
           mensagem.textContent = 'produtos.json atualizado no GitHub! Pode demorar alguns minutos para aparecer na página principal.';
           erro.textContent = '';
-          localStorage.setItem('produtos_cache', jsonText);
         } else {
           const errorData = await updateResponse.json();
-          throw new Error(`Erro ao atualizar produtos.json: ${errorData.message || updateResponse.statusText}`);
+          throw new Error(errorData.message || 'Erro ao atualizar produtos.json');
         }
       } catch (error) {
-        console.error('Erro ao sincronizar com o GitHub:', error); // Log
-        erro.textContent = error.message || 'Erro ao sincronizar com o GitHub. Verifique o token e tente novamente.';
+        erro.textContent = error.message || 'Erro ao sincronizar com o GitHub.';
         mensagem.textContent = '';
       }
       if (!auto) loading.style.display = 'none';
     }
 
-    function importarJSON() {
-      const importText = document.getElementById('import-json')?.value;
+    async function importarJSON() {
+      const importText = document.getElementById('import-json').value;
       const mensagem = document.getElementById('mensagem');
       const erro = document.getElementById('erro');
       const loading = document.getElementById('loading');
-      if (!mensagem || !erro || !loading) {
-        console.error('Elementos DOM não encontrados em importarJSON');
-        return;
-      }
-      if (!importText) {
-        erro.textContent = 'Por favor, insira o JSON para importar!';
-        mensagem.textContent = '';
-        return;
-      }
       try {
-        console.log("Importando JSON"); // Log
         loading.style.display = 'block';
         const importedProdutos = JSON.parse(importText);
-        if (!Array.isArray(importedProdutos)) {
-          throw new Error('JSON inválido! Deve ser uma lista de produtos.');
-        }
+        if (!Array.isArray(importedProdutos)) throw new Error('JSON inválido! Deve ser uma lista de produtos.');
         for (const produto of importedProdutos) {
-          if (!produto.nome || !produto.categoria || !produto.loja || !produto.link || isNaN(produto.preco) || !Array.isArray(produto.imagens)) {
-            throw new Error('Estrutura inválida em um ou mais produtos. Verifique nome, categoria, loja, link, preço e imagens.');
+          const formData = new FormData();
+          formData.append('nome', produto.nome);
+          formData.append('descricao', produto.descricao || '');
+          formData.append('categoria', produto.categoria);
+          formData.append('loja', produto.loja);
+          formData.append('link', produto.link);
+          formData.append('preco', produto.preco);
+          for (const img of produto.imagens) {
+            const response = await fetch(img);
+            const blob = await response.blob();
+            formData.append('imagens', blob, `image-${Date.now()}.jpg`);
           }
+          await adicionarProduto(formData);
         }
-        produtos = importedProdutos;
-        localStorage.setItem('produtos', JSON.stringify(produtos));
-        atualizarJSON();
-        atualizarListaProdutos();
-        mensagem.textContent = 'Produtos importados com sucesso! Clique em "Atualizar produtos.json no GitHub" para sincronizar.';
+        mensagem.textContent = 'Produtos importados com sucesso!';
         erro.textContent = '';
         document.getElementById('import-json').value = '';
-        console.log("JSON importado com sucesso"); // Log
+        atualizarJSON();
+        atualizarListaProdutos();
       } catch (error) {
-        console.error('Erro ao importar JSON:', error);
-        erro.textContent = error.message || 'Erro ao importar JSON. Verifique o formato e tente novamente.';
+        erro.textContent = error.message || 'Erro ao importar JSON.';
         mensagem.textContent = '';
       }
       loading.style.display = 'none';
     }
 
+    function openModal(produtoIndex, imageIndex) {
+      const modal = document.getElementById('imageModal');
+      const carrosselImagens = document.getElementById('modalCarrosselImagens');
+      const carrosselDots = document.getElementById('modalCarrosselDots');
+      currentImages = produtos[produtoIndex].imagens || [];
+      currentImageIndex = imageIndex;
+      if (currentImages.length === 0) return;
+      carrosselImagens.innerHTML = currentImages.map((img) => `<img src="${img}" alt="Imagem ampliada">`).join('');
+      carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+      carrosselDots.innerHTML = currentImages.map((_, i) => `<span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})"></span>`).join('');
+      modal.style.display = 'flex';
+    }
+
+    function moveModalCarrossel(direction) {
+      const carrosselImagens = document.getElementById('modalCarrosselImagens');
+      const carrosselDots = document.getElementById('modalCarrosselDots').children;
+      const totalImagens = currentImages.length;
+      currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
+      carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+      Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
+    }
+
+    function setModalCarrosselImage(index) {
+      const carrosselImagens = document.getElementById('modalCarrosselImagens');
+      const carrosselDots = document.getElementById('modalCarrosselDots').children;
+      currentImageIndex = index;
+      carrosselImagens.style.transform = `translateX(-${index * 100}%)`;
+      Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('imageModal');
+      modal.style.display = 'none';
+      currentImages = [];
+      currentImageIndex = 0;
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
-      console.log(`Iniciando admin-xyz-123.html v${VERSION}`);
-      const criticalElements = ['form-produto', 'imageModal', 'lista-produtos', 'json-text', 'import-json', 'mensagem', 'erro', 'loading'];
-      const missingElements = criticalElements.filter((id) => !document.getElementById(id));
-      if (missingElements.length > 0) {
-        console.error('Elementos DOM críticos não encontrados:', missingElements);
-        const erro = document.getElementById('erro');
-        if (erro) erro.textContent = 'Erro interno: Elementos da página não encontrados!';
-        return;
-      }
-      inicializarProdutos();
       carregarToken();
-      configurarEventos();
-      atualizarJSON();
       atualizarListaProdutos();
+      atualizarJSON();
+
+      const formProduto = document.getElementById('form-produto');
+      formProduto.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const mensagem = document.getElementById('mensagem');
+        const erro = document.getElementById('erro');
+        const loading = document.getElementById('loading');
+        try {
+          loading.style.display = 'block';
+          const formData = new FormData(formProduto);
+          await adicionarProduto(formData);
+          mensagem.textContent = 'Produto adicionado com sucesso!';
+          erro.textContent = '';
+          formProduto.reset();
+          atualizarListaProdutos();
+          await atualizarGitHub(true);
+        } catch (error) {
+          erro.textContent = error.message || 'Erro ao adicionar produto.';
+          mensagem.textContent = '';
+        }
+        loading.style.display = 'none';
+      });
+
+      const imageModal = document.getElementById('imageModal');
+      imageModal.addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) closeModal();
+      });
     });
   </script>
 </body>
