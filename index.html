@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light">
     <meta name="description" content="Ofertas com descontos reais nas principais lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliado seguros e atualizados.">
     <meta property="og:title" content="Centro de Compras - Ofertas e Descontos">
     <meta property="og:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliados seguros e atualizados!">
@@ -15,32 +16,32 @@
     <title>Centro de Compras - Ofertas do Dia</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Roboto, sans-serif; margin: 0; padding: 0; background: #f4f4f4; }
+        body { font-family: Roboto, sans-serif; margin: 0; padding: 0; background: #f4f4f4; color: #000; }
         .site-header { display: flex; align-items: center; padding: 10px; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .logo-container img { max-width: 100px; }
         .header-text { margin-left: 10px; }
-        h1 { font-size: 24px; margin: 0; }
-        p { font-size: 14px; margin: 5px 0; }
+        h1 { font-size: 24px; margin: 0; color: #000; }
+        p { font-size: 14px; margin: 5px 0; color: #000; }
         nav { display: flex; justify-content: center; background: #ff6200; padding: 10px; }
         nav a { color: #fff; margin: 0 15px; text-decoration: none; font-weight: 700; }
         .container { display: flex; max-width: 1200px; margin: 0 auto; padding: 20px; }
         .sidebar-categorias { width: 200px; padding: 10px; background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        h3 { font-size: 18px; margin: 0 0 10px; }
-        .categoria-item { cursor: pointer; padding: 8px; margin: 5px 0; border-radius: 4px; }
-        .categoria-item.ativa { background: #ff6200; color: #fff; }
+        h3 { font-size: 18px; margin: 0 0 10px; color: #000; }
+        .categoria-item { cursor: pointer; padding: 8px; margin: 5px 0; border-radius: 4px; color: #000; }
+        .categoria-item.ativa { background: #ff6200 !important; color: #fff !important; }
         main { flex: 1; padding: 0 20px; }
         .lojas-parceiras { margin-bottom: 20px; }
         .grid-lojas { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; }
-        .loja, .loja-todas { cursor: pointer; padding: 10px; text-align: center; border-radius: 8px; }
+        .loja, .loja-todas { cursor: pointer; padding: 10px; text-align: center; border-radius: 8px; background: #fff; color: #000; }
         .loja img, .loja-todas img { max-width: 50px; }
-        .loja.ativa, .loja-todas.ativa { background: #ff6200; color: #fff; }
-        .barra-busca { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; }
+        .loja.ativa, .loja-todas.ativa { background: #ff6200 !important; color: #fff !important; }
+        .barra-busca { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; background: #fff; color: #000; }
         .loading-spinner { display: none; width: 30px; height: 30px; border: 4px solid #f3f3f3; border-top: 4px solid #ff6200; border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto; }
         @keyframes spin { 0% { transform: rotate(0); } 100% { transform: rotate(360deg); } }
         .grid-produtos { display: none; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
         .produto-card { transition: transform 0.2s; background: #fff; border-radius: 8px; padding: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-height: 300px; }
         .produto-card:hover { transform: translateY(-5px); }
-        .produto-card span { font-size: 14px; display: block; margin: 5px 0; }
+        .produto-card span { font-size: 14px; display: block; margin: 5px 0; color: #000; }
         .carrossel { position: relative; width: 100%; max-height: 150px; overflow: hidden; }
         .carrossel-imagens { display: flex; width: 100%; height: 100%; }
         .carrossel-imagens img { width: 100%; height: 150px; object-fit: cover; flex: 0 0 100%; transition: transform 0.3s ease; }
@@ -55,12 +56,12 @@
         .tarja-preco:hover { background: #e55a00; }
         #load-more { display: none; margin: 20px auto; padding: 10px 20px; background: #ff6200; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
         #load-more:hover { background: #e55a00; }
-        .mensagem-vazia, .error-message { display: none; color: red; text-align: center; margin-top: 10px; font-size: 14px; }
+        .mensagem-vazia, .error-message { display: none; color: #d00; text-align: center; margin-top: 10px; font-size: 14px; }
         .whatsapp, .telegram { display: block; margin: 10px 0; color: #ff6200; text-decoration: none; font-weight: bold; }
         .social-links { display: flex; justify-content: center; gap: 20px; margin: 20px 0; }
         .social-links a { display: flex; align-items: center; gap: 5px; text-decoration: none; color: #000; }
         .social-links img { max-width: 30px; }
-        footer { text-align: center; padding: 20px; background: #fff; }
+        footer { text-align: center; padding: 20px; background: #fff; color: #000; }
         .robo-assistente { position: fixed; bottom: 20px; right: 20px; }
         .robo-imagem { width: 50px; }
         .robo-texto { background: #ff6200; color: #fff; padding: 5px; border-radius: 4px; }
@@ -113,19 +114,19 @@
                     <h3>🌟 Lojas Parceiras</h3>
                     <div class="grid-lojas">
                         <div class="loja-todas ativa" onclick="filtrarPorLoja('todas')" role="button" aria-label="Filtrar por Todas as Lojas"><span>Todas as Lojas</span></div>
-                        <div class="loja" data-loja="amazon" onclick="filtrarPorLoja('amazon')" role="button" aria-label="Filtrar por Amazon"><img src="logos/amazon.png" alt="Logo da Amazon" loading="lazy" onerror="this.style.display='none';"><span class="amazon">Amazon</span></div>
-                        <div class="loja" data-loja="magalu" onclick="filtrarPorLoja('magalu')" role="button" aria-label="Filtrar por Magalu"><img src="logos/magalu.png" alt="Logo da Magalu" loading="lazy" onerror="this.style.display='none';"><span class="magalu">Magalu</span></div>
-                        <div class="loja" data-loja="shein" onclick="filtrarPorLoja('shein')" role="button" aria-label="Filtrar por Shein"><img src="logos/shein.png" alt="Logo da Shein" loading="lazy" onerror="this.style.display='none';"><span class="shein">Shein</span></div>
-                        <div class="loja" data-loja="shopee" onclick="filtrarPorLoja('shopee')" role="button" aria-label="Filtrar por Shopee"><img src="logos/shopee.png" alt="Logo da Shopee" loading="lazy" onerror="this.style.display='none';"><span class="shopee">Shopee</span></div>
-                        <div class="loja" data-loja="mercadolivre" onclick="filtrarPorLoja('mercadolivre')" role="button" aria-label="Filtrar por Mercado Livre"><img src="logos/mercadolivre.jpg" alt="Logo do Mercado Livre" loading="lazy" onerror="this.style.display='none';"><span class="mercadolivre">Mercado Livre</span></div>
-                        <div class="loja" data-loja="alibaba" onclick="filtrarPorLoja('alibaba')" role="button" aria-label="Filtrar por Alibaba"><img src="logos/alibaba.png" alt="Logo da Alibaba" loading="lazy" onerror="this.style.display='none';"><span class="alibaba">Alibaba</span></div>
+                        <div class="loja" data-loja="amazon" onclick="filtrarPorLoja('amazon')" role="button" aria-label="Filtrar por Amazon"><img src="logos/amazon.png" alt="Logo da Amazon" loading="lazy" onerror="this.style.display='none';"><span>Amazon</span></div>
+                        <div class="loja" data-loja="magalu" onclick="filtrarPorLoja('magalu')" role="button" aria-label="Filtrar por Magalu"><img src="logos/magalu.png" alt="Logo da Magalu" loading="lazy" onerror="this.style.display='none';"><span>Magalu</span></div>
+                        <div class="loja" data-loja="shein" onclick="filtrarPorLoja('shein')" role="button" aria-label="Filtrar por Shein"><img src="logos/shein.png" alt="Logo da Shein" loading="lazy" onerror="this.style.display='none';"><span>Shein</span></div>
+                        <div class="loja" data-loja="shopee" onclick="filtrarPorLoja('shopee')" role="button" aria-label="Filtrar por Shopee"><img src="logos/shopee.png" alt="Logo da Shopee" loading="lazy" onerror="this.style.display='none';"><span>Shopee</span></div>
+                        <div class="loja" data-loja="mercadolivre" onclick="filtrarPorLoja('mercadolivre')" role="button" aria-label="Filtrar por Mercado Livre"><img src="logos/mercadolivre.jpg" alt="Logo do Mercado Livre" loading="lazy" onerror="this.style.display='none';"><span>Mercado Livre</span></div>
+                        <div class="loja" data-loja="alibaba" onclick="filtrarPorLoja('alibaba')" role="button" aria-label="Filtrar por Alibaba"><img src="logos/alibaba.png" alt="Logo da Alibaba" loading="lazy" onerror="this.style.display='none';"><span>Alibaba</span></div>
                     </div>
                 </div>
                 <input type="text" id="busca" placeholder="Busque por produtos..." class="barra-busca" aria-label="Buscar produtos">
                 <div class="loading-spinner" id="loading-spinner"></div>
                 <div class="grid-produtos" id="grid-produtos"></div>
                 <button id="load-more" onclick="carregarMaisProdutos()">Carregar Mais</button>
-                <p class="mensagem-vazia" id="mensagem-vazia" aria-live="polite">Nenhum produto encontrado.</p>
+                <p class="mensagem-vazia" id="mensagem-vazia " aria-live="polite">Nenhum produto encontrado.</p>
                 <p class="error-message" id="error-message" style="display: none;" aria-live="assertive"></p>
             </section>
             <a class="whatsapp" href="https://wa.me/5521975179737" target="_blank">📲 Atendimento via WhatsApp</a>
@@ -148,7 +149,7 @@
         </a>
     </div>
     <script>
-        const VERSION = "1.0.7";
+        const VERSION = "1.0.8";
         let currentPage = 1;
         const productsPerPage = 12;
         let allProducts = [];
