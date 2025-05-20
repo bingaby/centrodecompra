@@ -15,13 +15,18 @@
   <title>Centro de Compras - Ofertas do Dia</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <style>
+    .logo-container img#logo {
+      cursor: pointer;
+    }
+  </style>
 </head>
 
 <body>
   <header class="site-header">
     <div class="logo-container">
       <a href="#">
-        <img src="logos/centrodecompras.jpg" alt="Centro de Compras" loading="lazy" />
+        <img src="logos/centrodecompras.jpg" alt="Centro de Compras" id="logo" loading="lazy" aria-label="Logo - clique duplo para acessar a administração" />
       </a>
     </div>
     <div class="header-text">
@@ -146,7 +151,18 @@
 
   <script src="script.js"></script>
   <script>
+    // Atualiza o ano no rodapé
     document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Adiciona evento de duplo clique na logo com proteção por senha
+    document.getElementById('logo').addEventListener('dblclick', () => {
+      const senha = prompt('Digite a senha de administrador:');
+      if (senha === 'admin123') { // Substitua 'admin123' pela sua senha real
+        window.location.href = 'admin-xyz-123.html';
+      } else {
+        alert('Senha incorreta!');
+      }
+    });
 
     // Fetch produtos da API e renderiza na página
     fetch('/produtos')
