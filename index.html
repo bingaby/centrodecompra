@@ -16,12 +16,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <style>
-    .logo-container img#logo {
-      cursor: pointer;
-    }
+    .logo-container img#logo { cursor: pointer; }
+    .produto { border: 1px solid #ddd; padding: 10px; margin: 10px; text-align: center; }
+    .produto img { max-width: 100%; height: auto; }
+    .produto a { display: inline-block; padding: 10px; background: #007bff; color: white; text-decoration: none; }
+    .loading-spinner { display: none; text-align: center; }
+    .mensagem-vazia { display: none; text-align: center; color: red; }
   </style>
 </head>
-
 <body>
   <header class="site-header">
     <div class="logo-container">
@@ -63,7 +65,6 @@
     <main>
       <section id="ofertas-section">
         <h2 id="ofertas-titulo">🛍️ Ofertas do Dia</h2>
-
         <div class="lojas-parceiras">
           <h3>🌟 Lojas Parceiras</h3>
           <div class="grid-lojas">
@@ -96,12 +97,10 @@
             </div>
           </div>
         </div>
-
         <input type="text" id="busca" placeholder="Busque por produtos..." class="barra-busca" aria-label="Buscar produtos" aria-describedby="busca-instrucao">
         <span id="busca-instrucao" style="display: none;">Digite o nome do produto para filtrar os resultados.</span>
-
         <div id="busca-feedback" class="busca-feedback">Buscando...</div>
-        <div class="loading-spinner" id="loading-spinner"></div>
+        <div class="loading-spinner" id="loading-spinner">Carregando...</div>
         <div class="grid-lojas" id="grid-produtos"></div>
         <p class="mensagem-vazia" id="mensagem-vazia">Nenhum produto encontrado.</p>
       </section>
@@ -154,37 +153,54 @@
     // Atualiza o ano no rodapé
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Adiciona evento de duplo clique na logo com proteção por senha
+    // Adiciona evento de duplo clique na logo
     document.getElementById('logo').addEventListener('dblclick', () => {
       const senha = prompt('Digite a senha de administrador:');
-      if (senha === 'admin123') { // Substitua 'admin123' pela sua senha real
+      if (senha === 'admin123') {
         window.location.href = 'admin-xyz-123.html';
       } else {
         alert('Senha incorreta!');
       }
     });
 
-    // Fetch produtos da API e renderiza na página
+    // Fetch produtos da API
     fetch('/produtos')
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Erro HTTP: ${response.status}`);
+        }
+        return response.json();
+      })
       .then(data => {
         const gridProdutos = document.getElementById('grid-produtos');
+        const mensagemVazia = document.getElementById('mensagem-vazia');
+        const loadingSpinner = document.getElementById('loading-spinner');
+
+        loadingSpinner.style.display = 'none';
+
+        if (data.length === 0) {
+          mensagemVazia.style.display = 'block';
+          return;
+        }
+
+        mensagemVazia.style.display = 'none';
         data.forEach(produto => {
           const divProduto = document.createElement('div');
           divProduto.classList.add('produto');
-
           divProduto.innerHTML = `
             <img src="${produto.imagem}" alt="${produto.nome}" loading="lazy" />
             <h3>${produto.nome}</h3>
             <p>${produto.descricao}</p>
             <a href="${produto.linkAfiliado}" target="_blank">Comprar</a>
           `;
-
           gridProdutos.appendChild(divProduto);
         });
       })
       .catch(err => {
         console.error('Erro ao buscar produtos:', err);
+        document.getElementById('loading-spinner').style.display = 'none';
+        document.getElementById('mensagem-vazia').textContent = 'Erro ao carregar produtos. Tente novamente mais tarde.';
+        document.getElementById('mensagem-vazia').style.display = 'block';
       });
   </script>
 </body>
