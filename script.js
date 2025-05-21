@@ -35,56 +35,60 @@ function renderizarProdutos(produtosFiltrados) {
     const divProduto = document.createElement('div');
     divProduto.classList.add('produto-card');
     setTimeout(() => divProduto.classList.add('visible'), 10);
+    const imagens = Array.isArray(produto.imagens) ? produto.imagens.filter(img => img && (img.startsWith('http') || img.startsWith('data:image'))) : [];
     divProduto.innerHTML = `
       <div class="carrossel">
         <div class="carrossel-imagens" id="carrossel-${produto._id}">
-          ${produto.imagens && produto.imagens.length > 0 ?
-            produto.imagens.map(img => `<img src="${img}" alt="${produto.nome}" loading="lazy">`).join('') :
+          ${imagens.length > 0 ?
+            imagens.map(img => `<img src="${img}" alt="${produto.nome}" loading="lazy" onerror="this.src='https://via.placeholder.com/150?text=Sem+Imagem';">`).join('') :
             '<p>Sem imagem</p>'}
         </div>
-        ${produto.imagens && produto.imagens.length > 1 ? `
+        ${imagens.length > 1 ? `
           <button class="carrossel-prev" onclick="moveCarrossel('${produto._id}', -1)" aria-label="Imagem anterior">◄</button>
           <button class="carrossel-next" onclick="moveCarrossel('${produto._id}', 1)" aria-label="Próxima imagem">►</button>
           <div class="carrossel-dots" id="dots-${produto._id}">
-            ${produto.imagens.map((_, i) => `<span class="carrossel-dot ${i === 0 ? 'ativo' : ''}" onclick="setCarrosselImage('${produto._id}', ${i})" aria-label="Ir para imagem ${i + 1}"></span>`).join('')}
+            ${imagens.map((_, i) => `<span class="carrossel-dot ${i === 0 ? 'ativo' : ''}" onclick="setCarrosselImage('${produto._id}', ${i})" aria-label="Ir para imagem ${i + 1}"></span>`).join('')}
           </div>
         ` : ''}
       </div>
       <span>${produto.nome}</span>
-      <span class="descricao">${produto.descrição || produto.descricao}</span>
+      <span class="descricao">${produto.descricao || produto.descrição || 'Sem descrição'}</span>
       <a href="${produto.link || produto.linkAfiliado}" class="ver-na-loja ${produto.loja}" target="_blank">Ver na Loja</a>
     `;
     gridProdutos.appendChild(divProduto);
   });
 
-  // Adicionar controles de paginação
+  // Controles de paginação
+  const totalPaginas = Math.ceil(produtosFiltrados.length / itensPorPagina);
   const paginacao = document.createElement('div');
   paginacao.className = 'paginacao';
   paginacao.innerHTML = `
     <button onclick="mudarPagina(${paginaAtual - 1})" ${paginaAtual === 1 ? 'disabled' : ''} aria-label="Página anterior">◄ Anterior</button>
-    <span>Página ${paginaAtual} de ${Math.ceil(produtosFiltrados.length / itensPorPagina)}</span>
-    <button onclick="mudarPagina(${paginaAtual + 1})" ${fim >= produtosFiltrados.length ? 'disabled' : ''} aria-label="Próxima página">Próxima ►</button>
+    <span>Página ${paginaAtual} de ${totalPaginas || 1}</span>
+    <button onclick="mudarPagina(${paginaAtual + 1})" ${paginaAtual >= totalPaginas ? 'disabled' : ''} aria-label="Próxima página">Próxima ►</button>
   `;
   gridProdutos.appendChild(paginacao);
 }
 
 function moveCarrossel(produtoId, direction) {
   const carrossel = document.getElementById(`carrossel-${produtoId}`);
-  const dots = document.getElementById(`dots-${produtoId}`).children;
+  if (!carrossel) return;
+  const dots = document.getElementById(`dots-${produtoId}`)?.children;
   const totalImagens = carrossel.children.length;
   let index = parseInt(carrossel.dataset.index || 0);
   index = (index + direction + totalImagens) % totalImagens;
   carrossel.style.transform = `translateX(-${index * 100}%)`;
   carrossel.dataset.index = index;
-  Array.from(dots).forEach((dot, i) => dot.classList.toggle('ativo', i === index));
+  if (dots) Array.from(dots).forEach((dot, i) => dot.classList.toggle('ativo', i === index));
 }
 
 function setCarrosselImage(produtoId, index) {
   const carrossel = document.getElementById(`carrossel-${produtoId}`);
-  const dots = document.getElementById(`dots-${produtoId}`).children;
+  if (!carrossel) return;
+  const dots = document.getElementById(`dots-${produtoId}`)?.children;
   carrossel.style.transform = `translateX(-${index * 100}%)`;
   carrossel.dataset.index = index;
-  Array.from(dots).forEach((dot, i) => dot.classList.toggle('ativo', i === index));
+  if (dots) Array.from(dots).forEach((dot, i) => dot.classList.toggle('ativo', i === index));
 }
 
 function filtrarPorCategoria(categoria) {
@@ -92,7 +96,7 @@ function filtrarPorCategoria(categoria) {
     item.classList.toggle('ativa', item.dataset.categoria === categoria);
   });
   const produtosFiltrados = categoria === 'todas' ? produtos : produtos.filter(p => p.categoria === categoria);
-  paginaAtual = 1; // Resetar página ao filtrar
+  paginaAtual = 1;
   renderizarProdutos(produtosFiltrados);
 }
 
@@ -101,22 +105,27 @@ function filtrarPorLoja(loja) {
     item.classList.toggle('ativa', item.dataset.loja === loja || (loja === 'todas' && item.classList.contains('loja-todas')));
   });
   const produtosFiltrados = loja === 'todas' ? produtos : produtos.filter(p => p.loja === loja);
-  paginaAtual = 1; // Resetar página ao filtrar
+  paginaAtual = 1;
   renderizarProdutos(produtosFiltrados);
 }
 
 function mudarPagina(pagina) {
+  if (pagina < 1) return;
   paginaAtual = pagina;
   const termo = document.getElementById('busca').value.toLowerCase();
   const produtosFiltrados = termo ?
-    produtos.filter(p => p.nome.toLowerCase().includes(termo) || (p.descrição || p.descricao).toLowerCase().includes(termo)) :
+    produtos.filter(p => p.nome.toLowerCase().includes(termo) || (p.descricao || p.descrição || '').toLowerCase().includes(termo)) :
     produtos;
   renderizarProdutos(produtosFiltrados);
 }
 
-function carregarProdutos() {
+async function carregarProdutos() {
   const loadingSpinner = document.getElementById('loading-spinner');
   const mensagemVazia = document.getElementById('mensagem-vazia');
+  const urls = [
+    'https://raw.githubusercontent.com/bingaby/centrodecompra/main/produtos.json',
+    'https://bingaby.github.io/centrodecompra/produtos.json'
+  ];
 
   // Verificar cache local
   const cache = localStorage.getItem('produtos_cache');
@@ -125,33 +134,55 @@ function carregarProdutos() {
   const now = Date.now();
 
   if (cache && cacheTime && (now - cacheTime < cacheDuration)) {
-    produtos = JSON.parse(cache).slice(0, 1000); // Limitar a 1000 itens
+    produtos = JSON.parse(cache).slice(0, 1000);
     renderizarProdutos(produtos);
     return;
   }
 
   loadingSpinner.style.display = 'block';
-  fetch('https://raw.githubusercontent.com/bingaby/centrodecompra/main/produtos.json')
-    .then(response => {
-      if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
-      return response.json();
-    })
-    .then(data => {
-      produtos = data
-        .filter(p => p.nome && (p.descrição || p.descricao) && p.categoria && p.loja && (p.link || p.linkAfiliado))
-        .slice(0, 1000); // Limitar a 1000 itens
-      localStorage.setItem('produtos_cache', JSON.stringify(produtos));
-      localStorage.setItem('produtos_cache_time', Date.now());
-      renderizarProdutos(produtos);
-    })
-    .catch(error => {
-      console.error('Erro ao carregar produtos:', error);
-      mensagemVazia.textContent = 'Erro ao carregar produtos. Tente novamente mais tarde.';
-      mensagemVazia.style.display = 'block';
-    })
-    .finally(() => {
-      loadingSpinner.style.display = 'none';
-    });
+  mensagemVazia.style.display = 'none';
+  try {
+    let response;
+    for (const url of urls) {
+      try {
+        response = await fetch(url);
+        if (response.ok) break;
+      } catch (e) {
+        console.warn(`Falha ao tentar URL ${url}:`, e);
+      }
+    }
+    if (!response || !response.ok) {
+      if (response?.status === 404) {
+        produtos = [];
+        localStorage.setItem('produtos_cache', JSON.stringify(produtos));
+        localStorage.setItem('produtos_cache_time', now);
+        renderizarProdutos(produtos);
+        mensagemVazia.textContent = 'Nenhum produto disponível.';
+        mensagemVazia.style.display = 'block';
+        return;
+      }
+      throw new Error(`Erro HTTP: ${response?.status || 'Desconhecido'}`);
+    }
+    const contentType = response.headers.get('Content-Type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const text = await response.text();
+      console.error('Resposta recebida:', text);
+      throw new Error('Resposta não é JSON. Verifique produtos.json.');
+    }
+    produtos = await response.json();
+    produtos = produtos
+      .filter(p => p.nome && (p.descricao || p.descrição) && p.categoria && p.loja && (p.link || p.linkAfiliado))
+      .slice(0, 1000);
+    localStorage.setItem('produtos_cache', JSON.stringify(produtos));
+    localStorage.setItem('produtos_cache_time', now);
+    renderizarProdutos(produtos);
+  } catch (error) {
+    console.error('Erro ao carregar produtos:', error);
+    mensagemVazia.textContent = 'Erro ao carregar produtos. Tente novamente mais tarde.';
+    mensagemVazia.style.display = 'block';
+  } finally {
+    loadingSpinner.style.display = 'none';
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -170,9 +201,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const termo = e.target.value.toLowerCase();
     const produtosFiltrados = produtos.filter(p =>
       p.nome.toLowerCase().includes(termo) ||
-      (p.descrição || p.descricao).toLowerCase().includes(termo)
+      (p.descricao || p.descrição || '').toLowerCase().includes(termo)
     );
-    paginaAtual = 1; // Resetar página ao buscar
+    paginaAtual = 1;
     renderizarProdutos(produtosFiltrados);
   });
 
