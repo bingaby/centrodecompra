@@ -74,7 +74,7 @@
       </select>
       <input type="url" name="link" placeholder="Link do produto (https://...)" required pattern="https?://.+" aria-required="true">
       <input type="number" name="preco" placeholder="Preço do produto (ex.: 99.99)" step="0.01" min="0" max="100000" required aria-required="true">
-      <input type="file" name="imagens" accept="image/jpeg,image/png" multiple aria-required="true">
+      <input type="file" name="imagens" accept="image/jpeg,image/png" multiple>
       <p style="font-size: 14px; color: #666;">Nota: O preço será usado apenas na área administrativa e não será exibido na página principal.</p>
       <button type="submit">Adicionar</button>
     </form>
@@ -123,8 +123,8 @@
   </div>
 
   <script>
-    const VERSION = "1.0.6";
-    const IMGBB_API_KEY = 'SUA_CHAVE_IMGBB'; // Substitua pela sua chave do imgbb
+    const VERSION = "1.0.7";
+    const IMGBB_API_KEY = 'SUA_CHAVE_IMGBB'; // Substitua pela sua chave do imgbb (obtenha em https://api.imgbb.com/)
     let produtos = [];
     let currentImages = [];
     let currentImageIndex = 0;
@@ -181,6 +181,9 @@
     }
 
     async function uploadImage(file) {
+      if (IMGBB_API_KEY === 'SUA_CHAVE_IMGBB') {
+        throw new Error('Chave do imgbb não configurada. Substitua IMGBB_API_KEY no código.');
+      }
       try {
         const resizedBlob = await resizeImage(file);
         const formData = new FormData();
@@ -193,7 +196,7 @@
         if (!data.success) throw new Error(data.error.message || 'Erro ao fazer upload da imagem');
         return data.data.url;
       } catch (error) {
-        throw new Error(error.message || 'Falha no upload da imagem');
+        throw new Error(error.message || 'Falha no upload da imagem. Verifique a conexão ou a chave do imgbb.');
       }
     }
 
@@ -203,27 +206,43 @@
       const mensagem = document.getElementById('mensagem');
       const erro = document.getElementById('erro');
       const loading = document.getElementById('loading');
+      const urls = [
+        'https://raw.githubusercontent.com/bingaby/centrodecompra/main/produtos.json',
+        'https://bingaby.github.io/centrodecompra/produtos.json'
+      ];
       try {
         loading.style.display = 'block';
-        const response = await fetch('https://raw.githubusercontent.com/bingaby/centrodecompra/main/produtos.json');
-        if (!response.ok) {
-          if (response.status === 404) {
+        let response;
+        for (const url of urls) {
+          try {
+            response = await fetch(url);
+            if (response.ok) break;
+          } catch (e) {
+            console.warn(`Falha ao tentar URL ${url}:`, e);
+          }
+        }
+        if (!response || !response.ok) {
+          if (response?.status === 404) {
             produtos = [];
             document.getElementById('json-text').value = JSON.stringify(produtos, null, 2);
             atualizarListaProdutos();
+            mensagem.textContent = 'Arquivo produtos.json não encontrado. Inicializado como vazio.';
             return;
           }
-          throw new Error(`Erro HTTP: ${response.status}`);
+          throw new Error(`Erro HTTP: ${response?.status || 'Desconhecido'}`);
         }
-        if (response.headers.get('Content-Type') !== 'application/json') {
-          throw new Error('Resposta não é JSON');
+        const contentType = response.headers.get('Content-Type');
+        if (!contentType || !contentType.includes('application/json')) {
+          const text = await response.text();
+          console.error('Resposta recebida:', text);
+          throw new Error('Resposta não é JSON. Verifique se produtos.json é válido.');
         }
         produtos = await response.json();
         document.getElementById('json-text').value = JSON.stringify(produtos, null, 2);
         atualizarListaProdutos();
       } catch (error) {
         console.error('Erro ao carregar produtos:', error);
-        erro.textContent = 'Erro ao carregar produtos. Verifique a URL ou o arquivo produtos.json.';
+        erro.textContent = error.message || 'Erro ao carregar produtos. Verifique a conexão ou o arquivo produtos.json.';
         mensagem.textContent = '';
       } finally {
         loading.style.display = 'none';
@@ -235,8 +254,10 @@
       const imagens = [];
       const files = formData.getAll('imagens');
       for (const file of files) {
-        const url = await uploadImage(file);
-        imagens.push(url);
+        if (file.size > 0) { // Ignorar arquivos vazios
+          const url = await uploadImage(file);
+          imagens.push(url);
+        }
       }
       const produto = {
         _id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
