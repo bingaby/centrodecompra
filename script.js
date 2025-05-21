@@ -35,7 +35,7 @@ function renderizarProdutos(produtosFiltrados) {
       </div>
       <span>${produto.nome}</span>
       <span class="descricao">${produto.descricao}</span>
-      <a href="${produto.linkAfiliado}" class="ver-na-loja ${produto.loja}" target="_blank">Ver na Loja</a>
+      <a href="${produto.link || produto.linkAfiliado}" class="ver-na-loja ${produto.loja}" target="_blank">Ver na Loja</a>
     `;
     gridProdutos.appendChild(divProduto);
   });
@@ -76,6 +76,45 @@ function filtrarPorLoja(loja) {
   renderizarProdutos(produtosFiltrados);
 }
 
+function carregarProdutos() {
+  const loadingSpinner = document.getElementById('loading-spinner');
+  const mensagemVazia = document.getElementById('mensagem-vazia');
+
+  // Verificar cache local
+  const cache = localStorage.getItem('produtos_cache');
+  const cacheTime = localStorage.getItem('produtos_cache_time');
+  const cacheDuration = 10 * 60 * 1000; // 10 minutos em milissegundos
+  const now = Date.now();
+
+  if (cache && cacheTime && (now - cacheTime < cacheDuration)) {
+    produtos = JSON.parse(cache);
+    produtos = produtos.slice(0, 1000); // Limitar a 1000 itens
+    renderizarProdutos(produtos);
+    return;
+  }
+
+  loadingSpinner.style.display = 'block';
+  fetch('https://raw.githubusercontent.com/bingaby/centrodecompra/main/produtos.json')
+    .then(response => {
+      if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
+      return response.json();
+    })
+    .then(data => {
+      produtos = data.slice(0, 1000); // Limitar a 1000 itens
+      localStorage.setItem('produtos_cache', JSON.stringify(produtos));
+      localStorage.setItem('produtos_cache_time', Date.now());
+      renderizarProdutos(produtos);
+    })
+    .catch(error => {
+      console.error('Erro ao carregar produtos:', error);
+      mensagemVazia.textContent = 'Erro ao carregar produtos. Tente novamente mais tarde.';
+      mensagemVazia.style.display = 'block';
+    })
+    .finally(() => {
+      loadingSpinner.style.display = 'none';
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('year').textContent = new Date().getFullYear();
   document.getElementById('logo').addEventListener('dblclick', () => {
@@ -87,29 +126,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  document.getElementById('loading-spinner').style.display = 'block';
-  fetch('/produtos')
-    .then(response => {
-      if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
-      return response.json();
-    })
-    .then(data => {
-      produtos = data;
-      renderizarProdutos(produtos);
-    })
-    .catch(error => {
-      console.error('Erro ao carregar produtos:', error);
-      document.getElementById('loading-spinner').style.display = 'none';
-      document.getElementById('mensagem-vazia').textContent = 'Erro ao carregar produtos. Tente novamente mais tarde.';
-      document.getElementById('mensagem-vazia').style.display = 'block';
-    });
-
+  // Adicionar busca
   document.getElementById('busca').addEventListener('input', (e) => {
     const termo = e.target.value.toLowerCase();
     const produtosFiltrados = produtos.filter(p =>
       p.nome.toLowerCase().includes(termo) ||
-      p.descricao.toLowerCase().includes(termo)
+      p.descrição.toLowerCase().includes(termo)
     );
     renderizarProdutos(produtosFiltrados);
   });
+
+  // Carregar produtos
+  carregarProdutos();
 });
