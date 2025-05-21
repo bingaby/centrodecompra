@@ -1,3 +1,4 @@
+/* style.css */
 body {
   font-family: 'Roboto', sans-serif;
   margin: 0;
@@ -193,6 +194,10 @@ h1, h2, h3 {
   background-color: #25D366;
 }
 
+.whatsapp:hover {
+  background-color: #20B058;
+}
+
 .telegram {
   background-color: #0088cc;
 }
@@ -291,12 +296,10 @@ footer {
   transform: scale(1.03);
 }
 
-.produto-card img {
-  max-height: 100px;
-  width: auto;
-  object-fit: contain;
-  margin: 0 auto;
-  cursor: pointer;
+.produto-card p {
+  color: #666;
+  font-size: 12px;
+  margin: 5px 0;
 }
 
 .produto-card span {
@@ -565,6 +568,49 @@ footer {
 .robo-assistente:hover .robo-texto {
   display: block;
   background-color: #FF8C00;
+}
+
+.paginacao {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.paginacao button {
+  background: #FFA500;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  margin: 0 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.paginacao button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.paginacao span {
+  font-size: 14px;
+  color: #333;
+}
+
+#atualizar {
+  background: #FFA500;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  display: block;
+  margin: 10px auto;
+}
+
+#atualizar:hover {
+  background: #FF8C00;
 }
 
 @media (max-width: 768px) {
