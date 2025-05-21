@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "_id": "1747859059237d0i28l3b1",
+    "nome": "Mochila Lenovo Casual B210 Preta para notebook de até 15.6\" GX40Q17225",
+    "descricao": "B210 Preta para notebook de até 15.6\" GX40Q17225",
+    "categoria": "moda",
+    "loja": "amazon",
+    "link": "https://amzn.to/44FCf8v",
+    "preco": "79.90",
+    "imagens": [
+      "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/mochila Lenovo.jpg)"
+    ]
+  }
+]
