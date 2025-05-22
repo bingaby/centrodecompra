@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Gerenciar Produtos</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
   <style>
     body { font-family: 'Roboto', Arial, sans-serif; padding: 20px; background-color: #f5f5f5; }
     h1, h3 { text-align: center; color: #333; }
@@ -21,156 +20,104 @@
     #produtos-cadastrados th { background-color: #f9f9f9; }
     #produtos-cadastrados button.excluir { background-color: #dc3545; padding: 5px 10px; font-size: 14px; }
     #produtos-cadastrados button.excluir:hover { background-color: #c82333; }
-    .thumbnail { width: 50px; height: 50px; object-fit: cover; margin: 2px; cursor: pointer; border-radius: 4px; }
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
-    .modal-content { position: relative; max-width: 90%; max-height: 90%; width: auto; height: auto; }
-    .modal-content .carrossel-imagens { display: flex; overflow: hidden; width: 100%; height: 100%; }
-    .modal-content .carrossel-imagens img { width: 100%; height: auto; object-fit: contain; flex: 0 0 100%; transition: transform 0.3s ease; }
-    .modal-close { position: absolute; top: 10px; right: 10px; background: #ff6200; color: white; border: none; padding: 8px 12px; border-radius: 50%; cursor: pointer; font-size: 16px; }
-    .carrossel-prev, .carrossel-next { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; padding: 10px; cursor: pointer; font-size: 18px; border-radius: 4px; }
-    .carrossel-prev { left: 10px; }
-    .carrossel-next { right: 10px; }
-    .carrossel-dots { position: absolute; bottom: 10px; width: 100%; text-align: center; }
-    .carrossel-dot { display: inline-block; width: 10px; height: 10px; background: #ccc; border-radius: 50%; margin: 0 5px; cursor: pointer; }
-    .carrossel-dot.ativo { background: #ff6200; }
+    .thumbnail { width: 50px; height: 50px; object-fit: cover; margin: 2px; }
     .loading { display: none; text-align: center; margin-top: 10px; }
     .loading::after { content: 'Carregando...'; animation: dots 1s infinite; }
     @keyframes dots { 0%, 20% { content: 'Carregando.'; } 40% { content: 'Carregando..'; } 60% { content: 'Carregando...'; } }
-    .preco-link { color: #ff6200; text-decoration: none; font-weight: bold; }
-    .preco-link:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
-  <div id="main-content">
-    <h1>Adicionar Produto</h1>
-    <form id="form-produto" enctype="multipart/form-data">
-      <input type="text" name="nome" placeholder="Nome do produto" required aria-required="true">
-      <textarea name="descricao" placeholder="Descrição do produto" required aria-required="true"></textarea>
-      <select name="categoria" required aria-required="true">
-        <option value="" disabled selected>Selecione uma categoria</option>
-        <option value="eletronicos">Eletrônicos</option>
-        <option value="moda">Moda</option>
-        <option value="fitness">Fitness</option>
-        <option value="casa">Casa e Decoração</option>
-        <option value="beleza">Beleza</option>
-        <option value="esportes">Esportes</option>
-        <option value="livros">Livros</option>
-        <option value="infantil">Infantil</option>
-        <option value="Celulares">Celulares</option>
-        <option value="Eletrodomésticos">Eletrodomésticos</option>
-      </select>
-      <select name="loja" required aria-required="true">
-        <option value="" disabled selected>Selecione uma loja</option>
-        <option value="amazon">Amazon</option>
-        <option value="magalu">Magalu</option>
-        <option value="shein">Shein</option>
-        <option value="shopee">Shopee</option>
-        <option value="mercadolivre">Mercado Livre</option>
-        <option value="alibaba">Alibaba</option>
-      </select>
-      <input type="url" name="link" placeholder="Link do produto (https://...)" required pattern="https?://.+" aria-required="true">
-      <input type="number" name="preco" placeholder="Preço do produto (ex.: 99.99)" step="0.01" min="0" max="100000" required aria-required="true">
-      <input type="file" name="imagens" accept="image/jpeg,image/png" multiple>
-      <p style="font-size: 14px; color: #666;">Selecione imagens (JPEG/PNG, máx. 500 KB cada, até 3 por produto).</p>
-      <p style="font-size: 14px; color: #666;">Nota: O preço será usado apenas na área administrativa e não será exibido na página principal.</p>
-      <button type="submit">Adicionar</button>
-    </form>
-    <div id="mensagem" aria-live="polite"></div>
-    <div id="erro" aria-live="assertive"></div>
-    <div id="loading" class="loading"></div>
+  <h1>Adicionar Produto</h1>
+  <form id="form-produto" enctype="multipart/form-data">
+    <input type="text" name="nome" placeholder="Nome do produto" required>
+    <textarea name="descricao" placeholder="Descrição do produto" required></textarea>
+    <select name="categoria" required>
+      <option value="" disabled selected>Selecione uma categoria</option>
+      <option value="moda">Moda</option>
+      <option value="eletronicos">Eletrônicos</option>
+    </select>
+    <select name="loja" required>
+      <option value="" disabled selected>Selecione uma loja</option>
+      <option value="amazon">Amazon</option>
+      <option value="magalu">Magalu</option>
+    </select>
+    <input type="url" name="link" placeholder="Link do produto (https://...)" required pattern="https?://.+">
+    <input type="number" name="preco" placeholder="Preço (ex.: 99.99)" step="0.01" min="0" required>
+    <input type="file" name="imagens" accept="image/jpeg,image/png" multiple>
+    <p style="font-size: 14px; color: #666;">Imagens: JPEG/PNG, máx. 500 KB, até 3.</p>
+    <button type="submit">Adicionar</button>
+  </form>
+  <div id="mensagem"></div>
+  <div id="erro"></div>
+  <div id="loading" class="loading"></div>
 
-    <div id="produtos-cadastrados">
-      <h3>Produtos Cadastrados</h3>
-      <table id="tabela-produtos">
-        <thead>
-          <tr>
-            <th>Nome</th>
-            <th>Descrição</th>
-            <th>Categoria</th>
-            <th>Loja</th>
-            <th>Link</th>
-            <th>Preço</th>
-            <th>Imagens</th>
-            <th>Ação</th>
-          </tr>
-        </thead>
-        <tbody id="lista-produtos"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="modal" id="imageModal">
-    <button class="modal-close" onclick="closeModal()">✕</button>
-    <div class="modal-content" id="modalCarrossel">
-      <div class="carrossel-imagens" id="modalCarrosselImagens"></div>
-      <button class="carrossel-prev" onclick="moveModalCarrossel(-1)">◄</button>
-      <button class="carrossel-next" onclick="moveModalCarrossel(1)">►</button>
-      <div class="carrossel-dots" id="modalCarrosselDots"></div>
-    </div>
+  <div id="produtos-cadastrados">
+    <h3>Produtos Cadastrados</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Descrição</th>
+          <th>Categoria</th>
+          <th>Loja</th>
+          <th>Link</th>
+          <th>Preço</th>
+          <th>Imagens</th>
+          <th>Ação</th>
+        </tr>
+      </thead>
+      <tbody id="lista-produtos"></tbody>
+    </table>
   </div>
 
   <script>
-    const VERSION = "1.0.11";
-    const API_URL = 'http://localhost:3000'; // Atualizar para 'https://centrodecompra-backend.onrender.com' após deploy
+    const API_URL = 'http://localhost:3000';
     let produtos = [];
-    let currentImages = [];
-    let currentImageIndex = 0;
-    let isFetching = false;
 
     async function carregarProdutos() {
-      if (isFetching) return;
-      isFetching = true;
       const mensagem = document.getElementById('mensagem');
       const erro = document.getElementById('erro');
       const loading = document.getElementById('loading');
       try {
         loading.style.display = 'block';
-        console.log('Carregando produtos de:', `${API_URL}/produtos`);
+        console.log('Carregando:', `${API_URL}/produtos`);
         const response = await fetch(`${API_URL}/produtos`);
-        console.log('Resposta:', response.status, response.statusText);
-        if (!response.ok) {
-          if (response.status === 404) {
-            produtos = [];
-            atualizarListaProdutos();
-            mensagem.textContent = 'Nenhum produto encontrado.';
-            return;
-          }
-          throw new Error(`Erro HTTP: ${response.status}`);
-        }
+        console.log('Resposta:', response.status);
+        if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
         produtos = await response.json();
-        atualizarListaProdutos();
+        atualizarLista();
+        mensagem.textContent = produtos.length ? '' : 'Nenhum produto cadastrado.';
+        erro.textContent = '';
       } catch (error) {
-        console.error('Erro ao carregar produtos:', error);
-        erro.textContent = error.message || 'Erro ao carregar produtos. Verifique o servidor.';
+        console.error('Erro:', error);
+        erro.textContent = 'Erro ao carregar produtos. Servidor ligado?';
         mensagem.textContent = '';
       } finally {
         loading.style.display = 'none';
-        isFetching = false;
       }
     }
 
-    function atualizarListaProdutos() {
-      const listaProdutos = document.getElementById('lista-produtos');
-      listaProdutos.innerHTML = '';
-      if (produtos.length === 0) {
-        listaProdutos.innerHTML = '<tr><td colspan="8">Nenhum produto cadastrado.</td></tr>';
+    function atualizarLista() {
+      const lista = document.getElementById('lista-produtos');
+      lista.innerHTML = '';
+      if (!produtos.length) {
+        lista.innerHTML = '<tr><td colspan="8">Nenhum produto cadastrado.</td></tr>';
         return;
       }
-      produtos.forEach((produto, index) => {
+      produtos.forEach(produto => {
         const tr = document.createElement('tr');
-        const imagens = produto.imagens || [];
-        const precoFormatado = produto.preco ? `R$ ${parseFloat(produto.preco).toFixed(2).replace('.', ',')}` : 'R$ 0,00';
+        const preco = `R$ ${parseFloat(produto.preco).toFixed(2).replace('.', ',')}`;
         tr.innerHTML = `
           <td>${produto.nome}</td>
           <td>${produto.descricao}</td>
           <td>${produto.categoria}</td>
           <td>${produto.loja}</td>
           <td><a href="${produto.link}" target="_blank">Link</a></td>
-          <td><a href="${produto.link}" target="_blank" class="preco-link">${precoFormatado}</a></td>
-          <td>${imagens.length > 0 ? imagens.map((img, i) => `<img src="${img}" alt="Imagem ${i + 1}" class="thumbnail" onclick="openModal(${index}, ${i})">`).join('') : 'Nenhuma imagem'}</td>
+          <td>${preco}</td>
+          <td>${produto.imagens?.length ? produto.imagens.map(img => `<img src="${img}" class="thumbnail">`).join('') : 'Sem imagem'}</td>
           <td><button class="excluir" onclick="excluirProduto('${produto._id}')">Excluir</button></td>
         `;
-        listaProdutos.appendChild(tr);
+        lista.appendChild(tr);
       });
     }
 
@@ -180,113 +127,57 @@
       const loading = document.getElementById('loading');
       try {
         loading.style.display = 'block';
-        console.log('Excluindo produto:', id);
+        console.log('Excluindo:', id);
         const response = await fetch(`${API_URL}/produtos/${id}`, { method: 'DELETE' });
-        console.log('Resposta:', response.status, response.statusText);
-        if (!response.ok) throw new Error('Erro ao excluir produto.');
+        console.log('Resposta:', response.status);
+        if (!response.ok) throw new Error('Erro ao excluir.');
         produtos = produtos.filter(p => p._id !== id);
-        atualizarListaProdutos();
-        mensagem.textContent = 'Produto excluído com sucesso!';
+        atualizarLista();
+        mensagem.textContent = 'Produto excluído!';
         erro.textContent = '';
       } catch (error) {
-        console.error('Erro ao excluir produto:', error);
-        erro.textContent = error.message || 'Erro ao excluir produto.';
+        console.error('Erro:', error);
+        erro.textContent = 'Erro ao excluir produto.';
         mensagem.textContent = '';
       } finally {
         loading.style.display = 'none';
       }
     }
 
-    function openModal(produtoIndex, imageIndex) {
-      const modal = document.getElementById('imageModal');
-      const carrosselImagens = document.getElementById('modalCarrosselImagens');
-      const carrosselDots = document.getElementById('modalCarrosselDots');
-      currentImages = produtos[produtoIndex].imagens || [];
-      currentImageIndex = imageIndex;
-      if (currentImages.length === 0) return;
-      carrosselImagens.innerHTML = currentImages.map((img) => `<img src="${img}" alt="Imagem ampliada">`).join('');
-      carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
-      carrosselDots.innerHTML = currentImages.map((_, i) => `<span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})" aria-label="Ir para imagem ${i + 1}"></span>`).join('');
-      modal.style.display = 'flex';
-    }
-
-    function moveModalCarrossel(direction) {
-      const carrosselImagens = document.getElementById('modalCarrosselImagens');
-      const carrosselDots = document.getElementById('modalCarrosselDots').children;
-      const totalImagens = currentImages.length;
-      currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
-      carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
-      Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
-    }
-
-    function setModalCarrosselImage(index) {
-      const carrosselImagens = document.getElementById('modalCarrosselImagens');
-      const carrosselDots = document.getElementById('modalCarrosselDots').children;
-      currentImageIndex = index;
-      carrosselImagens.style.transform = `translateX(-${index * 100}%)`;
-      Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
-    }
-
-    function closeModal() {
-      const modal = document.getElementById('imageModal');
-      modal.style.display = 'none';
-      currentImages = [];
-      currentImageIndex = 0;
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      carregarProdutos();
-
-      const formProduto = document.getElementById('form-produto');
-      formProduto.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const mensagem = document.getElementById('mensagem');
-        const erro = document.getElementById('erro');
-        const loading = document.getElementById('loading');
-        try {
-          loading.style.display = 'block';
-          const formData = new FormData(formProduto);
-          const files = formData.getAll('imagens');
-          console.log('Arquivos selecionados:', files);
-          if (files.length > 3) throw new Error('Máximo de 3 imagens por produto.');
-          for (const file of files) {
-            if (file && file.size > 0 && file.type) {
-              console.log('Arquivo:', file.name, 'Tamanho:', file.size, 'Tipo:', file.type);
-            } else {
-              console.warn('Arquivo inválido:', file);
-            }
-          }
-          console.log('Enviando para:', `${API_URL}/produtos`);
-          const response = await fetch(`${API_URL}/produtos`, {
-            method: 'POST',
-            body: formData
-          });
-          console.log('Resposta:', response.status, response.statusText);
-          if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'Erro ao adicionar produto.');
-          }
-          const result = await response.json();
-          console.log('Resultado:', result);
-          produtos.push(result.produto);
-          atualizarListaProdutos();
-          mensagem.textContent = result.message;
-          erro.textContent = '';
-          formProduto.reset();
-        } catch (error) {
-          console.error('Erro no submit:', error);
-          erro.textContent = error.message || 'Erro ao adicionar produto.';
-          mensagem.textContent = '';
-        } finally {
-          loading.style.display = 'none';
+    document.getElementById('form-produto').addEventListener('submit', async e => {
+      e.preventDefault();
+      const mensagem = document.getElementById('mensagem');
+      const erro = document.getElementById('erro');
+      const loading = document.getElementById('loading');
+      try {
+        loading.style.display = 'block';
+        const formData = new FormData(e.target);
+        console.log('Enviando para:', `${API_URL}/produtos`);
+        const response = await fetch(`${API_URL}/produtos`, {
+          method: 'POST',
+          body: formData
+        });
+        console.log('Resposta:', response.status);
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Erro ao adicionar.');
         }
-      });
-
-      const imageModal = document.getElementById('imageModal');
-      imageModal.addEventListener('click', (e) => {
-        if (e.target === e.currentTarget) closeModal();
-      });
+        const result = await response.json();
+        produtos.push(result.produto);
+        atualizarLista();
+        mensagem.textContent = result.message;
+        erro.textContent = '';
+        e.target.reset();
+      } catch (error) {
+        console.error('Erro:', error);
+        erro.textContent = error.message || 'Erro ao adicionar produto.';
+        mensagem.textContent = '';
+      } finally {
+        loading.style.display = 'none';
+      }
     });
+
+    document.addEventListener('DOMContentLoaded', carregarProdutos);
   </script>
 </body>
 </html>
