@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let clickCount = 0;
   let clickTimeout;
   logo.addEventListener('click', (event) => {
-    event.preventDefault(); // Evita comportamento padrão do <a> ao redor do logo
+    event.preventDefault();
     clickCount++;
     console.log(`Clique ${clickCount} no logo (id="logo")`);
     if (clickCount === 1) {
@@ -82,7 +82,7 @@ async function carregarProdutos() {
     console.error('Erro ao carregar produtos:', error);
     const mensagemVazia = document.getElementById('mensagem-vazia');
     if (mensagemVazia) {
-      mensagemVazia.textContent = 'Erro ao carregar produtos.';
+      mensagemVazia.textContent = 'Erro ao carregar produtos. Tente novamente mais tarde.';
       mensagemVazia.style.display = 'block';
     }
   }
@@ -113,13 +113,15 @@ function filtrarProdutos() {
 
   mensagemVazia.style.display = 'none';
   produtosFiltrados.forEach(produto => {
-    const nomeImagem = produto.imagens?.[0] || 'sem-imagem.jpg';
-    const imagemURL = `https://raw.githubusercontent.com/bingaby/centrodecompra/main/upload/${nomeImagem}`;
+    const nomeImagem = produto.imagens?.[0] || '/imagens/sem-imagem.jpg';
+    const imagemURL = nomeImagem.startsWith('/imagens/') 
+      ? `https://raw.githubusercontent.com/bingaby/centrodecompra/main${nomeImagem}` 
+      : nomeImagem; // Suporta Data URLs temporariamente para compatibilidade
 
     const card = document.createElement('div');
     card.className = 'produto-card';
     card.innerHTML = `
-      <img src="${imagemURL}" alt="${produto.nome}" loading="lazy">
+      <img src="${imagemURL}" alt="${produto.nome}" loading="lazy" onerror="this.src='/imagens/sem-imagem.jpg'">
       <h3>${produto.nome}</h3>
       <p><strong>Loja:</strong> ${produto.loja}</p>
       <p><strong>Preço:</strong> R$ ${parseFloat(produto.preco).toFixed(2).replace('.', ',')}</p>
