@@ -111,7 +111,7 @@
 
   <script>
     const VERSION = "1.0.11";
-    const API_URL = 'http://localhost:3000'; // Atualizar para URL do Render
+    const API_URL = 'http://localhost:3000'; // Atualizar para 'https://centrodecompra-backend.onrender.com' após deploy
     let produtos = [];
     let currentImages = [];
     let currentImageIndex = 0;
@@ -125,7 +125,9 @@
       const loading = document.getElementById('loading');
       try {
         loading.style.display = 'block';
+        console.log('Carregando produtos de:', `${API_URL}/produtos`);
         const response = await fetch(`${API_URL}/produtos`);
+        console.log('Resposta:', response.status, response.statusText);
         if (!response.ok) {
           if (response.status === 404) {
             produtos = [];
@@ -138,6 +140,7 @@
         produtos = await response.json();
         atualizarListaProdutos();
       } catch (error) {
+        console.error('Erro ao carregar produtos:', error);
         erro.textContent = error.message || 'Erro ao carregar produtos. Verifique o servidor.';
         mensagem.textContent = '';
       } finally {
@@ -177,13 +180,16 @@
       const loading = document.getElementById('loading');
       try {
         loading.style.display = 'block';
+        console.log('Excluindo produto:', id);
         const response = await fetch(`${API_URL}/produtos/${id}`, { method: 'DELETE' });
+        console.log('Resposta:', response.status, response.statusText);
         if (!response.ok) throw new Error('Erro ao excluir produto.');
         produtos = produtos.filter(p => p._id !== id);
         atualizarListaProdutos();
         mensagem.textContent = 'Produto excluído com sucesso!';
         erro.textContent = '';
       } catch (error) {
+        console.error('Erro ao excluir produto:', error);
         erro.textContent = error.message || 'Erro ao excluir produto.';
         mensagem.textContent = '';
       } finally {
@@ -241,22 +247,34 @@
           loading.style.display = 'block';
           const formData = new FormData(formProduto);
           const files = formData.getAll('imagens');
+          console.log('Arquivos selecionados:', files);
           if (files.length > 3) throw new Error('Máximo de 3 imagens por produto.');
+          for (const file of files) {
+            if (file && file.size > 0 && file.type) {
+              console.log('Arquivo:', file.name, 'Tamanho:', file.size, 'Tipo:', file.type);
+            } else {
+              console.warn('Arquivo inválido:', file);
+            }
+          }
+          console.log('Enviando para:', `${API_URL}/produtos`);
           const response = await fetch(`${API_URL}/produtos`, {
             method: 'POST',
             body: formData
           });
+          console.log('Resposta:', response.status, response.statusText);
           if (!response.ok) {
             const errorData = await response.json();
             throw new Error(errorData.error || 'Erro ao adicionar produto.');
           }
           const result = await response.json();
+          console.log('Resultado:', result);
           produtos.push(result.produto);
           atualizarListaProdutos();
           mensagem.textContent = result.message;
           erro.textContent = '';
           formProduto.reset();
         } catch (error) {
+          console.error('Erro no submit:', error);
           erro.textContent = error.message || 'Erro ao adicionar produto.';
           mensagem.textContent = '';
         } finally {
