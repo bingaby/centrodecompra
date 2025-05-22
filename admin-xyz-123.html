@@ -93,7 +93,7 @@
 
     <div id="github-sync">
       <h3>Sincronizar com GitHub</h3>
-      <input type="password" id="github-token" placeholder="GitHub Personal Access Token" required>
+      <input type="password" id="github-token" placeholder="GitHub Personal Access Token">
       <textarea id="json-text" readonly></textarea>
       <button onclick="atualizarGitHub()">Atualizar produtos.json no GitHub</button>
       <textarea id="import-json" placeholder="Cole o JSON para importar"></textarea>
@@ -171,66 +171,68 @@
 
         try {
           const token = document.getElementById('github-token')?.value.trim();
-          if (!token) {
-            erro.textContent = 'Insira o GitHub Personal Access Token para fazer upload das imagens!';
-            mensagem.textContent = '';
-            return;
-          }
-
-          // Gerar nomes únicos para as imagens e fazer upload
-          const imagensPaths = [];
-          const imagensDataUrls = []; // Para exibição local
+          let imagensPaths = [];
+          const imagensDataUrls = [];
           const timestamp = Date.now();
+
+          // Gerar Data URLs e caminhos das imagens
           for (let i = 0; i < imagens.length; i++) {
             const file = imagens[i];
             const fileName = `produto_${nome.replace(/\s+/g, '-').toLowerCase()}-${timestamp}-${i + 1}.jpg`;
             const resizedBlob = await resizeImage(file, 300, 300);
 
-            // Gerar Data URL para exibição local
+            // Gerar Data URL
             const reader = new FileReader();
             const dataUrl = await new Promise((resolve, reject) => {
               reader.onload = () => resolve(reader.result);
-              reader.onerror = () => reject(new Error('Erro ao ler imagem.'));
+              reader.onerror = () => reject(new Error(`Erro ao ler imagem ${fileName}.`));
               reader.readAsDataURL(resizedBlob);
             });
             imagensDataUrls.push(dataUrl);
-
-            // Fazer upload da imagem para /imagens/
-            const content = dataUrl.split(',')[1]; // Remove "data:image/jpeg;base64,"
-            const response = await fetch(`https://api.github.com/repos/bingaby/centrodecompra/contents/imagens/${fileName}`, {
-              method: 'PUT',
-              headers: {
-                'Authorization': `Bearer ${token}`,
-                'Accept': 'application/vnd.github.v3+json',
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                message: `Adiciona imagem ${fileName}`,
-                content: content,
-                branch: 'main'
-              })
-            });
-
-            if (!response.ok) {
-              const errorData = await response.json();
-              throw new Error(`Erro ao fazer upload da imagem ${fileName}: ${errorData.message || response.statusText}`);
-            }
-
             imagensPaths.push(`/imagens/${fileName}`);
           }
 
-          // Adicionar produto com caminhos das imagens
+          // Adicionar produto localmente
           const novoProduto = { nome, categoria, loja, link, preco, imagens: imagensPaths };
           produtos.push(novoProduto);
           localStorage.setItem('produtos', JSON.stringify(produtos));
           atualizarJSON();
           atualizarListaProdutos(imagensDataUrls);
-          mensagem.textContent = 'Produto adicionado e imagens enviadas! Clique em "Atualizar produtos.json no GitHub" para sincronizar.';
+          mensagem.textContent = 'Produto adicionado localmente! Insira o token e sincronize para enviar imagens ao GitHub.';
           erro.textContent = '';
+
+          // Fazer upload das imagens se o token estiver presente
+          if (token) {
+            for (let i = 0; i < imagens.length; i++) {
+              const fileName = imagensPaths[i].replace('/imagens/', '');
+              const content = imagensDataUrls[i].split(',')[1];
+
+              const response = await fetch(`https://api.github.com/repos/bingaby/centrodecompra/contents/imagens/${fileName}`, {
+                method: 'PUT',
+                headers: {
+                  'Authorization': `Bearer ${token}`,
+                  'Accept': 'application/vnd.github.v3+json',
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  message: `Adiciona imagem ${fileName}`,
+                  content: content,
+                  branch: 'main'
+                })
+              });
+
+              if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`Erro ao fazer upload da imagem ${fileName}: ${errorData.message || response.statusText}`);
+              }
+            }
+            mensagem.textContent = 'Produto adicionado e imagens enviadas ao GitHub! Clique em "Atualizar produtos.json no GitHub" para sincronizar.';
+          }
+
           e.target.reset();
         } catch (error) {
           console.error('Erro ao adicionar produto:', error);
-          erro.textContent = error.message || 'Erro ao processar as imagens. Tente novamente.';
+          erro.textContent = error.message || 'Erro ao processar as imagens ou fazer upload. Verifique o token e tente novamente.';
           mensagem.textContent = '';
         }
       });
@@ -308,13 +310,16 @@
         const tr = document.createElement('tr');
         const imagens = produto.imagens && produto.imagens.length > 0 ? produto.imagens : [];
         const precoFormatado = produto.preco ? `R$ ${parseFloat(produto.preco).toFixed(2).replace('.', ',')}` : 'R$ 0,00';
+        const miniaturas = imagens.length > 0 
+          ? imagens.map((img, i) => `<img src="${imagensDataUrls[i] || img}" alt="Imagem ${i + 1}" class="thumbnail" onclick="openModal(${index}, ${i})" onerror="this.src='/imagens/sem-imagem.jpg'">`).join('')
+          : 'Nenhuma imagem';
         tr.innerHTML = `
           <td>${produto.nome}</td>
           <td>${produto.categoria}</td>
           <td>${produto.loja}</td>
           <td><a href="${produto.link}" target="_blank">Link</a></td>
           <td>${precoFormatado}</td>
-          <td>${imagens.length > 0 ? imagens.map((img, i) => `<img src="${imagensDataUrls[i] || img}" alt="Imagem ${i + 1}" class="thumbnail" onclick="openModal(${index}, ${i})">`).join('') : 'Nenhuma imagem'}</td>
+          <td>${miniaturas}</td>
           <td><button class="excluir" onclick="excluirProduto(${index})">Excluir</button></td>
         `;
         listaProdutos.appendChild(tr);
