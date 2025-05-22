@@ -157,7 +157,7 @@ async function carregarProdutos() {
         localStorage.setItem('produtos_cache', JSON.stringify(produtos));
         localStorage.setItem('produtos_cache_time', now);
         renderizarProdutos(produtos);
-        mensagemVazia.textContent = 'Nenhum produto disponível.';
+        mensagemVazia.textContent = 'Nenhum produto disponível. Adicione produtos no painel administrativo.';
         mensagemVazia.style.display = 'block';
         return;
       }
@@ -167,7 +167,7 @@ async function carregarProdutos() {
     if (!contentType || !contentType.includes('application/json')) {
       const text = await response.text();
       console.error('Resposta recebida:', text);
-      throw new Error('Resposta não é JSON. Verifique produtos.json.');
+      throw new Error('Resposta não é JSON. Verifique produtos.json em https://github.com/bingaby/centrodecompra/blob/main/produtos.json.');
     }
     produtos = await response.json();
     produtos = produtos
@@ -178,7 +178,7 @@ async function carregarProdutos() {
     renderizarProdutos(produtos);
   } catch (error) {
     console.error('Erro ao carregar produtos:', error);
-    mensagemVazia.textContent = 'Erro ao carregar produtos. Tente novamente mais tarde.';
+    mensagemVazia.textContent = `Erro ao carregar produtos: ${error.message}. Corrija produtos.json ou contate o administrador.`;
     mensagemVazia.style.display = 'block';
   } finally {
     loadingSpinner.style.display = 'none';
