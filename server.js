@@ -15,21 +15,24 @@ const storage = multer.diskStorage({
     cb(null, `${Date.now()}-${file.originalname}`);
   }
 });
+
+const fileFilter = (req, file, cb) => {
+  if (['image/jpeg', 'image/png'].includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error('Formato não suportado. Use JPEG ou PNG.'), false);
+  }
+};
+
 const upload = multer({
   storage,
   limits: { fileSize: 500 * 1024 }, // 500 KB
-  fileFilter: (req, file, cb) => {
-    if (['image/jpeg', 'image/png'].includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new Error('Formato não suportado. Use JPEG ou PNG.'));
-    }
-  }
+  fileFilter
 });
 
 // Middleware
 app.use(express.json());
-app.use('/imagens', express.static(path.join(__dirname, 'uploads')));
+app.use('/imagens', express.static(path.join(__dirname, 'Uploads')));
 
 // Inicializar Octokit
 const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
@@ -118,6 +121,58 @@ app.get('/produtos', async (req, res) => {
     } else {
       res.status(500).json({ error: 'Erro ao carregar produtos.' });
     }
+  }
+});
+
+// Endpoint para excluir produto
+app.delete('/produtos/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Carregar produtos.json atual
+    let produtos = [];
+    let sha;
+    try {
+      const response = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+        owner: 'bingaby',
+        repo: 'centrodecompra',
+        path: 'produtos.json'
+      });
+      produtos = JSON.parse(Buffer.from(response.data.content, 'base64').toString());
+      sha = response.data.sha;
+    } catch (error) {
+      if (error.status === 404) {
+        return res.status(404).json({ error: 'Nenhum produto encontrado.' });
+      }
+      throw error;
+    }
+
+    // Verificar se o produto existe
+    const produtoIndex = produtos.findIndex(p => p._id === id);
+    if (produtoIndex === -1) {
+      return res.status(404).json({ error: 'Produto não encontrado.' });
+    }
+
+    // Remover produto
+    produtos.splice(produtoIndex, 1);
+
+    // Atualizar produtos.json no GitHub
+    const jsonContent = JSON.stringify(produtos, null, 2);
+    const content = Buffer.from(jsonContent).toString('base64');
+    await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
+      owner: 'bingaby',
+      repo: 'centrodecompra',
+      path: 'produtos.json',
+      message: 'Remove produto via servidor',
+      content,
+      sha,
+      branch: 'main'
+    });
+
+    res.json({ message: 'Produto excluído com sucesso!' });
+  } catch (error) {
+    console.error('Erro ao excluir produto:', error);
+    res.status(500).json({ error: error.message || 'Erro ao excluir produto.' });
   }
 });
 
