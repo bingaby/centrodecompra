@@ -2,8 +2,9 @@
 let produtos = [];
 let currentImages = [];
 let currentImageIndex = 0;
-const itensPorPagina = 20; // Exibir 20 produtos por página
+const itensPorPagina = 20;
 let paginaAtual = 1;
+const API_URL = 'https://centrodecompra-backend.onrender.com'; // Substitua pela URL do seu servidor
 
 function renderizarProdutos(produtosFiltrados) {
   const gridProdutos = document.getElementById('grid-produtos');
@@ -13,7 +14,6 @@ function renderizarProdutos(produtosFiltrados) {
   loadingSpinner.style.display = 'none';
   gridProdutos.innerHTML = '';
 
-  // Paginação
   const inicio = (paginaAtual - 1) * itensPorPagina;
   const fim = inicio + itensPorPagina;
   const produtosPaginados = produtosFiltrados.slice(inicio, fim);
@@ -58,7 +58,6 @@ function renderizarProdutos(produtosFiltrados) {
     gridProdutos.appendChild(divProduto);
   });
 
-  // Controles de paginação
   const totalPaginas = Math.ceil(produtosFiltrados.length / itensPorPagina);
   const paginacao = document.createElement('div');
   paginacao.className = 'paginacao';
@@ -122,15 +121,10 @@ function mudarPagina(pagina) {
 async function carregarProdutos() {
   const loadingSpinner = document.getElementById('loading-spinner');
   const mensagemVazia = document.getElementById('mensagem-vazia');
-  const urls = [
-    'https://raw.githubusercontent.com/bingaby/centrodecompra/main/produtos.json',
-    'https://bingaby.github.io/centrodecompra/produtos.json'
-  ];
 
-  // Verificar cache local
   const cache = localStorage.getItem('produtos_cache');
   const cacheTime = localStorage.getItem('produtos_cache_time');
-  const cacheDuration = 10 * 60 * 1000; // 10 minutos
+  const cacheDuration = 10 * 60 * 1000;
   const now = Date.now();
 
   if (cache && cacheTime && (now - cacheTime < cacheDuration)) {
@@ -142,17 +136,9 @@ async function carregarProdutos() {
   loadingSpinner.style.display = 'block';
   mensagemVazia.style.display = 'none';
   try {
-    let response;
-    for (const url of urls) {
-      try {
-        response = await fetch(url);
-        if (response.ok) break;
-      } catch (e) {
-        console.warn(`Falha ao tentar URL ${url}:`, e);
-      }
-    }
-    if (!response || !response.ok) {
-      if (response?.status === 404) {
+    const response = await fetch(`${API_URL}/produtos`);
+    if (!response.ok) {
+      if (response.status === 404) {
         produtos = [];
         localStorage.setItem('produtos_cache', JSON.stringify(produtos));
         localStorage.setItem('produtos_cache_time', now);
@@ -161,13 +147,7 @@ async function carregarProdutos() {
         mensagemVazia.style.display = 'block';
         return;
       }
-      throw new Error(`Erro HTTP: ${response?.status || 'Desconhecido'}`);
-    }
-    const contentType = response.headers.get('Content-Type');
-    if (!contentType || !contentType.includes('application/json')) {
-      const text = await response.text();
-      console.error('Resposta recebida:', text);
-      throw new Error('Resposta não é JSON. Verifique produtos.json em https://github.com/bingaby/centrodecompra/blob/main/produtos.json.');
+      throw new Error(`Erro HTTP: ${response.status}`);
     }
     produtos = await response.json();
     produtos = produtos
@@ -178,7 +158,7 @@ async function carregarProdutos() {
     renderizarProdutos(produtos);
   } catch (error) {
     console.error('Erro ao carregar produtos:', error);
-    mensagemVazia.textContent = `Erro ao carregar produtos: ${error.message}. Corrija produtos.json ou contate o administrador.`;
+    mensagemVazia.textContent = `Erro ao carregar produtos: ${error.message}. Verifique o servidor em ${API_URL}.`;
     mensagemVazia.style.display = 'block';
   } finally {
     loadingSpinner.style.display = 'none';
@@ -196,7 +176,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Adicionar busca
   document.getElementById('busca').addEventListener('input', (e) => {
     const termo = e.target.value.toLowerCase();
     const produtosFiltrados = produtos.filter(p =>
@@ -207,7 +186,6 @@ document.addEventListener('DOMContentLoaded', () => {
     renderizarProdutos(produtosFiltrados);
   });
 
-  // Adicionar botão de atualização
   const atualizarButton = document.createElement('button');
   atualizarButton.id = 'atualizar';
   atualizarButton.textContent = 'Atualizar Ofertas';
@@ -216,10 +194,9 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('ofertas-section').insertBefore(atualizarButton, document.getElementById('grid-produtos'));
   atualizarButton.addEventListener('click', () => {
     localStorage.removeItem('produtos_cache');
-    localStorage.removeItem('produtos_cache_time');
+    localStorage.setItem('produtos_cache_time', now);
     carregarProdutos();
   });
 
-  // Carregar produtos
   carregarProdutos();
 });
