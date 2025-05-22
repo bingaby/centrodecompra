@@ -4,9 +4,17 @@ const { Octokit } = require('@octokit/core');
 const path = require('path');
 const fs = require('fs').promises;
 require('dotenv').config();
+const cors = require('cors');
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+// Configurar CORS
+app.use(cors({
+  origin: ['https://www.centrodecompra.com.br', 'https://bingaby.github.io'], // Permitir múltiplas origens
+  methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type']
+}));
 
 // Configurar multer para upload de imagens
 const storage = multer.diskStorage({
@@ -46,7 +54,7 @@ app.post('/produtos', upload.array('imagens', 3), async (req, res) => {
     }
 
     // Gerar URLs para imagens
-    const imagens = req.files.map(file => `${process.env.SERVER_URL}/imagens/${file.filename}`);
+    const imagens = req.files.map(file => `${process.env.SERVER_URL || 'http://localhost:3000'}/imagens/${file.filename}`);
 
     // Carregar produtos.json atual
     let produtos = [];
