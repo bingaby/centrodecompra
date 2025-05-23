@@ -9,15 +9,11 @@
     body { font-family: 'Roboto', Arial, sans-serif; padding: 20px; background-color: #f5f5f5; }
     h1, h3 { text-align: center; color: #333; }
     form { max-width: 500px; margin: auto; display: flex; flex-direction: column; gap: 10px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-    input, select, button, textarea { padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; }
+    input, select, button { padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; }
     button { background-color: #ff6200; color: white; border: none; cursor: pointer; font-weight: bold; }
     button:hover { background-color: #e55a00; }
     #mensagem { margin-top: 10px; color: green; text-align: center; }
     #erro { margin-top: 10px; color: red; text-align: center; }
-    #github-sync { margin-top: 20px; max-width: 500px; margin: auto; background: white; padding: 10px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-    #github-sync textarea { width: 100%; height: 100px; resize: vertical; }
-    #github-sync input { margin-bottom: 10px; }
-    #github-sync button { margin-top: 10px; width: 100%; }
     #produtos-cadastrados { margin: 20px auto; max-width: 800px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     #produtos-cadastrados table { width: 100%; border-collapse: collapse; }
     #produtos-cadastrados th, #produtos-cadastrados td { padding: 10px; border: 1px solid #ddd; text-align: left; }
@@ -90,15 +86,6 @@
         <tbody id="lista-produtos"></tbody>
       </table>
     </div>
-
-    <div id="github-sync">
-      <h3>Sincronizar com GitHub</h3>
-      <input type="password" id="github-token" placeholder="GitHub Personal Access Token">
-      <textarea id="json-text" readonly></textarea>
-      <button onclick="atualizarGitHub()">Atualizar produtos.json no GitHub</button>
-      <textarea id="import-json" placeholder="Cole o JSON para importar"></textarea>
-      <button onclick="importarJSON()">Importar JSON</button>
-    </div>
   </div>
 
   <div class="modal" id="imageModal">
@@ -112,20 +99,25 @@
   </div>
 
   <script>
+    const API_URL = 'https://seu-servidor.render.com'; // Substitua pelo URL do seu servidor no Render
     let produtos = [];
     let currentImages = [];
     let currentImageIndex = 0;
 
-    // Inicializar produtos do localStorage
-    try {
-      const storedProdutos = localStorage.getItem('produtos');
-      produtos = storedProdutos ? JSON.parse(storedProdutos) : [];
-      if (!Array.isArray(produtos)) produtos = [];
-    } catch (e) {
-      console.error('Erro ao carregar produtos do localStorage:', e);
-      produtos = [];
+    // Carregar produtos do servidor ao iniciar
+    async function carregarProdutos() {
+      try {
+        const response = await fetch(`${API_URL}/api/produtos`);
+        if (!response.ok) throw new Error('Erro ao carregar produtos');
+        produtos = await response.json();
+        atualizarListaProdutos();
+      } catch (error) {
+        console.error('Erro ao carregar produtos:', error);
+        document.getElementById('erro').textContent = 'Erro ao carregar produtos do servidor';
+      }
     }
 
+    // Configurar eventos do formulário
     function configurarEventos() {
       const formProduto = document.getElementById('form-produto');
       if (!formProduto) {
@@ -141,24 +133,21 @@
           console.error('Elementos DOM não encontrados: #mensagem ou #erro');
           return;
         }
-        const nome = e.target.querySelector('input[name="nome"]').value;
-        const categoria = e.target.querySelector('select[name="categoria"]').value;
-        const loja = e.target.querySelector('select[name="loja"]').value;
-        const link = e.target.querySelector('input[name="link"]').value;
-        const preco = e.target.querySelector('input[name="preco"]').value;
-        const imagens = e.target.querySelector('input[name="imagens"]').files;
 
-        if (!nome || !categoria || !loja || !link || !preco) {
+        const formData = new FormData(formProduto);
+        const imagens = formData.getAll('imagens');
+
+        if (!formData.get('nome') || !formData.get('categoria') || !formData.get('loja') || !formData.get('link') || !formData.get('preco')) {
           erro.textContent = 'Todos os campos são obrigatórios!';
           mensagem.textContent = '';
           return;
         }
-        if (parseFloat(preco) < 0) {
+        if (parseFloat(formData.get('preco')) < 0) {
           erro.textContent = 'O preço deve ser um valor positivo!';
           mensagem.textContent = '';
           return;
         }
-        if (imagens.length === 0) {
+        if (imagens.length === 0 || imagens[0].size === 0) {
           erro.textContent = 'Pelo menos uma imagem deve ser escolhida!';
           mensagem.textContent = '';
           return;
@@ -170,69 +159,29 @@
         }
 
         try {
-          const token = document.getElementById('github-token')?.value.trim();
-          let imagensPaths = [];
-          const imagensDataUrls = [];
-          const timestamp = Date.now();
-
-          // Gerar Data URLs e caminhos das imagens
-          for (let i = 0; i < imagens.length; i++) {
-            const file = imagens[i];
-            const fileName = `produto_${nome.replace(/\s+/g, '-').toLowerCase()}-${timestamp}-${i + 1}.jpg`;
-            const resizedBlob = await resizeImage(file, 300, 300);
-
-            // Gerar Data URL
-            const reader = new FileReader();
-            const dataUrl = await new Promise((resolve, reject) => {
-              reader.onload = () => resolve(reader.result);
-              reader.onerror = () => reject(new Error(`Erro ao ler imagem ${fileName}.`));
-              reader.readAsDataURL(resizedBlob);
-            });
-            imagensDataUrls.push(dataUrl);
-            imagensPaths.push(`/imagens/${fileName}`);
+          // Redimensionar imagens antes do upload
+          const resizedImages = [];
+          for (const imagem of imagens) {
+            const resizedBlob = await resizeImage(imagem, 300, 300);
+            resizedImages.push(new File([resizedBlob], imagem.name, { type: imagem.type }));
           }
+          resizedImages.forEach((file, i) => formData.set(`imagens[${i}]`, file));
 
-          // Adicionar produto localmente
-          const novoProduto = { nome, categoria, loja, link, preco, imagens: imagensPaths };
-          produtos.push(novoProduto);
-          localStorage.setItem('produtos', JSON.stringify(produtos));
-          atualizarJSON();
-          atualizarListaProdutos(imagensDataUrls);
-          mensagem.textContent = 'Produto adicionado localmente! Insira o token e sincronize para enviar imagens ao GitHub.';
+          const response = await fetch(`${API_URL}/api/produtos`, {
+            method: 'POST',
+            body: formData
+          });
+          const result = await response.json();
+
+          if (!response.ok) throw new Error(result.error || 'Erro ao adicionar produto');
+
+          mensagem.textContent = result.message || 'Produto adicionado com sucesso!';
           erro.textContent = '';
-
-          // Fazer upload das imagens se o token estiver presente
-          if (token) {
-            for (let i = 0; i < imagens.length; i++) {
-              const fileName = imagensPaths[i].replace('/imagens/', '');
-              const content = imagensDataUrls[i].split(',')[1];
-
-              const response = await fetch(`https://api.github.com/repos/bingaby/centrodecompra/contents/imagens/${fileName}`, {
-                method: 'PUT',
-                headers: {
-                  'Authorization': `Bearer ${token}`,
-                  'Accept': 'application/vnd.github.v3+json',
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                  message: `Adiciona imagem ${fileName}`,
-                  content: content,
-                  branch: 'main'
-                })
-              });
-
-              if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(`Erro ao fazer upload da imagem ${fileName}: ${errorData.message || response.statusText}`);
-              }
-            }
-            mensagem.textContent = 'Produto adicionado e imagens enviadas ao GitHub! Clique em "Atualizar produtos.json no GitHub" para sincronizar.';
-          }
-
-          e.target.reset();
+          formProduto.reset();
+          await carregarProdutos(); // Atualizar lista após adicionar
         } catch (error) {
           console.error('Erro ao adicionar produto:', error);
-          erro.textContent = error.message || 'Erro ao processar as imagens ou fazer upload. Verifique o token e tente novamente.';
+          erro.textContent = error.message || 'Erro ao adicionar produto. Tente novamente.';
           mensagem.textContent = '';
         }
       });
@@ -280,22 +229,7 @@
       });
     }
 
-    function atualizarJSON() {
-      const jsonText = document.getElementById('json-text');
-      if (!jsonText) {
-        console.error('Elemento DOM não encontrado: #json-text');
-        return;
-      }
-      try {
-        jsonText.value = JSON.stringify(produtos, null, 2);
-      } catch (e) {
-        console.error('Erro ao atualizar JSON:', e);
-        const erro = document.getElementById('erro');
-        if (erro) erro.textContent = 'Erro ao gerar JSON. Tente novamente.';
-      }
-    }
-
-    function atualizarListaProdutos(imagensDataUrls = []) {
+    function atualizarListaProdutos() {
       const listaProdutos = document.getElementById('lista-produtos');
       if (!listaProdutos) {
         console.error('Elemento DOM não encontrado: #lista-produtos');
@@ -311,7 +245,7 @@
         const imagens = produto.imagens && produto.imagens.length > 0 ? produto.imagens : [];
         const precoFormatado = produto.preco ? `R$ ${parseFloat(produto.preco).toFixed(2).replace('.', ',')}` : 'R$ 0,00';
         const miniaturas = imagens.length > 0 
-          ? imagens.map((img, i) => `<img src="${imagensDataUrls[i] || img}" alt="Imagem ${i + 1}" class="thumbnail" onclick="openModal(${index}, ${i})" onerror="this.src='/imagens/sem-imagem.jpg'">`).join('')
+          ? imagens.map((img, i) => `<img src="${API_URL}${img}" alt="Imagem ${i + 1}" class="thumbnail" onclick="openModal(${index}, ${i})" onerror="this.src='/imagens/sem-imagem.jpg'">`).join('')
           : 'Nenhuma imagem';
         tr.innerHTML = `
           <td>${produto.nome}</td>
@@ -339,7 +273,7 @@
 
       if (currentImages.length === 0) return;
 
-      carrosselImagens.innerHTML = currentImages.map((img) => `<img src="${img}" alt="Imagem ampliada">`).join('');
+      carrosselImagens.innerHTML = currentImages.map((img) => `<img src="${API_URL}${img}" alt="Imagem ampliada">`).join('');
       carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
       carrosselDots.innerHTML = currentImages.map((_, i) => `<span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})"></span>`).join('');
       modal.style.display = 'flex';
@@ -381,7 +315,7 @@
       currentImageIndex = 0;
     }
 
-    function excluirProduto(index) {
+    async function excluirProduto(index) {
       const mensagem = document.getElementById('mensagem');
       const erro = document.getElementById('erro');
       if (!mensagem || !erro) {
@@ -389,118 +323,17 @@
         return;
       }
       try {
-        produtos.splice(index, 1);
-        localStorage.setItem('produtos', JSON.stringify(produtos));
-        atualizarJSON();
-        atualizarListaProdutos();
-        mensagem.textContent = 'Produto excluído! Clique em "Atualizar produtos.json no GitHub" para sincronizar.';
-        erro.textContent = '';
-      } catch (e) {
-        console.error('Erro ao excluir produto:', e);
-        erro.textContent = 'Erro ao excluir produto. Tente novamente.';
-      }
-    }
-
-    async function atualizarGitHub() {
-      const token = document.getElementById('github-token')?.value.trim();
-      const jsonText = document.getElementById('json-text')?.value;
-      const mensagem = document.getElementById('mensagem');
-      const erro = document.getElementById('erro');
-      if (!mensagem || !erro) {
-        console.error('Elementos DOM não encontrados: #mensagem ou #erro');
-        return;
-      }
-      if (!token) {
-        erro.textContent = 'Por favor, insira o GitHub Personal Access Token!';
-        mensagem.textContent = '';
-        return;
-      }
-      if (!jsonText) {
-        erro.textContent = 'JSON dos produtos não encontrado!';
-        mensagem.textContent = '';
-        return;
-      }
-
-      try {
-        const parsedJson = JSON.parse(jsonText);
-        if (!Array.isArray(parsedJson)) {
-          throw new Error('JSON inválido! Deve ser uma lista de produtos.');
-        }
-
-        let sha = null;
-        const getResponse = await fetch('https://api.github.com/repos/bingaby/centrodecompra/contents/produtos.json', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Accept': 'application/vnd.github.v3+json',
-            'Content-Type': 'application/json'
-          }
+        const response = await fetch(`${API_URL}/api/produtos/${index}`, {
+          method: 'DELETE'
         });
-
-        if (getResponse.ok) {
-          const fileData = await getResponse.json();
-          sha = fileData.sha;
-        } else if (getResponse.status !== 404) {
-          const errorData = await getResponse.json();
-          throw new Error(`Erro ao verificar produtos.json: ${errorData.message || getResponse.statusText}`);
-        }
-
-        const content = btoa(unescape(encodeURIComponent(jsonText)));
-        const updateResponse = await fetch('https://api.github.com/repos/bingaby/centrodecompra/contents/produtos.json', {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Accept': 'application/vnd.github.v3+json',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            message: 'Atualiza produtos.json via admin',
-            content: content,
-            sha: sha,
-            branch: 'main'
-          })
-        });
-
-        if (updateResponse.ok) {
-          mensagem.textContent = 'produtos.json atualizado no GitHub! Os produtos devem aparecer na página principal em alguns minutos.';
-          erro.textContent = '';
-        } else {
-          const errorData = await updateResponse.json();
-          throw new Error(`Erro ao atualizar produtos.json: ${errorData.message || updateResponse.statusText}`);
-        }
-      } catch (error) {
-        console.error('Erro ao sincronizar com o GitHub:', error);
-        erro.textContent = error.message || 'Erro ao sincronizar com o GitHub. Verifique o token e tente novamente.';
-        mensagem.textContent = '';
-      }
-    }
-
-    function importarJSON() {
-      const importText = document.getElementById('import-json')?.value;
-      const mensagem = document.getElementById('mensagem');
-      const erro = document.getElementById('erro');
-      if (!mensagem || !erro) {
-        console.error('Elementos DOM não encontrados: #mensagem ou #erro');
-        return;
-      }
-      if (!importText) {
-        erro.textContent = 'Por favor, insira o JSON para importar!';
-        mensagem.textContent = '';
-        return;
-      }
-      try {
-        const importedProdutos = JSON.parse(importText);
-        if (!Array.isArray(importedProdutos)) throw new Error('JSON inválido! Deve ser uma lista de produtos.');
-        produtos = importedProdutos;
-        localStorage.setItem('produtos', JSON.stringify(produtos));
-        atualizarJSON();
-        atualizarListaProdutos();
-        mensagem.textContent = 'Produtos importados com sucesso! Clique em "Atualizar produtos.json no GitHub" para sincronizar.';
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Erro ao excluir produto');
+        mensagem.textContent = result.message || 'Produto excluído com sucesso!';
         erro.textContent = '';
-        document.getElementById('import-json').value = '';
+        await carregarProdutos();
       } catch (error) {
-        console.error('Erro ao importar JSON:', error);
-        erro.textContent = error.message || 'Erro ao importar JSON. Verifique o formato e tente novamente.';
+        console.error('Erro ao excluir produto:', error);
+        erro.textContent = error.message || 'Erro ao excluir produto. Tente novamente.';
         mensagem.textContent = '';
       }
     }
@@ -508,15 +341,14 @@
     // Inicializar após o DOM estar carregado
     document.addEventListener('DOMContentLoaded', () => {
       console.log('DOM carregado, inicializando admin-xyz-123.html');
-      const criticalElements = ['form-produto', 'imageModal', 'lista-produtos', 'json-text', 'import-json'];
+      const criticalElements = ['form-produto', 'imageModal', 'lista-produtos'];
       const missingElements = criticalElements.filter((id) => !document.getElementById(id));
       if (missingElements.length > 0) {
         console.error('Elementos DOM críticos não encontrados:', missingElements);
         return;
       }
       configurarEventos();
-      atualizarJSON();
-      atualizarListaProdutos();
+      carregarProdutos();
     });
   </script>
 </body>
