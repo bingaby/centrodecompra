@@ -78,7 +78,7 @@
   </div>
 
   <script>
-    const API_URL = 'https://centrodecompra-backend.onrender.com'; // Seu backend
+    const API_URL = 'https://centrodecompra-backend.onrender.com';
 
     async function carregarProdutos() {
       try {
@@ -98,11 +98,11 @@
         tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Nenhum produto cadastrado.</td></tr>';
         return;
       }
-      produtos.forEach((produto, idx) => {
+      produtos.forEach((produto) => {
         const precoFormatado = `R$ ${parseFloat(produto.preco).toFixed(2).replace('.', ',')}`;
         const imagens = produto.imagens || [];
         const miniaturas = imagens.length > 0
-          ? imagens.map((img, i) => `<img src="${API_URL}${img}" class="thumbnail" alt="Imagem ${i + 1}" />`).join('')
+          ? imagens.map((img, i) => `<img src="${img}" class="thumbnail" alt="Imagem ${i + 1}" />`).join('')
           : 'Sem imagens';
 
         tbody.innerHTML += `
@@ -131,10 +131,33 @@
       }
     }
 
-    // Carregar produtos ao iniciar
-    document.addEventListener('DOMContentLoaded', () => {
-      carregarProdutos();
+    // Envio do formulário com imagens
+    document.getElementById('form-produto').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const form = event.target;
+      const formData = new FormData(form);
+
+      document.getElementById('mensagem').textContent = '';
+      document.getElementById('erro').textContent = '';
+
+      try {
+        const res = await fetch(`${API_URL}/api/produtos`, {
+          method: 'POST',
+          body: formData
+        });
+        if (!res.ok) {
+          const erroJson = await res.json().catch(() => null);
+          throw new Error(erroJson?.message || 'Erro ao adicionar produto');
+        }
+        document.getElementById('mensagem').textContent = 'Produto adicionado com sucesso!';
+        form.reset();
+        carregarProdutos();
+      } catch (error) {
+        document.getElementById('erro').textContent = error.message;
+      }
     });
+
+    document.addEventListener('DOMContentLoaded', carregarProdutos);
   </script>
 </body>
 </html>
