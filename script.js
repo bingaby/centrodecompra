@@ -1,4 +1,4 @@
-const API_URL = 'https://centrodecompra-backend.onrender.com/api/produtos'; // Substitua pelo URL do seu servidor no Render
+const API_URL = 'https://centrodecompra-backend.onrender.com'; // Substitua pelo URL do seu servidor no Render
 
 // Estado global
 let produtos = [];
