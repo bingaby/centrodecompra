@@ -1,6 +1,4 @@
-// script.js para index.html
-const API_URL = 'https://centrodecompra-backend.onrender.com/api/produtos
-'; // Substitua pelo URL do seu servidor no Render
+const API_URL = 'https://centrodecompra-backend.onrender.com/api/produtos'; // Substitua pelo URL do seu servidor no Render
 
 // Estado global
 let produtos = [];
@@ -117,11 +115,25 @@ document.addEventListener('DOMContentLoaded', () => {
   configurarBusca();
   atualizarAnoFooter();
 
-  // Configurar clique duplo no logo para redirecionar para admin
+  // Configurar triplo clique no logo para redirecionar para admin
   const logo = document.getElementById('logo');
   if (logo) {
-    logo.addEventListener('dblclick', () => {
-      window.location.href = 'admin-xyz-123.html';
+    let clickCount = 0;
+    let clickTimer;
+
+    logo.addEventListener('click', () => {
+      clickCount++;
+
+      if (clickCount === 3) {
+        clearTimeout(clickTimer);
+        clickCount = 0;
+        window.location.href = 'admin-xyz-123.html'; // redirecionar para admin
+      } else {
+        clearTimeout(clickTimer);
+        clickTimer = setTimeout(() => {
+          clickCount = 0;
+        }, 600); // 600ms para o usuário fazer os 3 cliques
+      }
     });
   }
 });
