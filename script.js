@@ -1,5 +1,5 @@
 // script.js para index.html
-const API_URL = 'https://seu-servidor.render.com'; // Substitua pelo URL do seu servidor no Render
+const API_URL = 'https://centrodecompra-backend.onrender.com'; // Substitua pelo URL do seu servidor no Render
 
 // Estado global
 let produtos = [];
