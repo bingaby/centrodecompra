@@ -15,7 +15,7 @@ async function carregarProdutos() {
     mensagemVazia.style.display = 'none';
     gridProdutos.style.display = 'none';
 
-    const response = await fetch(`${API_URL}/api/produtos`);
+    const response = await fetch(${API_URL}/api/produtos);
     if (!response.ok) throw new Error('Erro ao carregar produtos');
     produtos = await response.json();
 
@@ -52,30 +52,22 @@ function filtrarProdutos() {
 
   produtosFiltrados.forEach(produto => {
     const imagem = produto.imagens && produto.imagens.length > 0
-      ? `${API_URL}${produto.imagens[0].startsWith('/') ? '' : '/'}${produto.imagens[0]}`
+      ? ${API_URL}${produto.imagens[0].startsWith('/') ? '' : '/'}${produto.imagens[0]}
       : '/imagens/sem-imagem.jpg';
 
     const precoFormatado = produto.preco
-      ? `R$ ${parseFloat(produto.preco).toFixed(2).replace('.', ',')}`
+      ? R$ ${parseFloat(produto.preco).toFixed(2).replace('.', ',')}
       : 'Preço indisponível';
 
     const card = document.createElement('div');
     card.className = 'produto-card';
-    card.setAttribute('role', 'group');
-    card.setAttribute('aria-label', `${produto.nome}, vendido por ${produto.loja}, preço ${precoFormatado}`);
-
-    card.innerHTML = `
-      <img src="${imagem}" alt="${produto.nome}" loading="lazy">
+    card.innerHTML = 
+      <img src="${imagem}" alt="${produto.nome}" loading="lazy" onerror="this.src='/imagens/sem-imagem.jpg'">
       <h3>${produto.nome}</h3>
       <p class="preco">${precoFormatado}</p>
       <p class="loja">${produto.loja}</p>
-      <a href="${produto.link}" target="_blank" class="btn-comprar" rel="nofollow noopener noreferrer">Comprar agora</a>
-    `;
-
-    // Garantir fallback da imagem
-    const img = card.querySelector('img');
-    img.onerror = () => { img.src = '/imagens/sem-imagem.jpg'; };
-
+      <a href="${produto.link}" target="_blank" class="btn-comprar">Comprar agora</a>
+    ;
     gridProdutos.appendChild(card);
   });
 }
@@ -83,9 +75,7 @@ function filtrarProdutos() {
 function filtrarPorCategoria(categoria) {
   categoriaSelecionada = categoria;
   document.querySelectorAll('.categoria-item').forEach(item => {
-    const ativo = item.dataset.categoria === categoria;
-    item.classList.toggle('ativa', ativo);
-    if (ativo) item.focus();
+    item.classList.toggle('ativa', item.dataset.categoria === categoria);
   });
   filtrarProdutos();
 }
@@ -93,18 +83,10 @@ function filtrarPorCategoria(categoria) {
 function filtrarPorLoja(loja) {
   lojaSelecionada = loja;
   document.querySelectorAll('.loja').forEach(item => {
-    const ativo = item.dataset.loja === loja;
-    item.classList.toggle('ativa', ativo);
-    if (ativo) item.focus();
+    item.classList.toggle('ativa', item.dataset.loja === loja);
   });
   document.querySelector('.loja-todas').classList.toggle('ativa', loja === 'todas');
   filtrarProdutos();
-}
-
-function escapeHtml(text) {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
 }
 
 function configurarBusca() {
@@ -118,7 +100,7 @@ function configurarBusca() {
 
     if (termoBusca) {
       buscaFeedback.style.display = 'block';
-      buscaFeedback.textContent = `Buscando por "${escapeHtml(termoBusca)}"...`;
+      buscaFeedback.textContent = Buscando por "${termoBusca}"...;
     } else {
       buscaFeedback.style.display = 'none';
       buscaFeedback.textContent = '';
