@@ -61,13 +61,21 @@ function filtrarProdutos() {
 
     const card = document.createElement('div');
     card.className = 'produto-card';
+    card.setAttribute('role', 'group');
+    card.setAttribute('aria-label', `${produto.nome}, vendido por ${produto.loja}, preço ${precoFormatado}`);
+
     card.innerHTML = `
-      <img src="${imagem}" alt="${produto.nome}" loading="lazy" onerror="this.src='/imagens/sem-imagem.jpg'">
+      <img src="${imagem}" alt="${produto.nome}" loading="lazy">
       <h3>${produto.nome}</h3>
       <p class="preco">${precoFormatado}</p>
       <p class="loja">${produto.loja}</p>
-      <a href="${produto.link}" target="_blank" class="btn-comprar">Comprar agora</a>
+      <a href="${produto.link}" target="_blank" class="btn-comprar" rel="nofollow noopener noreferrer">Comprar agora</a>
     `;
+
+    // Garantir fallback da imagem
+    const img = card.querySelector('img');
+    img.onerror = () => { img.src = '/imagens/sem-imagem.jpg'; };
+
     gridProdutos.appendChild(card);
   });
 }
@@ -75,7 +83,9 @@ function filtrarProdutos() {
 function filtrarPorCategoria(categoria) {
   categoriaSelecionada = categoria;
   document.querySelectorAll('.categoria-item').forEach(item => {
-    item.classList.toggle('ativa', item.dataset.categoria === categoria);
+    const ativo = item.dataset.categoria === categoria;
+    item.classList.toggle('ativa', ativo);
+    if (ativo) item.focus();
   });
   filtrarProdutos();
 }
@@ -83,10 +93,18 @@ function filtrarPorCategoria(categoria) {
 function filtrarPorLoja(loja) {
   lojaSelecionada = loja;
   document.querySelectorAll('.loja').forEach(item => {
-    item.classList.toggle('ativa', item.dataset.loja === loja);
+    const ativo = item.dataset.loja === loja;
+    item.classList.toggle('ativa', ativo);
+    if (ativo) item.focus();
   });
   document.querySelector('.loja-todas').classList.toggle('ativa', loja === 'todas');
   filtrarProdutos();
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 }
 
 function configurarBusca() {
@@ -100,7 +118,7 @@ function configurarBusca() {
 
     if (termoBusca) {
       buscaFeedback.style.display = 'block';
-      buscaFeedback.textContent = `Buscando por "${termoBusca}"...`;
+      buscaFeedback.textContent = `Buscando por "${escapeHtml(termoBusca)}"...`;
     } else {
       buscaFeedback.style.display = 'none';
       buscaFeedback.textContent = '';
