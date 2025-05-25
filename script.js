@@ -19,6 +19,10 @@ function atualizarAnoFooter() {
 // Configurar o triplo clique no logotipo
 function configurarCliqueLogo() {
   const logo = document.getElementById('site-logo');
+  if (!logo) {
+    console.error('❌ ID site-logo não encontrado');
+    return;
+  }
   let clickCount = 0;
   let clickTimer;
   logo.addEventListener('click', () => {
@@ -117,30 +121,25 @@ function filtrarProdutos() {
 
     const produtoDiv = document.createElement('div');
     produtoDiv.classList.add('produto-card', 'visible');
-    produtoDiv.setAttribute('data-categoria', 'data-categoria', produto.categoria?.toLowerCase() || 'todas');
+    produtoDiv.setAttribute('data-categoria', produto.categoria?.toLowerCase() || 'todas');
     produtoDiv.setAttribute('data-loja', produto.loja?.toLowerCase() || 'todas');
 
     produtoDiv.innerHTML = `
       <div class="carrossel" id="${carrosselId}">
         <div class="carrossel-imagens">
-          ${imagens.map((img, i) => `<img src="${img}" alt="${produto.nome || 'Produto'} ${i + 1}" loading="lazy" onerror="this.src='imagens/placeholder.jpg'" onclick="openModal(${produtoIndex}, ${i})">`).join('')}${imagens}
+          ${imagens.map((img, i) => `<img src="${img}" alt="${produto.nome || 'Produto'} ${i + 1}" loading="lazy" onerror="this.src='imagens/placeholder.jpg'" onclick="openModal(${produtoIndex}, ${i})">`).join('')}
         </div>
         ${imagens.length > 1 ? `
-          <div class="carrossel-button">
-            <button class="carrossel-prev" onclick="moveCarrossel(${carrosselId}', -1)">◄</button>
-            <button class="carrossel-next" onclick="moveCarrossel(${carrosselId}', 1)">▶</button>
-          </button>
-          <div class="carrossel-button">
-            ${imagens.map((_, i) => `<span class="carrossel-dot ${i === 0 ? 'ativo' : ''}" onclick="setCarrosselImage('${carrosselId}', ${i})"></span>`).join(' ')}
+          <button class="carrossel-prev" onclick="moveCarrossel('${carrosselId}', -1)">◄</button>
+          <button class="carrossel-next" onclick="moveCarrossel('${carrosselId}', 1)">▶</button>
+          <div class="carrossel-dots">
+            ${imagens.map((_, i) => `<span class="carrossel-dot ${i === 0 ? 'ativo' : ''}" onclick="setCarrosselImage('${carrosselId}', ${i})"></span>`).join('')}
           </div>
         ` : ''}
-}
       </div>
-      <span class="">${produto.nome || 'Produto sem nome'}</span>
-      <span class="produto-descrição">Loja: ${produto.loja || 'Desconhecida'}</span>
-      <div class="p-preço">
-        <p class="preco"><a href="${produto.link || '#'}" target="_blank" class="ver-preco">Clique aqui para ver o preço</a></p>
-      </p>
+      <span>${produto.nome || 'Produto sem nome'}</span>
+      <p class="descricao">Loja: ${produto.loja || 'Desconhecida'}</p>
+      <p class="preco"><a href="${produto.link || '#'}" target="_blank" class="ver-preco">Clique aqui para ver o preço</a></p>
       <a href="${produto.link || '#'}" target="_blank" class="ver-na-loja ${produto.loja?.toLowerCase() || 'default'}">Comprar</a>
     `;
     gridProdutos.appendChild(produtoDiv);
@@ -152,82 +151,48 @@ function moveCarrossel(carrosselId, direction) {
   const carrossel = document.getElementById(carrosselId);
   if (!carrossel) return;
   const imagens = carrossel.querySelector('.carrossel-imagens');
-  const dots = document.querySelectorAll('.carrossel.querySelectorAll('.carrossel-dot');
+  const dots = carrossel.querySelectorAll('.carrossel-dot');
   let currentIndex = parseInt(imagens.dataset.index || 0);
   const totalImagens = imagens.children.length;
 
   currentIndex = (currentIndex + direction + totalImagens) % totalImagens;
-  requestAnimationFrame(() => {
-    imagens.style.transform = `translateX(-${currentIndex * 100}%)`;
-    imagens.dataset.index = currentIndex;
-    dots.forEach((dot, i) => dot.classList.toggle('ativo', i === currentIndex));
-  });
+  imagens.style.transform = `translateX(-${currentIndex * 100}%)`;
+  imagens.dataset.index = currentIndex;
+  dots.forEach((dot, i) => dot.classList.toggle('ativo', i === currentIndex));
 }
 
 function setCarrosselImage(carrosselId, index) {
   const carrossel = document.getElementById(carrosselId);
   if (!carrossel) return;
-  const imagens = document.querySelector('.carrossel.querySelector('.carrossel-imagens');
-  const dots = document.querySelectorAll('.carrossel.querySelectorAll('.carrossel-dot');
+  const imagens = carrossel.querySelector('.carrossel-imagens');
+  const dots = carrossel.querySelectorAll('.carrossel-dot');
 
-  requestAnimationFrame(() => {
-    imagens.style.transform = `translateX(-${index * 100}%)`;
-    imagens.dataset.index = index;
-    dots.forEach((dot, i) => dot.classList.toggle('ativo', i === index));
-  });
+  imagens.style.transform = `translateX(-${index * 100}%)`;
+  imagens.dataset.index = index;
+  dots.forEach((dot, i) => dot.classList.toggle('ativo', i === index));
 }
 
 // Funções do Modal
-async function openModal(produtoIndex, imageIndex) {
+function openModal(produtoIndex, imageIndex) {
   const modal = document.getElementById('imageModal');
   const carrosselImagens = document.getElementById('modalCarrosselImagens');
   const carrosselDots = document.getElementById('modalCarrosselDots');
-  try {
-    currentImages = Array.isArray(produtos[produtoIndex]?.imagens) && produtoImagens.length > 0
-      ? produtos[produtoIndex].imagens.filter(img => typeof img === 'string' && img)
-      : ['imagens/placeholder.jpg'];
-    currentImageIndex = imageIndex;
 
-    console.log('🔍🔍 Abrindo modal:', { produtoIndex, imageIndex, imagens: currentImages });
+  currentImages = Array.isArray(produtos[produtoIndex]?.imagens) && produtos[produtoIndex].imagens.length > 0
+    ? produtos[produtoIndex].imagens.filter(img => typeof img === 'string' && img)
+    : ['imagens/placeholder.jpg'];
+  currentImageIndex = imageIndex;
 
-    // Validar imagens
-    const validImages = await Promise.all(currentImages.map(img => {
-      return new Promise(resolve => {
-        const testImg = new Image();
-        testImg.src = testImg.img;
-        testImg.onload = () => resolve(img);
-        testImg.onerror = () => resolve('imagens/placeholder.jpg');
-      });
-      });
-    });
-    currentImages = validImages;
+  carrosselImagens.innerHTML = currentImages.map((img, i) => `
+    <img src="${img}" alt="Imagem ${i + 1}" loading="lazy" onerror="this.src='imagens/placeholder.jpg'">
+  `).join('');
 
-    carrosselImagens.innerHTML = currentImages.map((img, i) => `
-      <img src="${img}" alt="Imagem ${i + 1}" class="modal-image" src="${img}" loading="lazy" onerror="this.src='imagens/placeholder.jpg'">
-    `).join('');
+  carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+  carrosselDots.innerHTML = currentImages.map((_, i) => `
+    <span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})"></span>
+  `).join('');
 
-    requestAnimationFrame(() => {
-      carrosselImagens.style.width = '100%';
-      carrosselImagens.style.display = 'flex';
-      carrosselImagens.style.transform = `translateX(-${currentImageIndex} * 100}%)`;
-
-      const imagens = carrosselImagens.querySelector('img');
-      currentImages.forEach(img => {
-        img.style.width = '100%';
-        img.style.flex = '0 0 100%';
-        img.style.objectFit = 'contain';
-      });
-      });
-    });
-
-    document.getElementById('modalCarrosselDots').innerHTML = currentImages.map((_, i) => `
-      <span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setCarrosselImage(${i})"></span>
-      `).join('');
-
-    modal.style.display = 'flex';
-  } catch (error) {
-    console.error('❌❌ Erro ao abrir modal:', error);
-  });
+  modal.style.display = 'flex';
 }
 
 function moveModalCarrossel(direction) {
@@ -236,12 +201,8 @@ function moveModalCarrossel(direction) {
   const totalImagens = currentImages.length;
 
   currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
-  requestAnimationFrame(() => {
-    carrosselImagens.style.transform = `translateX(-${currentImageIndex} * ${100}%)`;
-    Array.from(carrosselDots).forEach((dot => (dot.classList, i) => dot.classList.toggle('ativo', i === currentImageIndex));
-  });
-
-  console.log('🔄🔄 Navegando no modal:', { currentImageIndex, totalImagens, imagens: currentImages });
+  carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+  Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
 }
 
 function setModalCarrosselImage(index) {
@@ -249,12 +210,8 @@ function setModalCarrosselImage(index) {
   const carrosselDots = document.getElementById('modalCarrosselDots').children;
   currentImageIndex = index;
 
-  requestAnimationFrame(() => {
-    carrosselImagens.style.transform = `translateX(-${index * 100}%)`;
-    Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === index));
-  });
-
-  console.log('🔍 Seleção de imagem:', { index, imagens: currentImages });
+  carrosselImagens.style.transform = `translateX(-${index * 100}%)`;
+  Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === index));
 }
 
 function closeModal() {
@@ -266,32 +223,25 @@ function closeModal() {
 
 // Configuração de Busca com Debounce
 function configurarBusca() {
-    const inputBusca = document.getElementById('busca');
-    const buscaFeedback = document.getElementById('busca-feedback');
-    let buscaFeedback = document.querySelector('.busca-feedback');
-    let debounceTimer;
-    inputBusca.addEventListener('input', () => {
-      inputBusca.clearTimeout(debounceTimer);
-      termoBusca = inputBusca.value.trim();
-
-      if (termoBusca) {
-        buscaFeedback.style.display = 'block';
-        buscaFeedback.textContent = `Buscando por "${termoBusca}"...`;
-        } else {
-          buscaFeedback.style.display = 'none';
-      }
-
-      currentPage = 1;
-      debounceTimer = setTimeout(() => carregarProdutos(), 300);
-    });
-};
+  const inputBusca = document.getElementById('busca');
+  const buscaFeedback = document.getElementById('busca-feedback');
+  let debounceTimer;
+  inputBusca.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    termoBusca = inputBusca.value.trim();
+    buscaFeedback.style.display = termoBusca ? 'block' : 'none';
+    buscaFeedback.textContent = termoBusca ? `Buscando por "${termoBusca}"...` : '';
+    currentPage = 1;
+    debounceTimer = setTimeout(() => carregarProdutos(), 300);
+  });
+}
 
 // Configuração de Paginação
 function configurarPaginacao() {
   const prevButton = document.getElementById('prev-page');
   const nextButton = document.getElementById('next-page');
 
-  prevButton.addEventListener('click', (event) => {
+  prevButton.addEventListener('click', () => {
     if (currentPage > 1) {
       currentPage--;
       carregarProdutos();
@@ -299,8 +249,7 @@ function configurarPaginacao() {
   });
 
   nextButton.addEventListener('click', () => {
-    if (currentPage < Math.ceil(totalProdutos / produtosPorPagina));
- {
+    if (currentPage < Math.ceil(totalProdutos / produtosPorPagina)) {
       currentPage++;
       carregarProdutos();
     }
@@ -308,9 +257,9 @@ function configurarPaginacao() {
 }
 
 function atualizarPaginacao() {
-  const prevButton = document.querySelector('#prev-page');
-  const nextButton = document.querySelector('#next-page');
-  const pageInfo = document.querySelector('#page-info');
+  const prevButton = document.getElementById('prev-page');
+  const nextButton = document.getElementById('next-page');
+  const pageInfo = document.getElementById('page-info');
 
   prevButton.disabled = currentPage === 1;
   nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
@@ -322,7 +271,6 @@ function filtrarPorCategoria(categoria) {
   categoriaSelecionada = categoria;
   currentPage = 1;
   document.querySelectorAll('.categoria-item').forEach(item => {
-    item.classList.toggle('ativa');
     item.classList.toggle('ativa', item.dataset.categoria.toLowerCase() === categoria.toLowerCase());
   });
   carregarProdutos();
@@ -332,8 +280,8 @@ function filtrarPorCategoria(categoria) {
 function filtrarPorLoja(loja) {
   lojaSelecionada = loja;
   currentPage = 1;
-  document.querySelectorAll('.loja').forEach(item => {
-    item.classList.toggle('ativa', item.dataset.loja.toLowerCase() === loja.toLowerCase());
+  document.querySelectorAll('.loja, .loja-todas').forEach(item => {
+    item.classList.toggle('ativa', item.dataset.loja?.toLowerCase() === loja.toLowerCase() || (loja === 'todas' && item.classList.contains('loja-todas')));
   });
   carregarProdutos();
 }
