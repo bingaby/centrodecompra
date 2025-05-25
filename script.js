@@ -1,6 +1,6 @@
-const API_URL = 'https://centrodecompra-backend.onrender.com'; // Use 'http://localhost:10000' localmente
+const API_URL = 'https://centrodecompra-backend.onrender.com'; // Use 'http://localhost:10000' para testes locais
 
-// Variáveis Globais
+// Variáveis globais
 let produtos = [];
 let categoriaSelecionada = 'todas';
 let lojaSelecionada = 'todas';
@@ -16,13 +16,9 @@ function atualizarAnoFooter() {
   document.getElementById('year').textContent = new Date().getFullYear();
 }
 
-// Configurar o triplo clique no logotipo
+// Detectar triplo clique no logotipo
 function configurarCliqueLogo() {
   const logo = document.getElementById('site-logo');
-  if (!logo) {
-    console.error('❌ ID site-logo não encontrado');
-    return;
-  }
   let clickCount = 0;
   let clickTimer;
   logo.addEventListener('click', () => {
@@ -44,7 +40,7 @@ async function carregarProdutos() {
   const errorMessage = document.getElementById('error-message');
   const gridProdutos = document.getElementById('grid-produtos');
   
-  const maxRetries = 5;
+  const maxRetries = 3;
   let attempt = 1;
 
   while (attempt <= maxRetries) {
@@ -70,7 +66,7 @@ async function carregarProdutos() {
       atualizarPaginacao();
       return;
     } catch (error) {
-      console.error(`⚠️ Tentativa ${attempt} falhou: ${error}`);
+      console.error(`⚠️ Tentativa ${attempt} falhou:`, error);
       if (attempt === maxRetries) {
         errorMessage.textContent = `Erro ao carregar produtos após ${maxRetries} tentativas: ${error.message}.`;
         errorMessage.style.display = 'block';
@@ -89,7 +85,6 @@ async function carregarProdutos() {
 function filtrarProdutos() {
   const gridProdutos = document.getElementById('grid-produtos');
   const mensagemVazia = document.getElementById('mensagem-vazia');
-  if (!gridProdutos || !mensagemVazia) return;
 
   const produtosFiltrados = produtos.filter((produto) => {
     const matchCategoria =
@@ -99,7 +94,7 @@ function filtrarProdutos() {
       lojaSelecionada === 'todas' ||
       produto.loja?.toLowerCase() === lojaSelecionada.toLowerCase();
     const matchBusca =
-      !termBusca || produto.nome?.toLowerCase().includes(termoBusca.toLowerCase());
+      !termoBusca || produto.nome?.toLowerCase().includes(termoBusca.toLowerCase());
     return matchCategoria && matchLoja && matchBusca;
   });
 
@@ -138,7 +133,7 @@ function filtrarProdutos() {
         ` : ''}
       </div>
       <span>${produto.nome || 'Produto sem nome'}</span>
-      <p class="descricao">Loja: ${produto.loja || 'Desconhecida'}</p>
+      <span class="descricao">Loja: ${produto.loja || 'Desconhecida'}</span>
       <p class="preco"><a href="${produto.link || '#'}" target="_blank" class="ver-preco">Clique aqui para ver o preço</a></p>
       <a href="${produto.link || '#'}" target="_blank" class="ver-na-loja ${produto.loja?.toLowerCase() || 'default'}">Comprar</a>
     `;
@@ -146,7 +141,7 @@ function filtrarProdutos() {
   });
 }
 
-// Funções do Carrossel
+// Funções do carrossel
 function moveCarrossel(carrosselId, direction) {
   const carrossel = document.getElementById(carrosselId);
   if (!carrossel) return;
@@ -156,9 +151,11 @@ function moveCarrossel(carrosselId, direction) {
   const totalImagens = imagens.children.length;
 
   currentIndex = (currentIndex + direction + totalImagens) % totalImagens;
-  imagens.style.transform = `translateX(-${currentIndex * 100}%)`;
-  imagens.dataset.index = currentIndex;
-  dots.forEach((dot, i) => dot.classList.toggle('ativo', i === currentIndex));
+  requestAnimationFrame(() => {
+    imagens.style.transform = `translateX(-${currentIndex * 100}%)`;
+    imagens.dataset.index = currentIndex;
+    dots.forEach((dot, i) => dot.classList.toggle('ativo', i === currentIndex));
+  });
 }
 
 function setCarrosselImage(carrosselId, index) {
@@ -167,32 +164,63 @@ function setCarrosselImage(carrosselId, index) {
   const imagens = carrossel.querySelector('.carrossel-imagens');
   const dots = carrossel.querySelectorAll('.carrossel-dot');
 
-  imagens.style.transform = `translateX(-${index * 100}%)`;
-  imagens.dataset.index = index;
-  dots.forEach((dot, i) => dot.classList.toggle('ativo', i === index));
+  requestAnimationFrame(() => {
+    imagens.style.transform = `translateX(-${index * 100}%)`;
+    imagens.dataset.index = index;
+    dots.forEach((dot, i) => dot.classList.toggle('ativo', i === index));
+  });
 }
 
-// Funções do Modal
-function openModal(produtoIndex, imageIndex) {
+// Funções do modal
+async function openModal(produtoIndex, imageIndex) {
   const modal = document.getElementById('imageModal');
   const carrosselImagens = document.getElementById('modalCarrosselImagens');
   const carrosselDots = document.getElementById('modalCarrosselDots');
 
-  currentImages = Array.isArray(produtos[produtoIndex]?.imagens) && produtos[produtoIndex].imagens.length > 0
-    ? produtos[produtoIndex].imagens.filter(img => typeof img === 'string' && img)
-    : ['imagens/placeholder.jpg'];
-  currentImageIndex = imageIndex;
+  try {
+    currentImages = Array.isArray(produtos[produtoIndex]?.imagens) && produtos[produtoIndex].imagens.length > 0
+      ? produtos[produtoIndex].imagens.filter(img => typeof img === 'string' && img)
+      : ['imagens/placeholder.jpg'];
+    currentImageIndex = imageIndex;
 
-  carrosselImagens.innerHTML = currentImages.map((img, i) => `
-    <img src="${img}" alt="Imagem ${i + 1}" loading="lazy" onerror="this.src='imagens/placeholder.jpg'">
-  `).join('');
+    console.log('🔍 Abrindo modal:', { produtoIndex, imageIndex, imagens: currentImages });
 
-  carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
-  carrosselDots.innerHTML = currentImages.map((_, i) => `
-    <span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})"></span>
-  `).join('');
+    // Validar imagens
+    const validImages = await Promise.all(currentImages.map(img => {
+      return new Promise(resolve => {
+        const testImg = new Image();
+        testImg.src = img;
+        testImg.onload = () => resolve(img);
+        testImg.onerror = () => resolve('imagens/placeholder.jpg');
+      });
+    }));
+    currentImages = validImages;
 
-  modal.style.display = 'flex';
+    carrosselImagens.innerHTML = currentImages.map((img, i) => `
+      <img src="${img}" alt="Imagem ${i + 1}" class="modal-image" loading="lazy" onerror="this.src='imagens/placeholder.jpg'">
+    `).join('');
+
+    requestAnimationFrame(() => {
+      carrosselImagens.style.width = '100%';
+      carrosselImagens.style.display = 'flex';
+      carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+
+      const imagens = carrosselImagens.querySelectorAll('img');
+      imagens.forEach(img => {
+        img.style.width = '100%';
+        img.style.flex = '0 0 100%';
+        img.style.objectFit = 'contain';
+      });
+    });
+
+    carrosselDots.innerHTML = currentImages.map((_, i) => `
+      <span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})"></span>
+    `).join('');
+
+    modal.style.display = 'flex';
+  } catch (error) {
+    console.error('❌ Erro ao abrir modal:', error);
+  }
 }
 
 function moveModalCarrossel(direction) {
@@ -201,17 +229,24 @@ function moveModalCarrossel(direction) {
   const totalImagens = currentImages.length;
 
   currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
-  carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
-  Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
+  requestAnimationFrame(() => {
+    carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+    Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
+  });
+
+  console.log('🔄 Navegando modal:', { currentImageIndex, totalImagens, imagens: currentImages });
 }
 
 function setModalCarrosselImage(index) {
   const carrosselImagens = document.getElementById('modalCarrosselImagens');
   const carrosselDots = document.getElementById('modalCarrosselDots').children;
   currentImageIndex = index;
+  requestAnimationFrame(() => {
+    carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+    Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
+  });
 
-  carrosselImagens.style.transform = `translateX(-${index * 100}%)`;
-  Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === index));
+  console.log('🔍 Selecionando imagem:', { index, imagens: currentImages });
 }
 
 function closeModal() {
@@ -221,22 +256,29 @@ function closeModal() {
   currentImageIndex = 0;
 }
 
-// Configuração de Busca com Debounce
+// Configurar busca com debounce
 function configurarBusca() {
   const inputBusca = document.getElementById('busca');
   const buscaFeedback = document.getElementById('busca-feedback');
   let debounceTimer;
+
   inputBusca.addEventListener('input', () => {
     clearTimeout(debounceTimer);
     termoBusca = inputBusca.value.trim();
-    buscaFeedback.style.display = termoBusca ? 'block' : 'none';
-    buscaFeedback.textContent = termoBusca ? `Buscando por "${termoBusca}"...` : '';
+
+    if (termoBusca) {
+      buscaFeedback.style.display = 'block';
+      buscaFeedback.textContent = `Buscando por "${termoBusca}"...`;
+    } else {
+      buscaFeedback.style.display = 'none';
+    }
+
     currentPage = 1;
     debounceTimer = setTimeout(() => carregarProdutos(), 300);
   });
 }
 
-// Configuração de Paginação
+// Configurar paginação
 function configurarPaginacao() {
   const prevButton = document.getElementById('prev-page');
   const nextButton = document.getElementById('next-page');
@@ -281,7 +323,7 @@ function filtrarPorLoja(loja) {
   lojaSelecionada = loja;
   currentPage = 1;
   document.querySelectorAll('.loja, .loja-todas').forEach(item => {
-    item.classList.toggle('ativa', item.dataset.loja?.toLowerCase() === loja.toLowerCase() || (loja === 'todas' && item.classList.contains('loja-todas')));
+    item.classList.toggle('ativa', item.dataset.loja.toLowerCase() === loja.toLowerCase());
   });
   carregarProdutos();
 }
@@ -295,8 +337,6 @@ document.addEventListener('DOMContentLoaded', () => {
   configurarCliqueLogo();
 
   document.getElementById('imageModal').addEventListener('click', (e) => {
-    if (e.target === document.getElementById('imageModal')) {
-      closeModal();
-    }
+    if (e.target === e.currentTarget) closeModal();
   });
 });
