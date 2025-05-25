@@ -17,10 +17,10 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header class="site-header">
+  <header class="site-header" role="banner">
     <div class="logo-container">
-      <a href="#">
-        <img src="logos/centrodecompras.jpg" alt="Centro de Compras" id="logo" loading="lazy" aria-label="Logo - clique duplo para acessar a administração" />
+      <a href="#" aria-label="Centro de Compras - Página inicial">
+        <img src="logos/centrodecompras.jpg" alt="Logo Centro de Compras" id="logo" loading="lazy" />
       </a>
     </div>
     <div class="header-text">
@@ -29,107 +29,116 @@
     </div>
   </header>
 
-  <nav>
-    <a href="index.html">Promoções</a>
-    <a href="cupom.html">Cupom de desconto</a>
-    <a href="sobre.html">Sobre</a>
-    <a href="contato.html">Contato</a>
+  <nav role="navigation" aria-label="Menu principal">
+    <ul class="menu-principal">
+      <li><a href="index.html">Promoções</a></li>
+      <li><a href="cupom.html">Cupom de desconto</a></li>
+      <li><a href="sobre.html">Sobre</a></li>
+      <li><a href="contato.html">Contato</a></li>
+    </ul>
   </nav>
 
   <div class="container">
-    <aside class="sidebar-categorias">
-      <h3>Categorias</h3>
+    <aside class="sidebar-categorias" role="complementary" aria-label="Categorias de produtos">
+      <h2>Categorias</h2>
       <ul>
-        <li class="categoria-item ativa" data-categoria="todas" onclick="filtrarPorCategoria('todas')" role="button" aria-label="Filtrar por Todas as Categorias">Todas as Categorias</li>
-        <li class="categoria-item" data-categoria="eletronicos" onclick="filtrarPorCategoria('eletronicos')" role="button" aria-label="Filtrar por Eletrônicos">Eletrônicos</li>
-        <li class="categoria-item" data-categoria="moda" onclick="filtrarPorCategoria('moda')" role="button" aria-label="Filtrar por Moda">Moda</li>
-        <li class="categoria-item" data-categoria="fitness" onclick="filtrarPorCategoria('fitness')" role="button" aria-label="Filtrar por Fitness">Fitness</li>
-        <li class="categoria-item" data-categoria="casa" onclick="filtrarPorCategoria('casa')" role="button" aria-label="Filtrar por Casa e Decoração">Casa e Decoração</li>
-        <li class="categoria-item" data-categoria="beleza" onclick="filtrarPorCategoria('beleza')" role="button" aria-label="Filtrar por Beleza">Beleza</li>
-        <li class="categoria-item" data-categoria="esportes" onclick="filtrarPorCategoria('esportes')" role="button" aria-label="Filtrar por Esportes">Esportes</li>
-        <li class="categoria-item" data-categoria="livros" onclick="filtrarPorCategoria('livros')" role="button" aria-label="Filtrar por Livros">Livros</li>
-        <li class="categoria-item" data-categoria="infantil" onclick="filtrarPorCategoria('infantil')" role="button" aria-label="Filtrar por Infantil">Infantil</li>
-        <li class="categoria-item" data-categoria="celulares" onclick="filtrarPorCategoria('celulares')" role="button" aria-label="Filtrar por Celulares">Celulares</li>
-        <li class="categoria-item" data-categoria="eletrodomesticos" onclick="filtrarPorCategoria('eletrodomesticos')" role="button" aria-label="Filtrar por Eletrodomésticos">Eletrodomésticos</li>
+        <li tabindex="0" class="categoria-item ativa" data-categoria="todas" role="button" aria-pressed="true" aria-label="Filtrar por Todas as Categorias">Todas as Categorias</li>
+        <li tabindex="0" class="categoria-item" data-categoria="eletronicos" role="button" aria-pressed="false" aria-label="Filtrar por Eletrônicos">Eletrônicos</li>
+        <li tabindex="0" class="categoria-item" data-categoria="moda" role="button" aria-pressed="false" aria-label="Filtrar por Moda">Moda</li>
+        <li tabindex="0" class="categoria-item" data-categoria="fitness" role="button" aria-pressed="false" aria-label="Filtrar por Fitness">Fitness</li>
+        <li tabindex="0" class="categoria-item" data-categoria="casa" role="button" aria-pressed="false" aria-label="Filtrar por Casa e Decoração">Casa e Decoração</li>
+        <li tabindex="0" class="categoria-item" data-categoria="beleza" role="button" aria-pressed="false" aria-label="Filtrar por Beleza">Beleza</li>
+        <li tabindex="0" class="categoria-item" data-categoria="esportes" role="button" aria-pressed="false" aria-label="Filtrar por Esportes">Esportes</li>
+        <li tabindex="0" class="categoria-item" data-categoria="livros" role="button" aria-pressed="false" aria-label="Filtrar por Livros">Livros</li>
+        <li tabindex="0" class="categoria-item" data-categoria="infantil" role="button" aria-pressed="false" aria-label="Filtrar por Infantil">Infantil</li>
+        <li tabindex="0" class="categoria-item" data-categoria="celulares" role="button" aria-pressed="false" aria-label="Filtrar por Celulares">Celulares</li>
+        <li tabindex="0" class="categoria-item" data-categoria="eletrodomesticos" role="button" aria-pressed="false" aria-label="Filtrar por Eletrodomésticos">Eletrodomésticos</li>
       </ul>
     </aside>
 
-    <main>
-      <section id="ofertas-section">
+    <main role="main">
+      <section id="ofertas-section" aria-labelledby="ofertas-titulo">
         <h2 id="ofertas-titulo">🛍️ Ofertas do Dia</h2>
 
-        <div class="lojas-parceiras">
+        <div class="lojas-parceiras" aria-label="Lojas parceiras para filtrar ofertas">
           <h3>🌟 Lojas Parceiras</h3>
-          <div class="grid-lojas">
-            <div class="loja-todas ativa" onclick="filtrarPorLoja('todas')" role="button" aria-label="Filtrar por Todas as Lojas">
-              <span>Todas as Lojas</span>
-            </div>
-            <div class="loja" data-loja="amazon" onclick="filtrarPorLoja('amazon')" role="button" aria-label="Filtrar por Amazon">
+          <div class="grid-lojas" role="list">
+            <div class="loja-todas ativa" role="button" tabindex="0" aria-pressed="true" aria-label="Filtrar por Todas as Lojas" data-loja="todas">Todas as Lojas</div>
+            <div class="loja" role="button" tabindex="0" aria-pressed="false" aria-label="Filtrar por Amazon" data-loja="amazon">
               <img src="logos/amazon.png" alt="Logo da Amazon" loading="lazy" />
-              <span class="amazon">Amazon</span>
+              <span>Amazon</span>
             </div>
-            <div class="loja" data-loja="magalu" onclick="filtrarPorLoja('magalu')" role="button" aria-label="Filtrar por Magalu">
+            <div class="loja" role="button" tabindex="0" aria-pressed="false" aria-label="Filtrar por Magalu" data-loja="magalu">
               <img src="logos/magalu.png" alt="Logo da Magalu" loading="lazy" />
-              <span class="magalu">Magalu</span>
+              <span>Magalu</span>
             </div>
-            <div class="loja" data-loja="shein" onclick="filtrarPorLoja('shein')" role="button" aria-label="Filtrar por Shein">
+            <div class="loja" role="button" tabindex="0" aria-pressed="false" aria-label="Filtrar por Shein" data-loja="shein">
               <img src="logos/shein.png" alt="Logo da Shein" loading="lazy" />
-              <span class="shein">Shein</span>
+              <span>Shein</span>
             </div>
-            <div class="loja" data-loja="shopee" onclick="filtrarPorLoja('shopee')" role="button" aria-label="Filtrar por Shopee">
+            <div class="loja" role="button" tabindex="0" aria-pressed="false" aria-label="Filtrar por Shopee" data-loja="shopee">
               <img src="logos/shopee.png" alt="Logo da Shopee" loading="lazy" />
-              <span class="shopee">Shopee</span>
+              <span>Shopee</span>
             </div>
-            <div class="loja" data-loja="mercadolivre" onclick="filtrarPorLoja('mercadolivre')" role="button" aria-label="Filtrar por Mercado Livre">
+            <div class="loja" role="button" tabindex="0" aria-pressed="false" aria-label="Filtrar por Mercado Livre" data-loja="mercadolivre">
               <img src="logos/mercadolivre.jpg" alt="Logo do Mercado Livre" loading="lazy" />
-              <span class="mercadolivre">Mercado Livre</span>
+              <span>Mercado Livre</span>
             </div>
-            <div class="loja" data-loja="alibaba" onclick="filtrarPorLoja('alibaba')" role="button" aria-label="Filtrar por Alibaba">
+            <div class="loja" role="button" tabindex="0" aria-pressed="false" aria-label="Filtrar por Alibaba" data-loja="alibaba">
               <img src="logos/alibaba.png" alt="Logo da Alibaba" loading="lazy" />
-              <span class="alibaba">Alibaba</span>
+              <span>Alibaba</span>
             </div>
           </div>
         </div>
 
-        <input type="text" id="busca" placeholder="Busque por produtos..." class="barra-busca" aria-label="Buscar produtos" aria-describedby="busca-instrucao" />
-        <span id="busca-instrucao" style="display: none;">Digite o nome do produto para filtrar os resultados.</span>
-        <div id="busca-feedback" class="busca-feedback" style="display:none;">Buscando...</div>
-        <div class="loading-spinner" id="loading-spinner" style="display:none;">Carregando...</div>
+        <input
+          type="search"
+          id="busca"
+          class="barra-busca"
+          placeholder="Busque por produtos..."
+          aria-label="Buscar produtos"
+          aria-describedby="busca-instrucao"
+        />
+        <span id="busca-instrucao" class="sr-only">Digite o nome do produto para filtrar os resultados.</span>
+        <div id="busca-feedback" class="busca-feedback" aria-live="polite" style="display:none;">Buscando...</div>
+        <div id="loading-spinner" class="loading-spinner" aria-live="assertive" style="display:none;">Carregando...</div>
 
-        <div class="grid-lojas" id="grid-produtos"></div>
-        <p class="mensagem-vazia" id="mensagem-vazia" style="display:none;">Nenhum produto encontrado.</p>
+        <div id="grid-produtos" class="grid-produtos" role="list" aria-live="polite"></div>
+        <p id="mensagem-vazia" class="mensagem-vazia" style="display:none;">Nenhum produto encontrado.</p>
       </section>
 
-      <a class="whatsapp" href="https://wa.me/5521975179737" target="_blank" rel="noopener">📲 Atendimento via WhatsApp</a>
-      <a class="telegram" href="https://t.me/boost/centraldecomprascdc" target="_blank" rel="noopener">📢 Canal no Telegram</a>
+      <nav class="contatos-rapidos" aria-label="Atendimento e canais sociais">
+        <a class="whatsapp" href="https://wa.me/5521975179737" target="_blank" rel="noopener noreferrer" aria-label="Atendimento via WhatsApp">📲 Atendimento via WhatsApp</a>
+        <a class="telegram" href="https://t.me/boost/centraldecomprascdc" target="_blank" rel="noopener noreferrer" aria-label="Canal no Telegram">📢 Canal no Telegram</a>
 
-      <div class="social-links">
-        <a href="https://www.tiktok.com/@cdc.centraldecompas?_t=ZM-8vYQlF9u1dH&_r=1" target="_blank" rel="noopener">
-          <div class="icon"><img src="logos/tiktok.png" alt="Ícone do TikTok" loading="lazy" /></div>
-          <span>TikTok</span>
-        </a>
-        <a href="https://www.instagram.com/cdccentrodecompras/?utm_source=qr&r=nametag" target="_blank" rel="noopener">
-          <div class="icon"><img src="logos/instagram.png" alt="Ícone do Instagram" loading="lazy" /></div>
-          <span>Instagram</span>
-        </a>
-        <a href="https://x.com/ComprasCdc" target="_blank" rel="noopener">
-          <div class="icon"><img src="logos/x.png" alt="Ícone do X" loading="lazy" /></div>
-          <span>X</span>
-        </a>
-        <a href="https://www.youtube.com/channel/UCaKHlI-hWqwdAXS6Xsv3ZzA" target="_blank" rel="noopener">
-          <div class="icon"><img src="logos/youtube.png" alt="Ícone do YouTube" loading="lazy" /></div>
-          <span>YouTube</span>
-        </a>
-      </div>
+        <div class="social-links">
+          <a href="https://www.tiktok.com/@cdc.centraldecompas?_t=ZM-8vYQlF9u1dH&_r=1" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+            <img src="logos/tiktok.png" alt="Ícone do TikTok" loading="lazy" />
+            <span>TikTok</span>
+          </a>
+          <a href="https://www.instagram.com/cdccentrodecompras/?utm_source=qr&r=nametag" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+            <img src="logos/instagram.png" alt="Ícone do Instagram" loading="lazy" />
+            <span>Instagram</span>
+          </a>
+          <a href="https://x.com/ComprasCdc" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+            <img src="logos/x.png" alt="Ícone do X" loading="lazy" />
+            <span>X</span>
+          </a>
+          <a href="https://www.youtube.com/channel/UCaKHlI-hWqwdAXS6Xsv3ZzA" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+            <img src="logos/youtube.png" alt="Ícone do YouTube" loading="lazy" />
+            <span>YouTube</span>
+          </a>
+        </div>
+      </nav>
     </main>
   </div>
 
-  <footer>
+  <footer role="contentinfo">
     <p>🔧 Todos os direitos reservados <strong>Grupo Centro de Compras "CdC"</strong> © <span id="year"></span></p>
   </footer>
 
-  <div class="robo-assistente">
-    <a href="https://wa.me/5521975179737" target="_blank" rel="noopener">
+  <div class="robo-assistente" aria-label="Assistente virtual">
+    <a href="https://wa.me/5521975179737" target="_blank" rel="noopener noreferrer">
       <img src="imagens/robo.jpg" alt="Robô Assistente" class="robo-imagem" />
       <div class="robo-texto">Posso ajudar?</div>
     </a>
@@ -154,92 +163,112 @@
     // Função para carregar produtos do backend
     async function carregarProdutos() {
       try {
-        loadingSpinner.style.display = 'block';
-        buscaFeedback.style.display = 'block';
-        const res = await fetch(`${API_URL}/produtos`);
-        produtos = await res.json();
-        loadingSpinner.style.display = 'none';
-        buscaFeedback.style.display = 'none';
+        mostrarLoading(true);
+        const response = await fetch(`${API_URL}/produtos`);
+        if (!response.ok) throw new Error('Falha ao buscar produtos');
+        produtos = await response.json();
+        mostrarLoading(false);
         renderizarProdutos();
       } catch (error) {
-        loadingSpinner.style.display = 'none';
-        buscaFeedback.style.display = 'none';
-        gridProdutos.innerHTML = '<p>Erro ao carregar produtos.</p>';
+        mostrarLoading(false);
+        gridProdutos.innerHTML = '<p class="erro">Erro ao carregar produtos. Tente novamente mais tarde.</p>';
       }
     }
 
-    // Filtrar e renderizar produtos
-    function renderizarProdutos() {
-      const buscaValor = buscaInput.value.toLowerCase();
+    // Mostrar/ocultar loading e feedback
+    function mostrarLoading(mostrar) {
+      loadingSpinner.style.display = mostrar ? 'block' : 'none';
+      buscaFeedback.style.display = mostrar ? 'block' : 'none';
+    }
 
-      let produtosFiltrados = produtos.filter(p => {
-        const correspondeCategoria = filtroCategoria === 'todas' || p.categoria === filtroCategoria;
-        const correspondeLoja = filtroLoja === 'todas' || p.loja === filtroLoja;
-        const correspondeBusca = p.nome.toLowerCase().includes(buscaValor);
-        return correspondeCategoria && correspondeLoja && correspondeBusca;
+    // Renderizar produtos filtrados
+    function renderizarProdutos() {
+      const termoBusca = buscaInput.value.trim().toLowerCase();
+
+      const filtrados = produtos.filter(produto => {
+        const porCategoria = filtroCategoria === 'todas' || produto.categoria === filtroCategoria;
+        const porLoja = filtroLoja === 'todas' || produto.loja === filtroLoja;
+        const porBusca = produto.nome.toLowerCase().includes(termoBusca);
+        return porCategoria && porLoja && porBusca;
       });
 
-      if (produtosFiltrados.length === 0) {
+      if (filtrados.length === 0) {
         mensagemVazia.style.display = 'block';
+        gridProdutos.innerHTML = '';
       } else {
         mensagemVazia.style.display = 'none';
+        gridProdutos.innerHTML = filtrados.map(p => `
+          <article class="card-produto" role="listitem" tabindex="0" aria-label="${p.nome}, preço R$${p.preco}">
+            <a href="${p.url}" target="_blank" rel="nofollow noopener noreferrer" aria-label="Link para ${p.nome} na loja ${p.loja}">
+              <img src="${p.imagem}" alt="Imagem de ${p.nome}" loading="lazy" />
+              <h3>${p.nome}</h3>
+              <p class="preco">R$ ${p.preco.toFixed(2)}</p>
+            </a>
+          </article>
+        `).join('');
       }
-
-      gridProdutos.innerHTML = produtosFiltrados.map(p => `
-        <div class="card-produto" role="article" tabindex="0" aria-label="Produto ${p.nome}, preço R$${p.preco}">
-          <img src="/uploads/${p.imagem}" alt="${p.nome}" loading="lazy" />
-          <div class="detalhes-produto">
-            <h4>${p.nome}</h4>
-            <p>Categoria: ${p.categoria}</p>
-            <p class="preco">R$ ${p.preco.toFixed(2).replace('.', ',')}</p>
-            <a href="${p.link}" target="_blank" rel="noopener" aria-label="Comprar ${p.nome} na loja ${p.loja}">Comprar</a>
-          </div>
-        </div>
-      `).join('');
     }
 
-    // Filtrar por categoria
-    function filtrarPorCategoria(categoria) {
+    // Atualizar filtros de categoria
+    function atualizarFiltroCategoria(categoria) {
       filtroCategoria = categoria;
-      atualizarAtivoCategoria();
+      document.querySelectorAll('.categoria-item').forEach(item => {
+        const ativo = item.dataset.categoria === categoria;
+        item.classList.toggle('ativa', ativo);
+        item.setAttribute('aria-pressed', ativo);
+      });
       renderizarProdutos();
     }
 
-    // Atualiza o item ativo da categoria
-    function atualizarAtivoCategoria() {
-      document.querySelectorAll('.categoria-item').forEach(el => {
-        el.classList.toggle('ativa', el.getAttribute('data-categoria') === filtroCategoria);
-      });
-    }
-
-    // Filtrar por loja
-    function filtrarPorLoja(loja) {
+    // Atualizar filtros de loja
+    function atualizarFiltroLoja(loja) {
       filtroLoja = loja;
-      atualizarAtivoLoja();
+      document.querySelectorAll('.loja').forEach(item => {
+        const ativo = item.dataset.loja === loja;
+        item.classList.toggle('ativa', ativo);
+        item.setAttribute('aria-pressed', ativo);
+      });
+      // Também o botão "Todas as Lojas"
+      const todasLojasBtn = document.querySelector('.loja-todas');
+      const todasAtiva = loja === 'todas';
+      todasLojasBtn.classList.toggle('ativa', todasAtiva);
+      todasLojasBtn.setAttribute('aria-pressed', todasAtiva);
+
       renderizarProdutos();
     }
 
-    // Atualiza o item ativo da loja
-    function atualizarAtivoLoja() {
-      document.querySelectorAll('.loja').forEach(el => {
-        el.classList.remove('ativa');
+    // Eventos de clique e teclado para categorias
+    document.querySelectorAll('.categoria-item').forEach(item => {
+      item.addEventListener('click', () => atualizarFiltroCategoria(item.dataset.categoria));
+      item.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          atualizarFiltroCategoria(item.dataset.categoria);
+        }
       });
-      document.querySelectorAll('.loja-todas').forEach(el => {
-        el.classList.remove('ativa');
-      });
-      if (filtroLoja === 'todas') {
-        document.querySelector('.loja-todas').classList.add('ativa');
-      } else {
-        const lojaEl = document.querySelector(`.loja[data-loja="${filtroLoja}"]`);
-        if (lojaEl) lojaEl.classList.add('ativa');
-      }
-    }
-
-    buscaInput.addEventListener('input', () => {
-      renderizarProdutos();
     });
 
-    // Inicializa o carregamento
+    // Eventos de clique e teclado para lojas
+    document.querySelectorAll('.loja, .loja-todas').forEach(item => {
+      item.addEventListener('click', () => atualizarFiltroLoja(item.dataset.loja));
+      item.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          atualizarFiltroLoja(item.dataset.loja);
+        }
+      });
+    });
+
+    // Evento de busca com debounce
+    let debounceTimeout;
+    buscaInput.addEventListener('input', () => {
+      clearTimeout(debounceTimeout);
+      debounceTimeout = setTimeout(() => {
+        renderizarProdutos();
+      }, 300);
+    });
+
+    // Inicializa
     carregarProdutos();
   </script>
 </body>
