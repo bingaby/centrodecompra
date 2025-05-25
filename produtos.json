@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "_id": "1748135075948lguoo69om",
+    "nome": "Central de",
+    "categoria": "eletronicos",
+    "loja": "amazon",
+    "link": "https://amzn.to/3GBiZif",
+    "preco": 79,
+    "imagens": [
+      "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_central-de-1748135072756.png",
+      "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_central-de-1748135073650.jpg"
+    ]
+  }
+]
