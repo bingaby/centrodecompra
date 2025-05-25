@@ -96,6 +96,11 @@
         <div class="grid-lojas" id="grid-produtos"></div>
         <p class="mensagem-vazia" id="mensagem-vazia" style="display: none;">Nenhum produto encontrado.</p>
         <p class="error-message" id="error-message" style="display: none;"></p>
+        <div class="paginacao">
+          <button id="prev-page" disabled>Anterior</button>
+          <span id="page-info">Página 1</span>
+          <button id="next-page">Próxima</button>
+        </div>
       </section>
 
       <a class="whatsapp" href="https://wa.me/5521975179737" target="_blank">📲 Atendimento via WhatsApp</a>
@@ -135,7 +140,7 @@
     <div class="modal-content">
       <div class="carrossel-imagens" id="modalCarrosselImagens"></div>
       <button class="carrossel-prev" onclick="moveModalCarrossel(-1)">◄</button>
-      <button class="carrossel-next" onclick="moveModalCarrossel(1)">►</button>
+      <button class="carrossel-next" onclick="moveModalCarrossel(1)">▶</button>
       <div class="carrossel-dots" id="modalCarrosselDots"></div>
     </div>
   </div>
