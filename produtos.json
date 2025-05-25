@@ -1,17 +1,5 @@
 [
   {
-    "_id": "17482090941509c4pyh55m",
-    "nome": "Relógio Inteligente Snapdragon W5+Gen1",
-    "descricao": "TicWatch Pro 5 Android Wear OS Smartwatch Relógio Inteligente Snapdragon W5+Gen1 Carregamento Rápido,GPS Bússola,Resistência à água de 5ATM,2GB de RAM,compatível apenas com Android",
-    "categoria": "eletronicos",
-    "loja": "amazon",
-    "link": "https://amzn.to/4k8ClKt",
-    "preco": 10,
-    "imagens": [
-      "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_relógio-inteligente-snapdragon-w5+gen1-1748209092908.jpg"
-    ]
-  },
-  {
     "_id": "17482093665532p5lz6zzr",
     "nome": "Headphone Fone De Ouvido Jbl Tune 520bt Sem Fio Bluetooth",
     "descricao": "Headphone Fone De Ouvido Jbl Tune 520bt Sem Fio Bluetooth",
