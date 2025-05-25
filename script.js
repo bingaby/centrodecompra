@@ -16,7 +16,7 @@ function atualizarAnoFooter() {
   }
 }
 
-// Detectar triplo clique no logotipo para redirecionar para admin-xyz-123.html
+// Detectar triplo clique no logotipo
 function configurarCliqueLogo() {
   const logo = document.getElementById('site-logo');
   if (logo) {
@@ -27,10 +27,10 @@ function configurarCliqueLogo() {
       if (clickCount === 1) {
         clickTimer = setTimeout(() => {
           clickCount = 0;
-        }, 600); // 600ms para detectar cliques rápidos
+        }, 600);
       } else if (clickCount === 3) {
         clearTimeout(clickTimer);
-        window.location.href = 'admin-xyz-123.html';
+        window.location.href = 'admin.html';
         clickCount = 0;
       }
     });
@@ -96,11 +96,8 @@ function filtrarProdutos() {
 
   produtosFiltrados.forEach((produto, produtoIndex) => {
     const imagens = produto.imagens && produto.imagens.length > 0
-      ? produto.imagens.map(img => `${API_URL}${img.startsWith('/') ? '' : '/'}${img}`)
+      ? produto.imagens
       : ['/imagens/sem-imagem.jpg'];
-    const precoFormatado = produto.preco
-      ? `R$ ${parseFloat(produto.preco).toFixed(2).replace('.', ',')}`
-      : 'Preço indisponível';
     const carrosselId = `carrossel-${produtoIndex}`;
 
     const produtoDiv = document.createElement('div');
@@ -122,8 +119,8 @@ function filtrarProdutos() {
         ` : ''}
       </div>
       <h3>${produto.nome}</h3>
-      <p class="preco">${precoFormatado}</p>
-      <span class="descricao">Loja: ${produto.loja}</span>
+      <p class="preco"><a href="${produto.link}" target="_blank" class="ver-preco">Clique aqui para ver o preço</a></p>
+      <span class="loja">Loja: ${produto.loja}</span>
       <a href="${produto.link}" target="_blank" class="ver-na-loja ${produto.loja.toLowerCase()} btn-comprar">Comprar agora</a>
     `;
     gridProdutos.appendChild(produtoDiv);
@@ -157,14 +154,14 @@ function setCarrosselImage(carrosselId, index) {
 }
 
 // Funções do modal
-async function openModal(produtoIndex, imageIndex) {
+function openModal(produtoIndex, imageIndex) {
   const modal = document.getElementById('imageModal');
   const carrosselImagens = document.getElementById('modalCarrosselImagens');
   const carrosselDots = document.getElementById('modalCarrosselDots');
 
   try {
     currentImages = produtos[produtoIndex]?.imagens && produtos[produtoIndex].imagens.length > 0
-      ? produtos[produtoIndex].imagens.map(img => `${API_URL}${img.startsWith('/') ? '' : '/'}${img}`)
+      ? produtos[produtoIndex].imagens
       : ['/imagens/sem-imagem.jpg'];
     currentImageIndex = imageIndex;
 
