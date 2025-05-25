@@ -77,8 +77,8 @@ nav a:hover {
 
 /* Contêiner Principal */
 .container {
-  width: 100%;
-  margin: 0;
+  width: 100%; /* Alterado para ocupar a largura total */
+  margin: 0; /* Removido margens automáticas */
   padding: 0 0.5rem;
   display: flex;
   flex-wrap: wrap;
@@ -175,7 +175,6 @@ main {
 /* Barra de Busca */
 .barra-busca {
   width: 100%;
-  max-width: none;
   padding: 0.5rem;
   margin: 1rem 0;
   border: 1px solid #ddd;
@@ -209,8 +208,9 @@ main {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 1rem;
-  width: 100%;
+  width: 100%; /* Alterado para ocupar a largura total */
   padding: 0.5rem;
+  margin: 0; /* Garante que não haja margens */
 }
 
 .produto-card {
@@ -513,7 +513,6 @@ footer p {
 
 form {
   width: 100%;
-  max-width: none;
   display: flex;
   flex-direction: column;
 }
