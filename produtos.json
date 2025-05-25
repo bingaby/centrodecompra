@@ -10,5 +10,17 @@
       "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_central-de-1748198671690.png",
       "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_central-de-1748198672322.jpg"
     ]
+  },
+  {
+    "_id": "1748198787325ll2zyppne",
+    "nome": "Central de",
+    "categoria": "eletronicos",
+    "loja": "amazon",
+    "link": "https://amzn.to/3GBiZif",
+    "preco": 78.98,
+    "imagens": [
+      "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_central-de-1748198784583.jpg",
+      "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_central-de-1748198784995.jpg"
+    ]
   }
 ]
