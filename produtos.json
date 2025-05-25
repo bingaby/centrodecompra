@@ -11,5 +11,18 @@
       "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_central-de-1748201204964.jpg",
       "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_central-de-1748201205377.jpg"
     ]
+  },
+  {
+    "_id": "1748201684785bmtjf2lfz",
+    "nome": "Central de",
+    "descricao": "teste",
+    "categoria": "fitness",
+    "loja": "amazon",
+    "link": "https://amzn.to/3GBiZif",
+    "preco": 79,
+    "imagens": [
+      "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_central-de-1748201683010.jpg",
+      "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_central-de-1748201683120.webp"
+    ]
   }
 ]
