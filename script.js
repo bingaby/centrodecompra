@@ -9,32 +9,28 @@ let currentImages = [];
 let currentImageIndex = 0;
 let currentPage = 1;
 const produtosPorPagina = 20;
+const totalProdutos = 1000;
 
 // Atualizar ano no footer
 function atualizarAnoFooter() {
-  const yearElement = document.getElementById('year');
-  if (yearElement) yearElement.textContent = new Date().getFullYear();
+  document.getElementById('year').textContent = new Date().getFullYear();
 }
 
 // Detectar triplo clique no logotipo
 function configurarCliqueLogo() {
   const logo = document.getElementById('site-logo');
-  if (logo) {
-    let clickCount = 0;
-    let clickTimer;
-    logo.addEventListener('click', () => {
-      clickCount++;
-      if (clickCount === 1) {
-        clickTimer = setTimeout(() => {
-          clickCount = 0;
-        }, 500);
-      } else if (clickCount === 3) {
-        clearTimeout(clickTimer);
-        window.location.href = '/admin-xyz-123.html';
-        clickCount = 0;
-      }
-    });
-  }
+  let clickCount = 0;
+  let clickTimer;
+  logo.addEventListener('click', () => {
+    clickCount++;
+    if (clickCount === 1) {
+      clickTimer = setTimeout(() => clickCount = 0, 500);
+    } else if (clickCount === 3) {
+      clearTimeout(clickTimer);
+      window.location.href = '/admin-xyz-123.html';
+      clickCount = 0;
+    }
+  });
 }
 
 // Carregar produtos da API
@@ -53,14 +49,10 @@ async function carregarProdutos() {
       `${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`,
       { cache: 'no-store' }
     );
-    if (!response.ok) {
-      throw new Error(`Erro ao carregar: ${response.status}`);
-    }
+    if (!response.ok) throw new Error(`Erro ${response.status}`);
     produtos = await response.json();
 
-    if (!Array.isArray(produtos)) {
-      throw new Error('Resposta inválida da API');
-    }
+    if (!Array.isArray(produtos)) throw new Error('Resposta inválida');
 
     filtrarProdutos();
     atualizarPaginacao();
@@ -171,15 +163,23 @@ function openModal(produtoIndex, imageIndex) {
       : ['imagens/placeholder.jpg'];
     currentImageIndex = imageIndex;
 
-    console.log('Imagens no modal:', currentImages); // Depuração
+    // Validar URLs das imagens
+    currentImages = currentImages.map(img => img && typeof img === 'string' ? img : 'imagens/placeholder.jpg');
+    console.log('Abrindo modal:', { produtoIndex, imageIndex, imagens: currentImages });
 
-    carrosselImagens.innerHTML = currentImages.map(img => `<img src="${img}" alt="Imagem ampliada" class="modal-image" loading="lazy" onerror="this.src='imagens/placeholder.jpg'" />`).join('');
+    carrosselImagens.innerHTML = currentImages.map((img, i) => `
+      <img src="${img}" alt="Imagem ${i + 1}" class="modal-image" loading="lazy" onerror="this.src='imagens/placeholder.jpg'">
+    `).join('');
 
+    // Forçar layout para evitar problemas de renderização
+    carrosselImagens.style.width = '100%';
     carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
 
-    carrosselDots.innerHTML = currentImages.map((_, i) => `<span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})"></span>`).join('');
+    carrosselDots.innerHTML = currentImages.map((_, i) => `
+      <span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})"></span>
+    `).join('');
 
-    modal.style.display = 'block';
+    modal.style.display = 'flex';
   } catch (error) {
     console.error('Erro ao abrir modal:', error);
   }
@@ -193,7 +193,7 @@ function moveModalCarrossel(direction) {
   currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
   carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
 
-  console.log('Movendo carrossel:', { currentImageIndex, totalImagens, imagens: currentImages }); // Depuração
+  console.log('Navegando modal:', { currentImageIndex, totalImagens, imagens: currentImages });
 
   Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
 }
@@ -204,7 +204,7 @@ function setModalCarrosselImage(index) {
   currentImageIndex = index;
   carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
 
-  console.log('Definindo imagem do modal:', { index, imagens: currentImages }); // Depuração
+  console.log('Selecionando imagem:', { index, imagens: currentImages });
 
   Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === index));
 }
@@ -231,13 +231,10 @@ function configurarBusca() {
       buscaFeedback.textContent = `Buscando por "${termoBusca}"...`;
     } else {
       buscaFeedback.style.display = 'none';
-      buscaFeedback.textContent = '';
     }
 
-    currentPage = 1; // Resetar página ao buscar
-    debounceTimer = setTimeout(() => {
-      carregarProdutos();
-    }, 300);
+    currentPage = 1;
+    debounceTimer = setTimeout(() => carregarProdutos(), 300);
   });
 }
 
@@ -254,8 +251,10 @@ function configurarPaginacao() {
   });
 
   nextButton.addEventListener('click', () => {
-    currentPage++;
-    carregarProdutos();
+    if (currentPage < Math.ceil(totalProdutos / produtosPorPagina)) {
+      currentPage++;
+      carregarProdutos();
+    }
   });
 }
 
@@ -265,15 +264,15 @@ function atualizarPaginacao() {
   const pageInfo = document.getElementById('page-info');
 
   prevButton.disabled = currentPage === 1;
-  nextButton.disabled = produtos.length < produtosPorPagina;
-  pageInfo.textContent = `Página ${currentPage}`;
+  nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
+  pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina)}`;
 }
 
 // Filtrar por categoria
 function filtrarPorCategoria(categoria) {
   categoriaSelecionada = categoria;
   currentPage = 1;
-  document.querySelectorAll('.categoria-item').forEach((item) => {
+  document.querySelectorAll('.categoria-item').forEach(item => {
     item.classList.toggle('ativa', item.dataset.categoria.toLowerCase() === categoria.toLowerCase());
   });
   carregarProdutos();
@@ -283,7 +282,7 @@ function filtrarPorCategoria(categoria) {
 function filtrarPorLoja(loja) {
   lojaSelecionada = loja;
   currentPage = 1;
-  document.querySelectorAll('.loja, .loja-todas').forEach((item) => {
+  document.querySelectorAll('.loja, .loja-todas').forEach(item => {
     item.classList.toggle('ativa', item.dataset.loja.toLowerCase() === loja.toLowerCase());
   });
   carregarProdutos();
@@ -297,7 +296,6 @@ document.addEventListener('DOMContentLoaded', () => {
   atualizarAnoFooter();
   configurarCliqueLogo();
 
-  // Fechar modal ao clicar fora
   document.getElementById('imageModal').addEventListener('click', (e) => {
     if (e.target === e.currentTarget) closeModal();
   });
