@@ -82,17 +82,5 @@
     "imagens": [
       "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_relógio-inteligente-snapdragon-w5+gen1-1748214759276.jpg"
     ]
-  },
-  {
-    "_id": "1748216046487d4z9be4hg",
-    "nome": "Headphone Fone De Ouvido Jbl Tune 520bt Sem Fio Bluetooth",
-    "descricao": "Headphone Fone De Ouvido Jbl Tune 520bt Sem Fio Bluetooth",
-    "categoria": "moda",
-    "loja": "mercadolivre",
-    "link": "https://mercadolivre.com/sec/324Gm84",
-    "preco": 10,
-    "imagens": [
-      "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_headphone-fone-de-ouvido-jbl-tune-520bt-sem-fio-bluetooth-1748216045526.jpg"
-    ]
   }
 ]
