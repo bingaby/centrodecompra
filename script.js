@@ -1,12 +1,10 @@
-const API_URL = 'https://centrodecompra-backend.onrender.com'; // Substitua pelo URL do seu servidor no Render
+const API_URL = 'https://centrodecompra-backend.onrender.com';
 
-// Estado global
 let produtos = [];
 let categoriaSelecionada = 'todas';
 let lojaSelecionada = 'todas';
 let termoBusca = '';
 
-// Função para buscar produtos do servidor
 async function carregarProdutos() {
   const loadingSpinner = document.getElementById('loading-spinner');
   const mensagemVazia = document.getElementById('mensagem-vazia');
@@ -31,7 +29,6 @@ async function carregarProdutos() {
   }
 }
 
-// Função para filtrar produtos com base em categoria, loja e busca
 function filtrarProdutos() {
   const gridProdutos = document.getElementById('grid-produtos');
   const mensagemVazia = document.getElementById('mensagem-vazia');
@@ -54,8 +51,14 @@ function filtrarProdutos() {
   gridProdutos.style.display = 'grid';
 
   produtosFiltrados.forEach(produto => {
-    const imagem = produto.imagens && produto.imagens.length > 0 ? `${API_URL}${produto.imagens[0]}` : '/imagens/sem-imagem.jpg';
-    const precoFormatado = produto.preco ? `R$ ${parseFloat(produto.preco).toFixed(2).replace('.', ',')}` : 'Preço indisponível';
+    const imagem = produto.imagens && produto.imagens.length > 0
+      ? `${API_URL}${produto.imagens[0].startsWith('/') ? '' : '/'}${produto.imagens[0]}`
+      : '/imagens/sem-imagem.jpg';
+
+    const precoFormatado = produto.preco
+      ? `R$ ${parseFloat(produto.preco).toFixed(2).replace('.', ',')}`
+      : 'Preço indisponível';
+
     const card = document.createElement('div');
     card.className = 'produto-card';
     card.innerHTML = `
@@ -69,7 +72,6 @@ function filtrarProdutos() {
   });
 }
 
-// Função para filtrar por categoria
 function filtrarPorCategoria(categoria) {
   categoriaSelecionada = categoria;
   document.querySelectorAll('.categoria-item').forEach(item => {
@@ -78,7 +80,6 @@ function filtrarPorCategoria(categoria) {
   filtrarProdutos();
 }
 
-// Função para filtrar por loja
 function filtrarPorLoja(loja) {
   lojaSelecionada = loja;
   document.querySelectorAll('.loja').forEach(item => {
@@ -88,20 +89,29 @@ function filtrarPorLoja(loja) {
   filtrarProdutos();
 }
 
-// Função para buscar por texto
 function configurarBusca() {
   const inputBusca = document.getElementById('busca');
   const buscaFeedback = document.getElementById('busca-feedback');
+  let debounceTimer;
 
   inputBusca.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
     termoBusca = inputBusca.value.trim();
-    buscaFeedback.style.display = termoBusca ? 'block' : 'none';
-    buscaFeedback.textContent = termoBusca ? `Buscando por "${termoBusca}"...` : '';
-    filtrarProdutos();
+
+    if (termoBusca) {
+      buscaFeedback.style.display = 'block';
+      buscaFeedback.textContent = `Buscando por "${termoBusca}"...`;
+    } else {
+      buscaFeedback.style.display = 'none';
+      buscaFeedback.textContent = '';
+    }
+
+    debounceTimer = setTimeout(() => {
+      filtrarProdutos();
+    }, 300);
   });
 }
 
-// Atualizar ano no footer
 function atualizarAnoFooter() {
   const yearElement = document.getElementById('year');
   if (yearElement) {
@@ -109,13 +119,11 @@ function atualizarAnoFooter() {
   }
 }
 
-// Inicializar página
 document.addEventListener('DOMContentLoaded', () => {
   carregarProdutos();
   configurarBusca();
   atualizarAnoFooter();
 
-  // Configurar triplo clique no logo para redirecionar para admin
   const logo = document.getElementById('logo');
   if (logo) {
     let clickCount = 0;
@@ -123,16 +131,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     logo.addEventListener('click', () => {
       clickCount++;
-
       if (clickCount === 3) {
         clearTimeout(clickTimer);
         clickCount = 0;
-        window.location.href = 'admin-xyz-123.html'; // redirecionar para admin
+        window.location.href = 'admin-xyz-123.html';
       } else {
         clearTimeout(clickTimer);
         clickTimer = setTimeout(() => {
           clickCount = 0;
-        }, 600); // 600ms para o usuário fazer os 3 cliques
+        }, 600);
       }
     });
   }
