@@ -70,5 +70,17 @@
     "imagens": [
       "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_jogo-de-toalhas-buddemeyer-brisa-banho-5-peças-1748211250785.jpg"
     ]
+  },
+  {
+    "_id": "174821191754527jc3n2j3",
+    "nome": "Ar-condicionado Split 12.000BTUs Gree Inverter Frio GWC12ATBXA-D6DNA1A",
+    "descricao": "Ar-condicionado Split 12.000BTUs Gree Inverter Frio GWC12ATBXA-D6DNA1A",
+    "categoria": "Eletrodomésticos",
+    "loja": "magalu",
+    "link": "https://www.magazinevoce.com.br/magazinein_1807841/ar-condicionado-split-12-000btus-gree-inverter-frio-gwc12atbxa-d6dna1a/p/238774900/ar/aciv/",
+    "preco": 10,
+    "imagens": [
+      "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_ar-condicionado-split-12.000btus-gree-inverter-frio-gwc12atbxa-d6dna1a-1748211916482.jpg"
+    ]
   }
 ]
