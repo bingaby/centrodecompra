@@ -58,5 +58,17 @@
     "imagens": [
       "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_kit-whey-protein-fusion-+-bcaa-+-creatina-+-shaker-1748210459712.jpg"
     ]
+  },
+  {
+    "_id": "1748211252013uq7b48icd",
+    "nome": "Jogo De Toalhas Buddemeyer Brisa Banho 5 Peças",
+    "descricao": "Jogo De Toalhas Buddemeyer Brisa Banho 5 Peças",
+    "categoria": "casa",
+    "loja": "mercadolivre",
+    "link": "https://mercadolivre.com/sec/1BYezzy",
+    "preco": 10,
+    "imagens": [
+      "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_jogo-de-toalhas-buddemeyer-brisa-banho-5-peças-1748211250785.jpg"
+    ]
   }
 ]
