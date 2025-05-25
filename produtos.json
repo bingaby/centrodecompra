@@ -82,5 +82,17 @@
     "imagens": [
       "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_ar-condicionado-split-12.000btus-gree-inverter-frio-gwc12atbxa-d6dna1a-1748211916482.jpg"
     ]
+  },
+  {
+    "_id": "1748212282737xo6diow75",
+    "nome": "Tenis Masculino Academia Corrida Treino Esportivo Caminhada Confortavel e Leve + Relógio Digital",
+    "descricao": "Tenis Masculino Academia Corrida Treino Esportivo Caminhada Confortavel e Leve + Relógio Digital",
+    "categoria": "moda",
+    "loja": "amazon",
+    "link": "https://amzn.to/4mrFbvL",
+    "preco": 10,
+    "imagens": [
+      "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_tenis-masculino-academia-corrida-treino-esportivo-caminhada-confortavel-e-leve-+-relógio-digital-1748212281517.jpg"
+    ]
   }
 ]
