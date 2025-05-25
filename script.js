@@ -1,4 +1,4 @@
-const API_URL = 'https://centrodecompra-backend.onrender.com'; // Use 'http://localhost:10000' para testes locais
+const API_URL = 'https://centrodecompra-backend.onrender.com'; // Alterar para localhost em testes locais
 
 // Variáveis globais
 let produtos = [];
@@ -172,7 +172,7 @@ function setCarrosselImage(carrosselId, index) {
 }
 
 // Funções do modal
-async function openModal(produtoIndex, imageIndex) {
+function openModal(produtoIndex, imageIndex) {
   const modal = document.getElementById('imageModal');
   const carrosselImagens = document.getElementById('modalCarrosselImagens');
   const carrosselDots = document.getElementById('modalCarrosselDots');
@@ -186,15 +186,15 @@ async function openModal(produtoIndex, imageIndex) {
     console.log('🔍 Abrindo modal:', { produtoIndex, imageIndex, imagens: currentImages });
 
     // Validar imagens
-    const validImages = await Promise.all(currentImages.map(img => {
+    const validImages = currentImages.map(img => {
       return new Promise(resolve => {
         const testImg = new Image();
         testImg.src = img;
         testImg.onload = () => resolve(img);
         testImg.onerror = () => resolve('imagens/placeholder.jpg');
       });
-    }));
-    currentImages = validImages;
+    });
+    currentImages = await Promise.all(validImages);
 
     carrosselImagens.innerHTML = currentImages.map((img, i) => `
       <img src="${img}" alt="Imagem ${i + 1}" class="modal-image" loading="lazy" onerror="this.src='imagens/placeholder.jpg'">
@@ -228,22 +228,25 @@ function moveModalCarrossel(direction) {
   const carrosselDots = document.getElementById('modalCarrosselDots').children;
   const totalImagens = currentImages.length;
 
-  currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
+  currentImageIndex = (currentImageIndex + direction) % totalImagens;
   requestAnimationFrame(() => {
     carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
-    Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
+    Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('active', i === currentImageIndex));
   });
 
-  console.log('🔄 Navegando modal:', { currentImageIndex, totalImagens, imagens: currentImages });
+  console.log('🔄 Navegando modal:', { currentImageIndex,
+    totalImagens,
+    imagens: currentImages });
 }
 
 function setModalCarrosselImage(index) {
   const carrosselImagens = document.getElementById('modalCarrosselImagens');
   const carrosselDots = document.getElementById('modalCarrosselDots').children;
   currentImageIndex = index;
+  
   requestAnimationFrame(() => {
-    carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
-    Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
+    carrosselImagens.style.transform = `translateX(-${index * 100}%)`;
+    Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === index));
   });
 
   console.log('🔍 Selecionando imagem:', { index, imagens: currentImages });
@@ -258,23 +261,23 @@ function closeModal() {
 
 // Configurar busca com debounce
 function configurarBusca() {
-  const inputBusca = document.getElementById('busca');
+  const busca = document.getElementById('busca');
   const buscaFeedback = document.getElementById('busca-feedback');
   let debounceTimer;
-
-  inputBusca.addEventListener('input', () => {
+  
+  busca.addEventListener('input', () => {
     clearTimeout(debounceTimer);
-    termoBusca = inputBusca.value.trim();
-
+    termoBusca = busca.value.trim();
+    
     if (termoBusca) {
       buscaFeedback.style.display = 'block';
       buscaFeedback.textContent = `Buscando por "${termoBusca}"...`;
     } else {
       buscaFeedback.style.display = 'none';
     }
-
+    
     currentPage = 1;
-    debounceTimer = setTimeout(() => carregarProdutos(), 300);
+    debounceTimer = setTimeout(() => carregarProdutos(), 200);
   });
 }
 
@@ -308,7 +311,7 @@ function atualizarPaginacao() {
   pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina)}`;
 }
 
-// Filtrar por categoria
+// Filtrar por categoria por página
 function filtrarPorCategoria(categoria) {
   categoriaSelecionada = categoria;
   currentPage = 1;
@@ -318,9 +321,9 @@ function filtrarPorCategoria(categoria) {
   carregarProdutos();
 }
 
-// Filtrar por loja
+// Filtrar por loja por página
 function filtrarPorLoja(loja) {
-  lojaSelecionada = loja;
+  lojaSeleção = loja;
   currentPage = 1;
   document.querySelectorAll('.loja, .loja-todas').forEach(item => {
     item.classList.toggle('ativa', item.dataset.loja.toLowerCase() === loja.toLowerCase());
@@ -335,8 +338,10 @@ document.addEventListener('DOMContentLoaded', () => {
   configurarPaginacao();
   atualizarAnoFooter();
   configurarCliqueLogo();
-
+  
   document.getElementById('imageModal').addEventListener('click', (e) => {
-    if (e.target === e.currentTarget) closeModal();
+    if (e.target === e.currentTarget) {
+      closeModal();
+    }
   });
 });
