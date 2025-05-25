@@ -1,1 +1,15 @@
-[]
+[
+  {
+    "_id": "1748201207780t5z9vdy0k",
+    "nome": "Central de",
+    "descricao": "teste",
+    "categoria": "moda",
+    "loja": "amazon",
+    "link": "https://amzn.to/3GBiZif",
+    "preco": 79,
+    "imagens": [
+      "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_central-de-1748201204964.jpg",
+      "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_central-de-1748201205377.jpg"
+    ]
+  }
+]
