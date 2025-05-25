@@ -46,5 +46,17 @@
     "imagens": [
       "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_smart-tv-40-philco-ptv40m9gacgb-android-tv-hdmi-usb-wi-fi-dolby-audio-preta-1748209694534.jpg"
     ]
+  },
+  {
+    "_id": "1748210460994wkzgtmddw",
+    "nome": "Kit Whey Protein Fusion + Bcaa + Creatina + Shaker",
+    "descricao": "Kit Whey Protein Fusion + Bcaa + Creatina + Shaker",
+    "categoria": "fitness",
+    "loja": "shopee",
+    "link": "https://s.shopee.com.br/AA4tVmhU8G",
+    "preco": 10,
+    "imagens": [
+      "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_kit-whey-protein-fusion-+-bcaa-+-creatina-+-shaker-1748210459712.jpg"
+    ]
   }
 ]
