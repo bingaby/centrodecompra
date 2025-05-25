@@ -27,7 +27,7 @@ function configurarCliqueLogo() {
       if (clickCount === 1) {
         clickTimer = setTimeout(() => {
           clickCount = 0;
-        }, 600);
+        }, 500);
       } else if (clickCount === 3) {
         clearTimeout(clickTimer);
         window.location.href = 'admin-xyz-123.html';
@@ -95,7 +95,7 @@ function filtrarProdutos() {
   gridProdutos.style.display = 'grid';
 
   produtosFiltrados.forEach((produto, produtoIndex) => {
-    const imagens = produto.imagens && produto.imagens.length > 0 ? produto.imagens : ['imagens/sem-imagem.jpg'];
+    const imagens = produto.imagens && produto.imagens.length > 0 ? produto.imagens : ['imagens/placeholder.jpg'];
     const carrosselId = `carrossel-${produtoIndex}`;
 
     const produtoDiv = document.createElement('div');
@@ -106,7 +106,7 @@ function filtrarProdutos() {
     produtoDiv.innerHTML = `
       <div class="carrossel" id="${carrosselId}">
         <div class="carrossel-imagens">
-          ${imagens.map((img, i) => `<img src="${img}" alt="${produto.nome}" loading="lazy" onerror="this.src='imagens/sem-imagem.jpg'" onclick="openModal(${produtoIndex}, ${i})">`).join('')}
+          ${imagens.map((img, i) => `<img src="${img}" alt="${produto.nome}" loading="lazy" onerror="this.src='imagens/placeholder.jpg'" onclick="openModal(${produtoIndex}, ${i})">`).join('')}
         </div>
         ${imagens.length > 1 ? `
           <button class="carrossel-prev" onclick="moveCarrossel('${carrosselId}', -1)">◄</button>
@@ -116,10 +116,10 @@ function filtrarProdutos() {
           </div>
         ` : ''}
       </div>
-      <h3>${produto.nome}</h3>
-      <span class="loja">Loja: ${produto.loja}</span>
+      <span>${produto.nome}</span>
+      <span class="descricao">Loja: ${produto.loja}</span>
       <p class="preco"><a href="${produto.link}" target="_blank" class="ver-preco">Clique aqui para ver o preço</a></p>
-      <a href="${produto.link}" target="_blank" class="ver-na-loja ${produto.loja.toLowerCase()} btn-comprar">Comprar agora</a>
+      <a href="${produto.link}" target="_blank" class="ver-na-loja ${produto.loja.toLowerCase()}">Comprar</a>
     `;
     gridProdutos.appendChild(produtoDiv);
   });
@@ -160,10 +160,12 @@ function openModal(produtoIndex, imageIndex) {
   try {
     currentImages = produtos[produtoIndex]?.imagens && produtos[produtoIndex].imagens.length > 0
       ? produtos[produtoIndex].imagens
-      : ['imagens/sem-imagem.jpg'];
+      : ['imagens/placeholder.jpg'];
     currentImageIndex = imageIndex;
 
-    carrosselImagens.innerHTML = currentImages.map(img => `<img src="${img}" alt="Imagem ampliada" onerror="this.src='imagens/sem-imagem.jpg'">`).join('');
+    console.log('Imagens no modal:', currentImages); // Depuração
+
+    carrosselImagens.innerHTML = currentImages.map(img => `<img src="${img}" alt="Imagem ampliada" loading="lazy" onerror="this.src='imagens/placeholder.jpg'">`).join('');
     carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
 
     carrosselDots.innerHTML = currentImages.map((_, i) => `<span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})"></span>`).join('');
@@ -182,6 +184,8 @@ function moveModalCarrossel(direction) {
   currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
   carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
 
+  console.log('Movendo carrossel do modal:', { currentImageIndex, totalImagens }); // Depuração
+
   Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
 }
 
@@ -190,6 +194,9 @@ function setModalCarrosselImage(index) {
   const carrosselDots = document.getElementById('modalCarrosselDots').children;
   currentImageIndex = index;
   carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+
+  console.log('Definindo imagem do modal:', index); // Depuração
+
   Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
 }
 
