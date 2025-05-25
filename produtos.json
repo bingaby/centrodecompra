@@ -1,17 +1,5 @@
 [
   {
-    "_id": "1748208891510mbrciixmh",
-    "nome": "Kit 4 Camisas ",
-    "descricao": "Kit 4 Camisas Dry-fit Sandrini Masculina Academia Treino Uv",
-    "categoria": "moda",
-    "loja": "amazon",
-    "link": "https://amzn.to/43pAZVR",
-    "preco": 79,
-    "imagens": [
-      "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_kit-4-camisas--1748208890633.jpg"
-    ]
-  },
-  {
     "_id": "17482090941509c4pyh55m",
     "nome": "Relógio Inteligente Snapdragon W5+Gen1",
     "descricao": "TicWatch Pro 5 Android Wear OS Smartwatch Relógio Inteligente Snapdragon W5+Gen1 Carregamento Rápido,GPS Bússola,Resistência à água de 5ATM,2GB de RAM,compatível apenas com Android",
