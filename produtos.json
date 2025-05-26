@@ -118,5 +118,17 @@
     "imagens": [
       "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_mamypoko-fralda-calça-premium-seca-p-46-unidades-1748286041181.jpg"
     ]
+  },
+  {
+    "_id": "1748289761743ov32wblpr",
+    "nome": "Cooktop de Indução Quatro Bocas Eos Eci04ep 220v",
+    "descricao": "Cooktop de Indução Quatro Bocas Eos Eci04ep 220v",
+    "categoria": "Eletrodomésticos",
+    "loja": "amazon",
+    "link": "https://amzn.to/4kzhqjF",
+    "preco": 10,
+    "imagens": [
+      "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_cooktop-de-indução-quatro-bocas-eos-eci04ep-220v-1748289760845.jpg"
+    ]
   }
 ]
