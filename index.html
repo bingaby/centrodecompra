@@ -20,7 +20,7 @@
   <header class="site-header">
     <div class="logo-container">
       <a href="#">
-        <img src="logos/centrodecompras.jpg" alt="Centro de Compras" loading="lazy" id="site-logo">
+        <img src="logos/centrodecompras.jpg" alt="Centro de Compras" id="site-logo">
       </a>
     </div>
     <div class="header-text">
@@ -64,28 +64,28 @@
               <span>Todas as Lojas</span>
             </div>
             <div class="loja" data-loja="amazon" onclick="filtrarPorLoja('amazon')">
-              <img src="logos/amazon.png" alt="Logo da Amazon" loading="lazy">
-              <span class="amazon">Amazon</span>
+              <img src="logos/amazon.png" alt="Amazon" loading="lazy">
+              <span>Amazon</span>
             </div>
             <div class="loja" data-loja="magalu" onclick="filtrarPorLoja('magalu')">
-              <img src="logos/magalu.png" alt="Logo da Magalu" loading="lazy">
-              <span class="magalu">Magalu</span>
+              <img src="logos/magalu.png" alt="Magalu" loading="lazy">
+              <span>Magalu</span>
             </div>
             <div class="loja" data-loja="shein" onclick="filtrarPorLoja('shein')">
-              <img src="logos/shein.png" alt="Logo da Shein" loading="lazy">
-              <span class="shein">Shein</span>
+              <img src="logos/shein.png" alt="Shein" loading="lazy">
+              <span>Shein</span>
             </div>
             <div class="loja" data-loja="shopee" onclick="filtrarPorLoja('shopee')">
-              <img src="logos/shopee.png" alt="Logo da Shopee" loading="lazy">
-              <span class="shopee">Shopee</span>
+              <img src="logos/shopee.png" alt="Shopee" loading="lazy">
+              <span>Shopee</span>
             </div>
             <div class="loja" data-loja="mercadolivre" onclick="filtrarPorLoja('mercadolivre')">
-              <img src="logos/mercadolivre.jpg" alt="Logo do Mercado Livre" loading="lazy">
-              <span class="mercadolivre">Mercado Livre</span>
+              <img src="logos/mercadolivre.jpg" alt="Mercado Livre" loading="lazy">
+              <span>Mercado Livre</span>
             </div>
             <div class="loja" data-loja="alibaba" onclick="filtrarPorLoja('alibaba')">
-              <img src="logos/alibaba.png" alt="Logo da Alibaba" loading="lazy">
-              <span class="alibaba">Alibaba</span>
+              <img src="logos/alibaba.png" alt="Alibaba" loading="lazy">
+              <span>Alibaba</span>
             </div>
           </div>
         </div>
@@ -95,23 +95,20 @@
         <div class="grid-lojas" id="grid-produtos"></div>
         <p class="mensagem-vazia" id="mensagem-vazia" style="display: none;">Nenhum produto encontrado.</p>
         <p class="error-message" id="error-message" style="display: none;"></p>
-        <div class="paginacao">
+        <div id="paginacao" class="paginacao">
           <button id="prev-page" disabled>Anterior</button>
           <span id="page-info">Página 1</span>
           <button id="next-page">Próxima</button>
         </div>
       </section>
 
-      <a class="whatsapp" href="https://wa.me/5521975179737" target="_blank">📲 Atendimento via WhatsApp</a>
-      <a class="telegram" href="https://t.me/boost/centraldecomprascdc" target="_blank">📢 Canal no Telegram</a>
-
       <div class="social-links">
-        <a href="https://www.tiktok.com/@cdc.centraldecompas?_t=ZM-8vYQlF9u1dH&_r=1" target="_blank">
-          <div class="icon"><img src="logos/tiktok.png" alt="TikTok" loading="lazy"></div>
+        <a href="https://www.tiktok.com/@cdc.centraldecompras" target="_blank">
+          <div class="icon"><img src="logos/tiktok.jpg" alt="TikTok" loading="lazy"></div>
           <span>TikTok</span>
         </a>
-        <a href="https://www.instagram.com/cdccentrodecompras/?utm_source=qr&r=nametag" target="_blank">
-          <div class="icon"><img src="logos/instagram.png" alt="Instagram" loading="lazy"></div>
+        <a href="https://www.instagram.com/cdccentrodecompras/" target="_blank">
+          <div class="icon"><img src="logos/instagram.jpg" alt="Instagram" loading="lazy"></div>
           <span>Instagram</span>
         </a>
         <a href="https://x.com/ComprasCdc" target="_blank">
@@ -123,6 +120,9 @@
           <span>YouTube</span>
         </a>
       </div>
+
+      <a href="https://wa.me/5521975179737" class="whatsapp" target="_blank">📲 Atendimento via WhatsApp</a>
+      <a href="https://t.me/boost/centraldecomprascdc" class="telegram" target="_blank">📢 Canal no Telegram</a>
     </main>
   </div>
 
@@ -142,7 +142,7 @@
 
   <div class="robo-assistente">
     <a href="https://wa.me/5521975179737" target="_blank">
-      <img src="imagens/robo.jpg" alt="Robô Assistente" class="robo-imagem">
+      <img src="imagens/robo.jpg" alt="Robô Assistente" class="robo-imagem" loading="lazy">
       <div class="robo-texto">Posso ajudar?</div>
     </a>
   </div>
