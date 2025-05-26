@@ -13,24 +13,37 @@ const totalProdutos = 1000;
 
 // Atualizar ano no footer
 function atualizarAnoFooter() {
-  document.getElementById('year').textContent = new Date().getFullYear();
+  const yearElement = document.getElementById('year');
+  if (yearElement) {
+    yearElement.textContent = new Date().getFullYear();
+  }
 }
 
 // Detectar triplo clique no logotipo
 function configurarCliqueLogo() {
   const logo = document.getElementById('site-logo');
+  if (!logo) {
+    console.error('❌ ID site-logo não encontrado no DOM');
+    return;
+  }
   let clickCount = 0;
   let clickTimer;
-  logo.addEventListener('click', () => {
+  logo.addEventListener('click', (e) => {
+    e.preventDefault(); // Evita comportamento padrão do link
     clickCount++;
+    console.log(`Clique detectado: ${clickCount}`);
     if (clickCount === 1) {
-      clickTimer = setTimeout(() => clickCount = 0, 500);
+      clickTimer = setTimeout(() => {
+        clickCount = 0;
+        console.log('Contagem de cliques resetada');
+      }, 500);
     } else if (clickCount === 3) {
       clearTimeout(clickTimer);
+      console.log('Triplo clique detectado, redirecionando para admin-xyz-123.html');
       window.location.href = '/admin-xyz-123.html';
       clickCount = 0;
     }
-  });
+  }, { once: false });
 }
 
 // Carregar produtos com retry
@@ -39,7 +52,12 @@ async function carregarProdutos() {
   const mensagemVazia = document.getElementById('mensagem-vazia');
   const errorMessage = document.getElementById('error-message');
   const gridProdutos = document.getElementById('grid-produtos');
-  
+
+  if (!gridProdutos || !mensagemVazia || !errorMessage || !loadingSpinner) {
+    console.error('❌ Elementos essenciais (grid-produtos, mensagem-vazia, error-message, loading-spinner) não encontrados');
+    return;
+  }
+
   const maxRetries = 3;
   let attempt = 1;
 
@@ -50,6 +68,7 @@ async function carregarProdutos() {
       errorMessage.style.display = 'none';
       gridProdutos.innerHTML = '';
 
+      console.log(`Tentativa ${attempt}: Carregando produtos de ${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`);
       const response = await fetch(
         `${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`,
         { cache: 'no-store' }
@@ -60,13 +79,16 @@ async function carregarProdutos() {
       }
       produtos = await response.json();
 
-      if (!Array.isArray(produtos)) throw new Error('Resposta inválida da API');
+      if (!Array.isArray(produtos)) {
+        throw new Error('Resposta inválida da API: não é um array');
+      }
 
+      console.log(`Produtos recebidos: ${produtos.length}`);
       filtrarProdutos();
       atualizarPaginacao();
       return;
     } catch (error) {
-      console.error(`⚠️ Tentativa ${attempt} falhou:`, error);
+      console.error(`⚠️ Tentativa ${attempt} falhou: ${error.message}`);
       if (attempt === maxRetries) {
         errorMessage.textContent = `Erro ao carregar produtos após ${maxRetries} tentativas: ${error.message}.`;
         errorMessage.style.display = 'block';
@@ -86,6 +108,11 @@ function filtrarProdutos() {
   const gridProdutos = document.getElementById('grid-produtos');
   const mensagemVazia = document.getElementById('mensagem-vazia');
 
+  if (!gridProdutos || !mensagemVazia) {
+    console.error('❌ grid-produtos ou mensagem-vazia não encontrados');
+    return;
+  }
+
   const produtosFiltrados = produtos.filter((produto) => {
     const matchCategoria =
       categoriaSelecionada === 'todas' ||
@@ -102,6 +129,7 @@ function filtrarProdutos() {
   if (produtosFiltrados.length === 0) {
     mensagemVazia.style.display = 'block';
     gridProdutos.style.display = 'none';
+    console.log('Nenhum produto filtrado encontrado');
     return;
   }
 
@@ -139,6 +167,7 @@ function filtrarProdutos() {
     `;
     gridProdutos.appendChild(produtoDiv);
   });
+  console.log(`Exibidos ${produtosFiltrados.length} produtos`);
 }
 
 // Funções do carrossel
@@ -185,7 +214,6 @@ async function openModal(produtoIndex, imageIndex) {
 
     console.log('🔍 Abrindo modal:', { produtoIndex, imageIndex, imagens: currentImages });
 
-    // Validar imagens
     const validImages = await Promise.all(currentImages.map(img => {
       return new Promise(resolve => {
         const testImg = new Image();
@@ -233,8 +261,6 @@ function moveModalCarrossel(direction) {
     carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
     Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
   });
-
-  console.log('🔄 Navegando modal:', { currentImageIndex, totalImagens, imagens: currentImages });
 }
 
 function setModalCarrosselImage(index) {
@@ -242,11 +268,9 @@ function setModalCarrosselImage(index) {
   const carrosselDots = document.getElementById('modalCarrosselDots').children;
   currentImageIndex = index;
   requestAnimationFrame(() => {
-    carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+    carrosselImagens.style.transform = `translateX(-${index * 100}%)`;
     Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
   });
-
-  console.log('🔍 Selecionando imagem:', { index, imagens: currentImages });
 }
 
 function closeModal() {
@@ -261,6 +285,11 @@ function configurarBusca() {
   const inputBusca = document.getElementById('busca');
   const buscaFeedback = document.getElementById('busca-feedback');
   let debounceTimer;
+
+  if (!inputBusca || !buscaFeedback) {
+    console.error('❌ Elementos de busca não encontrados');
+    return;
+  }
 
   inputBusca.addEventListener('input', () => {
     clearTimeout(debounceTimer);
@@ -283,6 +312,11 @@ function configurarPaginacao() {
   const prevButton = document.getElementById('prev-page');
   const nextButton = document.getElementById('next-page');
 
+  if (!prevButton || !nextButton) {
+    console.error('❌ Botões de paginação não encontrados');
+    return;
+  }
+
   prevButton.addEventListener('click', () => {
     if (currentPage > 1) {
       currentPage--;
@@ -302,6 +336,11 @@ function atualizarPaginacao() {
   const prevButton = document.getElementById('prev-page');
   const nextButton = document.getElementById('next-page');
   const pageInfo = document.getElementById('page-info');
+
+  if (!prevButton || !nextButton || !pageInfo) {
+    console.error('❌ Elementos de paginação não encontrados');
+    return;
+  }
 
   prevButton.disabled = currentPage === 1;
   nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
@@ -330,13 +369,17 @@ function filtrarPorLoja(loja) {
 
 // Inicialização
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('Inicializando página');
   carregarProdutos();
   configurarBusca();
   configurarPaginacao();
   atualizarAnoFooter();
   configurarCliqueLogo();
 
-  document.getElementById('imageModal').addEventListener('click', (e) => {
-    if (e.target === e.currentTarget) closeModal();
-  });
+  const modal = document.getElementById('imageModal');
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) closeModal();
+    });
+  }
 });
