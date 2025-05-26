@@ -94,5 +94,17 @@
     "imagens": [
       "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_wap-aspirador-de-pó-robô-robot-w400-3-em-1,-automático,-300ml,-compatível-com-assistentes-de-voz,-30w-10,8vdc-bivolt-1748285750977.jpg"
     ]
+  },
+  {
+    "_id": "1748285899178lta5wcrc1",
+    "nome": "Fralda Pampers Premium Care P - 40 fraldas",
+    "descricao": "Fralda Pampers Premium Care P - 40 fraldas",
+    "categoria": "infantil",
+    "loja": "amazon",
+    "link": "https://amzn.to/43BWRMM",
+    "preco": 10,
+    "imagens": [
+      "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_fralda-pampers-premium-care-p---40-fraldas-1748285898117.jpg"
+    ]
   }
 ]
