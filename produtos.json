@@ -142,5 +142,17 @@
     "imagens": [
       "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_bota-de-couro-mac-boot-monjolo-02---masculino-1748290439151.webp"
     ]
+  },
+  {
+    "_id": "1748291316312dhrdq0cfw",
+    "nome": "Chave De Impacto A Bateria 21v Bivolt Tb-21i The Black Tools",
+    "descricao": "Chave De Impacto A Bateria 21v Bivolt Tb-21i The Black Tools",
+    "categoria": "Eletrodomésticos",
+    "loja": "mercadolivre",
+    "link": "https://mercadolivre.com/sec/2KxXLAx",
+    "preco": 10,
+    "imagens": [
+      "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_chave-de-impacto-a-bateria-21v-bivolt-tb-21i-the-black-tools-1748291315169.webp"
+    ]
   }
 ]
