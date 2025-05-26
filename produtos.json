@@ -130,5 +130,17 @@
     "imagens": [
       "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_cooktop-de-indução-quatro-bocas-eos-eci04ep-220v-1748290218025.jpg"
     ]
+  },
+  {
+    "_id": "1748290440169f34flra67",
+    "nome": "Bota De Couro Mac Boot Monjolo 02 - Masculino",
+    "descricao": "Bota De Couro Mac Boot Monjolo 02 - Masculino",
+    "categoria": "moda",
+    "loja": "mercadolivre",
+    "link": "https://mercadolivre.com/sec/1zjVubd",
+    "preco": 10,
+    "imagens": [
+      "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_bota-de-couro-mac-boot-monjolo-02---masculino-1748290439151.webp"
+    ]
   }
 ]
