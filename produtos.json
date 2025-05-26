@@ -82,5 +82,17 @@
     "imagens": [
       "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_relógio-inteligente-snapdragon-w5+gen1-1748214759276.jpg"
     ]
+  },
+  {
+    "_id": "1748285751919pixbr362f",
+    "nome": "WAP Aspirador de Pó Robô ROBOT W400 3 em 1, Automático, 300ml, Compatível com Assistentes de Voz, 30W 10,8VDC Bivolt",
+    "descricao": "WAP Aspirador de Pó Robô ROBOT W400 3 em 1, Automático, 300ml, Compatível com Assistentes de Voz, 30W 10,8VDC Bivolt",
+    "categoria": "Eletrodomésticos",
+    "loja": "amazon",
+    "link": "https://amzn.to/43t0STt",
+    "preco": 10,
+    "imagens": [
+      "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_wap-aspirador-de-pó-robô-robot-w400-3-em-1,-automático,-300ml,-compatível-com-assistentes-de-voz,-30w-10,8vdc-bivolt-1748285750977.jpg"
+    ]
   }
 ]
