@@ -166,5 +166,17 @@
     "imagens": [
       "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_calça-jeans-feminina-skinny-com-lycra-cós-alto---kit-3-peças--1748344278040.webp"
     ]
+  },
+  {
+    "_id": "1748358614476erjwi7jdz",
+    "nome": "Mochila Lenovo Casual B210 Preta para notebook de até 15.6\" GX40Q17225",
+    "descricao": "bom",
+    "categoria": "eletronicos",
+    "loja": "amazon",
+    "link": "https://amzn.to/44FCf8v",
+    "preco": 10,
+    "imagens": [
+      "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_mochila-lenovo-casual-b210-preta-para-notebook-de-até-15.6\"-gx40q17225-1748358613241.webp"
+    ]
   }
 ]
