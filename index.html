@@ -1,164 +1,165 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
- <meta charset="UTF-8">
- <meta name="viewport" content="width=device-width, initial-scale=1">
- <meta name="description" content="Ofertas com descontos reais nas principais lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliado seguros e atualizados.">
- <meta property="og:title" content="Centro de Compras - Ofertas e Descontos">
- <meta property="og:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliados seguros e atualizados!">
- <meta property="og:image" content="logos/centrodecompras.jpg">
- <meta property="og:url" content="https://centrodecompra.com.br/">
- <meta name="twitter:card" content="summary_large_image">
- <meta name="twitter:title" content="Centro de Compras - Ofertas e Descontos">
- <meta name="twitter:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliados seguros e atualizados!">
- <meta name="twitter:image" content="logos/centrodecompras.jpg">
- <title>Centro de Compras - Ofertas do Dia</title>
- <!-- Pré-carregamento de recursos críticos -->
- <link rel="preload" href="logos/centrodecompras.jpg" as="image">
- <link rel="preconnect" href="https://fonts.googleapis.com">
- <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
- <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
- <link rel="stylesheet" href="style.css" media="print" onload="this.media='all'">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Ofertas com descontos reais nas principais lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliado seguros e atualizados.">
+  <meta property="og:title" content="Ofertas e descontos - Centro de Compras">
+  <meta property="og:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliados seguros e atualizados!">
+  <meta property="og:image" content="logos/centrodecompras.jpg">
+  <meta property="og:url" content="https://centrodecompras.com.br/">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Ofertas e descontos - Centro de Compras">
+  <meta name="twitter:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba.">
+  <meta name="twitter:image" content="logos/centrodecompras.jpg">
+  <title>Centro de Compras - Ofertas do Dia</title>
+  <!-- Pré-carregamento de recursos críticos -->
+  <link rel="preload" href="logos/centrodecompras.jpg" as="image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="style.css" media="print" onload="this.media='all'">
 </head>
 <body>
- <header class="site-header">
- <div class="logo-container">
- <a href="#">
- <img src="logos/centrodecompras.jpg" alt="Centro de Compras" id="site-logo" width="150" height="50">
- </a>
- </div>
- <div class="header-text">
- <h1>Centro de Compra</h1>
- <p>O maior portal de ofertas do Brasil! Descubra as melhores oportunidades nos maiores sites de venda, com links diretos para sua compra.</p>
- </div>
- </header>
+  <header class="site-header">
+    <div class="logo-container">
+      <a href="#">
+        <img src="logos/centrodecompras.jpg" alt="Centro de Compras" id="logo" width="150" height="50">
+      </a>
+    </div>
+    <div class="header-text">
+      <h1>Centro de Compras</h1>
+      <p>O maior portal de compras do Brasil! Descubra as melhores oportunidades em lojas confiáveis com links diretos para suas compras.</p>
+    </div>
+  </header>
 
- <nav>
- <a href="index.html">Promoções</a>
- <a href="cupom.html">Cupom de desconto</a>
- <a href="sobre.html">Sobre</a>
- <a href="contato.html">Contato</a>
- </nav>
+  <nav>
+    <a href="index.html">Promoções</a>
+    <a href="cupom.html">Cupom de desconto</a>
+    <a href="sobre.html">Sobre</a>
+    <a href="contato.html">Contato</a>
+  </nav>
 
- <div class="container">
- <aside class="sidebar-categorias">
- <h3>Categorias</h3>
- <ul>
- <li class="categoria-item ativa" data-categoria="todas" onclick="filtrarPorCategoria('todas')">Todas as Categorias</li>
- <li class="categoria-item" data-categoria="eletronicos" onclick="filtrarPorCategoria('eletronicos')">Eletrônicos</li>
- <li class="categoria-item" data-categoria="moda" onclick="filtrarPorCategoria('moda')">Moda</li>
- <li class="categoria-item" data-categoria="fitness" onclick="filtrarPorCategoria('fitness')">Fitness</li>
- <li class="categoria-item" data-categoria="casa" onclick="filtrarPorCategoria('casa')">Casa e Decoração</li>
- <li class="categoria-item" data-categoria="beleza" onclick="filtrarPorCategoria('beleza')">Beleza</li>
- <li class="categoria-item" data-categoria="esportes" onclick="filtrarPorCategoria('esportes')">Esportes</li>
- <li class="categoria-item" data-categoria="livros" onclick="filtrarPorCategoria('livros')">Livros</li>
- <li class="categoria-item" data-categoria="infantil" onclick="filtrarPorCategoria('infantil')">Infantil</li>
- <li class="categoria-item" data-categoria="Celulares" onclick="filtrarPorCategoria('Celulares')">Celulares</li>
- <li class="categoria-item" data-categoria="Eletrodomésticos" onclick="filtrarPorCategoria('Eletrodomésticos')">Eletrodomésticos</li>
- </ul>
- </aside>
+  <div class="container">
+    <aside class="sidebar-categorias">
+      <div class="categorias">
+      <h3>Categorias</h3>
+      <ul>
+        <li class="categoria-item ativa" data-categoria="todas" onclick="filtrarPorCategoria('todas')">Todas as Categorias</li>
+        <li class="categoria-item" data-categoria="eletronicos" onclick="filtrarPorCategoria('eletronicos')">Eletrônicos</li>
+        <li class="categoria-item" data-categoria="moda" onclick="filtrarPorCategoria('moda')">Moda</li>
+        <li class="categoria-item" data-categoria="fitness" onclick="filtrarPorCategoria('fitness')">Fitness</li>
+        <li class="categoria-item" data-categoria="casa" onclick="filtrarPorCategoria('casa')">Casa e Decoração</li>
+        <li class="categoria-item" data-categoria="beleza" onclick="filtrarPorCategoria('beleza')">Beleza</li>
+        <li class="categoria-item" data-categoria="esportes" onclick="filtrarPorCategoria('esportes')">Esportes</li>
+        <li class="categoria-item" data-categoria="livros" onclick="filtrarPorCategoria('livros')">Livros</li>
+        <li class="categoria-item" data-categoria="infantil" onclick="filtrarPorCategoria('infantil')">Infantil</li>
+        <li class="categoria-item" data-categoria="Celulares" onclick="filtrarPorCategoria('Celulares')">Celulares</li>
+        <li class="categoria-item" data-categoria="Eletrodomésticos" onclick="filtrarPorCategoria('Eletrodomésticos')">Eletrodomésticos</li>
+      </ul>
+    </div>
+    </aside>
 
- <main>
- <section id="ofertas-section">
- <h2 id="ofertas-titulo">🛍️ Ofertas do Dia</h2>
- <div class="lojas-parceiras">
- <h3>🌟 Lojas Parceiras</h3>
- <div class="grid-lojas">
- <div class="loja-todas ativa" onclick="filtrarPorLoja('todas')">
- <span>Todas as Lojas</span>
- </div>
- <div class="loja" data-loja="amazon" onclick="filtrarPorLoja('amazon')">
- <img src="logos/amazon.png" alt="Amazon" loading="lazy" width="100" height="40">
- <span>Amazon</span>
- </div>
- <div class="loja" data-loja="magalu" onclick="filtrarPorLoja('magalu')">
- <img src="logos/magalu.png" alt="Magalu" loading="lazy" width="100" height="40">
- <span>Magalu</span>
- </div>
- <div class="loja" data-loja="shein" onclick="filtrarPorLoja('shein')">
- <img src="logos/shein.png" alt="Shein" loading="lazy" width="100" height="40">
- <span>Shein</span>
- </div>
- <div class="loja" data-loja="shopee" onclick="filtrarPorLoja('shopee')">
- <img src="logos/shopee.png" alt="Shopee" loading="lazy" width="100" height="40">
- <span>Shopee</span>
- </div>
- <div class="loja" data-loja="mercadolivre" onclick="filtrarPorLoja('mercadolivre')">
- <img src="logos/mercadolivre.jpg" alt="Mercado Livre" loading="lazy" width="100" height="40">
- <span>Mercado Livre</span>
- </div>
- <div class="loja" data-loja="alibaba" onclick="filtrarPorLoja('alibaba')">
- <img src="logos/alibaba.png" alt="Alibaba" loading="lazy" width="100" height="40">
- <span>Alibaba</span>
- </div>
- </div>
- </div>
- <input type="text" id="busca" placeholder="Busque por produtos..." class="barra-busca">
- <div id="busca-feedback" class="busca-feedback"></div>
- <div class="loading-spinner" id="loading-spinner"></div>
- <div class="grid-lojas" id="grid-produtos"></div>
- <p class="mensagem-vazia" id="mensagem-vazia" style="display: none;">Nenhum produto encontrado.</p>
- <p class="error-message" id="error-message" style="display: none;"></p>
- <div id="paginacao" class="paginacao">
- <button id="prev-page" disabled>Anterior</button>
- <span id="page-info">Página 1</span>
- <button id="next-page">Próxima</button>
- </div>
- </section>
+    <main>
+      <div class="section">
+        <div id="h2"> id="ofertas-tit">🛍️ Ofertas do Dia</h2>
+        <div class="lojas-parceiras">
+          <h3>🌟 Lojas Parceiras</h3>
+          <div class="grid-lojas">
+            <div class="loja-todas ativa" onclick="filtrarPorLoja('todas')">
+              <span>Todas as Lojas</span>
+            </div>
+            <div class="loja" data-loja="amazon" onclick="filtrarPorLoja('amazon')">
+              <img src="logos/amazon.png" alt="Amazon" loading="lazy" width="100" height="40">
+              <span>Amazon</span>
+            </div>
+            <div class="loja" id="data-loja="magalu" onclick="filtrarPorLoja('magalu')">
+              <img src="logos/magalu.png" alt="Magalu" loading="lazy" width="100" height="40">
+              <span>Magalu</span>
+            </div>
+            <div class="loja" data-loja="shein" onclick="filtrarPorLoja('shein')">
+              <img src="logos/shein.jpg" alt="Shein" loading="lazy" width="100" height="40">
+              <span>Shein</span>
+            </div>
+            <div class="loja" data-loja="shopee" onclick="filtrarPorLoja('shopee')")">
+              <span>Shopee</span>
+              <img src="logos/shopee.jpg" alt="Shopee" loading="100" lazy>="40">
+            </div>
+            <div class="loja" data-loja="mercadolivre" onclick="filtrarPorLoja('mercadolivre')">
+              <img src="logos/mercadolivre.jpg" alt="Mercado Livre" loading="lazy" width="100" height="40">
+              <span>Mercado Livre</span>
+            </div>
+            <div class="loja" data-loja="alibaba" id="filtrarPorLoja('alibaba')">
+              <img src="logos/alibaba.png" alt="Alibaba" loading="lazy" width="100" height="40">
+              <span>Alibaba</span>
+            </div>
+          </div>
+        </div>
+        <input type="text" id="busca" placeholder="Busque por produtos..." class="barra-busca">
+        <div id="busca-feedback" class="busca-feedback"></div>
+        <div class="loading-spinner" id="loading-spinner"></div>
+        <div class="grid-produtos" id="grid-produtos"></div>
+        <p class="mensagem-vazia" id="mensagem-vazia" style="display: none;">Nenhum produto encontrado.</p>
+        <p class="error-message" id="error-message" style="display: none;"></p>
+        <div id="paginacao" class="paginacao">
+          <button id="prev-page" disabled>Anterior</button>
+          <span id="page-info">Página Página 1</span>
+          <button id="next-page">Próxima</button>
+        </div>
+      </div>
+    </main>
+  <div class="social-links">
+      <a href="https://www.tiktok.com/@cdc.centraldecompras" target="_blank">
+        <div class="icon">
+          <img src="logos/tiktok.jpg" alt="TikTok" loading="lazy" width="40" height="40">
+        </div>
+        <span>TikTok</span>
+      </a>
+      <a href="https://www.instagram.com/cdccentrodecompras/" target="_blank">
+        <div class="icon">
+          <img src="logos/instagram.jpg" alt="Instagram" loading="lazy" width="40" height="40">
+        </div>
+        <span>Instagram</span>
+      </a>
+      <a href="https://x.com/ComprasCdc" target="_blank">
+        <div class="icon">
+          <img src="logos/x.png" alt="X" loading="lazy" width="40" height="40">
+        </div>
+        <span>X</span>
+      </a>
+      <a href="https://www.youtube.com/channel/UCaKHlI-hWqwdAXS6Xsv3ZzA" target="_blank">
+        <div class="icon">
+          <img src="logos/youtube.png" alt="YouTube" loading="lazy" width="40" height="40">
+        </div>
+        <span>YouTube</span>
+      </a>
+    </div>
 
- <div class="social-links">
- <a href="https://www.tiktok.com/@cdc.centraldecompras" target="_blank">
- <div class="icon">
- <img src="logos/tiktok.jpg" alt="TikTok" loading="lazy" width="40" height="40">
- </div>
- <span>TikTok</span>
- </a>
- <a href="https://www.instagram.com/cdccentrodecompras/" target="_blank">
- <div class="icon">
- <img src="logos/instagram.jpg" alt="Instagram" loading="lazy" width="40" height="40">
- </div>
- <span>Instagram</span>
- </a>
- <a href="https://x.com/ComprasCdc" target="_blank">
- <div class="icon">
- <img src="logos/x.png" alt="X" loading="lazy" width="40" height="40">
- </div>
- <span>X</span>
- </a>
- <a href="https://www.youtube.com/channel/UCaKHlI-hWqwdAXS6Xsv3ZzA" target="_blank">
- <div class="icon">
- <img src="logos/youtube.png" alt="YouTube" loading="lazy" width="40" height="40">
- </div>
- <span>YouTube</span>
- </a>
- </div>
+    <a href="https://wa.me/5521975179737" class="whatsapp" target="_blank">📲 Atendimento via WhatsApp</a>
+    <a href="https://t.me/boost/centraldecomprascdc" class="telegram" target="_blank">📢 Canal no Telegram</a>
+  </div>
 
- <a href="https://wa.me/5521975179737" class="whatsapp" target="_blank">📲 Atendimento via WhatsApp</a>
- <a href="https://t.me/boost/centraldecomprascdc" class="telegram" target="_blank">📢 Canal no Telegram</a>
- </main>
- </div>
+  <div class="modal" id="imageModal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-content">
+      <div class="carrossel-imagens" id="modalCarrosselImagens"></div>
+      <button class="carrossel-prev" onclick="moveModalCarrossel(-1)">◄</button>
+      <button class="carrossel-next" onclick="moveModalCarrossel(1)">▶</button>
+      <div class="carrossel-dots" id="modalCarrosselDots"></div>
+    </div>
+  </div>
 
- <div class="modal" id="imageModal">
- <button class="modal-close" onclick="closeModal()">✕</button>
- <div class="modal-content">
- <div class="carrossel-imagens" id="modalCarrosselImagens"></div>
- <button class="carrossel-prev" onclick="moveModalCarrossel(-1)">◄</button>
- <button class="carrossel-next" onclick="moveModalCarrossel(1)">▶</button>
- <div class="carrossel-dots" id="modalCarrosselDots"></div>
- </div>
- </div>
+  <footer>
+    <p>🔧 Todos os direitos reservados <strong>Grupo Centro de Compra "CdC"</strong> © <span id="year"></span></p>
+  </footer>
 
- <footer>
- <p>🔧 Todos os direitos reservados <strong>Grupo Centro de Compra "CdC"</strong> © <span id="year"></span></p>
- </footer>
+  <div class="robo-assistente">
+    <a href="https://wa.me/5521975179737" target="_blank">
+      <img src="imagens/robo.jpg" alt="Robô Assistente" class="robo-imagem" loading="lazy" width="60" height="60">
+      <div class="robo-texto">Posso ajudar?</div>
+    </a>
+  </div>
 
- <div class="robo-assistente">
- <a href="https://wa.me/5521975179737" target="_blank">
- <img src="imagens/robo.jpg" alt="Robô Assistente" class="robo-imagem" loading="lazy" width="80" height="80">
- <div class="robo-texto">Posso ajudar?</div>
- </a>
- </div>
-
- <script defer src="script.js"></script>
+  <script defer src="script.js"></script>
 </body>
 </html>
