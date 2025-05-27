@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Painel administrativo do Centro de Compras para gerenciamento de produtos.">
   <title>Admin - Centro de Compras</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
@@ -10,50 +11,156 @@
 <body>
   <header class="site-header">
     <div class="logo-container">
-      <a href="index.html"><img src="logos/centrodecompras.jpg" alt="Centro de Compras"></a>
+      <a href="index.html">
+        <img src="logos/centrodecompras.jpg" alt="Centro de Compras" id="site-logo">
+      </a>
     </div>
     <div class="header-text">
       <h1>Admin - Centro de Compras</h1>
-      <p>Gerencie os produtos do portal.</p>
+      <p>Gerencie os produtos do maior portal de ofertas do Brasil.</p>
     </div>
   </header>
-  <div class="admin-container">
-    <h2>Adicionar Produto</h2>
-    <form id="add-product-form">
-      <label for="nome">Nome:</label><input type="text" id="nome" required>
-      <label for="idProduto">ID do Produto:</label><input type="text" id="idProduto" required>
-      <label for="descricao">Descrição:</label><textarea id="descricao" required></textarea>
-      <label for="categoria">Categoria:</label>
-      <select id="categoria" required>
-        <option value="eletronicos">Eletrônicos</option>
-        <option value="moda">Moda</option>
-        <option value="fitness">Fitness</option>
-        <option value="casa">Casa e Decoração</option>
-        <option value="beleza">Beleza</option>
-        <option value="esportes">Esportes</option>
-        <option value="livros">Livros</option>
-        <option value="infantil">Infantil</option>
-        <option value="Celulares">Celulares</option>
-        <option value="Eletrodomésticos">Eletrodomésticos</option>
-      </select>
-      <label for="loja">Loja:</label>
-      <select id="loja" required>
-        <option value="amazon">Amazon</option>
-        <option value="magalu">Magalu</option>
-        <option value="shein">Shein</option>
-        <option value="shopee">Shopee</option>
-        <option value="mercadolivre">Mercado Livre</option>
-        <option value="alibaba">Alibaba</option>
-      </select>
-      <label for="link">Link do Produto:</label><input type="url" id="link" required>
-      <label for="preco">Preço (R$):</label><input type="number" id="preco" step="0.01" required>
-      <label for="images">Imagens:</label><input type="file" id="images" multiple accept="image/*">
-      <button type="submit">Adicionar Produto</button>
-    </form>
+
+  <nav>
+    <a href="index.html">Voltar ao Site</a>
+  </nav>
+
+  <div class="container">
+    <main>
+      <section id="admin-section">
+        <h2>Gerenciamento de Produtos</h2>
+        <form id="add-product-form">
+          <div class="form-group">
+            <label for="nome">Nome do Produto:</label>
+            <input type="text" id="nome" name="nome" required>
+          </div>
+          <div class="form-group">
+            <label for="idProduto">ID do Produto:</label>
+            <input type="text" id="idProduto" name="idProduto" required>
+          </div>
+          <div class="form-group">
+            <label for="descricao">Descrição:</label>
+            <textarea id="descricao" name="descricao" required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="categoria">Categoria:</label>
+            <select id="categoria" name="categoria" required>
+              <option value="eletronicos">Eletrônicos</option>
+              <option value="moda">Moda</option>
+              <option value="fitness">Fitness</option>
+              <option value="casa">Casa e Decoração</option>
+              <option value="beleza">Beleza</option>
+              <option value="esportes">Esportes</option>
+              <option value="livros">Livros</option>
+              <option value="infantil">Infantil</option>
+              <option value="Celulares">Celulares</option>
+              <option value="Eletrodomésticos">Eletrodomésticos</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="loja">Loja:</label>
+            <select id="loja" name="loja" required>
+              <option value="amazon">Amazon</option>
+              <option value="magalu">Magalu</option>
+              <option value="shein">Shein</option>
+              <option value="shopee">Shopee</option>
+              <option value="mercadolivre">Mercado Livre</option>
+              <option value="alibaba">Alibaba</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="link">Link do Produto:</label>
+            <input type="url" id="link" name="link" required>
+          </div>
+          <div class="form-group">
+            <label for="preco">Preço (R$):</label>
+            <input type="number" id="preco" name="preco" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label for="imagens">Imagens:</label>
+            <input type="file" id="imagens" name="imagens" multiple accept="image/*">
+          </div>
+          <button type="submit">Adicionar Produto</button>
+        </form>
+        <p id="form-feedback" class="form-feedback" style="display: none;"></p>
+      </section>
+    </main>
   </div>
+
   <footer>
     <p>🔧 Todos os direitos reservados <strong>Grupo Centro de Compra "CdC"</strong> © <span id="year"></span></p>
   </footer>
-  <script src="script.js"></script>
+
+  <script>
+    const API_URL = 'https://centrodecompra-backend.onrender.com';
+
+    // Atualizar ano no footer
+    function atualizarAnoFooter() {
+      const yearElement = document.getElementById('year');
+      if (yearElement) {
+        yearElement.textContent = new Date().getFullYear();
+      }
+    }
+
+    // Enviar formulário
+    async function configurarFormulario() {
+      const form = document.getElementById('add-product-form');
+      const feedback = document.getElementById('form-feedback');
+
+      if (!form || !feedback) {
+        console.error('❌ Formulário ou feedback não encontrados');
+        return;
+      }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        feedback.style.display = 'none';
+
+        const formData = new FormData();
+        formData.append('nome', form.nome.value);
+        formData.append('idProduto', form.idProduto.value);
+        formData.append('descricao', form.descricao.value);
+        formData.append('categoria', form.categoria.value);
+        formData.append('loja', form.loja.value);
+        formData.append('link', form.link.value);
+        formData.append('preco', form.preco.value);
+
+        const imagens = form.imagens.files;
+        for (let i = 0; i < imagens.length; i++) {
+          formData.append('imagens', imagens[i]);
+        }
+
+        try {
+          const response = await fetch(`${API_URL}/api/produtos`, {
+            method: 'POST',
+            body: formData
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.details || `Erro ${response.status}`);
+          }
+
+          const result = await response.json();
+          feedback.style.display = 'block';
+          feedback.style.color = 'green';
+          feedback.textContent = 'Produto adicionado com sucesso!';
+          form.reset();
+        } catch (error) {
+          console.error('❌ Erro ao adicionar produto:', error);
+          feedback.style.display = 'block';
+          feedback.style.color = 'red';
+          feedback.textContent = `Erro: ${error.message}`;
+        }
+      });
+    }
+
+    // Inicialização
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('Inicializando admin-xyz-123.html');
+      atualizarAnoFooter();
+      configurarFormulario();
+    });
+  </script>
 </body>
 </html>
