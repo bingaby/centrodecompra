@@ -1,258 +1,262 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Painel administrativo do Centro de Compras para gerenciamento de produtos.">
-  <title>Admin - Centro de Compras</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8859">
+1<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Painel administrativo do Centro de Compras para gerenciamento de produtos.">
+    <title>Admin - Centro de Compras</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="site-header">
-    <div class="logo-container">
-      <a href="index.html">
-        <img src="logos/centrodecompras.jpg" alt="Centro de Compras" id="site-logo">
-      </a>
+    <header class="site-header">
+        <div class="logo-container">
+            <a href="index.html">
+                <img src="logos/centrodecompras.jpg" alt="Centro de Compras" id="site-logo">
+            </a>
+        </div>
+        <div class="header-text">
+            <h1>Admin - Centro de Compras</h1>
+            <p>Gerencie os produtos do maior portal de ofertas do Brasil.</p>
+        </div>
+    </header>
+
+    <nav>
+        <a href="index.html">Voltar ao Site</a>
+    </nav>
+
+    <div class="container">
+        <main>
+            <section id="admin-section">
+                <h2>Gerenciamento de Produtos</h2>
+
+                <!-- Formulário para Adicionar Produto -->
+                <h3>Adicionar Novo Produto</h3>
+                <form id="add-product-form">
+                    <div class="form-group">
+                        <label for="nome">Nome do Produto:</label>
+                        <input type="text" id="nome" name="nome" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="idProduto">ID do Produto:</label>
+                        <input type="text" id="idProduto" name="idProduto" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="descricao">Descrição:</label>
+                        <textarea id="descricao" name="descricao" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="categoria">Categoria:</label>
+                        <select id="categoria" name="categoria" required>
+                            <option value="eletronicos">Eletrônicos</option>
+                            <option value="moda">Moda</option>
+                            <option value="fitness">Fitness</option>
+                            <option value="casa">Casa e Decoração</option>
+                            <option value="beleza">Beleza</option>
+                            <option value="esportes">Esportes</option>
+                            <option value="livros">Livros</option>
+                            <option value="infantil">Infantil</option>
+                            <option value="Celulares">Celulares</option>
+                            <option value="Eletrodomésticos">Eletrodomésticos</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="loja">Loja:</label>
+                        <select id="loja" name="loja" required>
+                            <option value="amazon">Amazon</option>
+                            <option value="magalu">Magalu</option>
+                            <option value="shein">Shein</option>
+                            <option value="shopee">Shopee</option>
+                            <option value="mercadolivre">Mercado Livre</option>
+                            <option value="alibaba">Alibaba</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="link">Link do Produto:</label>
+                        <input type="url" id="link" name="link" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="preco">Preço (R$):</label>
+                        <input type="number" id="preco" name="preco" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="imagens">Imagens:</label>
+                        <input type="file" id="imagens" name="imagens" multiple accept="image/*">
+                    </div>
+                    <button type="submit">Adicionar Produto</button>
+                </form>
+                <p id="form-feedback" class="form-feedback" style="display: none;"></p>
+
+                <!-- Lista de Produtos -->
+                <h3>Produtos Cadastrados</h3>
+                <div id="loading-spinner" class="loading-spinner"></div>
+                <p id="error-message" class="error-message" style="display: none;"></p>
+                <div id="lista-produtos" class="grid-lojas"></div>
+            </section>
+        </main>
     </div>
-    <div class="header-text">
-      <h1>Admin - Centro de Compras</h1>
-      <p>Gerencie os produtos do maior portal de ofertas do Brasil.</p>
-    </div>
-  </header>
 
-  <nav>
-    <a href="index.html">Voltar ao Site</a>
-  </nav>
+    <footer>
+        <p>🔧 Todos os direitos reservados <strong>Grupo Centro de Compra "CdC"</strong> © <span id="year"></span></p>
+    </footer>
 
-  <div class="container">
-    <main>
-      <section id="admin-section">
-        <h2>Gerenciamento de Produtos</h2>
+    <script>
+        const API_URL = 'https://centrodecompra-backend.onrender.com';
 
-        <!-- Formulário para Adicionar Produto -->
-        <h3>Adicionar Novo Produto</h3>
-        <form id="add-product-form">
-          <div class="form-group">
-            <label for="nome">Nome do Produto:</label>
-            <input type="text" id="nome" name="nome" required>
-          </div>
-          <div class="form-group">
-            <label for="idProduto">ID do Produto:</label>
-            <input type="text" id="idProduto" name="idProduto" required>
-          </div>
-          <div class="form-group">
-            <label for="descricao">Descrição:</label>
-            <textarea id="descricao" name="descricao" required></textarea>
-          </div>
-          <div class="form-group">
-            <label for="categoria">Categoria:</label>
-            <select id="categoria" name="categoria" required>
-              <option value="eletronicos">Eletrônicos</option>
-              <option value="moda">Moda</option>
-              <option value="fitness">Fitness</option>
-              <option value="casa">Casa e Decoração</option>
-              <option value="beleza">Beleza</option>
-              <option value="esportes">Esportes</option>
-              <option value="livros">Livros</option>
-              <option value="infantil">Infantil</option>
-              <option value="Celulares">Celulares</option>
-              <option value="Eletrodomésticos">Eletrodomésticos</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="loja">Loja:</label>
-            <select id="loja" name="loja" required>
-              <option value="amazon">Amazon</option>
-              <option value="magalu">Magalu</option>
-              <option value="shein">Shein</option>
-              <option value="shopee">Shopee</option>
-              <option value="mercadolivre">Mercado Livre</option>
-              <option value="alibaba">Alibaba</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="link">Link do Produto:</label>
-            <input type="url" id="link" name="link" required>
-          </div>
-          <div class="form-group">
-            <label for="preco">Preço (R$):</label>
-            <input type="number" id="preco" name="preco" step="0.01" required>
-          </div>
-          <div class="form-group">
-            <label for="imagens">Imagens:</label>
-            <input type="file" id="imagens" name="imagens" multiple accept="image/*">
-          </div>
-          <button type="submit">Adicionar Produto</button>
-        </form>
-        <p id="form-feedback" class="form-feedback" style="display: none;"></p>
+        // Atualizar ano no footer
+        function atualizarAnoFooter() {
+            const yearElement = document.getElementById('year');
+            if (yearElement) {
+                yearElement.textContent = new Date().getFullYear();
+            }
+        }
 
-        <!-- Lista de Produtos -->
-        <h3>Produtos Cadastrados</h3>
-        <div id="loading-spinner" class="loading-spinner" style="display: none;"></div>
-        <p id="error-message" class="error-message" style="display: none;"></p>
-        <div id="lista-produtos" class="grid-lojas"></div>
-      </section>
-    </main>
-  </div>
+        // Carregar lista de produtos
+        async function carregarProdutosAdmin() {
+            const loadingSpinner = document.getElementById('loading-spinner');
+            const errorMessage = document.getElementById('error-message');
+            const listaProdutos = document.getElementById('lista-produtos');
 
-  <footer>
-    <p>🔧 Todos os direitos reservados <strong>Grupo Centro de Compra "CdC"</strong> © <span id="year"></span></p>
-  </footer>
+            if (!listaProdutos || !errorMessage || !loadingSpinner) {
+                console.error('❌ Elementos essenciais não encontrados');
+                return;
+            }
 
-  <script>
-    const API_URL = 'https://centrodecompra-backend.onrender.com';
+            try {
+                loadingSpinner.style.display = 'block';
+                errorMessage.style.display = 'none';
+                listaProdutos.innerHTML = '';
 
-    // Atualizar ano no footer
-    function atualizarAnoFooter() {
-      const yearElement = document.getElementById('year');
-      if (yearElement) {
-        yearElement.textContent = new Date().getFullYear();
-      }
-    }
+                console.log('Carregando produtos da API...');
+                const response = await fetch(`${API_URL}/api/produtos?page=1&limit=100`, {
+                    cache: 'no-store'
+                });
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.details || `Erro ${response.status}`);
+                }
+                const produtos = await response.json();
 
-    // Carregar lista de produtos
-    async function carregarProdutosAdmin() {
-      const loadingSpinner = document.getElementById('loading-spinner');
-      const errorMessage = document.getElementById('error-message');
-      const listaProdutos = document.getElementById('lista-produtos');
+                if (!Array.isArray(produtos)) {
+                    throw new Error('Resposta inválida da API: não é um array');
+                }
 
-      if (!listaProdutos || !errorMessage || !loadingSpinner) {
-        console.error('❌ Elementos essenciais não encontrados');
-        return;
-      }
+                console.log(`Produtos recebidos: ${produtos.length}`);
+                if (produtos.length === 0) {
+                    listaProdutos.innerHTML = '<p>Nenhum produto cadastrado.</p>';
+                    return;
+                }
 
-      try {
-        loadingSpinner.style.display = 'block';
-        errorMessage.style.display = 'none';
-        listaProdutos.innerHTML = '';
+                produtos.forEach(produto => {
+                    const produtoDiv = document.createElement('div');
+                    produtoDiv.classList.add('produto-card', 'visible');
+                    produtoDiv.innerHTML = `
+                        <h4>${produto.nome || 'Produto sem nome'}</h4>
+                        <p>ID: ${produto.idProduto || 'N/A'}</p>
+                        <p>Loja: ${produto.loja || 'Desconhecida'}</p>
+                        <p>Categoria: ${produto.categoria || 'N/A'}</p>
+                        <p>Preço: R$ ${produto.preco || 'N/A'}</p>
+                        <p><a href="${produto.link || '#'}" target="_blank">Ver Produto</a></p>
+                        <button onclick="excluirProduto('${produto.idProduto}')" class="excluir-btn">Excluir</button>
+                    `;
+                    listaProdutos.appendChild(produtoDiv);
+                });
+            } catch (error) {
+                console.error('❌ Erro ao carregar produtos:', error);
+                errorMessage.textContent = `Erro ao carregar produtos: ${error.message}`;
+                errorMessage.style.display = 'block';
+            } finally {
+                loadingSpinner.style.display = 'none';
+            }
+        }
 
-        const response = await fetch(`${API_URL}/api/produtos?page=1&limit=100`, {
-          cache: 'no-store'
+        // Adicionar produto
+        async function configurarFormulario() {
+            const form = document.getElementById('add-product-form');
+            const feedback = document.getElementById('form-feedback');
+
+            if (!form || !feedback) {
+                console.error('❌ Formulário ou feedback não encontrados');
+                return;
+            }
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                feedback.style.display = 'none';
+
+                const formData = new FormData();
+                formData.append('nome', form.nome.value);
+                formData.append('idProduto', form.idProduto.value);
+                formData.append('descricao', form.descricao.value);
+                formData.append('categoria', form.categoria.value);
+                formData.append('loja', form.loja.value);
+                formData.append('link', form.link.value);
+                formData.append('preco', form.preco.value);
+
+                const imagens = form.imagens.files;
+                for (let i = 0; i < imagens.length; i++) {
+                    formData.append('imagens', imagens[i]);
+                }
+
+                try {
+                    console.log('Enviando novo produto...');
+                    const response = await fetch(`${API_URL}/api/produtos`, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({}));
+                        throw new Error(errorData.details || `Erro ${response.status}`);
+                    }
+
+                    feedback.style.display = 'block';
+                    feedback.style.color = 'green';
+                    feedback.textContent = 'Produto adicionado com sucesso!';
+                    form.reset();
+                    carregarProdutosAdmin();
+                } catch (error) {
+                    console.error('❌ Erro ao adicionar produto:', error);
+                    feedback.style.display = 'block';
+                    feedback.style.color = 'red';
+                    feedback.textContent = `Erro: ${error.message}`;
+                }
+            });
+        }
+
+        // Excluir produto
+        async function excluirProduto(idProduto) {
+            if (!confirm(`Tem certeza que deseja excluir o produto com ID ${idProduto}?`)) return;
+
+            const errorMessage = document.getElementById('error-message');
+
+            try {
+                console.log(`Excluindo produto com ID ${idProduto}...`);
+                const response = await fetch(`${API_URL}/api/produtos/${idProduto}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.details || `Erro ${response.status}`);
+                }
+
+                alert('Produto excluído com sucesso!');
+                carregarProdutosAdmin();
+            } catch (error) {
+                console.error('❌ Erro ao excluir produto:', error);
+                errorMessage.textContent = `Erro: ${error.message}`;
+                errorMessage.style.display = 'block';
+            }
+        }
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Inicializando admin-xyz-123.html');
+            atualizarAnoFooter();
+            configurarFormulario();
+            carregarProdutosAdmin();
         });
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.details || `Erro ${response.status}`);
-        }
-        const produtos = await response.json();
-
-        if (!Array.isArray(produtos)) {
-          throw new Error('Resposta inválida da API');
-        }
-
-        if (produtos.length === 0) {
-          listaProdutos.innerHTML = '<p>Nenhum produto cadastrado.</p>';
-          return;
-        }
-
-        produtos.forEach(produto => {
-          const produtoDiv = document.createElement('div');
-          produtoDiv.classList.add('produto-card', 'visible');
-          produtoDiv.innerHTML = `
-            <h4>${produto.nome || 'Produto sem nome'}</h4>
-            <p>ID: ${produto.idProduto || 'N/A'}</p>
-            <p>Loja: ${produto.loja || 'Desconhecida'}</p>
-            <p>Categoria: ${produto.categoria || 'N/A'}</p>
-            <p>Preço: R$ ${produto.preco || 'N/A'}</p>
-            <p><a href="${produto.link || '#'}" target="_blank">Ver Produto</a></p>
-            <button onclick="excluirProduto('${produto.idProduto}')" class="excluir-btn">Excluir</button>
-          `;
-          listaProdutos.appendChild(produtoDiv);
-        });
-      } catch (error) {
-        console.error('❌ Erro ao carregar produtos:', error);
-        errorMessage.textContent = `Erro: ${error.message}`;
-        errorMessage.style.display = 'block';
-      } finally {
-        loadingSpinner.style.display = 'none';
-      }
-    }
-
-    // Adicionar produto
-    async function configurarFormulario() {
-      const form = document.getElementById('add-product-form');
-      const feedback = document.getElementById('form-feedback');
-
-      if (!form || !feedback) {
-        console.error('❌ Formulário ou feedback não encontrados');
-        return;
-      }
-
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        feedback.style.display = 'none';
-
-        const formData = new FormData();
-        formData.append('nome', form.nome.value);
-        formData.append('idProduto', form.idProduto.value);
-        formData.append('descricao', form.descricao.value);
-        formData.append('categoria', form.categoria.value);
-        formData.append('loja', form.loja.value);
-        formData.append('link', form.link.value);
-        formData.append('preco', form.preco.value);
-
-        const imagens = form.imagens.files;
-        for (let i = 0; i < imagens.length; i++) {
-          formData.append('imagens', imagens[i]);
-        }
-
-        try {
-          const response = await fetch(`${API_URL}/api/produtos`, {
-            method: 'POST',
-            body: formData
-          });
-
-          if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.details || `Erro ${response.status}`);
-          }
-
-          feedback.style.display = 'block';
-          feedback.style.color = 'green';
-          feedback.textContent = 'Produto adicionado com sucesso!';
-          form.reset();
-          carregarProdutosAdmin(); // Atualiza a lista
-        } catch (error) {
-          console.error('❌ Erro ao adicionar produto:', error);
-          feedback.style.display = 'block';
-          feedback.style.color = 'red';
-          feedback.textContent = `Erro: ${error.message}`;
-        }
-      });
-    }
-
-    // Excluir produto
-    async function excluirProduto(idProduto) {
-      if (!confirm(`Tem certeza que deseja excluir o produto com ID ${idProduto}?`)) return;
-
-      const errorMessage = document.getElementById('error-message');
-
-      try {
-        const response = await fetch(`${API_URL}/api/produtos/${idProduto}`, {
-          method: 'DELETE'
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.details || `Erro ${response.status}`);
-        }
-
-        alert('Produto excluído com sucesso!');
-        carregarProdutosAdmin(); // Atualiza a lista
-      } catch (error) {
-        console.error('❌ Erro ao excluir produto:', error);
-        errorMessage.textContent = `Erro: ${error.message}`;
-        errorMessage.style.display = 'block';
-      }
-    }
-
-    // Inicialização
-    document.addEventListener('DOMContentLoaded', () => {
-      console.log('Inicializando admin-xyz-123.html');
-      atualizarAnoFooter();
-      configurarFormulario();
-      carregarProdutosAdmin();
-    });
-  </script>
+    </script>
 </body>
 </html>
