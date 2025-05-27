@@ -150,7 +150,12 @@ function filtrarProdutos() {
     produtoDiv.innerHTML = `
       <div class="carrossel" id="${carrosselId}">
         <div class="carrossel-imagens">
-          ${imagens.map((img, i) => `<img src="${img}" alt="${produto.nome || 'Produto'} ${i + 1}" loading="lazy" onerror="this.src='imagens/placeholder.jpg'" onclick="openModal(${produtoIndex}, ${i})">`).join('')}
+          ${imagens.map((img, i) => `
+            <picture>
+              <source srcset="${img.replace(/\.(jpg|png)$/, '.webp')}" type="image/webp">
+              <img src="${img}" alt="${produto.nome || 'Produto'} ${i + 1}" loading="lazy" width="300" height="300" onerror="this.src='imagens/placeholder.jpg'" onclick="openModal(${produtoIndex}, ${i})">
+            </picture>
+          `).join('')}
         </div>
         ${imagens.length > 1 ? `
           <button class="carrossel-prev" onclick="moveCarrossel('${carrosselId}', -1)">◄</button>
@@ -225,7 +230,10 @@ async function openModal(produtoIndex, imageIndex) {
     currentImages = validImages;
 
     carrosselImagens.innerHTML = currentImages.map((img, i) => `
-      <img src="${img}" alt="Imagem ${i + 1}" class="modal-image" loading="lazy" onerror="this.src='imagens/placeholder.jpg'">
+      <picture>
+        <source srcset="${img.replace(/\.(jpg|png)$/, '.webp')}" type="image/webp">
+        <img src="${img}" alt="Imagem ${i + 1}" class="modal-image" loading="lazy" width="600" height="600" onerror="this.src='imagens/placeholder.jpg'">
+      </picture>
     `).join('');
 
     requestAnimationFrame(() => {
