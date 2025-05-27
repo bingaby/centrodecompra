@@ -7,13 +7,13 @@ let lojaSelecionada = 'todas';
 let termoBusca = '';
 let currentImages = [];
 let currentImageIndex = 0;
-let currentPage = 1;
-const produtosPorPagina = 20;
 
 // Atualizar ano no footer
 function atualizarAnoFooter() {
   const yearElement = document.getElementById('year');
-  if (yearElement) yearElement.textContent = new Date().getFullYear();
+  if (yearElement) {
+    yearElement.textContent = new Date().getFullYear();
+  }
 }
 
 // Detectar triplo clique no logotipo
@@ -21,16 +21,16 @@ function configurarCliqueLogo() {
   const logo = document.getElementById('site-logo');
   if (logo) {
     let clickCount = 0;
-    let clickTimer;
+    let clickTimer = null;
     logo.addEventListener('click', () => {
       clickCount++;
       if (clickCount === 1) {
         clickTimer = setTimeout(() => {
           clickCount = 0;
-        }, 500);
+        }, 600);
       } else if (clickCount === 3) {
         clearTimeout(clickTimer);
-        window.location.href = '/admin-xyz-123.html';
+        window.location.href = 'admin-xyz-123.html';
         clickCount = 0;
       }
     });
@@ -43,30 +43,27 @@ async function carregarProdutos() {
   const mensagemVazia = document.getElementById('mensagem-vazia');
   const errorMessage = document.getElementById('error-message');
   const gridProdutos = document.getElementById('grid-produtos');
+
   try {
     loadingSpinner.style.display = 'block';
     mensagemVazia.style.display = 'none';
     errorMessage.style.display = 'none';
     gridProdutos.innerHTML = '';
 
-    const response = await fetch(
-      `${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`,
-      { cache: 'no-store' }
-    );
+    const response = await fetch(`${API_URL}/api/produtos`, { cache: 'no-store' });
     if (!response.ok) {
-      throw new Error(`Erro ao carregar: ${response.status}`);
+      throw new Error(`Erro ao carregar produtos: ${response.status} ${response.statusText}`);
     }
     produtos = await response.json();
 
     if (!Array.isArray(produtos)) {
-      throw new Error('Resposta inválida da API');
+      throw new Error('Resposta da API não é uma lista válida');
     }
 
     filtrarProdutos();
-    atualizarPaginacao();
   } catch (error) {
     console.error('Erro ao carregar produtos:', error);
-    errorMessage.textContent = 'Erro ao carregar produtos. Tente novamente.';
+    errorMessage.textContent = 'Erro ao carregar os produtos. Tente novamente mais tarde.';
     errorMessage.style.display = 'block';
     mensagemVazia.style.display = 'none';
     gridProdutos.style.display = 'none';
@@ -80,15 +77,10 @@ function filtrarProdutos() {
   const gridProdutos = document.getElementById('grid-produtos');
   const mensagemVazia = document.getElementById('mensagem-vazia');
 
-  const produtosFiltrados = produtos.filter((produto) => {
-    const matchCategoria =
-      categoriaSelecionada === 'todas' ||
-      produto.categoria.toLowerCase() === categoriaSelecionada.toLowerCase();
-    const matchLoja =
-      lojaSelecionada === 'todas' ||
-      produto.loja.toLowerCase() === lojaSelecionada.toLowerCase();
-    const matchBusca =
-      !termoBusca || produto.nome.toLowerCase().includes(termoBusca.toLowerCase());
+  const produtosFiltrados = produtos.filter(produto => {
+    const matchCategoria = categoriaSelecionada === 'todas' || produto.categoria.toLowerCase() === categoriaSelecionada.toLowerCase();
+    const matchLoja = lojaSelecionada === 'todas' || produto.loja.toLowerCase() === lojaSelecionada.toLowerCase();
+    const matchBusca = !termoBusca || produto.nome.toLowerCase().includes(termoBusca.toLowerCase());
     return matchCategoria && matchLoja && matchBusca;
   });
 
@@ -103,7 +95,7 @@ function filtrarProdutos() {
   gridProdutos.style.display = 'grid';
 
   produtosFiltrados.forEach((produto, produtoIndex) => {
-    const imagens = produto.imagens && produto.imagens.length > 0 ? produto.imagens : ['imagens/placeholder.jpg'];
+    const imagens = produto.imagens && produto.imagens.length > 0 ? produto.imagens : ['imagens/sem-imagem.jpg'];
     const carrosselId = `carrossel-${produtoIndex}`;
 
     const produtoDiv = document.createElement('div');
@@ -114,20 +106,20 @@ function filtrarProdutos() {
     produtoDiv.innerHTML = `
       <div class="carrossel" id="${carrosselId}">
         <div class="carrossel-imagens">
-          ${imagens.map((img, i) => `<img src="${img}" alt="${produto.nome}" loading="lazy" onerror="this.src='imagens/placeholder.jpg'" onclick="openModal(${produtoIndex}, ${i})">`).join('')}
+          ${imagens.map((img, i) => `<img src="${img}" alt="${produto.nome}" loading="lazy" onerror="this.src='imagens/sem-imagem.jpg'" onclick="openModal(${produtoIndex}, ${i})">`).join('')}
         </div>
         ${imagens.length > 1 ? `
           <button class="carrossel-prev" onclick="moveCarrossel('${carrosselId}', -1)">◄</button>
-          <button class="carrossel-next" onclick="moveCarrossel('${carrosselId}', 1)">▶</button>
+          <button class="carrossel-next" onclick="moveCarrossel('${carrosselId}', 1)">►</button>
           <div class="carrossel-dots">
             ${imagens.map((_, i) => `<span class="carrossel-dot ${i === 0 ? 'ativo' : ''}" onclick="setCarrosselImage('${carrosselId}', ${i})"></span>`).join('')}
           </div>
         ` : ''}
       </div>
-      <span>${produto.nome}</span>
-      <span class="descricao">Loja: ${produto.loja}</span>
+      <h3>${produto.nome}</h3>
+      <span class="loja">Loja: ${produto.loja}</span>
       <p class="preco"><a href="${produto.link}" target="_blank" class="ver-preco">Clique aqui para ver o preço</a></p>
-      <a href="${produto.link}" target="_blank" class="ver-na-loja ${produto.loja.toLowerCase()}">Comprar</a>
+      <a href="${produto.link}" target="_blank" class="ver-na-loja ${produto.loja.toLowerCase()} btn-comprar">Comprar agora</a>
     `;
     gridProdutos.appendChild(produtoDiv);
   });
@@ -168,18 +160,15 @@ function openModal(produtoIndex, imageIndex) {
   try {
     currentImages = produtos[produtoIndex]?.imagens && produtos[produtoIndex].imagens.length > 0
       ? produtos[produtoIndex].imagens
-      : ['imagens/placeholder.jpg'];
+      : ['imagens/sem-imagem.jpg'];
     currentImageIndex = imageIndex;
 
-    console.log('Imagens no modal:', currentImages); // Depuração
-
-    carrosselImagens.innerHTML = currentImages.map(img => `<img src="${img}" alt="Imagem ampliada" class="modal-image" loading="lazy" onerror="this.src='imagens/placeholder.jpg'" />`).join('');
-
+    carrosselImagens.innerHTML = currentImages.map(img => `<img src="${img}" alt="Imagem ampliada" onerror="this.src='imagens/sem-imagem.jpg'">`).join('');
     carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
 
     carrosselDots.innerHTML = currentImages.map((_, i) => `<span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})"></span>`).join('');
 
-    modal.style.display = 'block';
+    modal.style.display = 'flex';
   } catch (error) {
     console.error('Erro ao abrir modal:', error);
   }
@@ -193,8 +182,6 @@ function moveModalCarrossel(direction) {
   currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
   carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
 
-  console.log('Movendo carrossel:', { currentImageIndex, totalImagens, imagens: currentImages }); // Depuração
-
   Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
 }
 
@@ -203,10 +190,7 @@ function setModalCarrosselImage(index) {
   const carrosselDots = document.getElementById('modalCarrosselDots').children;
   currentImageIndex = index;
   carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
-
-  console.log('Definindo imagem do modal:', { index, imagens: currentImages }); // Depuração
-
-  Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === index));
+  Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
 }
 
 function closeModal() {
@@ -234,71 +218,39 @@ function configurarBusca() {
       buscaFeedback.textContent = '';
     }
 
-    currentPage = 1; // Resetar página ao buscar
     debounceTimer = setTimeout(() => {
-      carregarProdutos();
+      filtrarProdutos();
     }, 300);
   });
-}
-
-// Configurar paginação
-function configurarPaginacao() {
-  const prevButton = document.getElementById('prev-page');
-  const nextButton = document.getElementById('next-page');
-
-  prevButton.addEventListener('click', () => {
-    if (currentPage > 1) {
-      currentPage--;
-      carregarProdutos();
-    }
-  });
-
-  nextButton.addEventListener('click', () => {
-    currentPage++;
-    carregarProdutos();
-  });
-}
-
-function atualizarPaginacao() {
-  const prevButton = document.getElementById('prev-page');
-  const nextButton = document.getElementById('next-page');
-  const pageInfo = document.getElementById('page-info');
-
-  prevButton.disabled = currentPage === 1;
-  nextButton.disabled = produtos.length < produtosPorPagina;
-  pageInfo.textContent = `Página ${currentPage}`;
 }
 
 // Filtrar por categoria
 function filtrarPorCategoria(categoria) {
   categoriaSelecionada = categoria;
-  currentPage = 1;
-  document.querySelectorAll('.categoria-item').forEach((item) => {
-    item.classList.toggle('ativa', item.dataset.categoria.toLowerCase() === categoria.toLowerCase());
+  document.querySelectorAll('.categoria-item').forEach(item => {
+    item.classList.toggle('ativa', item.dataset.categoria === categoria.toLowerCase());
   });
-  carregarProdutos();
+  filtrarProdutos();
 }
 
 // Filtrar por loja
 function filtrarPorLoja(loja) {
   lojaSelecionada = loja;
-  currentPage = 1;
-  document.querySelectorAll('.loja, .loja-todas').forEach((item) => {
-    item.classList.toggle('ativa', item.dataset.loja.toLowerCase() === loja.toLowerCase());
+  document.querySelectorAll('.loja, .loja-todas').forEach(item => {
+    item.classList.toggle('ativa', item.dataset.loja === loja.toLowerCase());
   });
-  carregarProdutos();
+  filtrarProdutos();
 }
 
 // Inicialização
 document.addEventListener('DOMContentLoaded', () => {
   carregarProdutos();
   configurarBusca();
-  configurarPaginacao();
   atualizarAnoFooter();
   configurarCliqueLogo();
 
   // Fechar modal ao clicar fora
-  document.getElementById('imageModal').addEventListener('click', (e) => {
+  document.getElementById('imageModal').addEventListener('click', e => {
     if (e.target === e.currentTarget) closeModal();
   });
 });
