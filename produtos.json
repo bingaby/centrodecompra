@@ -190,5 +190,17 @@
     "imagens": [
       "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_microsoft-xbox-series-s-512gb-standard-cor-brancomicrosoft-xbox-series-s-512gb-standard-cor-branco-1748367327721.webp"
     ]
+  },
+  {
+    "_id": "1748367856114pkrbwl67o",
+    "nome": "Console PlayStation 5",
+    "descricao": "Console PlayStation 5",
+    "categoria": "eletronicos",
+    "loja": "amazon",
+    "link": "https://amzn.to/3ZEBadB",
+    "preco": 10,
+    "imagens": [
+      "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_console-playstation-5-1748367854660.jpg"
+    ]
   }
 ]
