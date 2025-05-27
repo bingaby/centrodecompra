@@ -555,8 +555,8 @@ h1, h2, h3 {
 }
 
 .robo-imagem {
-  width: 80px;
-  height: 80px;
+  width: 60px;
+  height: 60px;
   object-fit: contain;
   aspect-ratio: 1/1;
 }
@@ -565,9 +565,9 @@ h1, h2, h3 {
   display: none;
   background-color: #FFA500;
   color: white;
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 14px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
   font-weight: bold;
 }
 
@@ -639,13 +639,13 @@ footer {
   }
 
   .robo-imagem {
-    width: 60px;
-    height: 60px;
+    width: 40px;
+    height: 40px;
   }
 
   .robo-texto {
-    font-size: 12px;
-    padding: 6px 10px;
+    font-size: 10px;
+    padding: 4px 8px;
   }
 
   .robo-assistente {
