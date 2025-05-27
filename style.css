@@ -28,10 +28,16 @@ body {
   text-align: center;
 }
 
+.logo-container {
+  width: 150px; /* Ajustado para corresponder ao width/height do HTML */
+  height: 50px;
+}
+
 .logo-container img {
-  max-width: 120px;
-  height: auto;
-  margin-bottom: 10px;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  aspect-ratio: 3/1; /* Ajuste conforme a proporção real do logo */
 }
 
 .header-text h1 {
@@ -160,9 +166,16 @@ h1, h2, h3 {
   border: 2px solid #FFA500;
 }
 
+.loja picture {
+  width: 100px;
+  height: 40px;
+}
+
 .loja img {
-  max-height: 60px;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
+  aspect-ratio: 5/2; /* Ajuste conforme a proporção das imagens das lojas */
 }
 
 .loja span {
@@ -258,11 +271,16 @@ h1, h2, h3 {
   transform: scale(1.03);
 }
 
+.produto-card picture {
+  width: 100%;
+  height: 100px; /* Ajustado para corresponder ao carrossel */
+}
+
 .produto-card img {
-  max-height: 100px;
-  width: auto;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
-  margin: 0 auto;
+  aspect-ratio: 1/1; /* Ajuste conforme a proporção das imagens dos produtos */
   cursor: pointer;
 }
 
@@ -333,13 +351,20 @@ h1, h2, h3 {
   display: flex;
   transition: transform 0.3s ease;
   height: 100%;
+  will-change: transform; /* Melhora performance de animações */
 }
 
-.carrossel-imagens img {
+.carrossel-imagens picture {
   flex: 0 0 100%;
   width: 100%;
   height: 100%;
+}
+
+.carrossel-imagens img {
+  width: 100%;
+  height: 100%;
   object-fit: contain;
+  aspect-ratio: 1/1; /* Ajuste conforme a proporção das imagens */
 }
 
 .carrossel-prev, .carrossel-next {
@@ -387,7 +412,7 @@ h1, h2, h3 {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.8);
+  background: rgba(0, 0, 0, 0.8);
   z-index: 1000;
   justify-content: center;
   align-items: center;
@@ -406,13 +431,20 @@ h1, h2, h3 {
   overflow: hidden;
   width: 100%;
   height: auto;
+  will-change: transform; /* Melhora performance de animações */
+}
+
+.modal-content .carrossel-imagens picture {
+  flex: 0 0 100%;
+  width: 100%;
+  height: auto;
 }
 
 .modal-content .carrossel-imagens img {
   width: 100%;
   height: auto;
   object-fit: contain;
-  flex: 0 0 100%;
+  aspect-ratio: 1/1; /* Ajuste conforme a proporção das imagens */
   min-width: 100%;
 }
 
@@ -486,9 +518,16 @@ h1, h2, h3 {
   background-color: #ccc;
 }
 
-.social-links a img {
+.social-links a picture {
   width: 24px;
   height: 24px;
+}
+
+.social-links a img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  aspect-ratio: 1/1;
 }
 
 .social-links a span {
@@ -540,9 +579,16 @@ h1, h2, h3 {
   transform: scale(1.1);
 }
 
-.robo-imagem {
+.robo-assistente picture {
   width: 80px;
-  height: auto;
+  height: 80px;
+}
+
+.robo-imagem {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  aspect-ratio: 1/1;
 }
 
 .robo-texto {
@@ -618,8 +664,13 @@ footer {
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   }
 
-  .robo-imagem {
+  .produto-card picture {
+    height: 80px; /* Ajustado para dispositivos móveis */
+  }
+
+  .robo-assistente picture {
     width: 60px;
+    height: 60px;
   }
 
   .robo-texto {
