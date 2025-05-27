@@ -10,21 +10,30 @@
 <body>
   <header class="site-header">
     <div class="logo-container">
-      <a href="index.html"><img src="logos/centrodecompras.jpg" alt="Centro de Compras"></a>
+      <a href="index.html">
+        <img src="logos/centrodecompras.jpg" alt="Centro de Compras" loading="lazy">
+      </a>
     </div>
     <div class="header-text">
       <h1>Admin - Centro de Compras</h1>
       <p>Gerencie os produtos do portal.</p>
     </div>
   </header>
+
   <div class="admin-container">
     <h2>Adicionar Produto</h2>
     <form id="add-product-form">
-      <label for="nome">Nome:</label><input type="text" id="nome" required>
-      <label for="idProduto">ID do Produto:</label><input type="text" id="idProduto" required>
-      <label for="descricao">Descrição:</label><textarea id="descricao" required></textarea>
+      <label for="nome">Nome:</label>
+      <input type="text" id="nome" name="nome" required>
+      
+      <label for="idProduto">ID do Produto:</label>
+      <input type="text" id="idProduto" name="idProduto" required>
+      
+      <label for="descricao">Descrição:</label>
+      <textarea id="descricao" name="descricao" required></textarea>
+      
       <label for="categoria">Categoria:</label>
-      <select id="categoria" required>
+      <select id="categoria" name="categoria" required>
         <option value="eletronicos">Eletrônicos</option>
         <option value="moda">Moda</option>
         <option value="fitness">Fitness</option>
@@ -36,8 +45,9 @@
         <option value="Celulares">Celulares</option>
         <option value="Eletrodomésticos">Eletrodomésticos</option>
       </select>
+      
       <label for="loja">Loja:</label>
-      <select id="loja" required>
+      <select id="loja" name="loja" required>
         <option value="amazon">Amazon</option>
         <option value="magalu">Magalu</option>
         <option value="shein">Shein</option>
@@ -45,15 +55,63 @@
         <option value="mercadolivre">Mercado Livre</option>
         <option value="alibaba">Alibaba</option>
       </select>
-      <label for="link">Link do Produto:</label><input type="url" id="link" required>
-      <label for="preco">Preço (R$):</label><input type="number" id="preco" step="0.01" required>
-      <label for="images">Imagens:</label><input type="file" id="images" multiple accept="image/*">
+      
+      <label for="link">Link do Produto:</label>
+      <input type="url" id="link" name="link" required>
+      
+      <label for="preco">Preço (R$):</label>
+      <input type="number" id="preco" name="preco" step="0.01" required>
+      
+      <label for="images">Imagens:</label>
+      <input type="file" id="images" name="images" multiple accept="image/*">
+      
+      <label for="imagensUrls">URLs de Imagens (JSON):</label>
+      <textarea id="imagensUrls" name="imagensUrls" placeholder='["https://exemplo.com/imagem1.jpg"]'></textarea>
+      
       <button type="submit">Adicionar Produto</button>
     </form>
   </div>
+
   <footer>
     <p>🔧 Todos os direitos reservados <strong>Grupo Centro de Compra "CdC"</strong> © <span id="year"></span></p>
   </footer>
-  <script src="script.js"></script>
+
+  <script>
+    const API_URL = 'https://centrodecompra-backend.onrender.com'; // Use 'http://localhost:10000' localmente
+
+    document.getElementById('add-product-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData();
+      formData.append('nome', document.getElementById('nome').value);
+      formData.append('idProduto', document.getElementById('idProduto').value);
+      formData.append('descricao', document.getElementById('descricao').value);
+      formData.append('categoria', document.getElementById('categoria').value);
+      formData.append('loja', document.getElementById('loja').value);
+      formData.append('link', document.getElementById('link').value);
+      formData.append('preco', document.getElementById('preco').value);
+      formData.append('imagensUrls', document.getElementById('imagensUrls').value);
+
+      const files = document.getElementById('images').files;
+      for (let file of files) {
+        formData.append('images', file);
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/api/produtos`, {
+          method: 'POST',
+          body: formData
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error);
+        alert('Produto adicionado com sucesso!');
+        document.getElementById('add-product-form').reset();
+      } catch (error) {
+        console.error('❌ Erro ao adicionar produto:', error);
+        alert(`Erro: ${error.message}`);
+      }
+    });
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>
