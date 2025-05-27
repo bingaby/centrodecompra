@@ -29,6 +29,9 @@
     <main>
       <section id="admin-section">
         <h2>Gerenciamento de Produtos</h2>
+
+        <!-- Formulário para Adicionar Produto -->
+        <h3>Adicionar Novo Produto</h3>
         <form id="add-product-form">
           <div class="form-group">
             <label for="nome">Nome do Produto:</label>
@@ -83,6 +86,12 @@
           <button type="submit">Adicionar Produto</button>
         </form>
         <p id="form-feedback" class="form-feedback" style="display: none;"></p>
+
+        <!-- Lista de Produtos -->
+        <h3>Produtos Cadastrados</h3>
+        <div id="loading-spinner" class="loading-spinner" style="display: none;"></div>
+        <p id="error-message" class="error-message" style="display: none;"></p>
+        <div id="lista-produtos" class="grid-lojas"></div>
       </section>
     </main>
   </div>
@@ -102,7 +111,64 @@
       }
     }
 
-    // Enviar formulário
+    // Carregar lista de produtos
+    async function carregarProdutosAdmin() {
+      const loadingSpinner = document.getElementById('loading-spinner');
+      const errorMessage = document.getElementById('error-message');
+      const listaProdutos = document.getElementById('lista-produtos');
+
+      if (!listaProdutos || !errorMessage || !loadingSpinner) {
+        console.error('❌ Elementos essenciais não encontrados');
+        return;
+      }
+
+      try {
+        loadingSpinner.style.display = 'block';
+        errorMessage.style.display = 'none';
+        listaProdutos.innerHTML = '';
+
+        const response = await fetch(`${API_URL}/api/produtos?page=1&limit=100`, {
+          cache: 'no-store'
+        });
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.details || `Erro ${response.status}`);
+        }
+        const produtos = await response.json();
+
+        if (!Array.isArray(produtos)) {
+          throw new Error('Resposta inválida da API');
+        }
+
+        if (produtos.length === 0) {
+          listaProdutos.innerHTML = '<p>Nenhum produto cadastrado.</p>';
+          return;
+        }
+
+        produtos.forEach(produto => {
+          const produtoDiv = document.createElement('div');
+          produtoDiv.classList.add('produto-card', 'visible');
+          produtoDiv.innerHTML = `
+            <h4>${produto.nome || 'Produto sem nome'}</h4>
+            <p>ID: ${produto.idProduto || 'N/A'}</p>
+            <p>Loja: ${produto.loja || 'Desconhecida'}</p>
+            <p>Categoria: ${produto.categoria || 'N/A'}</p>
+            <p>Preço: R$ ${produto.preco || 'N/A'}</p>
+            <p><a href="${produto.link || '#'}" target="_blank">Ver Produto</a></p>
+            <button onclick="excluirProduto('${produto.idProduto}')" class="excluir-btn">Excluir</button>
+          `;
+          listaProdutos.appendChild(produtoDiv);
+        });
+      } catch (error) {
+        console.error('❌ Erro ao carregar produtos:', error);
+        errorMessage.textContent = `Erro: ${error.message}`;
+        errorMessage.style.display = 'block';
+      } finally {
+        loadingSpinner.style.display = 'none';
+      }
+    }
+
+    // Adicionar produto
     async function configurarFormulario() {
       const form = document.getElementById('add-product-form');
       const feedback = document.getElementById('form-feedback');
@@ -141,11 +207,11 @@
             throw new Error(errorData.details || `Erro ${response.status}`);
           }
 
-          const result = await response.json();
           feedback.style.display = 'block';
           feedback.style.color = 'green';
           feedback.textContent = 'Produto adicionado com sucesso!';
           form.reset();
+          carregarProdutosAdmin(); // Atualiza a lista
         } catch (error) {
           console.error('❌ Erro ao adicionar produto:', error);
           feedback.style.display = 'block';
@@ -155,11 +221,37 @@
       });
     }
 
+    // Excluir produto
+    async function excluirProduto(idProduto) {
+      if (!confirm(`Tem certeza que deseja excluir o produto com ID ${idProduto}?`)) return;
+
+      const errorMessage = document.getElementById('error-message');
+
+      try {
+        const response = await fetch(`${API_URL}/api/produtos/${idProduto}`, {
+          method: 'DELETE'
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.details || `Erro ${response.status}`);
+        }
+
+        alert('Produto excluído com sucesso!');
+        carregarProdutosAdmin(); // Atualiza a lista
+      } catch (error) {
+        console.error('❌ Erro ao excluir produto:', error);
+        errorMessage.textContent = `Erro: ${error.message}`;
+        errorMessage.style.display = 'block';
+      }
+    }
+
     // Inicialização
     document.addEventListener('DOMContentLoaded', () => {
       console.log('Inicializando admin-xyz-123.html');
       atualizarAnoFooter();
       configurarFormulario();
+      carregarProdutosAdmin();
     });
   </script>
 </body>
