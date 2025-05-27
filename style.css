@@ -29,7 +29,7 @@ body {
 }
 
 .logo-container {
-  width: 150px; /* Ajustado para corresponder ao width/height do HTML */
+  width: 150px;
   height: 50px;
 }
 
@@ -37,7 +37,7 @@ body {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  aspect-ratio: 3/1; /* Ajuste conforme a proporção real do logo */
+  aspect-ratio: 3/1;
 }
 
 .header-text h1 {
@@ -166,16 +166,11 @@ h1, h2, h3 {
   border: 2px solid #FFA500;
 }
 
-.loja picture {
+.loja img {
   width: 100px;
   height: 40px;
-}
-
-.loja img {
-  width: 100%;
-  height: 100%;
   object-fit: contain;
-  aspect-ratio: 5/2; /* Ajuste conforme a proporção das imagens das lojas */
+  aspect-ratio: 5/2;
 }
 
 .loja span {
@@ -271,16 +266,11 @@ h1, h2, h3 {
   transform: scale(1.03);
 }
 
-.produto-card picture {
-  width: 100%;
-  height: 100px; /* Ajustado para corresponder ao carrossel */
-}
-
 .produto-card img {
   width: 100%;
-  height: 100%;
+  height: 100px;
   object-fit: contain;
-  aspect-ratio: 1/1; /* Ajuste conforme a proporção das imagens dos produtos */
+  aspect-ratio: 1/1;
   cursor: pointer;
 }
 
@@ -351,20 +341,15 @@ h1, h2, h3 {
   display: flex;
   transition: transform 0.3s ease;
   height: 100%;
-  will-change: transform; /* Melhora performance de animações */
-}
-
-.carrossel-imagens picture {
-  flex: 0 0 100%;
-  width: 100%;
-  height: 100%;
+  will-change: transform;
 }
 
 .carrossel-imagens img {
+  flex: 0 0 100%;
   width: 100%;
   height: 100%;
   object-fit: contain;
-  aspect-ratio: 1/1; /* Ajuste conforme a proporção das imagens */
+  aspect-ratio: 1/1;
 }
 
 .carrossel-prev, .carrossel-next {
@@ -431,20 +416,15 @@ h1, h2, h3 {
   overflow: hidden;
   width: 100%;
   height: auto;
-  will-change: transform; /* Melhora performance de animações */
-}
-
-.modal-content .carrossel-imagens picture {
-  flex: 0 0 100%;
-  width: 100%;
-  height: auto;
+  will-change: transform;
 }
 
 .modal-content .carrossel-imagens img {
   width: 100%;
   height: auto;
   object-fit: contain;
-  aspect-ratio: 1/1; /* Ajuste conforme a proporção das imagens */
+  aspect-ratio: 1/1;
+  flex: 0 0 100%;
   min-width: 100%;
 }
 
@@ -518,14 +498,9 @@ h1, h2, h3 {
   background-color: #ccc;
 }
 
-.social-links a picture {
+.social-links a img {
   width: 24px;
   height: 24px;
-}
-
-.social-links a img {
-  width: 100%;
-  height: 100%;
   object-fit: contain;
   aspect-ratio: 1/1;
 }
@@ -579,14 +554,9 @@ h1, h2, h3 {
   transform: scale(1.1);
 }
 
-.robo-assistente picture {
+.robo-imagem {
   width: 80px;
   height: 80px;
-}
-
-.robo-imagem {
-  width: 100%;
-  height: 100%;
   object-fit: contain;
   aspect-ratio: 1/1;
 }
@@ -664,11 +634,11 @@ footer {
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   }
 
-  .produto-card picture {
-    height: 80px; /* Ajustado para dispositivos móveis */
+  .produto-card img {
+    height: 80px;
   }
 
-  .robo-assistente picture {
+  .robo-imagem {
     width: 60px;
     height: 60px;
   }
