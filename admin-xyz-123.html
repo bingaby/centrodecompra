@@ -1,5 +1,199 @@
 <!DOCTYPE html>
-<html lang="pt-br"> <head> <meta charset="UTF-8" /> <meta name="viewport" content="width=device-width, initial-scale=1" /> <title>Gerenciar Produtos</title> <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" /> <style> body { font-family: 'Roboto', Arial, sans-serif; padding: 20px; background-color: #f5f5f5; } h1, h3 { text-align: center; color: #333; } form { max-width: 500px; margin: auto; display: flex; flex-direction: column; gap: 10px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); } input, select, button { padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; } button { background-color: #ff6200; color: white; border: none; cursor: pointer; font-weight: bold; } button:hover { background-color: #e55a00; } #mensagem { margin-top: 10px; color: green; text-align: center; } #erro { margin-top: 10px; color: red; text-align: center; } #produtos-cadastrados { margin: 20px auto; max-width: 900px; background: white; padding: 20px; border-radius: 8px; sombra da caixa: 0 2px 4px rgba(0,0,0,0.1); } tabela #produtos-cadastrados { largura: 100%; colapso da fronteira: colapso; } #produtos-cadastrados th, #produtos-cadastrados td { padding: 10px; borda: 1px sólido #ddd; alinhamento de texto: esquerda; } #produtos-cadastrados th { background-color: #f9f9f9; } #produtos-cadastrados button.excluir { background-color: #dc3545; preenchimento: 5px 10px; tamanho da fonte: 14px; fronteira: nenhuma; cor: branco; raio da borda: 4px; cursor: ponteiro; } #produtos-cadastrados button.excluir:hover { background-color: #c82333; } .thumbnail { largura: 50px; altura: 50px; ajuste ao objeto: capa; margem: 2px; cursor: ponteiro; raio da borda:4px; } </style> </head> <body> <h1>Adicionar Produto</h1> <form id="form-produto" enctype="multipart/form-data"> <input type="text" name="nome" placeholder="Nome do produto" require /> <select name="categoria" require> <option value="" desabilitado selecionado>Selecione uma categoria</option> <option value="eletronicos">Eletrônicos</option> <option value="moda">Moda</option> <option value="fitness">Fitness</option> <option value="casa">Casa e Decoração</option> <option value="beleza">Beleza</option> <option value="esportes">Esportes</option> <option value="livros">Livros</option> <option value="infantil">Infantil</option> <option value="celulares">Celulares</option> <option value="eletrodomésticos">Eletrodomésticos</option> </select> <select name="loja" required> <option value="" disabled selected>Selecione uma loja</option> <option value="amazon">Amazon</option> <option value="magalu">Magalu</option> <option value="shein">Shein</option> <option value="shopee">Shopee</option> <option value="mercadolivre">Mercado Livre</option> <option value="alibaba">Alibaba</option> </select> <input type="url" name="link" placeholder="Link do produto (https://...)" required pattern="https?://.+" /> <input type="number" name="preco" placeholder="Preço do produto (ex.: 99,99)" step="0,01" min="0" required /> <input type="file" name="imagens" accept="image/*" multiple /> <button type="submit">Adicionar</button> </form> <div id="mensagem"></div> <div id="erro"></div>01" min="0" obrigatório /> <input type="file" name="imagens" accept="image/*" múltiplo /> <button type="submit">Adicionar</button> </form> <div id="mensagem"></div> <div id="erro"></div>01" min="0" obrigatório /> <input type="file" name="imagens" accept="image/*" múltiplo /> <button type="submit">Adicionar</button> </form> <div id="mensagem"></div> <div id="erro"></div>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gerenciar Produtos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Roboto', Arial, sans-serif;
+      padding: 20px;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+
+    h1, h3 {
+      text-align: center;
+      color: #444;
+    }
+
+    form {
+      max-width: 500px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: box-shadow 0.3s ease;
+    }
+
+    form:hover {
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    input, select, button {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+
+    button {
+      background-color: #ff6200;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #e55a00;
+    }
+
+    #mensagem {
+      margin-top: 10px;
+      color: green;
+      text-align: center;
+      font-size: 16px;
+    }
+
+    #erro {
+      margin-top: 10px;
+      color: red;
+      text-align: center;
+      font-size: 16px;
+    }
+
+    #produtos-cadastrados {
+      margin: 20px auto;
+      max-width: 900px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: box-shadow 0.3s ease;
+    }
+
+    #produtos-cadastrados:hover {
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    #produtos-cadastrados table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    #produtos-cadastrados th, #produtos-cadastrados td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+
+    #produtos-cadastrados th {
+      background-color: #f9f9f9;
+      font-weight: bold;
+    }
+
+    #produtos-cadastrados button.excluir {
+      background-color: #dc3545;
+      padding: 5px 10px;
+      font-size: 14px;
+      border: none;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    #produtos-cadastrados button.excluir:hover {
+      background-color: #c82333;
+    }
+
+    .thumbnail {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      margin: 2px;
+      cursor: pointer;
+      border-radius: 4px;
+      display: inline-block;
+      vertical-align: middle;
+      transition: transform 0.2s ease;
+    }
+
+    .thumbnail:hover {
+      transform: scale(1.1);
+    }
+
+    .thumbnail-error {
+      width: 50px;
+      height: 50px;
+      background-color: #f0f0f0;
+      display: inline-block;
+      text-align: center;
+      line-height: 50px;
+      color: #999;
+      border-radius: 4px;
+      margin: 2px;
+      font-size: 12px;
+    }
+
+    @media (max-width: 768px) {
+      form, #produtos-cadastrados {
+        max-width: 100%;
+        padding: 15px;
+      }
+
+      #produtos-cadastrados table {
+        font-size: 14px;
+      }
+
+      .thumbnail, .thumbnail-error {
+        width: 40px;
+        height: 40px;
+        line-height: 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Adicionar Produto</h1>
+  <form id="form-produto" enctype="multipart/form-data">
+    <input type="text" name="nome" placeholder="Nome do produto" required />
+    <select name="categoria" required>
+      <option value="" disabled selected>Selecione uma categoria</option>
+      <option value="eletronicos">Eletrônicos</option>
+      <option value="moda">Moda</option>
+      <option value="fitness">Fitness</option>
+      <option value="casa">Casa e Decoração</option>
+      <option value="beleza">Beleza</option>
+      <option value="esportes">Esportes</option>
+      <option value="livros">Livros</option>
+      <option value="infantil">Infantil</option>
+      <option value="celulares">Celulares</option>
+      <option value="eletrodomésticos">Eletrodomésticos</option>
+    </select>
+    <select name="loja" required>
+      <option value="" disabled selected>Selecione uma loja</option>
+      <option value="amazon">Amazon</option>
+      <option value="magalu">Magalu</option>
+      <option value="shein">Shein</option>
+      <option value="shopee">Shopee</option>
+      <option value="mercadolivre">Mercado Livre</option>
+      <option value="alibaba">Alibaba</option>
+    </select>
+    <input type="url" name="link" placeholder="Link do produto (https://...)" required pattern="https?://.+" />
+    <input type="number" name="preco" placeholder="Preço do produto (ex.: 99,99)" step="0.01" min="0" required />
+    <input type="file" name="imagens" accept="image/*" multiple />
+    <button type="submit">Adicionar</button>
+  </form>
+  <div id="mensagem"></div>
+  <div id="erro"></div>
 
   <div id="produtos-cadastrados">
     <h3>Produtos Cadastrados</h3>
@@ -46,7 +240,12 @@
         const precoFormatado = `R$ ${parseFloat(produto.preco).toFixed(2).replace('.', ',')}`;
         const imagens = produto.imagens || [];
         const miniaturas = imagens.length > 0
-          ? imagens.map((img, i) => `<img src="${img}" class="thumbnail" alt="Imagem ${i + 1}" />`).join('')
+          ? imagens.map((img, i) => `
+              <img src="${img}" 
+                   class="thumbnail" 
+                   alt="Imagem ${i + 1}" 
+                   onerror="this.outerHTML='<div class=\\'thumbnail-error\\'>Erro</div>'" />
+            `).join('')
           : 'Sem imagens';
 
         tbody.innerHTML += `
@@ -75,7 +274,6 @@
       }
     }
 
-    // Envio do formulário com imagens
     document.getElementById('form-produto').addEventListener('submit', async (event) => {
       event.preventDefault();
       const form = event.target;
@@ -103,5 +301,5 @@
 
     document.addEventListener('DOMContentLoaded', carregarProdutos);
   </script>
-</corpo> </html>
-
+</body>
+</html>
