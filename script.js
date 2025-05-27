@@ -29,7 +29,7 @@ function configurarCliqueLogo() {
   let clickCount = 0;
   let clickTimer;
   logo.addEventListener('click', (e) => {
-    e.preventDefault(); // Evita comportamento padrão do link
+    e.preventDefault();
     clickCount++;
     console.log(`Clique detectado: ${clickCount}`);
     if (clickCount === 1) {
@@ -151,10 +151,7 @@ function filtrarProdutos() {
       <div class="carrossel" id="${carrosselId}">
         <div class="carrossel-imagens">
           ${imagens.map((img, i) => `
-            <picture>
-              <source srcset="${img.replace(/\.(jpg|png)$/, '.webp')}" type="image/webp">
-              <img src="${img}" alt="${produto.nome || 'Produto'} ${i + 1}" loading="lazy" width="300" height="300" onerror="this.src='imagens/placeholder.jpg'" onclick="openModal(${produtoIndex}, ${i})">
-            </picture>
+            <img src="${img}" alt="${produto.nome || 'Produto'} ${i + 1}" loading="lazy" width="300" height="300" onerror="this.src='imagens/placeholder.jpg'" onclick="openModal(${produtoIndex}, ${i})">
           `).join('')}
         </div>
         ${imagens.length > 1 ? `
@@ -171,6 +168,15 @@ function filtrarProdutos() {
       <a href="${produto.link || '#'}" target="_blank" class="ver-na-loja ${produto.loja?.toLowerCase() || 'default'}">Comprar</a>
     `;
     gridProdutos.appendChild(produtoDiv);
+
+    // Pré-carregar a primeira imagem da primeira página
+    if (produtoIndex === 0 && currentPage === 1) {
+      const preloadLink = document.createElement('link');
+      preloadLink.rel = 'preload';
+      preloadLink.href = imagens[0];
+      preloadLink.as = 'image';
+      document.head.appendChild(preloadLink);
+    }
   });
   console.log(`Exibidos ${produtosFiltrados.length} produtos`);
 }
@@ -230,10 +236,7 @@ async function openModal(produtoIndex, imageIndex) {
     currentImages = validImages;
 
     carrosselImagens.innerHTML = currentImages.map((img, i) => `
-      <picture>
-        <source srcset="${img.replace(/\.(jpg|png)$/, '.webp')}" type="image/webp">
-        <img src="${img}" alt="Imagem ${i + 1}" class="modal-image" loading="lazy" width="600" height="600" onerror="this.src='imagens/placeholder.jpg'">
-      </picture>
+      <img src="${img}" alt="Imagem ${i + 1}" class="modal-image" loading="lazy" width="600" height="600" onerror="this.src='imagens/placeholder.jpg'">
     `).join('');
 
     requestAnimationFrame(() => {
