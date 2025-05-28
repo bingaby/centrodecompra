@@ -405,4 +405,26 @@ document.addEventListener('DOMContentLoaded', () => {
       navMobile.classList.toggle('active');
     });
   }
+
+  // Configurar ícone de busca
+  const searchIcon = document.querySelector('.search-icon');
+  const searchInput = document.getElementById('busca');
+  if (searchIcon && searchInput) {
+    searchIcon.addEventListener('click', () => {
+      searchInput.focus();
+      window.scrollTo({ top: searchInput.offsetTop - 100, behavior: 'smooth' });
+    });
+  }
+
+  // Configurar sombra dinâmica no cabeçalho
+  const header = document.querySelector('.site-header');
+  if (header) {
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 10) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+  }
 });
