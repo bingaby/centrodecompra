@@ -9,7 +9,7 @@ body {
   background-color: #f9fafb;
   color: #1f2937;
   line-height: 1.6;
-  padding-top: 110px; /* Aumentado para cabeçalho maior */
+  padding-top: 120px; /* Aumentado para cabeçalho maior */
 }
 
 .container {
@@ -29,8 +29,8 @@ body {
   left: 0;
   width: 100%;
   z-index: 50;
-  padding: 16px 0; /* Aumentado para espaço */
-  height: 90px; /* Aumentado para logotipo maior */
+  padding: 18px 0; /* Aumentado para espaço */
+  height: 100px; /* Aumentado para logotipo maior */
   display: flex;
   align-items: center;
   transition: box-shadow 0.3s ease; /* Sombra dinâmica */
@@ -50,10 +50,10 @@ body {
 }
 
 .logo-container img {
-  width: 240px; /* Aumentado para desktop */
-  height: 72px;
+  width: 300px; /* Aumentado para desktop */
+  height: 90px;
   object-fit: contain;
-  margin-top: 12px; /* Abaixar o logotipo */
+  margin-top: 14px; /* Abaixar o logotipo */
   transition: transform 0.2s ease; /* Efeito de hover */
 }
 
@@ -67,7 +67,7 @@ body {
 }
 
 .header-text h1 {
-  font-size: 1.5rem; /* Aumentado para legibilidade */
+  font-size: 1.5rem;
   font-weight: 700;
   color: #ffffff; /* Branco para contraste */
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); /* Sombra para legibilidade */
@@ -104,7 +104,7 @@ body {
   padding: 8px 0;
   text-align: center;
   position: fixed;
-  top: 90px; /* Ajustado para cabeçalho maior */
+  top: 100px; /* Ajustado para cabeçalho maior */
   left: 0;
   width: 100%;
   z-index: 49;
@@ -131,7 +131,7 @@ body {
   background-color: #2E8B57;
   padding: 12px;
   position: fixed;
-  top: 90px; /* Ajustado para cabeçalho maior */
+  top: 100px; /* Ajustado para cabeçalho maior */
   left: 0;
   width: 100%;
   z-index: 49;
@@ -165,7 +165,7 @@ body {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: sticky;
-  top: 160px; /* Ajustado para cabeçalho e menu */
+  top: 170px; /* Ajustado para cabeçalho e menu */
 }
 
 .sidebar h3 {
@@ -355,7 +355,7 @@ h2 {
   color: #ffffff;
   text-decoration: none;
   border-radius: 6px;
-  margin-top: 12px;
+  margin-top: 10px;
   font-size: 0.875rem;
   font-weight: 600;
   transition: background-color 0.2s;
@@ -396,7 +396,7 @@ h2 {
   left: 8px;
 }
 
-.carrossel-next {
+.carrossagent {
   right: 8px;
 }
 
@@ -428,7 +428,8 @@ h2 {
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  max-width: 100%;
+  height: auto100%;
   background: rgba(0, 0, 0, 0.8);
   z-index: 1000;
   justify-content: center;
@@ -629,9 +630,9 @@ footer p {
   }
 
   .logo-container img {
-    width: 220px; /* Ajuste para tablets */
-    height: 66px;
-    margin-top: 10px;
+    width: 270px; /* Ajuste para tablets */
+    height: 81px;
+    margin-top: 12px;
   }
 
   .header-text h1 {
@@ -645,7 +646,7 @@ footer p {
 
 @media (max-width: 768px) {
   body {
-    padding-top: 80px; /* Ajustado para mobile */
+    padding-top: 90px; /* Ajustado para mobile */
   }
 
   .container {
@@ -653,8 +654,8 @@ footer p {
   }
 
   .site-header {
-    height: 70px; /* Ajustado para mobile */
-    padding: 12px 0;
+    height: 80px; /* Ajustado para mobile */
+    padding: 14px 0;
   }
 
   .site-header .container {
@@ -664,9 +665,9 @@ footer p {
   }
 
   .logo-container img {
-    width: 200px; /* Aumentado para mobile */
-    height: 60px;
-    margin-top: 8px; /* Abaixar em mobile */
+    width: 240px; /* Aumentado para mobile */
+    height: 72px;
+    margin-top: 10px; /* Abaixar em mobile */
   }
 
   .header-text {
