@@ -9,6 +9,7 @@ body {
   background-color: #f9fafb;
   color: #1f2937;
   line-height: 1.6;
+  padding-top: 100px; /* Espaço para o cabeçalho fixo */
 }
 
 .container {
@@ -23,33 +24,38 @@ body {
 .site-header {
   background-color: #ffffff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  width: 100%;
   z-index: 50;
-  padding: 16px 0;
+  padding: 12px 0;
 }
 
 .logo-container img {
-  width: 150px;
-  height: 50px;
+  width: 140px;
+  height: 40px;
   object-fit: contain;
 }
 
 .header-text h1 {
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: #1f2937;
+  margin: 0;
 }
 
 .header-text p {
-  font-size: 1rem;
+  font-size: 0.9rem;
   color: #4b5563;
+  margin: 0;
 }
 
 .flex.items-center {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
 }
 
 .toggle-menu {
@@ -58,28 +64,27 @@ body {
   font-size: 1.5rem;
   color: #1f2937;
   cursor: pointer;
+  display: none;
 }
 
 /* Navegação */
-.nav-menu,
-.nav-mobile {
+.nav-menu {
   background-color: #2E8B57;
-  padding: 12px;
+  padding: 8px;
   text-align: center;
+  margin-top: 8px;
 }
 
-.nav-menu a,
-.nav-mobile a {
+.nav-menu a {
   color: #ffffff;
-  margin: 0 16px;
+  margin: 0 12px;
   text-decoration: none;
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 0.95rem;
   transition: color 0.2s;
 }
 
-.nav-menu a:hover,
-.nav-mobile a:hover {
+.nav-menu a:hover {
   color: #FFA500;
 }
 
@@ -87,6 +92,9 @@ body {
   display: none;
   flex-direction: column;
   gap: 12px;
+  background-color: #2E8B57;
+  padding: 12px;
+  width: 100%;
 }
 
 /* Sidebar */
@@ -97,7 +105,7 @@ body {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: sticky;
-  top: 20px;
+  top: 120px; /* Ajustado para não colidir com o cabeçalho fixo */
 }
 
 .sidebar h3 {
@@ -556,8 +564,45 @@ footer p {
 
 /* Media Queries */
 @media (max-width: 768px) {
+  body {
+    padding-top: 80px; /* Menor espaço para cabeçalho em mobile */
+  }
+
   .container {
     flex-direction: column;
+  }
+
+  .site-header {
+    padding: 8px 0;
+  }
+
+  .logo-container img {
+    width: 120px;
+    height: 36px;
+  }
+
+  .header-text h1 {
+    font-size: 1.25rem;
+  }
+
+  .header-text p {
+    font-size: 0.8rem;
+  }
+
+  .toggle-menu {
+    display: block;
+  }
+
+  .nav-menu {
+    display: none;
+  }
+
+  .nav-mobile {
+    display: flex;
+  }
+
+  .nav-mobile.hidden {
+    display: none;
   }
 
   .sidebar {
@@ -583,18 +628,6 @@ footer p {
 
   .grid-produtos {
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  }
-
-  .nav-menu {
-    display: none;
-  }
-
-  .nav-mobile {
-    display: flex;
-  }
-
-  .nav-mobile.hidden {
-    display: none;
   }
 
   .robo-imagem {
