@@ -22,15 +22,15 @@ body {
 
 /* Header */
 .site-header {
-  background-color: #ffffff;
+  background-color: #FFA500; /* Laranja no fundo do cabeçalho */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   z-index: 50;
-  padding: 10px 0; /* Compacto, como na Americanas */
-  height: 60px; /* Altura fixa para consistência */
+  padding: 10px 0;
+  height: 60px;
   display: flex;
   align-items: center;
 }
@@ -44,8 +44,8 @@ body {
 }
 
 .logo-container img {
-  width: 120px; /* Tamanho reduzido para imitar a Americanas */
-  height: 36px;
+  width: 180px; /* Aumentado para melhor visibilidade */
+  height: 54px;
   object-fit: contain;
 }
 
@@ -55,15 +55,15 @@ body {
 }
 
 .header-text h1 {
-  font-size: 1.25rem; /* Compacto, como um título de busca */
+  font-size: 1.25rem;
   font-weight: 700;
-  color: #1f2937;
+  color: #1f2937; /* Contraste com fundo laranja */
   margin: 0;
 }
 
 .header-text p {
   font-size: 0.8rem;
-  color: #4b5563;
+  color: #4b5563; /* Contraste com fundo laranja */
   margin: 0;
 }
 
@@ -71,18 +71,18 @@ body {
   background: none;
   border: none;
   font-size: 1.5rem;
-  color: #FFA500; /* Laranja para ícones */
+  color: #1f2937; /* Alterado para contraste com fundo laranja */
   cursor: pointer;
-  display: none; /* Visível apenas em mobile */
+  display: none;
 }
 
 /* Navegação */
 .nav-menu {
-  background-color: #2E8B57; /* Verde original */
+  background-color: #2E8B57; /* Verde mantido */
   padding: 8px 0;
   text-align: center;
   position: fixed;
-  top: 60px; /* Abaixo do cabeçalho fixo */
+  top: 60px;
   left: 0;
   width: 100%;
   z-index: 49;
@@ -99,14 +99,14 @@ body {
 }
 
 .nav-menu a:hover {
-  color: #FFA500; /* Laranja no hover */
+  color: #FFA500;
 }
 
 .nav-mobile {
   display: none;
   flex-direction: column;
   gap: 12px;
-  background-color: #2E8B57; /* Verde original */
+  background-color: #2E8B57; /* Verde mantido */
   padding: 12px;
   position: fixed;
   top: 60px;
@@ -136,7 +136,7 @@ body {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: sticky;
-  top: 140px; /* Ajustado para o cabeçalho e menu fixos */
+  top: 140px; /* Ajustado para cabeçalho e menu fixos */
 }
 
 .sidebar h3 {
@@ -596,7 +596,7 @@ footer p {
 /* Media Queries */
 @media (max-width: 768px) {
   body {
-    padding-top: 60px; /* Menor para mobile */
+    padding-top: 60px;
   }
 
   .container {
@@ -604,7 +604,7 @@ footer p {
   }
 
   .site-header {
-    height: 50px; /* Mais compacto em mobile */
+    height: 50px;
     padding: 8px 0;
   }
 
@@ -613,8 +613,8 @@ footer p {
   }
 
   .logo-container img {
-    width: 100px;
-    height: 30px;
+    width: 140px; /* Aumentado para mobile */
+    height: 42px;
   }
 
   .header-text h1 {
