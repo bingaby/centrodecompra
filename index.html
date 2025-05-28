@@ -5,195 +5,231 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Ofertas com descontos reais nas principais lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba.">
   <meta property="og:title" content="Centro de Compras - Ofertas">
-  <meta property="og:description" content="Encontre as melhores ofertas em lojas confiáveis com links de compras seguros.">
-  <meta property="og:image" content="logos/logoscentrodecompras.jpeg">
+  <meta property="og:description" content="Encontre as melhores ofertas em lojas confiáveis com links de afiliados seguros.">
+  <meta property="og:image" content="logos/centrodecompras.jpg">
   <meta property="og:url" content="https://www.centrodecompra.com.br/">
   <meta name="twitter:card" content="summary_large_image">
   <title>Centro de Compras - Ofertas do Dia</title>
-  <link rel="preload" href="logos/logoscentrodecompras.jpeg" as="image">
+  <link rel="preload" href="logos/centrodecompras.jpg" as="image">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="style.css" media="print" onload="this.media='all'">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <!-- Tailwind CSS CDN para prototipagem rápida (substitua pelo seu style.css se preferir) -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" media="print" onload="this.media='all'">
 </head>
-<body>
-  <header class="site-header">
-    <div class="logo-container">
-      <a href="index.html">
-        <img src="logos/logoscentrodecompras.jpeg" alt="Centro de Compras" id="site-logo-img" width="150" height="50" onerror="this.src='imagens/placeholder-logo.png'">
-      </a>
+<body class="bg-gray-100 font-sans">
+  <header class="bg-white shadow sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center">
+        <a href="index.html">
+          <img src="logos/logoscentrodecompras.jpeg" alt="Centro de Compras" class="h-12" width="150" height="50">
+        </a>
+        <div class="ml-4">
+          <h1 class="text-2xl font-bold text-gray-800">Centro de Compras</h1>
+          <p class="text-sm text-gray-600">As melhores ofertas do Brasil</p>
+        </div>
+      </div>
+      <nav class="hidden md:flex space-x-6">
+        <a href="index.html" class="text-gray-600 hover:text-blue-600 transition">Promoções</a>
+        <a href="cupom.html" class="text-gray-600 hover:text-blue-600 transition">Cupom de Desconto</a>
+        <a href="sobre.html" class="text-gray-600 hover:text-blue-600 transition">Sobre</a>
+        <a href="contato.html" class="text-gray-600 hover:text-blue-600 transition">Contato</a>
+      </nav>
+      <button class="md:hidden text-gray-600 focus:outline-none" onclick="toggleMenu()">
+        <i class="fas fa-bars text-2xl"></i>
+      </button>
     </div>
-    <div class="header-text">
-      <h1>Centro de Compras</h1>
-      <p>O maior portal de compras do Brasil! Encontre as melhores ofertas.</p>
+    <!-- Menu Mobile -->
+    <div id="mobile-menu" class="hidden md:hidden bg-white shadow">
+      <nav class="flex flex-col p-4 space-y-2">
+        <a href="index.html" class="text-gray-600 hover:text-blue-600 transition">Promoções</a>
+        <a href="cupom.html" class="text-gray-600 hover:text-blue-600 transition">Cupom de Desconto</a>
+        <a href="sobre.html" class="text-gray-600 hover:text-blue-600 transition">Sobre</a>
+        <a href="contato.html" class="text-gray-600 hover:text-blue-600 transition">Contato</a>
+      </nav>
     </div>
   </header>
 
-  <nav>
-    <div class="nav-links">
-      <a href="index.html">Promoções</a>
-      <a href="cupom.html">Cupom de Desconto</a>
-      <a href="sobre.html">Sobre</a>
-      <a href="contato.html">Contato</a>
-    </div>
-    <div class="nav-search">
-      <input type="text" id="nav-busca" placeholder="Busque por produtos..." class="barra-busca">
-    </div>
-  </nav>
+  <div class="container mx-auto px-4 py-8 flex flex-col md:flex-row">
+    <aside class="sidebar bg-white rounded-lg shadow p-6 mb-6 md:mb-0 md:w-1/4 md:mr-6">
+      <h3 class="text-lg font-semibold text-gray-800 mb-4">Categorias</h3>
+      <ul class="space-y-2">
+        <li class="categoria-item flex items-center p-2 rounded hover:bg-blue-50 cursor-pointer text-gray-700 hover:text-blue-600 transition" data-categoria="todas" onclick="filtrarPorCategoria('todas')">
+          <i class="fas fa-list mr-2"></i> Todas
+        </li>
+        <li class="categoria-item flex items-center p-2 rounded hover:bg-blue-50 cursor-pointer text-gray-700 hover:text-blue-600 transition" data-categoria="eletronicos" onclick="filtrarPorCategoria('eletronicos')">
+          <i class="fas fa-laptop mr-2"></i> Eletrônicos
+        </li>
+        <li class="categoria-item flex items-center p-2 rounded hover:bg-blue-50 cursor-pointer text-gray-700 hover:text-blue-600 transition" data-categoria="moda" onclick="filtrarPorCategoria('moda')">
+          <i class="fas fa-tshirt mr-2"></i> Moda
+        </li>
+        <li class="categoria-item flex items-center p-2 rounded hover:bg-blue-50 cursor-pointer text-gray-700 hover:text-blue-600 transition" data-categoria="fitness" onclick="filtrarPorCategoria('fitness')">
+          <i class="fas fa-dumbbell mr-2"></i> Fitness
+        </li>
+        <li class="categoria-item flex items-center p-2 rounded hover:bg-blue-50 cursor-pointer text-gray-700 hover:text-blue-600 transition" data-categoria="casa" onclick="filtrarPorCategoria('casa')">
+          <i class="fas fa-home mr-2"></i> Casa
+        </li>
+        <li class="categoria-item flex items-center p-2 rounded hover:bg-blue-50 cursor-pointer text-gray-700 hover:text-blue-600 transition" data-categoria="beleza" onclick="filtrarPorCategoria('beleza')">
+          <i class="fas fa-magic mr-2"></i> Beleza
+        </li>
+        <li class="categoria-item flex items-center p-2 rounded hover:bg-blue-50 cursor-pointer text-gray-700 hover:text-blue-600 transition" data-categoria="esportes" onclick="filtrarPorCategoria('esportes')">
+          <i class="fas fa-futbol mr-2"></i> Esportes
+        </li>
+        <li class="categoria-item flex items-center p-2 rounded hover:bg-blue-50 cursor-pointer text-gray-700 hover:text-blue-600 transition" data-categoria="livros" onclick="filtrarPorCategoria('livros')">
+          <i class="fas fa-book mr-2"></i> Livros
+        </li>
+        <li class="categoria-item flex items-center p-2 rounded hover:bg-blue-50 cursor-pointer text-gray-700 hover:text-blue-600 transition" data-categoria="infantil" onclick="filtrarPorCategoria('infantil')">
+          <i class="fas fa-baby mr-2"></i> Infantil
+        </li>
+        <li class="categoria-item flex items-center p-2 rounded hover:bg-blue-50 cursor-pointer text-gray-700 hover:text-blue-600 transition" data-categoria="celulares" onclick="filtrarPorCategoria('celulares')">
+          <i class="fas fa-mobile-alt mr-2"></i> Celulares
+        </li>
+        <li class="categoria-item flex items-center p-2 rounded hover:bg-blue-50 cursor-pointer text-gray-700 hover:text-blue-600 transition" data-categoria="eletrodomesticos" onclick="filtrarPorCategoria('eletrodomesticos')">
+          <i class="fas fa-blender mr-2"></i> Eletrodomésticos
+        </li>
+        <li class="categoria-item flex items-center p-2 rounded hover:bg-blue-50 cursor-pointer text-gray-700 hover:text-blue-600 transition" data-categoria="pet" onclick="filtrarPorCategoria('pet')">
+          <i class="fas fa-paw mr-2"></i> Pet
+        </li>
+        <li class="categoria-item flex items-center p-2 rounded hover:bg-blue-50 cursor-pointer text-gray-700 hover:text-blue-600 transition" data-categoria="jardinagem" onclick="filtrarPorCategoria('jardinagem')">
+          <i class="fas fa-leaf mr-2"></i> Jardinagem
+        </li>
+        <li class="categoria-item flex items-center p-2 rounded hover:bg-blue-50 cursor-pointer text-gray-700 hover:text-blue-600 transition" data-categoria="automotivo" onclick="filtrarPorCategoria('automotivo')">
+          <i class="fas fa-car mr-2"></i> Automotivo
+        </li>
+        <li class="categoria-item flex items-center p-2 rounded hover:bg-blue-50 cursor-pointer text-gray-700 hover:text-blue-600 transition" data-categoria="gastronomia" onclick="filtrarPorCategoria('gastronomia')">
+          <i class="fas fa-utensils mr-2"></i> Gastronomia
+        </li>
+        <li class="categoria-item flex items-center p-2 rounded hover:bg-blue-50 cursor-pointer text-gray-700 hover:text-blue-600 transition" data-categoria="games" onclick="filtrarPorCategoria('games')">
+          <i class="fas fa-gamepad mr-2"></i> Games
+        </li>
+      </ul>
+    </aside>
 
-  <header class="site-header">
-  <div class="container">
-    <div class="logo-container">
-      <img id="site-logo-img" src="logos/logoscentrodecompras.jpeg" alt="Logo Centro de Compras" width="240" height="72">
-    </div>
-    <div class="header-text">
-      <h1>Centro de Compras</h1>
-      <p>As melhores ofertas do Brasil</p>
-    </div>
-    <button class="toggle-menu" aria-label="Abrir menu">☰</button>
-    <button class="search-icon" aria-label="Buscar">🔍</button>
-  </div>
-  <nav class="nav-menu">
-    <a href="#" onclick="filtrarPorCategoria('todas')">Início</a>
-    <a href="#" onclick="filtrarPorCategoria('eletronicos')">Eletrônicos</a>
-    <a href="#" onclick="filtrarPorCategoria('moda')">Moda</a>
-    <a href="#" onclick="filtrarPorCategoria('fitness')">Fitness</a>
-    <a href="#" onclick="filtrarPorCategoria('casa')">Casa</a>
-    <a href="#" onclick="filtrarPorCategoria('beleza')">Beleza</a>
-    <a href="#" onclick="filtrarPorCategoria('esportes')">Esportes</a>
-    <a href="#" onclick="filtrarPorCategoria('livros')">Livros</a>
-    <a href="#" onclick="filtrarPorCategoria('infantil')">Infantil</a>
-    <a href="#" onclick="filtrarPorCategoria('celulares')">Celulares</a>
-    <a href="#" onclick="filtrarPorCategoria('eletrodomesticos')">Eletrodomésticos</a>
-    <a href="#" onclick="filtrarPorCategoria('pet')">Pet</a>
-    <a href="#" onclick="filtrarPorCategoria('jardinagem')">Jardinagem</a>
-    <a href="#" onclick="filtrarPorCategoria('automotivo')">Automotivo</a>
-    <a href="#" onclick="filtrarPorCategoria('gastronomia')">Gastronomia</a>
-    <a href="#" onclick="filtrarPorCategoria('games')">Games</a>
-  </nav>
-  <nav class="nav-mobile hidden">
-    <a href="#" onclick="filtrarPorCategoria('todas')">Início</a>
-    <a href="#" onclick="filtrarPorCategoria('eletronicos')">Eletrônicos</a>
-    <a href="#" onclick="filtrarPorCategoria('moda')">Moda</a>
-    <a href="#" onclick="filtrarPorCategoria('fitness')">Fitness</a>
-    <a href="#" onclick="filtrarPorCategoria('casa')">Casa</a>
-    <a href="#" onclick="filtrarPorCategoria('beleza')">Beleza</a>
-    <a href="#" onclick="filtrarPorCategoria('esportes')">Esportes</a>
-    <a href="#" onclick="filtrarPorCategoria('livros')">Livros</a>
-    <a href="#" onclick="filtrarPorCategoria('infantil')">Infantil</a>
-    <a href="#" onclick="filtrarPorCategoria('celulares')">Celulares</a>
-    <a href="#" onclick="filtrarPorCategoria('eletrodomesticos')">Eletrodomésticos</a>
-    <a href="#" onclick="filtrarPorCategoria('pet')">Pet</a>
-    <a href="#" onclick="filtrarPorCategoria('jardinagem')">Jardinagem</a>
-    <a href="#" onclick="filtrarPorCategoria('automotivo')">Automotivo</a>
-    <a href="#" onclick="filtrarPorCategoria('gastronomia')">Gastronomia</a>
-    <a href="#" onclick="filtrarPorCategoria('games')">Games</a>
-  </nav>
-</header>
-
-    <main>
-      <section>
-        <h2>🛍️ Ofertas do Dia</h2>
-        <div class="lojas-parceiras">
-          <h3>🌟 Lojas Parceiras</h3>
-          <div class="grid-lojas">
-            <div class="loja-todas ativa" onclick="filtrarPorLoja('todas')"><span>Todas as Lojas</span></div>
-            <div class="loja" data-loja="amazon" onclick="filtrarPorLoja('amazon')">
-              <img src="logos/amazon.png" alt="Amazon" loading="lazy" width="100" height="40"><span>Amazon</span>
+    <main class="flex-1">
+      <section class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Ofertas do Dia</h2>
+        <div class="lojas-parceiras mb-6">
+          <h3 class="text-lg font-semibold text-gray-800 mb-4">Lojas Parceiras</h3>
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            <div class="loja-todas flex items-center justify-center p-4 rounded-lg bg-gray-100 hover:bg-blue-100 cursor-pointer transition" onclick="filtrarPorLoja('todas')">
+              <span class="text-gray-700 font-medium">Todas as Lojas</span>
             </div>
-            <div class="loja" data-loja="magalu" onclick="filtrarPorLoja('magalu')">
-              <img src="logos/magalu.png" alt="Magalu" loading="lazy" width="100" height="40"><span>Magalu</span>
+            <div class="loja flex items-center justify-center p-4 rounded-lg bg-gray-100 hover:bg-blue-100 cursor-pointer transition" data-loja="amazon" onclick="filtrarPorLoja('amazon')">
+              <img src="logos/amazon.png" alt="Amazon" class="h-10" loading="lazy" width="100" height="40">
             </div>
-            <div class="loja" data-loja="shein" onclick="filtrarPorLoja('shein')">
-              <img src="logos/shein.png" alt="Shein" loading="lazy" width="100" height="40"><span>Shein</span>
+            <div class="loja flex items-center justify-center p-4 rounded-lg bg-gray-100 hover:bg-blue-100 cursor-pointer transition" data-loja="magalu" onclick="filtrarPorLoja('magalu')">
+              <img src="logos/magalu.png" alt="Magalu" class="h-10" loading="lazy" width="100" height="40">
             </div>
-            <div class="loja" data-loja="shopee" onclick="filtrarPorLoja('shopee')">
-              <img src="logos/shopee.png" alt="Shopee" loading="lazy" width="100" height="40"><span>Shopee</span>
+            <div class="loja flex items-center justify-center p-4 rounded-lg bg-gray-100 hover:bg-blue-100 cursor-pointer transition" data-loja="shein" onclick="filtrarPorLoja('shein')">
+              <img src="logos/shein.png" alt="Shein" class="h-10" loading="lazy" width="100" height="40">
             </div>
-            <div class="loja" data-loja="mercadolivre" onclick="filtrarPorLoja('mercadolivre')">
-              <img src="logos/mercadolivre.jpg" alt="Mercado Livre" loading="lazy" width="100" height="40"><span>Mercado Livre</span>
+            <div class="loja flex items-center justify-center p-4 rounded-lg bg-gray-100 hover:bg-blue-100 cursor-pointer transition" data-loja="shopee" onclick="filtrarPorLoja('shopee')">
+              <img src="logos/shopee.png" alt="Shopee" class="h-10" loading="lazy" width="100" height="40">
             </div>
-            <div class="loja" data-loja="alibaba" onclick="filtrarPorLoja('alibaba')">
-              <img src="logos/alibaba.png" alt="Alibaba" loading="lazy" width="100" height="40"><span>Alibaba</span>
+            <div class="loja flex items-center justify-center p-4 rounded-lg bg-gray-100 hover:bg-blue-100 cursor-pointer transition" data-loja="mercadolivre" onclick="filtrarPorLoja('mercadolivre')">
+              <img src="logos/mercadolivre.jpg" alt="Mercado Livre" class="h-10" loading="lazy" width="100" height="40">
+            </div>
+            <div class="loja flex items-center justify-center p-4 rounded-lg bg-gray-100 hover:bg-blue-100 cursor-pointer transition" data-loja="alibaba" onclick="filtrarPorLoja('alibaba')">
+              <img src="logos/alibaba.png" alt="Alibaba" class="h-10" loading="lazy" width="100" height="40">
             </div>
           </div>
         </div>
-        <div id="busca-feedback" class="busca-feedback"></div>
-        <div class="loading-spinner" id="loading-spinner"></div>
-        <div class="grid-produtos" id="grid-produtos"></div>
-        <p class="mensagem-vazia" id="mensagem-vazia" style="display: none;">Nenhum produto encontrado.</p>
-        <p class="error-message" id="error-message" style="display: none;"></p>
-        <div class="paginacao" id="paginacao">
-          <button id="prev-page" disabled>Anterior</button>
-          <span id="page-info">Página 1</span>
-          <button id="next-page">Próxima</button>
+        <input type="text" id="busca" placeholder="Busque por produtos..." class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4">
+        <div id="busca-feedback" class="text-sm text-gray-600 mb-4"></div>
+        <div class="loading-spinner hidden" id="loading-spinner">
+          <i class="fas fa-spinner fa-spin text-blue-600 text-2xl"></i>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="grid-produtos"></div>
+        <p class="mensagem-vazia text-gray-600 text-center" id="mensagem-vazia" style="display: none;">Nenhum produto encontrado.</p>
+        <p class="error-message text-red-600 text-center" id="error-message" style="display: none;"></p>
+        <div class="paginacao flex items-center justify-center space-x-4 mt-6" id="paginacao">
+          <button id="prev-page" class="px-4 py-2 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300 transition" disabled>Anterior</button>
+          <span id="page-info" class="text-gray-700">Página 1</span>
+          <button id="next-page" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Próxima</button>
         </div>
       </section>
-      <div class="social-links">
-        <a href="https://www.tiktok.com/@cdc.centraldecompras" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><img src="logos/tiktok.png" alt="TikTok" loading="lazy" width="40" height="40"></div>
-          <span>TikTok</span>
+      <div class="social-links flex justify-center space-x-6 mt-6">
+        <a href="https://www.tiktok.com/@cdc.centraldecompras" target="_blank" rel="noopener noreferrer" class="flex items-center text-gray-600 hover:text-blue-600 transition">
+          <i class="fab fa-tiktok text-2xl mr-2"></i> TikTok
         </a>
-        <a href="https://www.instagram.com/cdccentrodecompras/" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><img src="logos/Instagram.png" alt="Instagram" loading="lazy" width="40" height="40"></div>
-          <span>Instagram</span>
+        <a href="https://www.instagram.com/cdccentrodecompras/" target="_blank" rel="noopener noreferrer" class="flex items-center text-gray-600 hover:text-blue-600 transition">
+          <i class="fab fa-instagram text-2xl mr-2"></i> Instagram
         </a>
-        <a href="https://x.com/ComprasCdc" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><img src="logos/X.png" alt="X" loading="lazy" width="40" height="40"></div>
-          <span>X</span>
+        <a href="https://x.com/ComprasCdc" target="_blank" rel="noopener noreferrer" class="flex items-center text-gray-600 hover:text-blue-600 transition">
+          <i class="fab fa-x-twitter text-2xl mr-2"></i> X
         </a>
-        <a href="https://www.youtube.com/channel/UCaKHlI-hWqwdAXS6Xsv3ZzA" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><img src="logos/youtube.png" alt="YouTube" loading="lazy" width="40" height="40"></div>
-          <span>YouTube</span>
+        <a href="https://www.youtube.com/channel/UCaKHlI-hWqwdAXS6Xsv3ZzA" target="_blank" rel="noopener noreferrer" class="flex items-center text-gray-600 hover:text-blue-600 transition">
+          <i class="fab fa-youtube text-2xl mr-2"></i> YouTube
         </a>
       </div>
-      <a href="https://api.whatsapp.com/send?phone=5521975179737" class="whatsapp" target="_blank" rel="noopener noreferrer">📲 WhatsApp</a>
-      <a href="https://t.me/centraldecomprascdc" class="telegram" target="_blank" rel="noopener noreferrer">📢 Telegram</a>
+      <div class="flex justify-center space-x-4 mt-4">
+        <a href="https://api.whatsapp.com/send?phone=5521975179737" class="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition" target="_blank" rel="noopener noreferrer">
+          <i class="fab fa-whatsapp mr-2"></i> WhatsApp
+        </a>
+        <a href="https://t.me/centraldecomprascdc" class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition" target="_blank" rel="noopener noreferrer">
+          <i class="fab fa-telegram mr-2"></i> Telegram
+        </a>
+      </div>
     </main>
   </div>
 
-  <div class="modal" id="imageModal">
-    <button class="modal-close" onclick="closeModal()">✕</button>
-    <div class="modal-content">
+  <div class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden" id="imageModal">
+    <button class="modal-close absolute top-4 right-4 text-white text-2xl" onclick="closeModal()">✕</button>
+    <div class="modal-content bg-white rounded-lg p-4 max-w-3xl w-full">
       <div class="carrossel-imagens" id="modalCarrosselImagens"></div>
-      <button class="carrossel-prev" onclick="moveModalCarrossel(-1)">◄</button>
-      <button class="carrossel-next" onclick="moveModalCarrossel(1)">▶</button>
-      <div class="carrossel-dots" id="modalCarrosselDots"></div>
+      <button class="carrossel-prev absolute left-4 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full" onclick="moveModalCarrossel(-1)">◄</button>
+      <button class="carrossel-next absolute right-4 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full" onclick="moveModalCarrossel(1)">▶</button>
+      <div class="carrossel-dots flex justify-center space-x-2 mt-4" id="modalCarrosselDots"></div>
     </div>
   </div>
 
-  <footer>
-    <p>🔧 Todos os direitos reservados <strong>Grupo Centro de Compra "CdC"</strong> © <span id="year"></span></p>
-    <div class="footer-social">
-      <h4>Siga-nos nas redes sociais</h4>
-      <div class="social-links">
-        <a href="https://www.tiktok.com/@cdc.centraldecompras" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><img src="logos/tiktok.png" alt="TikTok" loading="lazy" width="40" height="40"></div>
-          <span>TikTok</span>
-        </a>
-        <a href="https://www.instagram.com/cdccentrodecompras/" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><img src="logos/Instagram.png" alt="Instagram" loading="lazy" width="40" height="40"></div>
-          <span>Instagram</span>
-        </a>
-        <a href="https://x.com/ComprasCdc" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><img src="logos/X.png" alt="X" loading="lazy" width="40" height="40"></div>
-          <span>X</span>
-        </a>
-        <a href="https://www.youtube.com/channel/UCaKHlI-hWqwdAXS6Xsv3ZzA" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><img src="logos/youtube.png" alt="YouTube" loading="lazy" width="40" height="40"></div>
-          <span>YouTube</span>
-        </a>
+  <footer class="bg-gray-800 text-white py-8 mt-8">
+    <div class="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div>
+        <h4 class="text-lg font-semibold mb-4">Centro de Compras</h4>
+        <p class="text-sm">O maior portal de compras do Brasil! Encontre as melhores ofertas em lojas confiáveis.</p>
       </div>
+      <div>
+        <h4 class="text-lg font-semibold mb-4">Links Úteis</h4>
+        <ul class="space-y-2">
+          <li><a href="index.html" class="hover:text-blue-400 transition">Promoções</a></li>
+          <li><a href="cupom.html" class="hover:text-blue-400 transition">Cupom de Desconto</a></li>
+          <li><a href="sobre.html" class="hover:text-blue-400 transition">Sobre</a></li>
+          <li><a href="contato.html" class="hover:text-blue-400 transition">Contato</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-lg font-semibold mb-4">Contato</h4>
+        <p class="text-sm">Entre em contato conosco:</p>
+        <ul class="space-y-2">
+          <li><a href="https://api.whatsapp.com/send?phone=5521975179737" class="hover:text-blue-400 transition">WhatsApp</a></li>
+          <li><a href="https://t.me/centraldecomprascdc" class="hover:text-blue-400 transition">Telegram</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="text-center mt-6">
+      <p class="text-sm">Todos os direitos reservados &copy; Grupo Centro de Compra "CdC" <span id="year"></span></p>
     </div>
   </footer>
 
-  <div class="robo-assistente">
+  <div class="robo-assistente fixed bottom-4 right-4">
     <a href="https://api.whatsapp.com/send?phone=5521975179737" target="_blank" rel="noopener noreferrer">
-      <img src="imagens/robo.jpg" alt="Robô Assistente" class="robo-imagem" loading="lazy" width="60" height="60">
-      <div class="robo-texto">Posso ajudar?</div>
+      <img src="imagens/robo.jpg" alt="Robô Assistente" class="h-12 rounded-full shadow" loading="lazy" width="60" height="60">
+      <span class="robo-texto absolute bg-blue-600 text-white text-sm px-2 py-1 rounded hidden">Posso ajudar?</span>
     </a>
   </div>
 
   <script defer src="script.js"></script>
+  <script>
+    // Atualizar ano no rodapé
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Função para toggle do menu mobile
+    function toggleMenu() {
+      const menu = document.getElementById('mobile-menu');
+      menu.classList.toggle('hidden');
+    }
+  </script>
 </body>
 </html>
