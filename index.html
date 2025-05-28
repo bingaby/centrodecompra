@@ -41,23 +41,55 @@
     </div>
   </nav>
 
+  <header class="site-header">
   <div class="container">
-    <aside class="sidebar">
-      <h3>Categorias</h3>
-      <ul>
-        <li class="categoria-item ativa" data-categoria="todas" onclick="filtrarPorCategoria('todas')">Todas</li>
-        <li class="categoria-item" data-categoria="eletronicos" onclick="filtrarPorCategoria('eletronicos')">Eletrônicos</li>
-        <li class="categoria-item" data-categoria="moda" onclick="filtrarPorCategoria('moda')">Moda</li>
-        <li class="categoria-item" data-categoria="fitness" onclick="filtrarPorCategoria('fitness')">Fitness</li>
-        <li class="categoria-item" data-categoria="casa" onclick="filtrarPorCategoria('casa')">Casa</li>
-        <li class="categoria-item" data-categoria="beleza" onclick="filtrarPorCategoria('beleza')">Beleza</li>
-        <li class="categoria-item" data-categoria="esportes" onclick="filtrarPorCategoria('esportes')">Esportes</li>
-        <li class="categoria-item" data-categoria="livros" onclick="filtrarPorCategoria('livros')">Livros</li>
-        <li class="categoria-item" data-categoria="infantil" onclick="filtrarPorCategoria('infantil')">Infantil</li>
-        <li class="categoria-item" data-categoria="Celulares" onclick="filtrarPorCategoria('Celulares')">Celulares</li>
-        <li class="categoria-item" data-categoria="Eletrodomésticos" onclick="filtrarPorCategoria('Eletrodomésticos')">Eletrodomésticos</li>
-      </ul>
-    </aside>
+    <div class="logo-container">
+      <img id="site-logo-img" src="logos/logoscentrodecompras.jpeg" alt="Logo Centro de Compras" width="240" height="72">
+    </div>
+    <div class="header-text">
+      <h1>Centro de Compras</h1>
+      <p>As melhores ofertas do Brasil</p>
+    </div>
+    <button class="toggle-menu" aria-label="Abrir menu">☰</button>
+    <button class="search-icon" aria-label="Buscar">🔍</button>
+  </div>
+  <nav class="nav-menu">
+    <a href="#" onclick="filtrarPorCategoria('todas')">Início</a>
+    <a href="#" onclick="filtrarPorCategoria('eletronicos')">Eletrônicos</a>
+    <a href="#" onclick="filtrarPorCategoria('moda')">Moda</a>
+    <a href="#" onclick="filtrarPorCategoria('fitness')">Fitness</a>
+    <a href="#" onclick="filtrarPorCategoria('casa')">Casa</a>
+    <a href="#" onclick="filtrarPorCategoria('beleza')">Beleza</a>
+    <a href="#" onclick="filtrarPorCategoria('esportes')">Esportes</a>
+    <a href="#" onclick="filtrarPorCategoria('livros')">Livros</a>
+    <a href="#" onclick="filtrarPorCategoria('infantil')">Infantil</a>
+    <a href="#" onclick="filtrarPorCategoria('celulares')">Celulares</a>
+    <a href="#" onclick="filtrarPorCategoria('eletrodomesticos')">Eletrodomésticos</a>
+    <a href="#" onclick="filtrarPorCategoria('pet')">Pet</a>
+    <a href="#" onclick="filtrarPorCategoria('jardinagem')">Jardinagem</a>
+    <a href="#" onclick="filtrarPorCategoria('automotivo')">Automotivo</a>
+    <a href="#" onclick="filtrarPorCategoria('gastronomia')">Gastronomia</a>
+    <a href="#" onclick="filtrarPorCategoria('games')">Games</a>
+  </nav>
+  <nav class="nav-mobile hidden">
+    <a href="#" onclick="filtrarPorCategoria('todas')">Início</a>
+    <a href="#" onclick="filtrarPorCategoria('eletronicos')">Eletrônicos</a>
+    <a href="#" onclick="filtrarPorCategoria('moda')">Moda</a>
+    <a href="#" onclick="filtrarPorCategoria('fitness')">Fitness</a>
+    <a href="#" onclick="filtrarPorCategoria('casa')">Casa</a>
+    <a href="#" onclick="filtrarPorCategoria('beleza')">Beleza</a>
+    <a href="#" onclick="filtrarPorCategoria('esportes')">Esportes</a>
+    <a href="#" onclick="filtrarPorCategoria('livros')">Livros</a>
+    <a href="#" onclick="filtrarPorCategoria('infantil')">Infantil</a>
+    <a href="#" onclick="filtrarPorCategoria('celulares')">Celulares</a>
+    <a href="#" onclick="filtrarPorCategoria('eletrodomesticos')">Eletrodomésticos</a>
+    <a href="#" onclick="filtrarPorCategoria('pet')">Pet</a>
+    <a href="#" onclick="filtrarPorCategoria('jardinagem')">Jardinagem</a>
+    <a href="#" onclick="filtrarPorCategoria('automotivo')">Automotivo</a>
+    <a href="#" onclick="filtrarPorCategoria('gastronomia')">Gastronomia</a>
+    <a href="#" onclick="filtrarPorCategoria('games')">Games</a>
+  </nav>
+</header>
 
     <main>
       <section>
