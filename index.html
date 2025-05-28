@@ -1,53 +1,31 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Ofertas com descontos reais nas principais lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba.">
-  <meta property="og:title" content="Centro de Compras - Ofertas">
-  <meta property="og:description" content="Encontre as melhores ofertas em lojas confiáveis com links de afiliados seguros.">
-  <meta property="og:image" content="logos/centrodecompras.jpg">
-  <meta property="og:url" content="https://www.centrodecompra.com.br/">
+ttps://www.centrodecompra.com.br/">
   <meta name="twitter:card" content="summary_large_image">
   <title>Centro de Compras - Ofertas do Dia</title>
   <link rel="preload" href="logos/centrodecompras.jpg" as="image">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" media="print" onload="this.media='all'">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="style.css" media="print" onload="this.media='all'">
 </head>
 <body>
   <header class="site-header">
-    <div class="container">
-      <div class="flex items-center justify-between">
-        <div class="logo-container">
-          <a href="index.html">
-            <img src="logos/logoscentrodecompras.jpeg" alt="Centro de Compras" id="site-logo-img" width="150" height="50">
-          </a>
-        </div>
-        <div class="header-text">
-          <h1>Centro de Compras</h1>
-          <p>As melhores ofertas do Brasil</p>
-        </div>
-        <button class="md:hidden toggle-menu" aria-label="Abrir menu">
-          <i class="fas fa-bars"></i>
-        </button>
-      </div>
-      <nav class="nav-menu hidden md:flex">
-        <a href="index.html">Promoções</a>
-        <a href="cupom.html">Cupom de Desconto</a>
-        <a href="sobre.html">Sobre</a>
-        <a href="contato.html">Contato</a>
-      </nav>
-      <nav class="nav-mobile hidden">
-        <a href="index.html">Promoções</a>
-        <a href="cupom.html">Cupom de Desconto</a>
-        <a href="sobre.html">Sobre</a>
-        <a href="contato.html">Contato</a>
-      </nav>
+    <div class="logo-container">
+      <a href="index.html">
+        <img src="logos/logoscentrodecompras.jpeg" alt="Centro de Compras" id="site-logo-img" width="150" height="50">
+      </a>
+    </div>
+    <div class="header-text">
+      <h1>Centro de Compras</h1>
+      <p>O maior portal de compras do Brasil! Encontre as melhores ofertas.</p>
     </div>
   </header>
+
+  <nav>
+    <a href="index.html">Promoções</a>
+    <a href="cupom.html">Cupom de Desconto</a>
+    <a href="sobre.html">Sobre</a>
+    <a href="contato.html">Contato</a>
+  </nav>
 
   <div class="container">
     <aside class="sidebar">
@@ -72,11 +50,12 @@
       </ul>
     </aside>
 
+
     <main>
       <section>
-        <h2>Ofertas do Dia</h2>
+        <h2>🛍️ Ofertas do Dia</h2>
         <div class="lojas-parceiras">
-          <h3>Lojas Parceiras</h3>
+          <h3>🌟 Lojas Parceiras</h3>
           <div class="grid-lojas">
             <div class="loja-todas ativa" onclick="filtrarPorLoja('todas')"><span>Todas as Lojas</span></div>
             <div class="loja" data-loja="amazon" onclick="filtrarPorLoja('amazon')">
@@ -113,30 +92,24 @@
       </section>
       <div class="social-links">
         <a href="https://www.tiktok.com/@cdc.centraldecompras" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><i class="fab fa-tiktok"></i></div>
+          <div class="icon"><img src="logos/tiktok.png" alt="TikTok" loading="lazy" width="40" height="40"></div>
           <span>TikTok</span>
         </a>
         <a href="https://www.instagram.com/cdccentrodecompras/" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><i class="fab fa-instagram"></i></div>
+          <div class="icon"><img src="logos/Instagram.png" alt="Instagram" loading="lazy" width="40" height="40"></div>
           <span>Instagram</span>
         </a>
         <a href="https://x.com/ComprasCdc" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><i class="fab fa-x-twitter"></i></div>
+          <div class="icon"><img src="logos/X.png" alt="X" loading="lazy" width="40" height="40"></div>
           <span>X</span>
         </a>
         <a href="https://www.youtube.com/channel/UCaKHlI-hWqwdAXS6Xsv3ZzA" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><i class="fab fa-youtube"></i></div>
+          <div class="icon"><img src="logos/youtube.png" alt="YouTube" loading="lazy" width="40" height="40"></div>
           <span>YouTube</span>
         </a>
       </div>
-      <div class="contact-links">
-        <a href="https://api.whatsapp.com/send?phone=5521975179737" class="whatsapp" target="_blank" rel="noopener noreferrer">
-          <i class="fab fa-whatsapp"></i> WhatsApp
-        </a>
-        <a href="https://t.me/centraldecomprascdc" class="telegram" target="_blank" rel="noopener noreferrer">
-          <i class="fab fa-telegram"></i> Telegram
-        </a>
-      </div>
+      <a href="https://api.whatsapp.com/send?phone=5521975179737" class="whatsapp" target="_blank" rel="noopener noreferrer">📲 WhatsApp</a>
+      <a href="https://t.me/centraldecomprascdc" class="telegram" target="_blank" rel="noopener noreferrer">📢 Telegram</a>
     </main>
   </div>
 
@@ -151,31 +124,7 @@
   </div>
 
   <footer>
-    <div class="container">
-      <div class="footer-content">
-        <div>
-          <h4>Centro de Compras</h4>
-          <p>O maior portal de compras do Brasil! Encontre as melhores ofertas.</p>
-        </div>
-        <div>
-          <h4>Links Úteis</h4>
-          <ul>
-            <li><a href="index.html">Promoções</a></li>
-            <li><a href="cupom.html">Cupom de Desconto</a></li>
-            <li><a href="sobre.html">Sobre</a></li>
-            <li><a href="contato.html">Contato</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4>Contato</h4>
-          <ul>
-            <li><a href="https://api.whatsapp.com/send?phone=5521975179737">WhatsApp</a></li>
-            <li><a href="https://t.me/centraldecomprascdc">Telegram</a></li>
-          </ul>
-        </div>
-      </div>
-      <p>Todos os direitos reservados © Grupo Centro de Compra "CdC" <span id="year"></span></p>
-    </div>
+    <p>🔧 Todos os direitos reservados <strong>Grupo Centro de Compra "CdC"</strong> © <span id="year"></span></p>
   </footer>
 
   <div class="robo-assistente">
