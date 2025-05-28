@@ -18,36 +18,55 @@
   <link rel="stylesheet" href="style.css" media="print" onload="this.media='all'">
 </head>
 <body>
-  <header class="site-header">
-    <div class="container">
-      <div class="flex items-center justify-between">
-        <div class="logo-container">
-          <a href="index.html">
-            <img src="logos/logoscentrodecompras.jpeg" alt="Centro de Compras" id="site-logo-img" width="150" height="50">
-          </a>
-        </div>
-        <div class="header-text">
-          <h1>Centro de Compras</h1>
-          <p>As melhores ofertas do Brasil</p>
-        </div>
-        <button class="md:hidden toggle-menu" aria-label="Abrir menu">
-          <i class="fas fa-bars"></i>
-        </button>
-      </div>
-      <nav class="nav-menu hidden md:flex">
-        <a href="index.html">Promoções</a>
-        <a href="cupom.html">Cupom de Desconto</a>
-        <a href="sobre.html">Sobre</a>
-        <a href="contato.html">Contato</a>
-      </nav>
-      <nav class="nav-mobile hidden">
-        <a href="index.html">Promoções</a>
-        <a href="cupom.html">Cupom de Desconto</a>
-        <a href="sobre.html">Sobre</a>
-        <a href="contato.html">Contato</a>
-      </nav>
+  <<header class="site-header">
+  <div class="container">
+    <div class="logo-container">
+      <img id="site-logo-img" src="logos/logoscentrodecompras.jpeg" alt="Logo Centro de Compras" width="240" height="72">
     </div>
-  </header>
+    <div class="header-text">
+      <h1>Centro de Compras</h1>
+      <p>As melhores ofertas do Brasil</p>
+    </div>
+    <button class="toggle-menu" aria-label="Abrir menu">☰</button>
+    <button class="search-icon" aria-label="Buscar">🔍</button>
+  </div>
+  <nav class="nav-menu">
+    <a href="#" onclick="filtrarPorCategoria('todas')">Início</a>
+    <a href="#" onclick="filtrarPorCategoria('eletronicos')">Eletrônicos</a>
+    <a href="#" onclick="filtrarPorCategoria('moda')">Moda</a>
+    <a href="#" onclick="filtrarPorCategoria('fitness')">Fitness</a>
+    <a href="#" onclick="filtrarPorCategoria('casa')">Casa</a>
+    <a href="#" onclick="filtrarPorCategoria('beleza')">Beleza</a>
+    <a href="#" onclick="filtrarPorCategoria('esportes')">Esportes</a>
+    <a href="#" onclick="filtrarPorCategoria('livros')">Livros</a>
+    <a href="#" onclick="filtrarPorCategoria('infantil')">Infantil</a>
+    <a href="#" onclick="filtrarPorCategoria('celulares')">Celulares</a>
+    <a href="#" onclick="filtrarPorCategoria('eletrodomesticos')">Eletrodomésticos</a>
+    <a href="#" onclick="filtrarPorCategoria('pet')">Pet</a>
+    <a href="#" onclick="filtrarPorCategoria('jardinagem')">Jardinagem</a>
+    <a href="#" onclick="filtrarPorCategoria('automotivo')">Automotivo</a>
+    <a href="#" onclick="filtrarPorCategoria('gastronomia')">Gastronomia</a>
+    <a href="#" onclick="filtrarPorCategoria('games')">Games</a>
+  </nav>
+  <nav class="nav-mobile hidden">
+    <a href="#" onclick="filtrarPorCategoria('todas')">Início</a>
+    <a href="#" onclick="filtrarPorCategoria('eletronicos')">Eletrônicos</a>
+    <a href="#" onclick="filtrarPorCategoria('moda')">Moda</a>
+    <a href="#" onclick="filtrarPorCategoria('fitness')">Fitness</a>
+    <a href="#" onclick="filtrarPorCategoria('casa')">Casa</a>
+    <a href="#" onclick="filtrarPorCategoria('beleza')">Beleza</a>
+    <a href="#" onclick="filtrarPorCategoria('esportes')">Esportes</a>
+    <a href="#" onclick="filtrarPorCategoria('livros')">Livros</a>
+    <a href="#" onclick="filtrarPorCategoria('infantil')">Infantil</a>
+    <a href="#" onclick="filtrarPorCategoria('celulares')">Celulares</a>
+    <a href="#" onclick="filtrarPorCategoria('eletrodomesticos')">Eletrodomésticos</a>
+    <a href="#" onclick="filtrarPorCategoria('pet')">Pet</a>
+    <a href="#" onclick="filtrarPorCategoria('jardinagem')">Jardinagem</a>
+    <a href="#" onclick="filtrarPorCategoria('automotivo')">Automotivo</a>
+    <a href="#" onclick="filtrarPorCategoria('gastronomia')">Gastronomia</a>
+    <a href="#" onclick="filtrarPorCategoria('games')">Games</a>
+  </nav>
+</header>
 
   <div class="container">
     <aside class="sidebar">
