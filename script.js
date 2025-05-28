@@ -396,4 +396,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if (e.target === e.currentTarget) closeModal();
     });
   }
+
+  // Configurar menu hamburguer
+  const toggleMenu = document.querySelector('.toggle-menu');
+  const navMobile = document.querySelector('.nav-mobile');
+  if (toggleMenu && navMobile) {
+    toggleMenu.addEventListener('click', () => {
+      navMobile.classList.toggle('active');
+    });
+  }
 });
