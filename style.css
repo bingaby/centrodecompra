@@ -9,7 +9,7 @@ body {
   background-color: #f9fafb;
   color: #1f2937;
   line-height: 1.6;
-  padding-top: 100px; /* Espaço para o cabeçalho fixo */
+  padding-top: 80px; /* Ajustado para a altura do cabeçalho fixo */
 }
 
 .container {
@@ -29,72 +29,103 @@ body {
   left: 0;
   width: 100%;
   z-index: 50;
-  padding: 12px 0;
+  padding: 10px 0; /* Compacto, como na Americanas */
+  height: 60px; /* Altura fixa para consistência */
+  display: flex;
+  align-items: center;
+}
+
+.site-header .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  gap: 16px;
 }
 
 .logo-container img {
-  width: 140px;
-  height: 40px;
+  width: 120px; /* Tamanho reduzido para imitar a Americanas */
+  height: 36px;
   object-fit: contain;
 }
 
+.header-text {
+  flex: 1;
+  text-align: center;
+}
+
 .header-text h1 {
-  font-size: 1.5rem;
+  font-size: 1.25rem; /* Compacto, como um título de busca */
   font-weight: 700;
   color: #1f2937;
   margin: 0;
 }
 
 .header-text p {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: #4b5563;
   margin: 0;
-}
-
-.flex.items-center {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
 }
 
 .toggle-menu {
   background: none;
   border: none;
   font-size: 1.5rem;
-  color: #1f2937;
+  color: #FFA500; /* Laranja para ícones */
   cursor: pointer;
-  display: none;
+  display: none; /* Visível apenas em mobile */
 }
 
 /* Navegação */
 .nav-menu {
-  background-color: #2E8B57;
-  padding: 8px;
+  background-color: #2E8B57; /* Verde original */
+  padding: 8px 0;
   text-align: center;
-  margin-top: 8px;
+  position: fixed;
+  top: 60px; /* Abaixo do cabeçalho fixo */
+  left: 0;
+  width: 100%;
+  z-index: 49;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .nav-menu a {
   color: #ffffff;
-  margin: 0 12px;
+  margin: 0 16px;
   text-decoration: none;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   transition: color 0.2s;
 }
 
 .nav-menu a:hover {
-  color: #FFA500;
+  color: #FFA500; /* Laranja no hover */
 }
 
 .nav-mobile {
   display: none;
   flex-direction: column;
   gap: 12px;
-  background-color: #2E8B57;
+  background-color: #2E8B57; /* Verde original */
   padding: 12px;
+  position: fixed;
+  top: 60px;
+  left: 0;
   width: 100%;
+  z-index: 49;
+}
+
+.nav-mobile a {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 8px 20px;
+  transition: color 0.2s;
+}
+
+.nav-mobile a:hover {
+  color: #FFA500;
 }
 
 /* Sidebar */
@@ -105,7 +136,7 @@ body {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: sticky;
-  top: 120px; /* Ajustado para não colidir com o cabeçalho fixo */
+  top: 140px; /* Ajustado para o cabeçalho e menu fixos */
 }
 
 .sidebar h3 {
@@ -565,7 +596,7 @@ footer p {
 /* Media Queries */
 @media (max-width: 768px) {
   body {
-    padding-top: 80px; /* Menor espaço para cabeçalho em mobile */
+    padding-top: 60px; /* Menor para mobile */
   }
 
   .container {
@@ -573,20 +604,25 @@ footer p {
   }
 
   .site-header {
+    height: 50px; /* Mais compacto em mobile */
     padding: 8px 0;
   }
 
+  .site-header .container {
+    padding: 0 16px;
+  }
+
   .logo-container img {
-    width: 120px;
-    height: 36px;
+    width: 100px;
+    height: 30px;
   }
 
   .header-text h1 {
-    font-size: 1.25rem;
+    font-size: 1rem;
   }
 
   .header-text p {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
   }
 
   .toggle-menu {
@@ -598,11 +634,11 @@ footer p {
   }
 
   .nav-mobile {
-    display: flex;
+    display: none;
   }
 
-  .nav-mobile.hidden {
-    display: none;
+  .nav-mobile.active {
+    display: flex;
   }
 
   .sidebar {
