@@ -226,5 +226,17 @@
     "imagens": [
       "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_smartphone-xiaomi-redmi-note-14-midnight-black-(preto)-8gb-ram-256gb-rom-marca:-xiaomi-1748454270441.jpg"
     ]
+  },
+  {
+    "_id": "1748454610477a5fdrb8nn",
+    "nome": "Smartphone Xiaomi Poco C75 NFC Black (Preto) 8GB RAM 256GB ROM [2410FPCC5G]",
+    "descricao": "Smartphone Xiaomi Poco C75 NFC Black (Preto) 8GB RAM 256GB ROM [2410FPCC5G]",
+    "categoria": "celulares",
+    "loja": "amazon",
+    "link": "https://amzn.to/45wofhE",
+    "preco": 10,
+    "imagens": [
+      "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_smartphone-xiaomi-poco-c75-nfc-black-(preto)-8gb-ram-256gb-rom-[2410fpcc5g]-1748454609452.jpg"
+    ]
   }
 ]
