@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Ofertas com descontos reais nas principais lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba.">
   <meta property="og:title" content="Centro de Compras - Ofertas">
-  <meta property="og:description" content="Encontre as melhores ofertas em lojas confiáveis com links de afiliados seguros.">
+  <meta property="og:description" content="Encontre as melhores ofertas em lojas confiáveis com links de compras seguros.">
   <meta property="og:image" content="logos/centrodecompras.jpg">
   <meta property="og:url" content="https://www.centrodecompra.com.br/">
   <meta name="twitter:card" content="summary_large_image">
@@ -21,28 +21,28 @@
   <header class="site-header">
     <div class="container">
       <div class="flex items-center justify-between">
-        <div class="logo-container">
+        <div class="logo-wrapper">
           <a href="index.html">
-            <img src="logos/centrodecompras.jpg" alt="Logo Centro de Compras" id="site-logo-img" width="300" height="90">
+            <img src="logos/centrodecompras.jpg" alt="Logo Centro de Compras" id="logo-img" onerror="this.src='images/placeholder-logo.png'" width="300" height="90">
           </a>
         </div>
         <div class="header-text">
           <h1>Centro de Compras</h1>
-          <p>As melhores ofertas do Brasil</p>
+          <p>Encontre as melhores ofertas</p>
         </div>
-        <button class="md:hidden toggle-menu" aria-label="Abrir menu">
+        <button class="md-hidden toggle-menu" aria-label="Abrir menu">
           <i class="fas fa-bars"></i>
         </button>
       </div>
-      <nav class="nav-menu hidden md:flex">
+      <nav class="nav-menu hidden md-flex">
+        <div class="nav-search">
+          <input type="text" id="nav-busca" placeholder="Busque por produtos..." aria-label="Buscar produtos">
+        </div>
         <div class="nav-links">
           <a href="index.html">Promoções</a>
           <a href="cupom.html">Cupom de Desconto</a>
           <a href="sobre.html">Sobre</a>
-          <a href="contato.html">Contato</a>
-        </div>
-        <div class="nav-search">
-          <input type="text" id="nav-busca" placeholder="Busque por produtos..." aria-label="Buscar produtos">
+          <a href="contato.html">Mais</a>
         </div>
       </nav>
       <nav class="nav-mobile hidden">
@@ -52,7 +52,7 @@
         <a href="index.html">Promoções</a>
         <a href="cupom.html">Cupom de Desconto</a>
         <a href="sobre.html">Sobre</a>
-        <a href="contato.html">Contato</a>
+        <a href="contato.html">Mais</a>
       </nav>
     </div>
   </header>
@@ -170,7 +170,7 @@
             <li><a href="index.html">Promoções</a></li>
             <li><a href="cupom.html">Cupom de Desconto</a></li>
             <li><a href="sobre.html">Sobre</a></li>
-            <li><a href="contato.html">Contato</a></li>
+            <li><a href="contato.html">Mais</a></li>
           </ul>
         </div>
         <div>
