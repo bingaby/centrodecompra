@@ -9,7 +9,7 @@ body {
   background-color: #f9fafb;
   color: #1f2937;
   line-height: 1.6;
-  padding-top: 180px; /* Aumentado para cabeçalho e nav fixos */
+  padding-top: 180px; /* Ajustado para cabeçalho e nav fixos */
 }
 
 .container {
@@ -27,7 +27,7 @@ body {
   top: 0;
   left: 0;
   width: 100%;
-  z-index: 100; /* Aumentado */
+  z-index: 1000; /* Aumentado */
   padding: 18px 0;
   height: 100px;
   transition: box-shadow 0.3s ease;
@@ -44,7 +44,7 @@ body {
   justify-content: space-between;
 }
 
-.logo-container img {
+.logo-wrapper img {
   width: 300px;
   height: 90px;
   object-fit: contain;
@@ -53,7 +53,7 @@ body {
   transition: transform 0.2s ease;
 }
 
-.logo-container img:hover {
+.logo-wrapper img:hover {
   transform: scale(1.05);
 }
 
@@ -90,7 +90,7 @@ body {
   top: 100px;
   left: 0;
   width: 100%;
-  z-index: 99; /* Aumentado */
+  z-index: 999; /* Aumentado */
   padding: 12px 20px;
   display: flex;
   flex-direction: column;
@@ -102,17 +102,19 @@ body {
 .nav-search {
   width: 100%;
   max-width: 800px;
-  order: 1; /* Busca no centro */
+  display: flex;
+  justify-content: center;
 }
 
 .nav-links {
   display: flex;
   gap: 16px;
-  order: 2; /* Links abaixo da busca */
+  justify-content: center;
 }
 
 #nav-busca, #nav-busca-mobile {
   width: 100%;
+  max-width: 600px; /* Ajustado para centralização */
   padding: 12px 16px;
   border: 1px solid #d1d5db;
   border-radius: 6px;
@@ -150,7 +152,7 @@ body {
   top: 100px;
   left: 0;
   width: 100%;
-  z-index: 99;
+  z-index: 999;
   transform: translateY(-100%);
   transition: transform 0.3s ease;
 }
@@ -181,7 +183,7 @@ body {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: sticky;
-  top: 220px; /* Ajustado para cabeçalho fixo */
+  top: 220px;
 }
 
 .sidebar h3 {
@@ -647,7 +649,7 @@ footer p {
     padding: 0 16px;
   }
 
-  .logo-container img {
+  .logo-wrapper img {
     width: 270px;
     height: 81px;
     margin-top: 12px;
@@ -664,7 +666,7 @@ footer p {
 
 @media (max-width: 768px) {
   body {
-    padding-top: 140px; /* Ajustado */
+    padding-top: 140px;
   }
 
   .container {
@@ -682,7 +684,7 @@ footer p {
     position: relative;
   }
 
-  .logo-container img {
+  .logo-wrapper img {
     width: 240px;
     height: 72px;
     margin-top: 10px;
@@ -750,4 +752,13 @@ footer p {
     font-size: 0.75rem;
     bottom: 56px;
   }
+}
+
+/* Classes utilitárias */
+.hidden { display: none; }
+.md\:hidden { display: none; }
+.md\:flex { display: flex; }
+@media (min-width: 768px) {
+  .md\:hidden { display: none; }
+  .md\:flex { display: flex; }
 }
