@@ -9,7 +9,7 @@ body {
   background-color: #f9fafb;
   color: #1f2937;
   line-height: 1.6;
-  padding-top: 160px; /* Ajustado para cabeçalho e nav fixos */
+  padding-top: 180px; /* Aumentado para cabeçalho e nav fixos */
 }
 
 .container {
@@ -22,12 +22,12 @@ body {
 
 /* Header */
 .site-header {
-  background-color: #FFA500; /* Laranja */
+  background-color: #FFA500;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  z-index: 50;
+  z-index: 100; /* Aumentado */
   padding: 18px 0;
   height: 100px;
   transition: box-shadow 0.3s ease;
@@ -49,6 +49,7 @@ body {
   height: 90px;
   object-fit: contain;
   margin-top: 14px;
+  display: block;
   transition: transform 0.2s ease;
 }
 
@@ -84,22 +85,30 @@ body {
 
 /* Navegação */
 .nav-menu {
-  background-color: #2E8B57; /* Verde */
+  background-color: #2E8B57;
   position: fixed;
   top: 100px;
   left: 0;
   width: 100%;
-  z-index: 49;
+  z-index: 99; /* Aumentado */
   padding: 12px 20px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .nav-search {
-  flex: 1;
-  max-width: 800px; /* Aumentado */
+  width: 100%;
+  max-width: 800px;
+  order: 1; /* Busca no centro */
+}
+
+.nav-links {
+  display: flex;
+  gap: 16px;
+  order: 2; /* Links abaixo da busca */
 }
 
 #nav-busca, #nav-busca-mobile {
@@ -118,7 +127,7 @@ body {
   box-shadow: 0 0 0 3px rgba(255, 165, 0, 0.1);
 }
 
-.nav-menu a {
+.nav-menu a, .nav-links a {
   color: #ffffff;
   text-decoration: none;
   font-weight: 600;
@@ -127,7 +136,7 @@ body {
   transition: color 0.2s;
 }
 
-.nav-menu a:hover {
+.nav-menu a:hover, .nav-links a:hover {
   color: #FFA500;
 }
 
@@ -141,7 +150,7 @@ body {
   top: 100px;
   left: 0;
   width: 100%;
-  z-index: 49;
+  z-index: 99;
   transform: translateY(-100%);
   transition: transform 0.3s ease;
 }
@@ -172,7 +181,7 @@ body {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: sticky;
-  top: 210px;
+  top: 220px; /* Ajustado para cabeçalho fixo */
 }
 
 .sidebar h3 {
@@ -198,7 +207,7 @@ body {
 }
 
 .categoria-item i {
-  margin-right: 8px; /* Substitui mr-2 */
+  margin-right: 8px;
 }
 
 .categoria-item:hover {
@@ -655,7 +664,7 @@ footer p {
 
 @media (max-width: 768px) {
   body {
-    padding-top: 120px;
+    padding-top: 140px; /* Ajustado */
   }
 
   .container {
