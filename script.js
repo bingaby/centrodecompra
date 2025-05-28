@@ -1,5 +1,7 @@
+// URL da API
 const API_URL = 'https://centrodecompra-backend.onrender.com';
 
+// Estado global
 let produtos = [];
 let categoriaSelecionada = 'todas';
 let lojaSelecionada = 'todas';
@@ -10,29 +12,32 @@ let currentPage = 1;
 const produtosPorPagina = 20;
 const totalProdutos = 1000;
 
+// Categorias válidas
 const categoriasValidas = [
   'todas', 'eletronicos', 'moda', 'fitness', 'casa', 'beleza',
-  'esportes', 'livros', 'infantil', 'celulares', 'eletrodomesticos',
-  'pet', 'jardinagem', 'automotivo', 'gastronomia', 'games'
+  'esportes', 'livros', 'infantil', 'celulares', 'eletrodomesticos'
 ];
 
+// Lojas válidas
 const lojasValidas = [
   'todas', 'amazon', 'magalu', 'shein', 'shopee', 'mercadolivre', 'alibaba'
 ];
 
-// Atualiza o ano no footer
+// Atualiza o ano no rodapé
 function atualizarAnoFooter() {
   const yearElement = document.getElementById('year');
   if (yearElement) {
     yearElement.textContent = new Date().getFullYear();
+  } else {
+    console.warn('Elemento #year não encontrado no rodapé.');
   }
 }
 
 // Configura clique triplo no logotipo para admin
 function configurarCliqueLogo() {
-  const logo = document.getElementById('logo-img');
+  const logo = document.getElementById('site-logo-img');
   if (!logo) {
-    console.error('Logotipo não encontrado. Verifique o ID "logo-img".');
+    console.error('Logotipo não encontrado. Verifique o ID "site-logo-img".');
     return;
   }
   let clickCount = 0;
@@ -49,7 +54,7 @@ function configurarCliqueLogo() {
     }
   });
   logo.addEventListener('error', () => {
-    console.error('Erro ao carregar o logotipo. Verifique o caminho: logos/logo.png');
+    console.error('Erro ao carregar logotipo. Verifique o caminho: logos/logoscentrodecompras.jpeg');
   });
 }
 
@@ -61,7 +66,7 @@ async function carregarProdutos() {
   const gridProdutos = document.getElementById('grid-produtos');
 
   if (!gridProdutos || !mensagemVazia || !errorMessage || !loadingSpinner) {
-    console.error('Elementos do DOM não encontrados.');
+    console.error('Elementos DOM não encontrados: #loading-spinner, #mensagem-vazia, #error-message, #grid-produtos.');
     return;
   }
 
@@ -81,16 +86,19 @@ async function carregarProdutos() {
       );
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.details || `Erro ${response.status}`);
+        throw new Error(errorData.details || `Erro HTTP ${response.status}`);
       }
       produtos = await response.json();
-      if (!Array.isArray(produtos)) throw new Error('Resposta inválida da API');
+      if (!Array.isArray(produtos)) {
+        throw new Error('Resposta da API não é um array.');
+      }
       filtrarProdutos();
       atualizarPaginacao();
       return;
     } catch (error) {
+      console.error(`Tentativa ${attempt} falhou: ${error.message}`);
       if (attempt === maxRetries) {
-        errorMessage.textContent = `Erro ao carregar produtos: ${error.message}.`;
+        errorMessage.textContent = `Erro ao carregar produtos: ${error.message}. Tente novamente.`;
         errorMessage.style.display = 'block';
         mensagemVazia.style.display = 'none';
         gridProdutos.style.display = 'none';
@@ -108,7 +116,10 @@ function filtrarProdutos() {
   const gridProdutos = document.getElementById('grid-produtos');
   const mensagemVazia = document.getElementById('mensagem-vazia');
 
-  if (!gridProdutos || !mensagemVazia) return;
+  if (!gridProdutos || !mensagemVazia) {
+    console.error('Elementos #grid-produtos ou #mensagem-vazia não encontrados.');
+    return;
+  }
 
   const produtosFiltrados = produtos.filter((produto) => {
     const matchCategoria =
@@ -201,7 +212,10 @@ async function openModal(produtoIndex, imageIndex) {
   const carrosselImagens = document.getElementById('modalCarrosselImagens');
   const carrosselDots = document.getElementById('modalCarrosselDots');
 
-  if (!modal || !carrosselImagens || !carrosselDots) return;
+  if (!modal || !carrosselImagens || !carrosselDots) {
+    console.error('Elementos do modal não encontrados.');
+    return;
+  }
 
   currentImages = Array.isArray(produtos[produtoIndex]?.imagens) && produtos[produtoIndex].imagens.length > 0
     ? produtos[produtoIndex].imagens.filter(img => typeof img === 'string' && img)
@@ -233,7 +247,7 @@ async function openModal(produtoIndex, imageIndex) {
 // Move o carrossel no modal
 function moveModalCarrossel(direction) {
   const carrosselImagens = document.getElementById('modalCarrosselImagens');
-  const carrosselDots = document.getElementById('modalCarrosselDots').children;
+  const carrosselDots = document.getElementById('modalCarrosselDots')?.children;
   const totalImagens = currentImages.length;
 
   if (!carrosselImagens || !carrosselDots) return;
@@ -246,7 +260,7 @@ function moveModalCarrossel(direction) {
 // Define imagem específica no modal
 function setModalCarrosselImage(index) {
   const carrosselImagens = document.getElementById('modalCarrosselImagens');
-  const carrosselDots = document.getElementById('modalCarrosselDots').children;
+  const carrosselDots = document.getElementById('modalCarrosselDots')?.children;
 
   if (!carrosselImagens || !carrosselDots) return;
 
@@ -267,26 +281,22 @@ function closeModal() {
 
 // Configura a busca
 function configurarBusca() {
-  const desktopSearchInput = document.getElementById('nav-busca');
-  const mobileSearchInput = document.getElementById('nav-busca-mobile');
+  const searchInput = document.getElementById('nav-busca');
   const buscaFeedback = document.getElementById('busca-feedback');
 
-  if (!desktopSearchInput || !mobileSearchInput || !buscaFeedback) {
-    console.error('Campos de busca ou feedback não encontrados.');
+  if (!searchInput || !buscaFeedback) {
+    console.error('Elementos de busca não encontrados: #nav-busca, #busca-feedback.');
     return;
   }
 
-  const handleSearchInput = (input) => {
+  searchInput.addEventListener('input', () => {
     clearTimeout(window.buscaTimer);
-    termoBusca = input.value.trim();
+    termoBusca = searchInput.value.trim();
     buscaFeedback.style.display = termoBusca ? 'block' : 'none';
     buscaFeedback.textContent = termoBusca ? `Buscando por "${termoBusca}"...` : '';
     currentPage = 1;
     window.buscaTimer = setTimeout(() => carregarProdutos(), 300);
-  };
-
-  desktopSearchInput.addEventListener('input', () => handleSearchInput(desktopSearchInput));
-  mobileSearchInput.addEventListener('input', () => handleSearchInput(mobileSearchInput));
+  });
 }
 
 // Configura a paginação
@@ -294,7 +304,10 @@ function configurarPaginacao() {
   const prevButton = document.getElementById('prev-page');
   const nextButton = document.getElementById('next-page');
 
-  if (!prevButton || !nextButton) return;
+  if (!prevButton || !nextButton) {
+    console.error('Botões de paginação não encontrados: #prev-page, #next-page.');
+    return;
+  }
 
   prevButton.onclick = () => {
     if (currentPage > 1) {
@@ -317,7 +330,10 @@ function atualizarPaginacao() {
   const nextButton = document.getElementById('next-page');
   const pageInfo = document.getElementById('page-info');
 
-  if (!prevButton || !nextButton || !pageInfo) return;
+  if (!prevButton || !nextButton || !pageInfo) {
+    console.error('Elementos de paginação não encontrados: #prev-page, #next-page, #page-info.');
+    return;
+  }
 
   prevButton.disabled = currentPage === 1;
   nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
@@ -326,18 +342,24 @@ function atualizarPaginacao() {
 
 // Filtra por categoria
 function filtrarPorCategoria(categoria) {
-  if (!categoriasValidas.includes(categoria.toLowerCase())) return;
+  if (!categoriasValidas.includes(categoria.toLowerCase())) {
+    console.warn(`Categoria inválida: ${categoria}`);
+    return;
+  }
   categoriaSelecionada = categoria.toLowerCase();
   currentPage = 1;
   document.querySelectorAll('.categoria-item').forEach(item => {
-    item.classList.toggle('ativa', item.dataset.categoria.toLowerCase() === categoria);
+    item.classList.toggle('ativa', item.dataset.categoria?.toLowerCase() === categoria);
   });
   carregarProdutos();
 }
 
 // Filtra por loja
 function filtrarPorLoja(loja) {
-  if (!lojasValidas.includes(loja.toLowerCase())) return;
+  if (!lojasValidas.includes(loja.toLowerCase())) {
+    console.warn(`Loja inválida: ${loja}`);
+    return;
+  }
   lojaSelecionada = loja.toLowerCase();
   currentPage = 1;
   document.querySelectorAll('.loja, .loja-todas').forEach(item => {
@@ -362,20 +384,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Menu mobile
-  const toggleMenu = document.querySelector('.toggle-menu');
-  const navMobile = document.querySelector('.nav-mobile');
-  if (toggleMenu && navMobile) {
-    toggleMenu.addEventListener('click', () => {
-      navMobile.classList.toggle('active');
-    });
-  }
-
-  // Sombra no cabeçalho
+  // Sombra no cabeçalho ao rolar
   const header = document.querySelector('.site-header');
   if (header) {
     window.addEventListener('scroll', () => {
       header.classList.toggle('scrolled', window.scrollY > 0);
     });
+  } else {
+    console.warn('Cabeçalho (.site-header) não encontrado.');
   }
 });
