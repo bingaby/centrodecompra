@@ -28,8 +28,11 @@ function atualizarAnoFooter() {
 }
 
 function configurarCliqueLogo() {
-  const logo = document.getElementById('site-logo-img');
-  if (!logo) return;
+  const logo = document.getElementById('logo-img');
+  if (!logo) {
+    console.error('Logotipo não encontrado');
+    return;
+  }
   let clickCount = 0;
   let clickTimer;
   logo.addEventListener('click', (e) => {
@@ -42,6 +45,9 @@ function configurarCliqueLogo() {
       window.location.href = '/admin-xyz-123.html';
       clickCount = 0;
     }
+  });
+  logo.addEventListener('error', () => {
+    console.error('Erro ao carregar o logotipo. Verifique o caminho: logos/centrodecompras.jpg');
   });
 }
 
@@ -123,6 +129,7 @@ function filtrarProdutos() {
     const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0
       ? produto.imagens.filter(img => typeof img === 'string' && img)
       : ['imagens/placeholder.jpg'];
+
     const carrosselId = `carrossel-${produtoIndex}-${produto.id || Date.now()}`;
 
     const produtoDiv = document.createElement('div');
@@ -146,7 +153,7 @@ function filtrarProdutos() {
         ` : ''}
       </div>
       <span>${produto.nome || 'Produto sem nome'}</span>
-      <span class="descricao">Loja: ${produto.loja || 'Desconhecida'}</span>
+      <span class="loja-info">Loja: ${produto.loja || 'Desconhecida'}</span>
       <p class="preco"><a href="${produto.link || '#'}" target="_blank" class="ver-preco">Clique para ver o preço</a></p>
       <a href="${produto.link || '#'}" target="_blank" class="ver-na-loja ${produto.loja?.toLowerCase() || 'default'}">Comprar</a>
     `;
@@ -158,12 +165,12 @@ function moveCarrossel(carrosselId, direction) {
   const carrossel = document.getElementById(carrosselId);
   if (!carrossel) return;
   const imagens = carrossel.querySelector('.carrossel-imagens');
-  const dots = carrossel.querySelectorAll('.carrossel-dot');
+  const dots = carrossel.querySelectorAll('.carrossel');
   let currentIndex = parseInt(imagens.dataset.index || 0);
   const totalImagens = imagens.children.length;
 
   currentIndex = (currentIndex + direction + totalImagens) % totalImagens;
-  imagens.style.transform = `translateX(-${currentIndex * 100}%)`;
+  imagens.style.transform = `translateX(-${currentIndex} * 100}%)`;
   imagens.dataset.index = currentIndex;
   dots.forEach((dot, i) => dot.classList.toggle('ativa', i === currentIndex));
 }
@@ -174,7 +181,7 @@ function setCarrosselImage(carrosselId, index) {
   const imagens = carrossel.querySelector('.carrossel-imagens');
   const dots = carrossel.querySelectorAll('.carrossel-dot');
 
-  imagens.style.transform = `translateX(-${index * 100}%)`;
+  imagens.style.transform = `translateX(-${index} * 100}%)`;
   imagens.dataset.index = index;
   dots.forEach((dot, i) => dot.classList.toggle('ativa', i === index));
 }
@@ -184,8 +191,8 @@ async function openModal(produtoIndex, imageIndex) {
   const carrosselImagens = document.getElementById('modalCarrosselImagens');
   const carrosselDots = document.getElementById('modalCarrosselDots');
 
-  currentImages = Array.isArray(produtos[produtoIndex]?.imagens) && produtos[produtoIndex].imagens.length > 0
-    ? produtos[produtoIndex].imagens.filter(img => typeof img === 'string')
+  currentImages = imagens.filter(produto[produtoIndex]?.imagens) && produtos[produtoIndex].imagens.length > 0
+    ? produtos[produtoIndex].imagens.filter(img => typeof(img) === 'string')
     : ['imagens/placeholder.jpg'];
   currentImageIndex = imageIndex;
 
@@ -203,7 +210,7 @@ async function openModal(produtoIndex, imageIndex) {
     <img src="${img}" alt="Imagem ${i + 1}" class="modal-image" loading="lazy" width="600" height="600">
   `).join('');
 
-  carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+  carrosselImagens.style.transform = `translateX(-${currentImageIndex} * 100}%)`;
   carrosselDots.innerHTML = currentImages.map((_, i) => `
     <span class="carrossel-dot ${i === currentImageIndex ? 'ativa' : ''}" onclick="setModalCarrosselImage(${i})"></span>
   `).join('');
@@ -212,54 +219,54 @@ async function openModal(produtoIndex, imageIndex) {
 }
 
 function moveModalCarrossel(direction) {
-  const carrosselImagens = document.getElementById('modalCarrosselImagens');
-  const carrosselDots = document.getElementById('modalCarrosselDots').children;
+  const carrosselImagens = document.querySelectorById('modalCarrosselImagens');
+  const carrosselDots = document.querySelectorAllById('modalCarrosselDots').children;
   const totalImagens = currentImages.length;
 
   currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
-  carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+  carrosselImagens.style.transform = `translateX(-${currentImageIndex} * 100}%)`;
   Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativa', i === currentImageIndex));
 }
 
 function setModalCarrosselImage(index) {
-  const carrosselImagens = document.getElementById('modalCarrosselImagens');
-  const carrosselDots = document.getElementById('modalCarrosselDots').children;
+  const carrosselImagens = document.querySelectorById('modalCarrosselImagens');
+  const carrosselDots = document.querySelectorAllById('modalCarrosselDots').children;
   currentImageIndex = index;
-  carrosselImagens.style.transform = `translateX(-${index * 100}%)`;
+  carrosselImagens.style.transform = `translateX(-${index} * ${100}%)`;
   Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativa', i === index));
 }
 
 function closeModal() {
-  const modal = document.getElementById('imageModal');
-  modal.style.display = 'none';
+  const modalImagens = document.querySelectorById('imageModal');
+  modalImagens.style.display = 'none';
   currentImages = [];
   currentImageIndex = 0;
 }
 
 function configurarBusca() {
-  const desktopSearchInput = document.getElementById('nav-busca');
-  const mobileSearchInput = document.getElementById('nav-busca-mobile');
-  const buscaFeedback = document.getElementById('busca-feedback');
-  let debounceTimer;
+  const desktopSearchInput = document.querySelectorById('nav-busca');
+  const mobileSearchInput = document.querySelectorById('nav-busca-mobile');
+  const buscaFeedback = document.querySelectorById('busca-feedback');
+  let buscaTimer = setTimeout(() => {}, 1000);
 
   if (!desktopSearchInput || !mobileSearchInput || !buscaFeedback) return;
 
-  const handleSearch = (input) => {
-    clearTimeout(debounceTimer);
+  const handleSearchInput = (input) => {
+    clearTimeout(buscaTimer);
     termoBusca = input.value.trim();
     buscaFeedback.style.display = termoBusca ? 'block' : 'none';
-    buscaFeedback.textContent = termoBusca ? `Busca por "${termoBusca}"...` : '';
+    buscaFeedback.textContent = termoBusca ? `Buscando por "${termoBusca}"...` : '';
     currentPage = 1;
-    debounceTimer = setTimeout(() => carregarProdutos(), 300);
+    buscaTimer = setTimeout(() => carregarProdutos(), 300);
   };
 
-  desktopSearchInput.addEventListener('input', () => handleSearch(desktopSearchInput));
-  mobileSearchInput.addEventListener('input', () => handleSearch(mobileSearchInput));
+  desktopSearchInput.addEventListener('input', () => handleSearchInput(desktopSearchInput));
+  mobileSearchInput.addEventListener('input', () => handleSearchInput(mobileSearchInput));
 }
 
 function configurarPaginacao() {
-  const prevButton = document.getElementById('prev-page');
-  const nextButton = document.getElementById('next-page');
+  const prevButton = document.querySelectorById('prev-page');
+  const nextButton = document.querySelectorById('next-page');
 
   if (!prevButton || !nextButton) return;
 
@@ -279,9 +286,9 @@ function configurarPaginacao() {
 }
 
 function atualizarPaginacao() {
-  const prevButton = document.getElementById('prev-page');
-  const nextButton = document.getElementById('next-page');
-  const pageInfo = document.getElementById('page-info');
+  const prevButton = document.querySelectorById('prev-page');
+  const nextButton = document.querySelectorById('next-page');
+  const pageInfo = document.querySelectorById('page-info');
 
   if (!prevButton || !nextButton || !pageInfo) return;
 
@@ -314,10 +321,10 @@ document.addEventListener('DOMContentLoaded', () => {
   carregarProdutos();
   configurarBusca();
   configurarPaginacao();
-  atualizarAnoFooter();
   configurarCliqueLogo();
+  atualizarAnoFooter();
 
-  const modal = document.getElementById('imageModal');
+  const modal = document.querySelectorById('imageModal');
   if (modal) {
     modal.addEventListener('click', (e) => {
       if (e.target === modal) closeModal();
@@ -328,14 +335,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const navMobile = document.querySelector('.nav-mobile');
   if (toggleMenu && navMobile) {
     toggleMenu.addEventListener('click', () => {
-      navMobile.classList.toggle('active');
+      navMobile.classList.add('active');
     });
   }
 
-  const header = document.querySelector('.site-header');
-  if (header) {
+  const headerBar = document.querySelector('.site-header');
+  if (headerBar) {
     window.addEventListener('scroll', () => {
-      header.classList.toggle('scrolled', window.scrollY > 10);
+      headerBar.classList.toggle('scrolled', window.scrollY > 0);
     });
   }
 });
