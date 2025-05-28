@@ -292,18 +292,19 @@ function closeModal() {
 
 // Configurar busca com debounce
 function configurarBusca() {
-  const inputBusca = document.getElementById('busca');
+  const desktopSearchInput = document.getElementById('nav-busca');
+  const mobileSearchInput = document.getElementById('nav-busca-mobile');
   const buscaFeedback = document.getElementById('busca-feedback');
   let debounceTimer;
 
-  if (!inputBusca || !buscaFeedback) {
-    console.error('Elementos de busca não encontrados');
+  if (!desktopSearchInput || !mobileSearchInput || !buscaFeedback) {
+    console.error('Elementos de busca (#nav-busca, #nav-busca-mobile, #busca-feedback) não encontrados');
     return;
   }
 
-  inputBusca.addEventListener('input', () => {
+  const handleSearch = (input) => {
     clearTimeout(debounceTimer);
-    termoBusca = inputBusca.value.trim();
+    termoBusca = input.value.trim();
 
     if (termoBusca) {
       buscaFeedback.style.display = 'block';
@@ -314,7 +315,10 @@ function configurarBusca() {
 
     currentPage = 1;
     debounceTimer = setTimeout(() => carregarProdutos(), 300);
-  });
+  };
+
+  desktopSearchInput.addEventListener('input', () => handleSearch(desktopSearchInput));
+  mobileSearchInput.addEventListener('input', () => handleSearch(mobileSearchInput));
 }
 
 // Configurar paginação
@@ -325,18 +329,20 @@ function configurarPaginacao() {
   if (!prevButton || !nextButton) {
     console.error('Botões de paginação não encontrados');
     return;
-  }
+}
 
   prevButton.addEventListener('click', () => {
     if (currentPage > 1) {
       currentPage--;
       carregarProdutos();
+      nextButton.disabled = false;
     }
   });
 
-  nextButton.addEventListener('click', () => {
+  prevButton.addEventListener('click', () => {
     if (currentPage < Math.ceil(totalProdutos / produtosPorPagina)) {
       currentPage++;
+      prevButton.disabled = false;
       carregarProdutos();
     }
   });
@@ -350,7 +356,7 @@ function atualizarPaginacao() {
   if (!prevButton || !nextButton || !pageInfo) {
     console.error('Elementos de paginação não encontrados');
     return;
-  }
+}
 
   prevButton.disabled = currentPage === 1;
   nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
@@ -362,12 +368,12 @@ function filtrarPorCategoria(categoria) {
   if (!categoriasValidas.includes(categoria.toLowerCase())) {
     console.warn(`Categoria inválida: ${categoria}`);
     return;
-  }
+}
   categoriaSelecionada = categoria.toLowerCase();
   currentPage = 1;
   document.querySelectorAll('.categoria-item').forEach(item => {
     item.classList.toggle('ativa', item.dataset.categoria.toLowerCase() === categoria.toLowerCase());
-  });
+});
   carregarProdutos();
 }
 
@@ -377,7 +383,7 @@ function filtrarPorLoja(loja) {
   currentPage = 1;
   document.querySelectorAll('.loja, .loja-todas').forEach(item => {
     item.classList.toggle('ativa', item.dataset.loja.toLowerCase() === loja.toLowerCase());
-  });
+});
   carregarProdutos();
 }
 
@@ -393,9 +399,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const modal = document.getElementById('imageModal');
   if (modal) {
     modal.addEventListener('click', (e) => {
-      if (e.target === e.currentTarget) closeModal();
-    });
-  }
+      if (e.target === modal) closeModal();
+});
+}
 
   // Configurar menu hamburguer
   const toggleMenu = document.querySelector('.toggle-menu');
@@ -403,18 +409,22 @@ document.addEventListener('DOMContentLoaded', () => {
   if (toggleMenu && navMobile) {
     toggleMenu.addEventListener('click', () => {
       navMobile.classList.toggle('active');
-    });
-  }
+});
+}
 
   // Configurar ícone de busca
   const searchIcon = document.querySelector('.search-icon');
-  const searchInput = document.getElementById('busca');
-  if (searchIcon && searchInput) {
+  const desktopSearchInput = document.querySelector('#nav-busca');
+  const mobileSearchInput = document.querySelector('#nav-busca-mobile');
+  if (searchIcon && (desktopSearchInput || mobileSearchInput)) {
     searchIcon.addEventListener('click', () => {
-      searchInput.focus();
-      window.scrollTo({ top: searchInput.offsetTop - 100, behavior: 'smooth' });
+      const targetInput = window.innerWidth <= 768 ? mobileSearchInput : desktopSearchInput;
+      if (targetInput) {
+        targetInput.focus();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     });
-  }
+}
 
   // Configurar sombra dinâmica no cabeçalho
   const header = document.querySelector('.site-header');
@@ -426,5 +436,5 @@ document.addEventListener('DOMContentLoaded', () => {
         header.classList.remove('scrolled');
       }
     });
-  }
+}
 });
