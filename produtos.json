@@ -190,5 +190,17 @@
     "imagens": [
       "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_console-playstation-5-1748367854660.jpg"
     ]
+  },
+  {
+    "_id": "1748453246536thguffwl7",
+    "nome": "Apple iPhone 13 (128 GB) - Estelar - Distribuidor Autorizado (loja oficial)",
+    "descricao": "LOJA OFICIAL APPL",
+    "categoria": "celulares",
+    "loja": "mercadolivre",
+    "link": "https://mercadolivre.com/sec/1gG1h8E",
+    "preco": 10,
+    "imagens": [
+      "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_apple-iphone-13-(128-gb)---estelar---distribuidor-autorizado-(loja-oficial)-1748453245557.webp"
+    ]
   }
 ]
