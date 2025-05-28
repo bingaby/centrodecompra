@@ -6,15 +6,15 @@
   <meta name="description" content="Ofertas com descontos reais nas principais lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba.">
   <meta property="og:title" content="Centro de Compras - Ofertas">
   <meta property="og:description" content="Encontre as melhores ofertas em lojas confiáveis com links de compras seguros.">
-  <meta property="og:image" content="logos/centrodecompras.jpg">
+  <meta property="og:image" content="logos/logo.png">
   <meta property="og:url" content="https://www.centrodecompra.com.br/">
   <meta name="twitter:card" content="summary_large_image">
   <title>Centro de Compras - Ofertas do Dia</title>
-  <link rel="preload" href="logos/centrodecompras.jpg" as="image">
+  <link rel="preload" href="logos/logo.png" as="image">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -23,27 +23,25 @@
       <div class="flex items-center justify-between">
         <div class="logo-wrapper">
           <a href="index.html">
-            <img src="logos/centrodecompras.jpg" alt="Logo Centro de Compras" id="logo-img" onerror="this.src='images/placeholder-logo.png'" width="300" height="90">
+            <img src="logos/logo.png" alt="Logo Centro de Compras" id="logo-img" onerror="this.src='images/placeholder-logo.png'" width="300" height="90">
           </a>
         </div>
         <div class="header-text">
           <h1>Centro de Compras</h1>
           <p>Encontre as melhores ofertas</p>
         </div>
-        <button class="md-hidden toggle-menu" aria-label="Abrir menu">
+        <button class="md:hidden toggle-menu" aria-label="Abrir menu">
           <i class="fas fa-bars"></i>
         </button>
       </div>
-      <nav class="nav-menu hidden md-flex">
+      <nav class="nav-menu hidden md:flex">
+        <a href="index.html">Promoções</a>
         <div class="nav-search">
           <input type="text" id="nav-busca" placeholder="Busque por produtos..." aria-label="Buscar produtos">
         </div>
-        <div class="nav-links">
-          <a href="index.html">Promoções</a>
-          <a href="cupom.html">Cupom de Desconto</a>
-          <a href="sobre.html">Sobre</a>
-          <a href="contato.html">Mais</a>
-        </div>
+        <a href="cupom.html">Cupom de Desconto</a>
+        <a href="sobre.html">Sobre</a>
+        <a href="contato.html">Mais</a>
       </nav>
       <nav class="nav-mobile hidden">
         <div class="nav-search">
