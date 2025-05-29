@@ -11,6 +11,26 @@ let currentPage = 1;
 const produtosPorPagina = 20;
 const totalProdutos = 1000;
 
+// Produtos mockados como fallback
+const mockProdutos = [
+  {
+    id: '1',
+    nome: 'Produto de Teste 1',
+    categoria: 'eletronicos',
+    loja: 'amazon',
+    imagens: ['imagens/placeholder.png'],
+    link: '#',
+  },
+  {
+    id: '2',
+    nome: 'Produto de Teste 2',
+    categoria: 'moda',
+    loja: 'shein',
+    imagens: ['imagens/placeholder.png'],
+    link: '#',
+  },
+];
+
 // Atualizar ano no footer
 function atualizarAnoFooter() {
   const yearElement = document.getElementById('year');
@@ -40,7 +60,7 @@ function configurarCliqueLogo() {
     } else if (clickCount === 3) {
       clearTimeout(clickTimer);
       console.log('Triplo clique detectado, redirecionando para admin-xyz-123.html');
-      window.location.href = '/admin-xyz-123.html';
+      window.location.href = 'admin-xyz-123.html';
       clickCount = 0;
     }
   });
@@ -84,16 +104,22 @@ async function carregarProdutos() {
       if (!Array.isArray(produtos)) throw new Error('Resposta inválida da API');
 
       console.log(`Produtos recebidos: ${produtos.length}`);
+      if (produtos.length === 0 && attempt === maxRetries) {
+        console.warn('Nenhum produto retornado, usando mock');
+        produtos = mockProdutos;
+      }
+
       await filtrarProdutos();
       atualizarPaginacao();
       return;
     } catch (error) {
       console.error(`Erro na tentativa ${attempt}: ${error.message}`);
       if (attempt === maxRetries) {
-        errorMessage.textContent = `Não foi possível carregar os produtos após ${maxRetries} tentativas.`;
+        console.warn('Usando produtos mock devido a falha na API');
+        produtos = mockProdutos;
+        await filtrarProdutos();
+        errorMessage.textContent = 'Erro ao carregar produtos. Exibindo itens de teste.';
         errorMessage.style.display = 'block';
-        mensagemVazia.style.display = 'none';
-        gridProdutos.style.display = 'none';
       }
       attempt++;
       await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
@@ -112,6 +138,8 @@ async function filtrarProdutos() {
     console.error('Elementos de produtos não encontrados');
     return;
   }
+
+  console.log('Filtrando produtos:', { categoriaSelecionada, lojaSelecionada, termoBusca });
 
   const produtosFiltrados = produtos.filter((produto) => {
     const matchCategoria =
