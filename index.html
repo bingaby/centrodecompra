@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="google-adsense-account" content="ca-pub-4531749081462125">
   <meta name="twitter:card" content="summary_large_image">
   <title>Centro de Compras - Ofertas do Dia</title>
@@ -9,12 +11,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" media="all">
   <link rel="stylesheet" href="style.css" media="print" onload="this.media='all'">
   <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="logos/favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="logos/apple-touch-icon.png">
   <link rel="manifest" href="logos/site.webmanifest">
-  <script src="https://sdk.mercadopago.com/js/v2"></script> <!-- SDK do Mercado Pago -->
+  <script src="https://sdk.mercadopago.com/js/v2"></script>
 </head>
 <body>
   <header class="site-header">
@@ -62,7 +65,6 @@
     <main>
       <section>
         <h2>🛍️ Ofertas do Dia</h2>
-        <!-- Bloco de anúncio do AdSense -->
         <ins class="adsbygoogle"
              style="display:inline-block;width:728px;height:90px"
              data-ad-client="ca-pub-4531749081462125"
@@ -100,7 +102,6 @@
         <div class="grid-produtos" id="grid-produtos"></div>
         <p class="mensagem-vazia" id="mensagem-vazia" style="display: none;">Nenhum produto encontrado.</p>
         <p class="error-message" id="error-message" style="display: none;"></p>
-        <!-- Seção de pagamento com Mercado Pago -->
         <div class="payment-section" style="display: none;">
           <h3>Finalizar Compra</h3>
           <div id="mercado-pago-button"></div>
@@ -152,7 +153,7 @@
   </div>
 
   <footer>
-    <p>🔧 Todos os direitos reservados <strong>Grupo Centro de Compra "CdC"</strong> © <span id="year"></span></p>
+    <p>🔧 Todos os direitos reservados <strong>Grupo Centro de Compras "CdC"</strong> © <span id="year"></span></p>
   </footer>
 
   <div class="robo-assistente">
