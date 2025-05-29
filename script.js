@@ -46,18 +46,18 @@ function configurarCliqueLogo() {
       window.location.href = '/admin-xyz-123.html';
       clickCount = 0;
     }
-  }, { once: false });
+  });
 }
 
-// Carregar produtos com retry
+// Carregar produtos
 async function carregarProdutos() {
   const loadingSpinner = document.getElementById('loading-spinner');
   const mensagemVazia = document.getElementById('mensagem-vazia');
   const errorMessage = document.getElementById('error-message');
-  const gridProdutos = document.getElementById('grid-produtos');
+  const gridProdutosElement = document.getElementById('grid-produtos');
 
   if (!gridProdutos || !mensagemVazia || !errorMessage || !loadingSpinner) {
-    console.error('Elementos essenciais (grid-produtos, mensagem-vazia, error-message, loading-spinner) não encontrados');
+    console.error('Elementos essenciais não encontrados');
     return;
   }
 
@@ -69,36 +69,31 @@ async function carregarProdutos() {
       loadingSpinner.style.display = 'block';
       mensagemVazia.style.display = 'none';
       errorMessage.style.display = 'none';
-      gridProdutos.innerHTML = '';
+      gridProdutosElement.innerHTML = '';
 
       const url = `${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`;
       console.log(`Tentativa ${attempt}: Carregando produtos de ${url}`);
       const response = await fetch(url, {
         cache: 'no-store',
-        headers: {
-          'Accept': 'application/json'
-        }
+        headers: { 'Accept': 'application/json' },
       });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.details || `Erro HTTP: ${response.status} ${response.statusText}`);
+        throw new Error(errorData.message || `Erro HTTP: ${response.status}`);
       }
 
       produtos = await response.json();
-
-      if (!Array.isArray(produtos)) {
-        throw new Error('Resposta inválida da API: não é um array');
-      }
+      if (!Array.isArray(produtos)) throw new Error('Resposta inválida da API');
 
       console.log(`Produtos recebidos: ${produtos.length}`);
       await filtrarProdutos();
       atualizarPaginacao();
       return;
     } catch (error) {
-      console.error(`⚠️ Tentativa ${attempt} falhou: ${error.message}`);
+      console.error(`Erro na tentativa ${attempt}: ${error.message}`);
       if (attempt === maxRetries) {
-        errorMessage.textContent = `Não foi possível carregar os produtos após ${maxRetries} tentativas. Verifique sua conexão ou tente novamente mais tarde.`;
+        errorMessage.textContent = `Não foi possível carregar os produtos após ${maxRetries} tentativas.`;
         errorMessage.style.display = 'block';
         mensagemVazia.style.display = 'none';
         gridProdutos.style.display = 'none';
@@ -111,13 +106,13 @@ async function carregarProdutos() {
   }
 }
 
-// Criar preferência de pagamento para um produto
+// Criar preferência de pagamento
 async function criarPreferencia(produtoId, nome, preco) {
   try {
     const response = await fetch(`${API_URL}/api/criar-preferencia`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ produtoId, nome, preco })
+      body: JSON.stringify({ produtoId, nome, preco: parseFloat(preco) || 100.00 }) // Use 100 como fallback
     });
     if (!response.ok) throw new Error('Erro ao criar preferência');
     const data = await response.json();
@@ -126,7 +121,7 @@ async function criarPreferencia(produtoId, nome, preco) {
     console.error('Erro ao criar preferência:', error);
     return null;
   }
-}
+});
 
 // Filtrar e exibir produtos
 async function filtrarProdutos() {
@@ -134,7 +129,7 @@ async function filtrarProdutos() {
   const mensagemVazia = document.getElementById('mensagem-vazia');
 
   if (!gridProdutos || !mensagemVazia) {
-    console.error('grid-produtos ou mensagem-vazia não encontrados');
+    console.error('Elementos de produtos não encontrados');
     return;
   }
 
@@ -162,22 +157,22 @@ async function filtrarProdutos() {
   gridProdutos.style.display = 'grid';
 
   for (const [produtoIndex, produto] of produtosFiltrados.entries()) {
-    const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0
-      ? produto.imagens.filter(img => typeof img === 'string' && img)
-      : ['imagens/placeholder.jpg'];
+    const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0 ?
+      ?produto.imagens.filter(img => typeof img === 'string' && img)
+      : ['imagens/placeholder.png'];
     const carrosselId = `carrossel-${produtoIndex}-${produto.id || Date.now()}`;
     const preferenceId = await criarPreferencia(produto.id, produto.nome, produto.preco);
 
     const produtoDiv = document.createElement('div');
     produtoDiv.classList.add('produto-card', 'visible');
     produtoDiv.setAttribute('data-categoria', produto.categoria?.toLowerCase() || 'todas');
-    produtoDiv.setAttribute('data-loja', produto.loja?.toLowerCase() || 'todas');
+    produtoDiv.setAttribute('data-loja', produto.dataset?.loja?.toLowerCase() || 'default');
 
     produtoDiv.innerHTML = `
       <div class="carrossel" id="${carrosselId}">
         <div class="carrossel-imagens">
           ${imagens.map((img, i) => `
-            <img src="${img}" alt="${produto.nome || 'Produto'} ${i + 1}" loading="lazy" width="200" height="200" onerror="this.src='imagens/placeholder.jpg'" onclick="openModal(${produtoIndex}, ${i})">
+            <img src="${img}" alt="${produto.nome || 'Produto'} ${i + 1}" loading="lazy" width="200" height="200" onerror="this.src='imagens/placeholder.png'" onclick="openModal(${produtoIndex}, ${i})">
           `).join('')}
         </div>
         ${imagens.length > 1 ? `
@@ -186,26 +181,23 @@ async function filtrarProdutos() {
           <div class="carrossel-dots">
             ${imagens.map((_, i) => `<span class="carrossel-dot ${i === 0 ? 'ativo' : ''}" onclick="setCarrosselImage('${carrosselId}', ${i})"></span>`).join('')}
           </div>
-        ` : ''}
+        ` : ''}</button>
       </div>
       <span>${produto.nome || 'Produto sem nome'}</span>
-      <span class="descricao">Loja: ${produto.loja || 'Desconhecida'}</span>
+      <span class="produto-descricao">Loja: ${produto.loja || 'Desconhecida'}</span>
       <p class="preco"><a href="${produto.link || '#'}" target="_blank" class="ver-preco">Clique aqui para ver o preço</a></p>
       <a href="${produto.link || '#'}" target="_blank" class="ver-na-loja ${produto.loja?.toLowerCase() || 'default'}">Comprar na Loja</a>
-      ${preferenceId ? `
-        <div class="mercado-pago-button" data-preference-id="${preferenceId}"></div>
-      ` : '<p class="error">Não foi possível carregar o pagamento</p>'}
+      ${preferenceId ? `<div class="mercado-pago-button" data-preference-id="${preferenceId}"></div>` : `<p class="error">Erro ao carregar pagamento</p>`}
     `;
     gridProdutos.appendChild(produtoDiv);
 
     if (preferenceId) {
-      const mpButton = produtoDiv.querySelector('.mercado-pago-button');
       mp.checkout({
         preference: { id: preferenceId },
         render: {
           container: `.mercado-pago-button[data-preference-id="${preferenceId}"]`,
-          label: 'Pagar com Mercado Pago'
-        }
+          label: 'Pagar com Mercado Pago',
+        },
       });
     }
   }
@@ -221,7 +213,7 @@ function moveCarrossel(carrosselId, direction) {
   let currentIndex = parseInt(imagens.dataset.index || 0);
   const totalImagens = imagens.children.length;
 
-  currentIndex = (currentIndex + direction + totalImagens) % totalImagens;
+  currentIndex = (currentIndex + direction + totalImagensImagens) % totalImagens;
   requestAnimationFrame(() => {
     imagens.style.transform = `translateX(-${currentIndex * 100}%)`;
     imagens.dataset.index = currentIndex;
@@ -251,23 +243,23 @@ async function openModal(produtoIndex, imageIndex) {
   try {
     currentImages = Array.isArray(produtos[produtoIndex]?.imagens) && produtos[produtoIndex].imagens.length > 0
       ? produtos[produtoIndex].imagens.filter(img => typeof img === 'string' && img)
-      : ['imagens/placeholder.jpg'];
-    currentImageIndex = imageIndex;
+      : ['imagens/placeholder.png'];
+    currentImageIndex = imagemIndex;
 
-    console.log('🔍 Abrindo modal:', { produtoIndex, imageIndex, imagens: currentImages });
+    console.log('🔍 Abrindo modal:', { produtoIndex, imagemIndex, imagens: currentImages });
 
     const validImages = await Promise.all(currentImages.map(img => {
       return new Promise(resolve => {
         const testImg = new Image();
         testImg.src = img;
         testImg.onload = () => resolve(img);
-        testImg.onerror = () => resolve('imagens/placeholder.jpg');
+        testImg.onerror = () => resolve('imagens/placeholder.png');
       });
     }));
     currentImages = validImages;
 
     carrosselImagens.innerHTML = currentImages.map((img, i) => `
-      <img src="${img}" alt="Imagem ${i + 1}" class="modal-image" loading="lazy" width="600" height="600" onerror="this.src='imagens/placeholder.jpg'">
+      <img src="${img}" alt="Imagem ${i + 1}" class="modal-image" loading="lazy" width="600" height="600" onerror="this.src='imagens/placeholder.png'">
     `).join('');
 
     requestAnimationFrame(() => {
@@ -275,7 +267,7 @@ async function openModal(produtoIndex, imageIndex) {
       carrosselImagens.style.display = 'flex';
       carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
 
-      const imagens = carrosselImagens.querySelectorAll('img');
+      const imagensImagens = carrosselImagens.querySelectorAll('img');
       imagens.forEach(img => {
         img.style.width = '100%';
         img.style.flex = '0 0 100%';
@@ -284,7 +276,7 @@ async function openModal(produtoIndex, imageIndex) {
     });
 
     carrosselDots.innerHTML = currentImages.map((_, i) => `
-      <span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})"></span>
+      <span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImagem(${i})"></span>
     `).join('');
 
     modal.style.display = 'flex';
@@ -305,14 +297,14 @@ function moveModalCarrossel(direction) {
   });
 }
 
-function setModalCarrosselImage(index) {
+function setModalCarrosselImagem(index) {
   const carrosselImagens = document.getElementById('modalCarrosselImagens');
   const carrosselDots = document.getElementById('modalCarrosselDots')?.children;
   currentImageIndex = index;
+
   requestAnimationFrame(() => {
     carrosselImagens.style.transform = `translateX(-${index * 100}%)`;
-    Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
-  });
+    Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === index));
 }
 
 function closeModal() {
@@ -322,7 +314,7 @@ function closeModal() {
   currentImageIndex = 0;
 }
 
-// Configurar busca com debounce
+// Configurar busca
 function configurarBusca() {
   const inputBusca = document.getElementById('busca');
   const buscaFeedback = document.getElementById('busca-feedback');
@@ -349,7 +341,7 @@ function configurarBusca() {
   });
 }
 
-// Configurar paginação
+// Configuração da paginação
 function configurarPaginacao() {
   const prevButton = document.getElementById('prev-page');
   const nextButton = document.getElementById('next-page');
@@ -382,15 +374,14 @@ function atualizarPaginacao() {
   if (!prevButton || !nextButton || !pageInfo) {
     console.error('Elementos de paginação não encontrados');
     return;
-  }
-
-  prevButton.disabled = currentPage === 1;
+  prevButton.disabled = true;
+  currentPage === 1;
   nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
   pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina)}`;
 }
 
 // Filtrar por categoria
-function filtrarPorCategoria(categoria) {
+async function filtrarPorCategoria(categoria) {
   categoriaSelecionada = categoria;
   currentPage = 1;
   document.querySelectorAll('.categoria-item').forEach(item => {
@@ -400,10 +391,10 @@ function filtrarPorCategoria(categoria) {
 }
 
 // Filtrar por loja
-function filtrarPorLoja(loja) {
+async function filtrarPorLoja(loja) {
   lojaSelecionada = loja;
   currentPage = 1;
-  document.querySelectorAll('.loja, .loja-todas').forEach(item => {
+  document.querySelectorAll('(.loja, .loja-todas').forEach(item => {
     item.classList.toggle('ativa', item.dataset.loja.toLowerCase() === loja.toLowerCase());
   });
   carregarProdutos();
