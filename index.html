@@ -6,24 +6,23 @@
   <meta name="google-adsense-account" content="ca-pub-4531749081462125">
   <meta name="twitter:card" content="summary_large_image">
   <title>Centro de Compras - Ofertas do Dia</title>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4531749081462125" crossorigin="anonymous"></script>
-  <link rel="preload" href="logos/logoscentrodecompras.jpeg" as="image">
+  <script async src="https://pagead.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4531749081462125" crossorigin="anonymous"></script>
+  <link rel="preload" href="logos/logoscentrodecompras.jpg" as="image">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" media="all">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="style.css" media="print" onload="this.media='all'">
   <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="logos/favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="logos/apple-touch-icon.png">
-  <link rel="manifest" href="logos/site.webmanifest">
-  <script src="https://sdk.mercadopago.com/js/v2"></script>
+  <link rel="manifest" href="manifest.json">
 </head>
 <body>
   <header class="site-header">
     <div class="logo-container">
       <a href="index.html">
-        <img src="logos/logoscentrodecompras.jpeg" alt="Centro de Compras" id="site-logo-img" width="150" height="50">
+        <img src="logos/logoscentrodecompras.jpg" alt="Centro de Compras" id="logo" width="150" height="50">
       </a>
     </div>
     <div class="header-text">
@@ -35,16 +34,16 @@
   <nav>
     <a href="index.html">Promoções</a>
     <a href="cupom.html">Cupom de Desconto</a>
-    <a href="sobre.html">Sobre</a>
+    <a href="sobre.html">Sobre Nós</a>
     <a href="contato.html">Contato</a>
   </nav>
 
   <div class="container">
     <aside class="sidebar">
-      <h3>Categorias</h3>
+      <h2 class="categorias">Categorias</h2>
       <ul>
         <li class="categoria-item ativa" data-categoria="todas" onclick="filtrarPorCategoria('todas')"><i class="fas fa-list mr-2"></i>Todas</li>
-        <li class="categoria-item" data-categoria="eletronicos" onclick="filtrarPorCategoria('eletronicos')"><i class="fas fa-laptop mr-2"></i>Eletrônicos</li>
+        <li class="categoria-item" data-categoria="eletronicos" onclick="filtrarPorCategoria('eletronicos')"><i class="fas fa-laptop mr-2"></i>Elettrônicos</li>
         <li class="categoria-item" data-categoria="moda" onclick="filtrarPorCategoria('moda')"><i class="fas fa-tshirt mr-2"></i>Moda</li>
         <li class="categoria-item" data-categoria="fitness" onclick="filtrarPorCategoria('fitness')"><i class="fas fa-dumbbell mr-2"></i>Fitness</li>
         <li class="categoria-item" data-categoria="casa" onclick="filtrarPorCategoria('casa')"><i class="fas fa-home mr-2"></i>Casa</li>
@@ -102,17 +101,6 @@
         <div class="grid-produtos" id="grid-produtos"></div>
         <p class="mensagem-vazia" id="mensagem-vazia" style="display: none;">Nenhum produto encontrado.</p>
         <p class="error-message" id="error-message" style="display: none;"></p>
-        <div class="payment-section" style="display: none;">
-          <h3>Finalizar Compra</h3>
-          <div id="mercado-pago-button"></div>
-          <div class="payment-icons">
-            <img src="logos/pix.png" alt="Pix" width="40" height="40">
-            <img src="logos/visa.png" alt="Visa" width="40" height="40">
-            <img src="logos/mastercard.png" alt="Mastercard" width="40" height="40">
-            <img src="logos/boleto.png" alt="Boleto" width="40" height="40">
-          </div>
-          <p class="payment-secure">Protegido por Mercado Pago</p>
-        </div>
         <div class="paginacao" id="paginacao">
           <button id="prev-page" disabled>Anterior</button>
           <span id="page-info">Página 1</span>
@@ -121,19 +109,19 @@
       </section>
       <div class="social-links">
         <a href="https://www.tiktok.com/@cdc.centraldecompras" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><img src="logos/tiktok.png" alt="TikTok" loading="lazy" width="40" height="40"></div>
+          <div class="icon"><img src="logos/tiktok.png" alt="TikTok" loading="lazy" width="24" height="24"></div>
           <span>TikTok</span>
         </a>
         <a href="https://www.instagram.com/cdccentrodecompras/" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><img src="logos/Instagram.png" alt="Instagram" loading="lazy" width="40" height="40"></div>
+          <div class="icon"><img src="logos/Instagram.png" alt="Instagram" loading="lazy" width="24" height="24"></div>
           <span>Instagram</span>
         </a>
         <a href="https://x.com/ComprasCdc" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><img src="logos/X.png" alt="X" loading="lazy" width="40" height="40"></div>
+          <div class="icon"><img src="logos/X.png" alt="X" loading="lazy" width="24" height="24"></div>
           <span>X</span>
         </a>
         <a href="https://www.youtube.com/channel/UCaKHlI-hWqwdAXS6Xsv3ZzA" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><img src="logos/youtube.png" alt="YouTube" loading="lazy" width="40" height="40"></div>
+          <div class="icon"><img src="logos/youtube.png" alt="YouTube" loading="lazy" width="24" height="24"></div>
           <span>YouTube</span>
         </a>
       </div>
@@ -152,8 +140,47 @@
     </div>
   </div>
 
-  <footer>
-    <p>🔧 Todos os direitos reservados <strong>Grupo Centro de Compras "CdC"</strong> © <span id="year"></span></p>
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-section">
+        <h3>Sobre o Centro de Compras</h3>
+        <p>O maior portal de compras do Brasil, conectando você às melhores ofertas das principais lojas online.</p>
+      </div>
+      <div class="footer-section">
+        <h3>Links Úteis</h3>
+        <ul>
+          <li><a href="index.html">Promoções</a></li>
+          <li><a href="cupom.html">Cupons de Desconto</a></li>
+          <li><a href="sobre.html">Sobre Nós</a></li>
+          <li><a href="contato.html">Contato</a></li>
+          <li><a href="politica-privacidade.html">Política de Privacidade</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h3>Contato</h3>
+        <p><i class="fas fa-envelope"></i> <a href="mailto:contato@centrodecompras.com.br">contato@centrodecompras.com.br</a></p>
+        <p><i class="fas fa-phone"></i> <a href="tel:+5521975179737">+55 21 97517-9737</a></p>
+      </div>
+      <div class="footer-section">
+        <h3>Siga-nos</h3>
+        <div class="footer-social">
+          <a href="https://www.tiktok.com/@cdc.centraldecompras" target="_blank" rel="noopener noreferrer"><i class="fab fa-tiktok"></i></a>
+          <a href="https://www.instagram.com/cdccentrodecompras/" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
+          <a href="https://x.com/ComprasCdc" target="_blank" rel="noopener noreferrer"><i class="fab fa-twitter"></i></a>
+          <a href="https://www.youtube.com/channel/UCaKHlI-hWqwdAXS6Xsv3ZzA" target="_blank" rel="noopener noreferrer"><i class="fab fa-youtube"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; <span id="year"></span> Centro de Compras. Todos os direitos reservados.</p>
+      <!-- Placeholder para métodos de pagamento futuros -->
+      <div class="footer-payment-methods" style="display: none;">
+        <img src="logos/pix.png" alt="Pix" width="40" height="40">
+        <img src="logos/visa.png" alt="Visa" width="40" height="40">
+        <img src="logos/mastercard.png" alt="Mastercard" width="40" height="40">
+        <img src="logos/boleto.png" alt="Boleto" width="40" height="40">
+      </div>
+    </div>
   </footer>
 
   <div class="robo-assistente">
