@@ -11,6 +11,9 @@ let currentPage = 1;
 const produtosPorPagina = 20;
 const totalProdutos = 1000;
 
+// Inicializar Mercado Pago
+const mp = new MercadoPago('SUA_PUBLIC_KEY', { locale: 'pt-BR' }); // Substitua por sua Public Key
+
 // Atualizar ano no footer
 function atualizarAnoFooter() {
   const yearElement = document.getElementById('year');
@@ -89,7 +92,7 @@ async function carregarProdutos() {
       }
 
       console.log(`Produtos recebidos: ${produtos.length}`);
-      filtrarProdutos();
+      await filtrarProdutos();
       atualizarPaginacao();
       return;
     } catch (error) {
@@ -108,8 +111,25 @@ async function carregarProdutos() {
   }
 }
 
+// Criar preferência de pagamento para um produto
+async function criarPreferencia(produtoId, nome, preco) {
+  try {
+    const response = await fetch(`${API_URL}/api/criar-preferencia`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ produtoId, nome, preco })
+    });
+    if (!response.ok) throw new Error('Erro ao criar preferência');
+    const data = await response.json();
+    return data.preferenceId;
+  } catch (error) {
+    console.error('Erro ao criar preferência:', error);
+    return null;
+  }
+}
+
 // Filtrar e exibir produtos
-function filtrarProdutos() {
+async function filtrarProdutos() {
   const gridProdutos = document.getElementById('grid-produtos');
   const mensagemVazia = document.getElementById('mensagem-vazia');
 
@@ -141,11 +161,12 @@ function filtrarProdutos() {
   mensagemVazia.style.display = 'none';
   gridProdutos.style.display = 'grid';
 
-  produtosFiltrados.forEach((produto, produtoIndex) => {
+  for (const [produtoIndex, produto] of produtosFiltrados.entries()) {
     const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0
       ? produto.imagens.filter(img => typeof img === 'string' && img)
       : ['imagens/placeholder.jpg'];
     const carrosselId = `carrossel-${produtoIndex}-${produto.id || Date.now()}`;
+    const preferenceId = await criarPreferencia(produto.id, produto.nome, produto.preco);
 
     const produtoDiv = document.createElement('div');
     produtoDiv.classList.add('produto-card', 'visible');
@@ -170,10 +191,24 @@ function filtrarProdutos() {
       <span>${produto.nome || 'Produto sem nome'}</span>
       <span class="descricao">Loja: ${produto.loja || 'Desconhecida'}</span>
       <p class="preco"><a href="${produto.link || '#'}" target="_blank" class="ver-preco">Clique aqui para ver o preço</a></p>
-      <a href="${produto.link || '#'}" target="_blank" class="ver-na-loja ${produto.loja?.toLowerCase() || 'default'}">Comprar</a>
+      <a href="${produto.link || '#'}" target="_blank" class="ver-na-loja ${produto.loja?.toLowerCase() || 'default'}">Comprar na Loja</a>
+      ${preferenceId ? `
+        <div class="mercado-pago-button" data-preference-id="${preferenceId}"></div>
+      ` : '<p class="error">Não foi possível carregar o pagamento</p>'}
     `;
     gridProdutos.appendChild(produtoDiv);
-  });
+
+    if (preferenceId) {
+      const mpButton = produtoDiv.querySelector('.mercado-pago-button');
+      mp.checkout({
+        preference: { id: preferenceId },
+        render: {
+          container: `.mercado-pago-button[data-preference-id="${preferenceId}"]`,
+          label: 'Pagar com Mercado Pago'
+        }
+      });
+    }
+  }
   console.log(`Exibidos ${produtosFiltrados.length} produtos`);
 }
 
