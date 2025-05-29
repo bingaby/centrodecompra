@@ -10,10 +10,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="style.css" media="print" onload="this.media='all'">
-  <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32x32.png"> <!-- Favicon principal -->
-  <link rel="icon" type="image/png" sizes="16x16" href="logos/favicon-16x16.png"> <!-- Favicon adicional -->
-  <link rel="apple-touch-icon" sizes="180x180" href="logos/apple-touch-icon.png"> <!-- Ícone para dispositivos Apple -->
-  <link rel="manifest" href="logos/site.webmanifest"> <!-- Manifesto para PWA -->
+  <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="logos/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="logos/apple-touch-icon.png">
+  <link rel="manifest" href="logos/site.webmanifest">
+  <script src="https://sdk.mercadopago.com/js/v2"></script> <!-- SDK do Mercado Pago -->
 </head>
 <body>
   <header class="site-header">
@@ -23,7 +24,7 @@
       </a>
     </div>
     <div class="header-text">
-      <h1>Centro de Compra</h1>
+      <h1>Centro de Compras</h1>
       <p>O maior portal de compras do Brasil! Encontre as melhores ofertas.</p>
     </div>
   </header>
@@ -88,7 +89,7 @@
             <div class="loja" data-loja="mercadolivre" onclick="filtrarPorLoja('mercadolivre')">
               <img src="logos/mercadolivre.jpg" alt="Mercado Livre" loading="lazy" width="100" height="40"><span>Mercado Livre</span>
             </div>
-            <div class="loja" data-lojaconforte-loja="alibaba" onclick="filtrarPorLoja('alibaba')">
+            <div class="loja" data-loja="alibaba" onclick="filtrarPorLoja('alibaba')">
               <img src="logos/alibaba.png" alt="Alibaba" loading="lazy" width="100" height="40"><span>Alibaba</span>
             </div>
           </div>
@@ -99,6 +100,18 @@
         <div class="grid-produtos" id="grid-produtos"></div>
         <p class="mensagem-vazia" id="mensagem-vazia" style="display: none;">Nenhum produto encontrado.</p>
         <p class="error-message" id="error-message" style="display: none;"></p>
+        <!-- Seção de pagamento com Mercado Pago -->
+        <div class="payment-section" style="display: none;">
+          <h3>Finalizar Compra</h3>
+          <div id="mercado-pago-button"></div>
+          <div class="payment-icons">
+            <img src="logos/pix.png" alt="Pix" width="40" height="40">
+            <img src="logos/visa.png" alt="Visa" width="40" height="40">
+            <img src="logos/mastercard.png" alt="Mastercard" width="40" height="40">
+            <img src="logos/boleto.png" alt="Boleto" width="40" height="40">
+          </div>
+          <p class="payment-secure">Protegido por Mercado Pago</p>
+        </div>
         <div class="paginacao" id="paginacao">
           <button id="prev-page" disabled>Anterior</button>
           <span id="page-info">Página 1</span>
