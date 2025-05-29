@@ -81,6 +81,8 @@ nav a:hover {
   padding: 10px;
   cursor: pointer;
   border-radius: 4px;
+  display: flex;
+  align-items: center;
 }
 
 .categoria-item:hover {
@@ -90,6 +92,10 @@ nav a:hover {
 .categoria-item.ativa {
   background-color: #FFA500;
   color: white;
+}
+
+.mr-2 {
+  margin-right: 8px;
 }
 
 /* Main */
@@ -184,6 +190,9 @@ h2 {
   border: 1px solid #e0e0e0;
   border-radius: 5px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
 .produto-card img {
@@ -218,11 +227,28 @@ h2 {
   color: white;
   text-decoration: none;
   border-radius: 4px;
-  margin-top: 10px;
+  margin-top: 5px;
 }
 
 .ver-na-loja:hover {
   background-color: #e69500;
+}
+
+.mercado-pago-button {
+  margin-top: 5px;
+}
+
+.mercado-pago-button a {
+  display: inline-block;
+  padding: 8px 16px;
+  background-color: #009ee3;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+}
+
+.mercado-pago-button a:hover {
+  background-color: #007bb5;
 }
 
 .carrossel {
@@ -272,6 +298,29 @@ h2 {
 
 .carrossel-dot.ativo {
   background: #FFA500;
+}
+
+/* Payment Section */
+.payment-section {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.payment-icons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.payment-icons img {
+  vertical-align: middle;
+}
+
+.payment-secure {
+  font-size: 14px;
+  color: #555;
+  margin-top: 10px;
 }
 
 /* Modal */
@@ -447,22 +496,4 @@ footer {
   .robo-texto {
     font-size: 0.8em;
   }
-  .payment-section {
-  margin-top: 20px;
-  text-align: center;
-}
-.payment-icons {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 10px;
-}
-.payment-icons img {
-  vertical-align: middle;
-}
-.payment-secure {
-  font-size: 14px;
-  color: #555;
-  margin-top: 10px;
-}
 }
