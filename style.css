@@ -31,6 +31,7 @@ body {
   width: 150px;
   height: 50px;
   object-fit: contain;
+  display: block;
 }
 
 .header-text h1 {
@@ -375,7 +376,7 @@ h2 {
   margin-top: 5px;
 }
 
-/* WhatsApp e Telegram */
+/* WhatsApp */
 .whatsapp, .telegram {
   display: inline-block;
   padding: 12px 24px;
