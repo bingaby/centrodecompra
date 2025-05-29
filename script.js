@@ -21,7 +21,7 @@ function atualizarAnoFooter() {
 
 // Detectar triplo clique no logotipo
 function configurarCliqueLogo() {
-  const logo = document.getElementById('site-logo-img'); // Corrigido para o ID correto
+  const logo = document.getElementById('site-logo-img');
   if (!logo) {
     console.error('ID site-logo-img não encontrado no DOM');
     return;
@@ -68,15 +68,20 @@ async function carregarProdutos() {
       errorMessage.style.display = 'none';
       gridProdutos.innerHTML = '';
 
-      console.log(`Tentativa ${attempt}: Carregando produtos de ${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`);
-      const response = await fetch(
-        `${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`,
-        { cache: 'no-store' }
-      );
+      const url = `${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`;
+      console.log(`Tentativa ${attempt}: Carregando produtos de ${url}`);
+      const response = await fetch(url, {
+        cache: 'no-store',
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.details || `Erro ${response.status}`);
+        throw new Error(errorData.details || `Erro HTTP: ${response.status} ${response.statusText}`);
       }
+
       produtos = await response.json();
 
       if (!Array.isArray(produtos)) {
@@ -90,7 +95,7 @@ async function carregarProdutos() {
     } catch (error) {
       console.error(`⚠️ Tentativa ${attempt} falhou: ${error.message}`);
       if (attempt === maxRetries) {
-        errorMessage.textContent = `Erro ao carregar produtos após ${maxRetries} tentativas: ${error.message}.`;
+        errorMessage.textContent = `Não foi possível carregar os produtos após ${maxRetries} tentativas. Verifique sua conexão ou tente novamente mais tarde.`;
         errorMessage.style.display = 'block';
         mensagemVazia.style.display = 'none';
         gridProdutos.style.display = 'none';
@@ -140,7 +145,7 @@ function filtrarProdutos() {
     const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0
       ? produto.imagens.filter(img => typeof img === 'string' && img)
       : ['imagens/placeholder.jpg'];
-    const carrosselId = `carrossel-${produtoIndex}-${produto.id || Date.now()}`; // Corrigido
+    const carrosselId = `carrossel-${produtoIndex}-${produto.id || Date.now()}`;
 
     const produtoDiv = document.createElement('div');
     produtoDiv.classList.add('produto-card', 'visible');
@@ -183,7 +188,7 @@ function moveCarrossel(carrosselId, direction) {
 
   currentIndex = (currentIndex + direction + totalImagens) % totalImagens;
   requestAnimationFrame(() => {
-    imagens.style.transform = `translateX(-${currentIndex * 100}%)`; // Corrigido
+    imagens.style.transform = `translateX(-${currentIndex * 100}%)`;
     imagens.dataset.index = currentIndex;
     dots.forEach((dot, i) => dot.classList.toggle('ativo', i === currentIndex));
   });
@@ -196,7 +201,7 @@ function setCarrosselImage(carrosselId, index) {
   const dots = carrossel.querySelectorAll('.carrossel-dot');
 
   requestAnimationFrame(() => {
-    imagens.style.transform = `translateX(-${index * 100}%)`; // Corrigido
+    imagens.style.transform = `translateX(-${index * 100}%)`;
     imagens.dataset.index = index;
     dots.forEach((dot, i) => dot.classList.toggle('ativo', i === index));
   });
@@ -260,7 +265,7 @@ function moveModalCarrossel(direction) {
 
   currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
   requestAnimationFrame(() => {
-    carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`; // Corrigido
+    carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
     Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
   });
 }
@@ -270,7 +275,7 @@ function setModalCarrosselImage(index) {
   const carrosselDots = document.getElementById('modalCarrosselDots')?.children;
   currentImageIndex = index;
   requestAnimationFrame(() => {
-    carrosselImagens.style.transform = `translateX(-${index * 100}%)`; // Corrigido
+    carrosselImagens.style.transform = `translateX(-${index * 100}%)`;
     Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
   });
 }
@@ -346,7 +351,7 @@ function atualizarPaginacao() {
 
   prevButton.disabled = currentPage === 1;
   nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
-  pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina)}`; // Corrigido
+  pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina)}`;
 }
 
 // Filtrar por categoria
