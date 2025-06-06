@@ -117,7 +117,7 @@
         <div class="search-container">
           <i class="fas fa-search search-icon"></i>
           <input type="text" id="busca" placeholder="Busque por produtos..." class="barra-busca" aria-label="Pesquisar produtos">
-          <button class="clear-search" onclick="document.getElementById('busca').value=''" aria-label="Limpar busca">✕</button>
+          <button class="clear-search" onclick="document.getElementById('busca').value=''; termoBusca=''; carregarProdutos();" aria-label="Limpar busca">✕</button>
         </div>
         <select id="ordenar-produtos" onchange="ordenarProdutos()" aria-label="Ordenar produtos">
           <option value="relevancia">Mais relevantes</option>
