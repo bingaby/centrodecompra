@@ -6,7 +6,7 @@
 
 body {
   font-family: 'Roboto', sans-serif;
-  background-color: #f9f9f9;
+  background-color: #FFF9E6; /* Fundo suave derivado do laranja */
   color: #333;
   line-height: 1.6;
 }
@@ -21,7 +21,7 @@ body {
 
 /* Header */
 .site-header {
-  background-color: #FFA500;
+  background-color: #FFA500; /* Laranja original */
   color: white;
   padding: 20px;
   display: flex;
@@ -64,7 +64,7 @@ nav {
   position: sticky;
   top: 0;
   z-index: 1000;
-  background-color: #2E8B57;
+  background-color: #2E8B57; /* Verde original */
   padding: 15px;
   text-align: center;
 }
@@ -84,7 +84,7 @@ nav a:hover {
 /* Sidebar */
 .sidebar {
   width: 200px;
-  background-color: #fff;
+  background-color: #FFFFFF;
   padding: 20px;
   border-radius: 5px;
   position: sticky;
@@ -95,7 +95,7 @@ nav a:hover {
 .sidebar h2 {
   font-size: 1.5em;
   margin-bottom: 15px;
-  color: #2E8B57;
+  color: #2E8B57; /* Verde */
 }
 
 .sidebar ul {
@@ -113,11 +113,11 @@ nav a:hover {
 }
 
 .categoria-item:hover {
-  background-color: #f0f0f0;
+  background-color: #FFE4B5; /* Tom suave do laranja */
 }
 
 .categoria-item.ativa {
-  background-color: #FFA500;
+  background-color: #FFA500; /* Laranja */
   color: white;
 }
 
@@ -137,16 +137,16 @@ main {
 
 section {
   padding: 20px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #E0E0E0;
   border-radius: 5px;
-  background-color: #fff;
+  background-color: #FFFFFF;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 h2 {
   font-size: 1.8em;
   margin-bottom: 20px;
-  color: #2E8B57;
+  color: #2E8B57; /* Verde */
 }
 
 .lojas-parceiras h3 {
@@ -164,7 +164,7 @@ h2 {
 .loja, .loja-todas {
   text-align: center;
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid #E0E0E0;
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -173,7 +173,7 @@ h2 {
 
 .loja.ativa, .loja-todas.ativa {
   border-color: #FFA500;
-  background-color: #fff9e6;
+  background-color: #FFF9E6; /* Tom suave do laranja */
 }
 
 .loja:focus, .loja-todas:focus {
@@ -206,7 +206,7 @@ h2 {
   max-width: 500px;
   padding: 12px 35px;
   margin: 15px 0;
-  border: 1px solid #ccc;
+  border: 1px solid #CCC;
   border-radius: 4px;
   font-size: 1em;
 }
@@ -235,10 +235,10 @@ h2 {
 #ordenar-produtos {
   padding: 10px;
   margin: 15px 0;
-  border: 1px solid #ccc;
+  border: 1px solid #CCC;
   border-radius: 4px;
   font-size: 1em;
-  background-color: #fff;
+  background-color: #FFFFFF;
 }
 
 #ordenar-produtos:focus {
@@ -280,9 +280,9 @@ h2 {
 }
 
 .produto-card {
-  background-color: #fff;
+  background-color: #FFFFFF;
   padding: 15px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #E0E0E0;
   border-radius: 5px;
   text-align: center;
   display: flex;
@@ -314,7 +314,7 @@ h2 {
 }
 
 .preco a {
-  color: #FFA500;
+  color: #FFA500; /* Laranja */
   text-decoration: none;
   font-weight: 500;
 }
@@ -326,7 +326,7 @@ h2 {
 .ver-na-loja {
   display: inline-block;
   padding: 10px 20px;
-  background-color: #FFA500;
+  background-color: #FFA500; /* Laranja */
   color: white;
   text-decoration: none;
   border-radius: 4px;
@@ -335,7 +335,7 @@ h2 {
 }
 
 .ver-na-loja:hover {
-  background-color: #e69500;
+  background-color: #E69500; /* Tom mais escuro do laranja */
 }
 
 .carrossel {
@@ -384,13 +384,13 @@ h2 {
 .carrossel-dot {
   width: 10px;
   height: 10px;
-  background: #bbb;
+  background: #CCC;
   border-radius: 50%;
   cursor: pointer;
 }
 
 .carrossel-dot.ativa {
-  background: #FFA500;
+  background: #FFA500; /* Laranja */
 }
 
 /* Modal */
@@ -422,7 +422,7 @@ h2 {
   position: absolute;
   top: 15px;
   right: 15px;
-  background: #FFA500;
+  background: #FFA500; /* Laranja */
   color: white;
   border: none;
   padding: 10px 15px;
@@ -452,7 +452,7 @@ h2 {
 .social-links .icon {
   width: 40px;
   height: 40px;
-  background: #e0e0e0;
+  background: #E0E0E0;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -487,15 +487,15 @@ h2 {
 }
 
 .whatsapp:hover {
-  background-color: #20b358;
+  background-color: #20B358;
 }
 
 .telegram {
-  background-color: #0088cc;
+  background-color: #0088CC;
 }
 
 .telegram:hover {
-  background-color: #0077b3;
+  background-color: #0077B3;
 }
 
 /* Robô Assistente */
@@ -514,7 +514,7 @@ h2 {
 
 .robo-texto {
   display: none;
-  background: #FFA500;
+  background: #FFA500; /* Laranja */
   color: white;
   padding: 8px 12px;
   border-radius: 4px;
@@ -530,7 +530,7 @@ h2 {
 
 /* Footer */
 .site-footer {
-  background-color: #2E8B57;
+  background-color: #2E8B57; /* Verde */
   color: white;
   padding: 40px 20px;
   margin-top: 40px;
@@ -547,7 +547,7 @@ h2 {
 .footer-section h3 {
   font-size: 1.3em;
   margin-bottom: 15px;
-  color: #FFA500;
+  color: #FFA500; /* Laranja */
 }
 
 .footer-section p {
@@ -594,7 +594,7 @@ h2 {
 }
 
 .footer-social a:hover {
-  color: #FFA500;
+  color: #FFA500; /* Laranja */
 }
 
 .footer-bottom {
@@ -624,7 +624,7 @@ h2 {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background: #FFA500;
+  background: #FFA500; /* Laranja */
   color: white;
   border: none;
   border-radius: 50%;
@@ -646,7 +646,7 @@ h2 {
 
 /* Error Message */
 .error-message {
-  color: #e60000;
+  color: #D32F2F;
   font-size: 0.9em;
   text-align: center;
   margin-top: 10px;
@@ -671,7 +671,7 @@ h2 {
 
   .categoria-item {
     padding: 8px 12px;
-    border: 1px solid #ddd;
+    border: 1px solid #E0E0E0;
     flex: 1 0 auto;
   }
 
@@ -701,8 +701,8 @@ h2 {
     text-align: center;
   }
 
-  .footer-section ul {
-    text-align: center;
+  .footer-section ul li a {
+    font-size: 1em;
   }
 
   .footer-social {
