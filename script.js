@@ -6,15 +6,15 @@ let categoriaSelecionada = 'todas';
 let lojaSelecionada = 'todas';
 let termoBusca = '';
 let currentImages = [];
-let currentImageIndex = 0;
+let currentImageIndex = 0';
 let currentPage = 1;
 const produtosPorPagina = 20;
-const totalProdutos = 1000;
+let totalProdutos = 0; // Alterado para 0, será atualizado com a API.
 
-// Produtos mockados como fallback
+// Produtos mockados padrão como fallback
 const mockProdutos = [
   {
-    id: '1',
+    id: '001',
     nome: 'Produto de Teste 1',
     categoria: 'eletronicos',
     loja: 'amazon',
@@ -24,7 +24,7 @@ const mockProdutos = [
     relevancia: 5
   },
   {
-    id: '2',
+    id: '002',
     nome: 'Produto de Teste 2',
     categoria: 'moda',
     loja: 'shein',
@@ -40,31 +40,35 @@ function atualizarAnoFooter() {
   const yearElement = document.getElementById('year');
   if (yearElement) {
     yearElement.textContent = new Date().getFullYear();
+    console.log('Ano do footer atualizado:', yearElement.textContent);
+  } else {
+    console.error('Elemento de ano do footer não encontrado');
   }
 }
 
-// Detectar triplo clique no logotipo
+// Detectar clique triplo no logotipo
 function configurarCliqueLogo() {
   const logo = document.getElementById('logo');
   if (!logo) {
-    console.error('ID logo não encontrado no DOM');
+    console.error('Elemento com ID #logo não encontrado no DOM');
     return;
   }
   let clickCount = 0;
   let clickTimer;
   logo.addEventListener('click', (e) => {
     e.preventDefault();
+    e.stopPropagation(); // Evita interferência de outros eventos
     clickCount++;
-    console.log(`Clique detectado: ${clickCount}`);
+    console.log(`Clique no logotipo detectado: ${clickCount}`);
     if (clickCount === 1) {
       clickTimer = setTimeout(() => {
         clickCount = 0;
         console.log('Contagem de cliques resetada');
-      }, 500);
+      }, 300); // Tempo reduzido para maior responsividade
     } else if (clickCount === 3) {
       clearTimeout(clickTimer);
       console.log('Triplo clique detectado, redirecionando para admin-xyz-123.html');
-      window.location.href = 'admin-xyz-123.html';
+      window.location.href = 'admin-xyz-123.html'; // Certifique-se de que este arquivo existe
       clickCount = 0;
     }
   });
@@ -78,23 +82,28 @@ async function carregarProdutos() {
   const gridProdutos = document.getElementById('grid-produtos');
 
   if (!gridProdutos || !mensagemVazia || !errorMessage || !loadingSpinner) {
-    console.error('Elementos essenciais não encontrados');
+    console.error('Elementos necessários não encontrados:', {
+      gridProdutos: !!gridProdutos,
+      mensagemVazia: !!mensagemVazia,
+      errorMessage: !!errorMessage,
+      loadingSpinner: !!loadingSpinner,
+    });
     return;
   }
 
   const maxRetries = 3;
   let attempt = 1;
 
+  loadingSpinner.style.display = 'block';
+  mensagemVazia.style.display = 'none';
+  errorMessage.style.display = 'none';
+  gridProdutos.innerHTML = '';
+
   while (attempt <= maxRetries) {
     try {
-      loadingSpinner.style.display = 'block';
-      mensagemVazia.style.display = 'none';
-      errorMessage.style.display = 'none';
-      gridProdutos.innerHTML = '';
-
-      const url = `${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`;
-      console.log(`Tentativa ${attempt}: Carregando produtos de ${url}`);
-      const response = await fetch(url, {
+      console.log(`Tentativa ${attempt}: Carregando produtos de ${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`);
+      const response = await fetch(`${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`, {
+        method: 'GET',
         cache: 'no-store',
         headers: { 'Accept': 'application/json' },
       });
@@ -104,13 +113,19 @@ async function carregarProdutos() {
         throw new Error(errorData.message || `Erro HTTP: ${response.status}`);
       }
 
-      produtos = await response.json();
-      if (!Array.isArray(produtos)) throw new Error('Resposta inválida da API');
+      const data = await response.json();
+      if (!Array.isArray(data.produtos)) {
+        throw new Error('Resposta da API inválida: esperado um array de produtos');
+      }
 
-      console.log(`Produtos recebidos: ${produtos.length}`);
+      produtos = data.produtos;
+      totalProdutos = data.total || produtos.length; // Atualiza o total com base na API
+      console.log(`Produtos recebidos: ${produtos.length}, Total: ${totalProdutos}`);
+
       if (produtos.length === 0 && attempt === maxRetries) {
-        console.warn('Nenhum produto retornado, usando mock');
+        console.warn('Nenhum produto retornado, usando mockProdutos');
         produtos = mockProdutos;
+        totalProdutos = mockProdutos.length;
       }
 
       await filtrarProdutos();
@@ -119,8 +134,9 @@ async function carregarProdutos() {
     } catch (error) {
       console.error(`Erro na tentativa ${attempt}: ${error.message}`);
       if (attempt === maxRetries) {
-        console.warn('Usando produtos mock devido a falha na API');
+        console.warn('Usando fallback para mockProdutos devido a falha na API');
         produtos = mockProdutos;
+        totalProdutos = mockProdutos.length;
         await filtrarProdutos();
         errorMessage.textContent = 'Erro ao carregar produtos. Exibindo itens de teste.';
         errorMessage.style.display = 'block';
@@ -133,19 +149,24 @@ async function carregarProdutos() {
   }
 }
 
-// Função para ordenar produtos
+// Ordenar produtos
 function ordenarProdutos() {
   const select = document.getElementById('ordenar-produtos');
+  if (!select) {
+    console.error('Elemento #ordenar-produtos não encontrado');
+    return;
+  }
+
   const criterio = select.value;
+  console.log(`Ordenando produtos por: ${criterio}`);
 
   produtos.sort((a, b) => {
     if (criterio === 'preco-asc') {
-      return (a.preco || 0) - (b.preco || 0);
+      return (a.preco || Infinity) - (b.preco || Infinity);
     } else if (criterio === 'preco-desc') {
-      return (b.preco || 0) - (a.preco || 0);
-    } else {
-      return (b.relevancia || 0) - (a.relevancia || 0); // Relevância
+      return (b.preco || Infinity) - (preco || Infinity);
     }
+    return (b.relevancia || 0) - (a.relevancia || 0); // Relevância padrão
   });
 
   filtrarProdutos();
@@ -157,11 +178,16 @@ async function filtrarProdutos() {
   const mensagemVazia = document.getElementById('mensagem-vazia');
 
   if (!gridProdutos || !mensagemVazia) {
-    console.error('Elementos de produtos não encontrados');
-    return;
+    console.error('Elementos de grid-produtos ou mensagem-vazia não encontrados');
+    return false;
   }
 
-  console.log('Filtrando produtos:', { categoriaSelecionada, lojaSelecionada, termoBusca });
+  console.log('Filtrando produtos:', {
+    categoriaSelecionada,
+    lojaSelecionada,
+    termoBusca,
+    totalProdutos: produtos.length,
+  });
 
   const produtosFiltrados = produtos.filter((produto) => {
     const matchCategoria =
@@ -176,11 +202,11 @@ async function filtrarProdutos() {
   });
 
   gridProdutos.innerHTML = '';
-  if (produtosFiltrados.length === 0) {
+  if (produtoFiltrados.length === 0) {
     mensagemVazia.style.display = 'block';
     gridProdutos.style.display = 'none';
-    console.log('Nenhum produto filtrado encontrado');
-    return;
+    console.log('Nenhum produto encontrado após filtragem');
+    return true;
   }
 
   mensagemVazia.style.display = 'none';
@@ -188,7 +214,7 @@ async function filtrarProdutos() {
 
   for (const [produtoIndex, produto] of produtosFiltrados.entries()) {
     const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0
-      ? produto.imagens.filter(img => typeof img === 'string' && img)
+      ? produto.imagens.filter(img => typeof img === 'string' && img.trim())
       : ['imagens/placeholder.png'];
     const carrosselId = `carrossel-${produtoIndex}-${produto.id || Date.now()}`;
 
@@ -219,13 +245,18 @@ async function filtrarProdutos() {
     `;
     gridProdutos.appendChild(produtoDiv);
   }
+
   console.log(`Exibidos ${produtosFiltrados.length} produtos`);
+  return true;
 }
 
 // Funções do carrossel
 function moveCarrossel(carrosselId, direction) {
   const carrossel = document.getElementById(carrosselId);
-  if (!carrossel) return;
+  if (!carrossel) {
+    console.error(`Carrossel com ID ${carrosselId} não encontrado`);
+    return;
+  }
   const imagens = carrossel.querySelector('.carrossel-imagens');
   const dots = carrossel.querySelectorAll('.carrossel-dot');
   let currentIndex = parseInt(imagens.dataset.index || 0);
@@ -241,7 +272,10 @@ function moveCarrossel(carrosselId, direction) {
 
 function setCarrosselImage(carrosselId, index) {
   const carrossel = document.getElementById(carrosselId);
-  if (!carrossel) return;
+  if (!carrossel) {
+    console.error(`Carrossel com ID ${carrosselId} não encontrado`);
+    return;
+  }
   const imagens = carrossel.querySelector('.carrossel-imagens');
   const dots = carrossel.querySelectorAll('.carrossel-dot');
 
@@ -258,9 +292,14 @@ async function openModal(produtoIndex, imageIndex) {
   const carrosselImagens = document.getElementById('modalCarrosselImagens');
   const carrosselDots = document.getElementById('modalCarrosselDots');
 
+  if (!modal || !carrosselImagens || !carrosselDots) {
+    console.error('Elementos do modal não encontrados');
+    return;
+  }
+
   try {
     currentImages = Array.isArray(produtos[produtoIndex]?.imagens) && produtos[produtoIndex].imagens.length > 0
-      ? produtos[produtoIndex].imagens.filter(img => typeof img === 'string' && img)
+      ? produtos[produtoIndex].imagens.filter(img => typeof img === 'string' && img.trim())
       : ['imagens/placeholder.png'];
     currentImageIndex = imageIndex;
 
@@ -277,7 +316,7 @@ async function openModal(produtoIndex, imageIndex) {
     currentImages = validImages;
 
     carrosselImagens.innerHTML = currentImages.map((img, i) => `
-      <img src="${img}" alt="Imagem ${i + 1} do produto" class="modal-image" loading="lazy" width="600" height="600" onerror="this.src='imagens/placeholder.png'">
+      <img src="${img}" alt="Imagem ${i + 1} do produto ${produtos[produtoIndex]?.nome || 'Produto'}" class="modal-image" loading="lazy" width="600" height="600" onerror="this.src='imagens/placeholder.png'">
     `).join('');
 
     requestAnimationFrame(() => {
@@ -288,7 +327,7 @@ async function openModal(produtoIndex, imageIndex) {
       const imgs = carrosselImagens.querySelectorAll('img');
       imgs.forEach(img => {
         img.style.width = '100%';
-        img.style.flex = '0 0 100 % ';
+        img.style.flex = '0 0 100%';
         img.style.objectFit = 'contain';
       });
     });
@@ -298,6 +337,7 @@ async function openModal(produtoIndex, imageIndex) {
     `).join('');
 
     modal.style.display = 'flex';
+    modal.setAttribute('aria-hidden', 'false');
     modal.focus();
   } catch (error) {
     console.error('Erro ao abrir modal:', error);
@@ -307,8 +347,9 @@ async function openModal(produtoIndex, imageIndex) {
 function moveModalCarrossel(direction) {
   const carrosselImagens = document.getElementById('modalCarrosselImagens');
   const carrosselDots = document.getElementById('modalCarrosselDots')?.children;
-  const totalImagens = currentImages.length;
+  if (!carrosselImagens || !carrosselDots) return;
 
+  const totalImagens = currentImages.length;
   currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
   requestAnimationFrame(() => {
     carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
@@ -319,17 +360,21 @@ function moveModalCarrossel(direction) {
 function setModalCarrosselImage(index) {
   const carrosselImagens = document.getElementById('modalCarrosselImagens');
   const carrosselDots = document.getElementById('modalCarrosselDots')?.children;
-  currentImageIndex = index;
+  if (!carrosselImagens || !carrosselDots) return;
 
+  currentImageIndex = index;
   requestAnimationFrame(() => {
     carrosselImagens.style.transform = `translateX(-${index * 100}%)`;
-    Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativa', i === index));
+    Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativa', i === currentImageIndex));
   });
 }
 
 function closeModal() {
   const modal = document.getElementById('imageModal');
+  if (!modal) return;
+
   modal.style.display = 'none';
+  modal.setAttribute('aria-hidden', 'true');
   currentImages = [];
   currentImageIndex = 0;
 }
@@ -337,20 +382,19 @@ function closeModal() {
 // Configurar busca
 function configurarBusca() {
   const inputBusca = document.getElementById('busca');
-  const buscaFeedback = document.getElementById('busca-feedback');
-  let debounceTimer;
-
+  const buscaFeedback = document.getElementById('Busca-feedback');
   if (!inputBusca || !buscaFeedback) {
-    console.error('Elementos de busca não encontrados');
+    console.error('Busca por elementos não encontrados:', { inputBusca: !!inputBusca, buscaFeedback: !!buscaFeedback });
     return;
   }
 
+  let debounceTimer;
   inputBusca.addEventListener('input', () => {
     clearTimeout(debounceTimer);
     termoBusca = inputBusca.value.trim();
 
     if (termoBusca) {
-      buscaFeedback.style.display = 'block';
+      buscaFeedback buscaFeedback.style.display = 'block';
       buscaFeedback.textContent = `Buscando por "${termoBusca}"...`;
     } else {
       buscaFeedback.style.display = 'none';
@@ -365,7 +409,6 @@ function configurarBusca() {
 function configurarPaginacao() {
   const prevButton = document.getElementById('prev-page');
   const nextButton = document.getElementById('next-page');
-
   if (!prevButton || !nextButton) {
     console.error('Botões de paginação não encontrados');
     return;
@@ -397,64 +440,69 @@ function atualizarPaginacao() {
   }
 
   prevButton.disabled = currentPage === 1;
-  nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
+  nextButton.disabled = totalProdutos === 0 || currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
   pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina)}`;
 }
 
 // Filtrar por categoria
-function filtrarPorCategoria(categoria) {
-  categoriaSelecionada = categoria;
+async function filtrarPorCategoria(categoria) {
+  categoriaSeleçãoada = categoria;
   currentPage = 1;
   document.querySelectorAll('.categoria-item').forEach(item => {
     item.classList.toggle('ativa', item.dataset.categoria.toLowerCase() === categoria.toLowerCase());
-  });
+}));
   carregarProdutos();
 }
 
-// Filtrar por loja por loja
+// Filtrar por loja
 function filtrarPorLoja(loja) {
-  lojaSeleção = loja;
-  currentPage = 1';
+  lojaSeleçãoada = loja;
+  currentPage = 1;
   document.querySelectorAll('.loja-todas, .loja').forEach(item => {
-    item.classList.toggle('ativa', item.dataset.toloja.toLowerCase() === loja.toLowerCase());
-  });
-  carregarProdutosCar();
+    item.classList.toggle('ativa', item.dataset.loja?.toLowerCase() === loja.toLowerCase());
+  }));
+  carregarProdutos();
 }
 
-// Configurar botão Voltar para o topo
-function configurarBackToTop() {
-  window.addEventListener('scrollTo', () => {
-    const backToTop = document.querySelector('.back-to-topo');
-    backToTop.classList.toggle('show', window.scrollToY > 300);
+// Configurar botão Voltar ao Topo
+function configurarBackTopTo() {
+  window.addEventListener('scroll', () => {
+    const backToTop = document.querySelector('.back-to-top');
+    if (backToTop) {
+      backToTop.classList.toggle('show', window.scrollY > 300);
+    }
   });
 }
 
-// Inicializar
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('Inicializando página inicial');
-    carregarProdutos();
-    configurarBuscaConfigura();
+// Inicialização
+document.addEventListener('DOMContentLoaded', async () => {
+  console.log('✅ Inicializando página');
+  try {
+    await carregarProdutos();
+    configurarBusca();
     configurarPaginacao();
     atualizarAnoFooter();
     configurarCliqueLogo();
     configurarBackToTop();
+  } catch (error) {
+    console.error('Erro durante inicialização:', error);
+  }
 
-    const modal = document.getElementById('imageModal');
-    if (modal) {
-      modal.addEventListener('click', (e) => {
-        if (e.target === e.currentTarget) {
-          closeModal();
-        }
-      });
-    }
-
-      // Adicionar suporte à navegação por teclado para categorias e lojas
-    document.querySelectorAll('.categoria-item, .loja, .loja-todas').forEach(item => {
-      item.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          item.click();
-        }
-      });
+  const modal = document.getElementById('imageModal');
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) {
+        closeModal();
+      }
     });
-});
+  }
+
+  // Adicionar suporte à navegação por teclado
+  document.querySelectorAll('.categoria-item, .loja, .loja-todas').forEach(item => {
+    item.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        item.click();
+      }
+    });
+  });
