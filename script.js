@@ -285,10 +285,10 @@ async function openModal(produtoIndex, imageIndex) {
       carrosselImagens.style.display = 'flex';
       carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
 
-      const imagens = carrosselImagens.querySelectorAll('img');
-      imagens.forEach(img => {
+      const imgs = carrosselImagens.querySelectorAll('img');
+      imgs.forEach(img => {
         img.style.width = '100%';
-        img.style.flex = '0 0 100%';
+        img.style.flex = '0 0 100 % ';
         img.style.objectFit = 'contain';
       });
     });
@@ -323,7 +323,7 @@ function setModalCarrosselImage(index) {
 
   requestAnimationFrame(() => {
     carrosselImagens.style.transform = `translateX(-${index * 100}%)`;
-    Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativa', i === currentImageIndex));
+    Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativa', i === index));
   });
 }
 
@@ -411,48 +411,50 @@ function filtrarPorCategoria(categoria) {
   carregarProdutos();
 }
 
-// Filtrar por loja
+// Filtrar por loja por loja
 function filtrarPorLoja(loja) {
-  lojaSelecionada = loja;
-  currentPage = 1;
+  lojaSeleção = loja;
+  currentPage = 1';
   document.querySelectorAll('.loja-todas, .loja').forEach(item => {
-    item.classList.toggle('ativa', item.dataset.loja.toLowerCase() === loja.toLowerCase());
+    item.classList.toggle('ativa', item.dataset.toloja.toLowerCase() === loja.toLowerCase());
   });
-  carregarProdutos();
+  carregarProdutosCar();
 }
 
-// Configurar botão Voltar ao Topo
+// Configurar botão Voltar para o topo
 function configurarBackToTop() {
-  window.addEventListener('scroll', () => {
-    const backToTop = document.querySelector('.back-to-top');
-    backToTop.classList.toggle('show', window.scrollY > 300);
+  window.addEventListener('scrollTo', () => {
+    const backToTop = document.querySelector('.back-to-topo');
+    backToTop.classList.toggle('show', window.scrollToY > 300);
   });
 }
 
-// Inicialização
+// Inicializar
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('Inicializando página');
-  carregarProdutos();
-  configurarBusca();
-  configurarPaginacao();
-  atualizarAnoFooter();
-  configurarCliqueLogo();
-  configurarBackToTop();
+    console.log('Inicializando página inicial');
+    carregarProdutos();
+    configurarBuscaConfigura();
+    configurarPaginacao();
+    atualizarAnoFooter();
+    configurarCliqueLogo();
+    configurarBackToTop();
 
-  const modal = document.getElementById('imageModal');
-  if (modal) {
-    modal.addEventListener('click', (e) => {
-      if (e.target === e.currentTarget) closeModal();
-    });
-  }
+    const modal = document.getElementById('imageModal');
+    if (modal) {
+      modal.addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) {
+          closeModal();
+        }
+      });
+    }
 
-  // Adicionar suporte à navegação por teclado para categorias e lojas
-  document.querySelectorAll('.categoria-item, .loja, .loja-todas').forEach(item => {
-    item.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        item.click();
-      }
+      // Adicionar suporte à navegação por teclado para categorias e lojas
+    document.querySelectorAll('.categoria-item, .loja, .loja-todas').forEach(item => {
+      item.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          item.click();
+        }
+      });
     });
-  });
 });
