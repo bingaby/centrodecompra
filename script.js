@@ -20,6 +20,8 @@ const mockProdutos = [
     loja: 'amazon',
     imagens: ['imagens/placeholder.png'],
     link: '#',
+    preco: 199.99,
+    relevancia: 5
   },
   {
     id: '2',
@@ -28,6 +30,8 @@ const mockProdutos = [
     loja: 'shein',
     imagens: ['imagens/placeholder.png'],
     link: '#',
+    preco: 49.99,
+    relevancia: 3
   },
 ];
 
@@ -129,6 +133,24 @@ async function carregarProdutos() {
   }
 }
 
+// Função para ordenar produtos
+function ordenarProdutos() {
+  const select = document.getElementById('ordenar-produtos');
+  const criterio = select.value;
+
+  produtos.sort((a, b) => {
+    if (criterio === 'preco-asc') {
+      return (a.preco || 0) - (b.preco || 0);
+    } else if (criterio === 'preco-desc') {
+      return (b.preco || 0) - (a.preco || 0);
+    } else {
+      return (b.relevancia || 0) - (a.relevancia || 0); // Relevância
+    }
+  });
+
+  filtrarProdutos();
+}
+
 // Filtrar e exibir produtos
 async function filtrarProdutos() {
   const gridProdutos = document.getElementById('grid-produtos');
@@ -183,16 +205,16 @@ async function filtrarProdutos() {
           `).join('')}
         </div>
         ${imagens.length > 1 ? `
-          <button class="carrossel-prev" onclick="moveCarrossel('${carrosselId}', -1)">◄</button>
-          <button class="carrossel-next" onclick="moveCarrossel('${carrosselId}', 1)">▶</button>
+          <button class="carrossel-prev" onclick="moveCarrossel('${carrosselId}', -1)" aria-label="Imagem anterior">◄</button>
+          <button class="carrossel-next" onclick="moveCarrossel('${carrosselId}', 1)" aria-label="Próxima imagem">▶</button>
           <div class="carrossel-dots">
-            ${imagens.map((_, i) => `<span class="carrossel-dot ${i === 0 ? 'ativa' : ''}" onclick="setCarrosselImage('${carrosselId}', ${i})"></span>`).join('')}
+            ${imagens.map((_, i) => `<span class="carrossel-dot ${i === 0 ? 'ativa' : ''}" onclick="setCarrosselImage('${carrosselId}', ${i})" aria-label="Selecionar imagem ${i + 1}"></span>`).join('')}
           </div>
         ` : ''}
       </div>
       <span>${produto.nome || 'Produto sem nome'}</span>
       <span class="descricao">Loja: ${produto.loja || 'Desconhecida'}</span>
-      <p class="preco"><a href="${produto.link || '#'}" target="_blank" class="ver-preco">Clique aqui para ver o preço</a></p>
+      <p class="preco"><a href="${produto.link || '#'}" target="_blank" class="ver-preco">R$ ${produto.preco ? produto.preco.toFixed(2) : 'Consultar'}</a></p>
       <a href="${produto.link || '#'}" target="_blank" class="ver-na-loja ${produto.loja?.toLowerCase() || 'default'}">Comprar na Loja</a>
     `;
     gridProdutos.appendChild(produtoDiv);
@@ -255,7 +277,7 @@ async function openModal(produtoIndex, imageIndex) {
     currentImages = validImages;
 
     carrosselImagens.innerHTML = currentImages.map((img, i) => `
-      <img src="${img}" alt="Imagem ${i + 1}" class="modal-image" loading="lazy" width="600" height="600" onerror="this.src='imagens/placeholder.png'">
+      <img src="${img}" alt="Imagem ${i + 1} do produto" class="modal-image" loading="lazy" width="600" height="600" onerror="this.src='imagens/placeholder.png'">
     `).join('');
 
     requestAnimationFrame(() => {
@@ -272,10 +294,11 @@ async function openModal(produtoIndex, imageIndex) {
     });
 
     carrosselDots.innerHTML = currentImages.map((_, i) => `
-      <span class="carrossel-dot ${i === currentImageIndex ? 'ativa' : ''}" onclick="setModalCarrosselImage(${i})"></span>
+      <span class="carrossel-dot ${i === currentImageIndex ? 'ativa' : ''}" onclick="setModalCarrosselImage(${i})" aria-label="Selecionar imagem ${i + 1}"></span>
     `).join('');
 
     modal.style.display = 'flex';
+    modal.focus();
   } catch (error) {
     console.error('Erro ao abrir modal:', error);
   }
@@ -398,6 +421,14 @@ function filtrarPorLoja(loja) {
   carregarProdutos();
 }
 
+// Configurar botão Voltar ao Topo
+function configurarBackToTop() {
+  window.addEventListener('scroll', () => {
+    const backToTop = document.querySelector('.back-to-top');
+    backToTop.classList.toggle('show', window.scrollY > 300);
+  });
+}
+
 // Inicialização
 document.addEventListener('DOMContentLoaded', () => {
   console.log('Inicializando página');
@@ -406,6 +437,7 @@ document.addEventListener('DOMContentLoaded', () => {
   configurarPaginacao();
   atualizarAnoFooter();
   configurarCliqueLogo();
+  configurarBackToTop();
 
   const modal = document.getElementById('imageModal');
   if (modal) {
@@ -413,4 +445,14 @@ document.addEventListener('DOMContentLoaded', () => {
       if (e.target === e.currentTarget) closeModal();
     });
   }
+
+  // Adicionar suporte à navegação por teclado para categorias e lojas
+  document.querySelectorAll('.categoria-item, .loja, .loja-todas').forEach(item => {
+    item.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        item.click();
+      }
+    });
+  });
 });
