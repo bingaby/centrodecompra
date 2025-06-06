@@ -24,12 +24,21 @@ body {
   background-color: #FFA500;
   color: white;
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
 }
 
+.logo-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
 .logo-container img {
-  width: 150px;
-  height: 50px;
+  width: 200px;
+  height: 100px;
   object-fit: contain;
   display: block;
 }
@@ -587,5 +596,11 @@ h2 {
 
   .footer-social {
     justify-content: center;
+  }
+
+  /* Ajuste responsivo para a logo em telas menores */
+  .logo-container img {
+    width: 150px;
+    height: 75px;
   }
 }
