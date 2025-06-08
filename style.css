@@ -6,7 +6,7 @@
 
 body {
   font-family: 'Roboto', sans-serif;
-  background-color: #FFF9E6; /* Fundo suave derivado do laranja */
+  background-color: #fff;
   color: #333;
   line-height: 1.6;
 }
@@ -21,7 +21,7 @@ body {
 
 /* Header */
 .site-header {
-  background-color: #FFA500; /* Laranja */
+  background-color: #FFA500;
   color: white;
   padding: 20px;
   display: flex;
@@ -40,29 +40,21 @@ body {
   width: 200px;
   height: 100px;
   object-fit: contain;
-  transition: transform 0.3s ease;
-}
-
-.logo-container img:hover {
-  transform: scale(1.05);
+  display: block;
 }
 
 .header-text h1 {
-  font-family: 'Poppins', sans-serif;
-  font-size: 2.5em;
+  font-size: 2em;
   margin-bottom: 10px;
 }
 
 .header-text p {
-  font-size: 1.2em;
+  font-size: 1.1em;
 }
 
 /* Navegação */
 nav {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  background-color: #2E8B57; /* Verde */
+  background-color: #2E8B57;
   padding: 15px;
   text-align: center;
 }
@@ -82,19 +74,17 @@ nav a:hover {
 /* Sidebar */
 .sidebar {
   width: 200px;
-  background-color: #FFFFFF;
+  background-color: #f9f9f9;
   padding: 20px;
   border-radius: 5px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   position: sticky;
-  top: 80px;
-  align-self: flex-start;
+  top: 20px;
 }
 
 .sidebar h2 {
   font-size: 1.5em;
   margin-bottom: 15px;
-  color: #2E8B57; /* Verde */
+  color: #2E8B57;
 }
 
 .sidebar ul {
@@ -108,21 +98,15 @@ nav a:hover {
   display: flex;
   align-items: center;
   font-size: 1em;
-  transition: background-color 0.3s ease;
 }
 
 .categoria-item:hover {
-  background-color: #FFE4B5; /* Tom suave do laranja */
+  background-color: #e0e0e0;
 }
 
 .categoria-item.ativa {
-  background-color: #FFA500; /* Laranja */
+  background-color: #FFA500;
   color: white;
-}
-
-.categoria-item:focus {
-  outline: 2px solid #FFA500;
-  outline-offset: 2px;
 }
 
 .mr-2 {
@@ -132,21 +116,19 @@ nav a:hover {
 /* Main */
 main {
   flex: 1;
-  min-width: 0;
 }
 
 section {
   padding: 20px;
-  border: 1px solid #E0E0E0;
+  border: 1px solid #e0e0e0;
   border-radius: 5px;
-  background-color: #FFFFFF;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
 }
 
 h2 {
   font-size: 1.8em;
   margin-bottom: 20px;
-  color: #2E8B57; /* Verde */
+  color: #2E8B57;
 }
 
 .lojas-parceiras h3 {
@@ -164,21 +146,15 @@ h2 {
 .loja, .loja-todas {
   text-align: center;
   padding: 10px;
-  border: 1px solid #E0E0E0;
+  border: 1px solid #ddd;
   border-radius: 4px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s;
 }
 
 .loja.ativa, .loja-todas.ativa {
   border-color: #FFA500;
-  background-color: #FFF9E6;
-}
-
-.loja:focus, .loja-todas:focus {
-  outline: 2px solid #FFA500;
-  outline-offset: 2px;
+  background-color: #fff9e6;
 }
 
 .loja img {
@@ -187,61 +163,14 @@ h2 {
   object-fit: contain;
 }
 
-.search-container {
-  position: relative;
-  max-width: 500px;
-  margin: 15px 0;
-}
-
-.search-icon {
-  position: absolute;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #666;
-}
-
 .barra-busca {
   width: 100%;
-  padding: 12px 35px;
-  border: 1px solid #CCC;
-  border-radius: 4px;
-  font-size: 1em;
-}
-
-.barra-busca:focus {
-  outline: 2px solid #FFA500;
-  outline-offset: 2px;
-}
-
-.clear-search {
-  display: none;
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: #666;
-  cursor: pointer;
-}
-
-.barra-busca:not(:placeholder-shown) + .clear-search {
-  display: block;
-}
-
-#ordenar-produtos {
-  padding: 10px;
+  max-width: 500px;
+  padding: 12px;
   margin: 15px 0;
-  border: 1px solid #CCC;
+  border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 1em;
-  background-color: #FFFFFF;
-}
-
-#ordenar-produtos:focus {
-  outline: 2px solid #FFA500;
-  outline-offset: 2px;
 }
 
 .busca-feedback {
@@ -262,7 +191,7 @@ h2 {
   width: 24px;
   height: 24px;
   border: 3px solid #FFA500;
-  border-top: transparent;
+  border-top: 3px solid transparent;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -278,21 +207,19 @@ h2 {
 }
 
 .produto-card {
-  background-color: #FFFFFF;
+  background-color: #fff;
   padding: 15px;
-  border: 1px solid #E0E0E0;
+  border: 1px solid #e0e0e0;
   border-radius: 5px;
   text-align: center;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
 }
 
 .produto-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
 .produto-card img {
@@ -333,7 +260,7 @@ h2 {
 }
 
 .ver-na-loja:hover {
-  background-color: #E69500;
+  background-color: #e69500;
 }
 
 .carrossel {
@@ -362,11 +289,6 @@ h2 {
   font-size: 1em;
 }
 
-.carrossel-prev:focus, .carrossel-next:focus {
-  outline: 2px solid #FFA500;
-  outline-offset: 2px;
-}
-
 .carrossel-prev { left: 5px; }
 .carrossel-next { right: 5px; }
 
@@ -382,7 +304,7 @@ h2 {
 .carrossel-dot {
   width: 10px;
   height: 10px;
-  background: #CCC;
+  background: #bbb;
   border-radius: 50%;
   cursor: pointer;
 }
@@ -399,7 +321,7 @@ h2 {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.8);
   z-index: 1000;
   justify-content: center;
   align-items: center;
@@ -407,30 +329,25 @@ h2 {
 
 .modal-content {
   max-width: 90%;
-  max-height: 90vh;
+  max-height: 90%;
 }
 
 .modal-image {
   width: 100%;
   height: auto;
-  object-fit: contain;
 }
 
 .modal-close {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 15px;
+  right: 15px;
   background: #FFA500;
   color: white;
   border: none;
-  padding: 8px 12px;
+  padding: 10px 15px;
   border-radius: 50%;
   cursor: pointer;
-}
-
-.modal-close:focus {
-  outline: 2px solid #000;
-  outline-offset: 2px;
+  font-size: 1em;
 }
 
 /* Social Links */
@@ -449,7 +366,7 @@ h2 {
 .social-links .icon {
   width: 40px;
   height: 40px;
-  background: #E0E0E0;
+  background: #e0e0e0;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -468,14 +385,14 @@ h2 {
   margin-top: 5px;
 }
 
-/* WhatsApp e Telegram */
+/* WhatsApp */
 .whatsapp, .telegram {
   display: inline-block;
-  padding: 12px 20px;
+  padding: 12px 24px;
   margin: 15px;
   color: white;
   text-decoration: none;
-  border-radius: 4px;
+  border-radius: 5px;
   font-weight: 500;
 }
 
@@ -484,7 +401,7 @@ h2 {
 }
 
 .whatsapp:hover {
-  background-color: #20B358;
+  background-color: #20b358;
 }
 
 .telegram {
@@ -511,14 +428,14 @@ h2 {
 
 .robo-texto {
   display: none;
-  position: absolute;
-  bottom: 70px;
-  right: 0;
   background: #FFA500;
   color: white;
   padding: 8px 12px;
   border-radius: 4px;
   font-size: 0.9em;
+  position: absolute;
+  bottom: 70px;
+  right: 0;
 }
 
 .robo-assistente:hover .robo-texto {
@@ -536,7 +453,7 @@ h2 {
 .footer-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
+  gap: 30px;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -606,7 +523,7 @@ h2 {
 }
 
 .footer-payment-methods {
-  margin-top: 10px;
+  margin-top: 15px;
   display: flex;
   justify-content: center;
   gap: 10px;
@@ -616,45 +533,18 @@ h2 {
   filter: brightness(0) invert(1);
 }
 
-/* Back to Top */
-.back-to-top {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: #FFA500;
-  color: white;
-  border: none;
-  padding: 10px;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
-  display: none;
-  z-index: 1000;
-}
-
-.back-to-top.show {
-  display: block;
-}
-
-.back-to-top:focus {
-  outline: 2px solid #000;
-  outline-offset: 2px;
-}
-
 /* Error Message */
 .error-message {
-  color: #d32f2f;
+  color: red;
   font-size: 0.9em;
-  margin-top: 10px;
   text-align: center;
+  margin-top: 10px;
 }
 
 /* Media Queries */
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   .container {
     flex-direction: column;
-    padding: 10px;
   }
 
   .sidebar {
@@ -670,8 +560,7 @@ h2 {
 
   .categoria-item {
     padding: 8px 12px;
-    border: 1px solid #e0e0e0;
-    border-radius: 4px;
+    border: 1px solid #ddd;
     flex: 1 0 auto;
   }
 
@@ -693,7 +582,7 @@ h2 {
   }
 
   .site-footer {
-    padding: 20px 15px;
+    padding: 30px 15px;
   }
 
   .footer-container {
@@ -701,10 +590,15 @@ h2 {
     text-align: center;
   }
 
+  .footer-section ul li a {
+    font-size: 1em;
+  }
+
   .footer-social {
     justify-content: center;
   }
 
+  /* Ajuste responsivo para a logo em telas menores */
   .logo-container img {
     width: 150px;
     height: 75px;
