@@ -1,4 +1,4 @@
-/* Variáveis CSS para consistência */
+/* Variáveis */
 :root {
   --primary-color: #FFA500; /* Laranja */
   --secondary-color: #2E8B57; /* Verde */
@@ -10,10 +10,9 @@
   --telegram-color: #0088cc;
   --spacing-sm: 0.625rem; /* 10px */
   --spacing-md: 1.25rem; /* 20px */
-  --font-base: 1rem; /* 16px */
 }
 
-/* Reset e estilos globais */
+/* Reset */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -24,12 +23,7 @@ body {
   font-family: 'Roboto', sans-serif;
   background-color: var(--white);
   color: var(--text-color);
-  font-size: var(--font-base);
-  line-height: 1.5;
-}
-
-ul {
-  list-style: none;
+  font-size: 1rem;
 }
 
 a {
@@ -52,24 +46,16 @@ a {
   color: var(--white);
   padding: var(--spacing-md);
   text-align: center;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .logo-container img {
   width: 9.375rem;
   height: 3.125rem;
   object-fit: contain;
-  display: block;
-}
-
-.header-text {
-  max-width: 50rem;
-  margin: 0 auto;
 }
 
 .header-text h1 {
   font-size: 2rem;
-  margin-bottom: var(--spacing-sm);
 }
 
 .header-text p {
@@ -87,16 +73,12 @@ nav a {
   color: var(--white);
   margin: 0 0.9375rem;
   font-weight: bold;
-  transition: all 0.2s ease;
 }
 
 nav a:hover,
 nav a:focus {
   text-decoration: underline;
   outline: none;
-}
-
-nav a:focus {
   box-shadow: 0 0 0 2px var(--white);
 }
 
@@ -106,11 +88,9 @@ nav a:focus {
   padding: var(--spacing-sm);
   background: var(--primary-color);
   color: var(--white);
-  text-align: center;
-  cursor: pointer;
-  border-radius: 4px;
   border: none;
-  font-size: 0.9rem;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .sidebar {
@@ -124,18 +104,21 @@ nav a:focus {
 
 .sidebar h3 {
   font-size: 1.2rem;
-  margin-bottom: 0.9375rem;
+  margin-bottom: var(--spacing-sm);
+}
+
+.sidebar ul {
+  list-style: none;
 }
 
 .categoria-item {
   padding: var(--spacing-sm);
   cursor: pointer;
   border-radius: 4px;
-  transition: all 0.2s ease;
 }
 
 .categoria-item i {
-  margin-right: 0.5rem;
+  margin-right: var(--spacing-sm);
 }
 
 .categoria-item:hover,
@@ -171,7 +154,6 @@ h2 {
 
 .lojas-parceiras h3 {
   font-size: 1.2rem;
-  margin-bottom: var(--spacing-sm);
 }
 
 .grid-lojas {
@@ -187,7 +169,6 @@ h2 {
   border: 1px solid var(--border-color);
   border-radius: 4px;
   cursor: pointer;
-  transition: all 0.2s ease;
 }
 
 .loja.ativa,
@@ -211,7 +192,6 @@ h2 {
   margin: -1px;
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
-  border: 0;
 }
 
 .barra-busca {
@@ -221,7 +201,6 @@ h2 {
   margin: var(--spacing-sm) 0;
   border: 1px solid var(--border-color);
   border-radius: 4px;
-  font-size: var(--font-base);
 }
 
 .barra-busca:focus {
@@ -230,17 +209,13 @@ h2 {
   box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.2);
 }
 
-.barra-busca::placeholder {
-  color: #999;
-}
-
 .busca-feedback {
   display: none;
   font-size: 0.9rem;
   color: #666;
 }
 
-/* Spinner de carregamento */
+/* Spinner */
 .loading-spinner {
   display: none;
   text-align: center;
@@ -276,12 +251,6 @@ h2 {
   border: 1px solid var(--border-color);
   border-radius: 5px;
   text-align: center;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.produto-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .produto-card img {
@@ -302,7 +271,6 @@ h2 {
 
 .preco a {
   color: var(--primary-color);
-  text-decoration: none;
 }
 
 .preco a:hover,
@@ -317,87 +285,13 @@ h2 {
   color: var(--white);
   border-radius: 4px;
   margin-top: var(--spacing-sm);
-  transition: background-color 0.2s ease;
 }
 
 .ver-na-loja:hover,
 .ver-na-loja:focus {
   background-color: #e69500;
   outline: none;
-}
-
-.ver-na-loja:focus {
   box-shadow: 0 0 0 2px var(--white);
-}
-
-/* Carrossel */
-.carrossel {
-  position: relative;
-  overflow: hidden;
-}
-
-.carrossel-imagens {
-  display: flex;
-  transition: transform 0.3s ease;
-}
-
-.carrossel-imagens img {
-  flex: 0 0 100%;
-}
-
-.carrossel-prev,
-.carrossel-next {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(0, 0, 0, 0.5);
-  color: var(--white);
-  border: none;
-  padding: 0.3125rem 0.625rem;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.carrossel-prev {
-  left: 5px;
-}
-
-.carrossel-next {
-  right: 5px;
-}
-
-.carrossel-prev:hover,
-.carrossel-prev:focus,
-.carrossel-next:hover,
-.carrossel-next:focus {
-  background: rgba(0, 0, 0, 0.7);
-  outline: none;
-}
-
-.carrossel-prev:focus,
-.carrossel-next:focus {
-  box-shadow: 0 0 0 2px var(--primary-color);
-}
-
-.carrossel-dots {
-  position: absolute;
-  bottom: 5px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 5px;
-}
-
-.carrossel-dot {
-  width: 0.5rem;
-  height: 0.5rem;
-  background: #bbb;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-.carrossel-dot.ativo {
-  background: var(--primary-color);
 }
 
 /* Modal */
@@ -435,16 +329,12 @@ h2 {
   padding: 0.5rem 0.75rem;
   border-radius: 50%;
   cursor: pointer;
-  transition: background-color 0.2s ease;
 }
 
 .modal-close:hover,
 .modal-close:focus {
   background: #e69500;
   outline: none;
-}
-
-.modal-close:focus {
   box-shadow: 0 0 0 2px var(--white);
 }
 
@@ -458,7 +348,6 @@ h2 {
 
 .social-links a {
   text-align: center;
-  transition: all 0.2s ease;
 }
 
 .social-links .icon {
@@ -479,7 +368,6 @@ h2 {
 .social-links span {
   display: block;
   font-size: 0.9rem;
-  color: var(--text-color);
 }
 
 .social-links a:hover .icon,
@@ -489,9 +377,6 @@ h2 {
 
 .social-links a:focus {
   outline: none;
-}
-
-.social-links a:focus .icon {
   box-shadow: 0 0 0 2px var(--primary-color);
 }
 
@@ -503,7 +388,6 @@ h2 {
   margin: var(--spacing-sm);
   color: var(--white);
   border-radius: 5px;
-  transition: background-color 0.2s ease;
 }
 
 .whatsapp {
@@ -514,6 +398,7 @@ h2 {
 .whatsapp:focus {
   background-color: #20b358;
   outline: none;
+  box-shadow: 0 0 0 2px var(--white);
 }
 
 .telegram {
@@ -524,10 +409,6 @@ h2 {
 .telegram:focus {
   background-color: #0077b3;
   outline: none;
-}
-
-.whatsapp:focus,
-.telegram:focus {
   box-shadow: 0 0 0 2px var(--white);
 }
 
@@ -555,14 +436,10 @@ h2 {
   position: absolute;
   bottom: 4.375rem;
   right: 0;
-  opacity: 0;
-  transition: opacity 0.2s ease;
 }
 
-.robo-assistente:hover .robo-texto,
-.robo-assistente:focus-within .robo-texto {
+.robo-assistente:hover .robo-texto {
   display: block;
-  opacity: 1;
 }
 
 /* Footer */
@@ -570,28 +447,23 @@ footer {
   background-color: var(--secondary-color);
   color: var(--white);
   text-align: center;
-  padding: 0.9375rem;
+  padding: var(--spacing-sm);
   margin-top: var(--spacing-md);
 }
 
 footer a {
   color: var(--white);
   text-decoration: underline;
-  margin: 0 0.3125rem;
-  transition: color 0.2s ease;
 }
 
 footer a:hover,
 footer a:focus {
   color: var(--primary-color);
   outline: none;
-}
-
-footer a:focus {
   box-shadow: 0 0 0 2px var(--white);
 }
 
-/* Mensagens de feedback */
+/* Mensagens */
 .mensagem-vazia,
 .error-message {
   text-align: center;
@@ -604,7 +476,6 @@ footer a:focus {
 .paginacao {
   display: flex;
   justify-content: center;
-  align-items: center;
   gap: var(--spacing-sm);
   margin-top: var(--spacing-md);
 }
@@ -615,16 +486,12 @@ footer a:focus {
   border-radius: 4px;
   background: var(--white);
   cursor: pointer;
-  transition: background-color 0.2s ease;
 }
 
 .paginacao button:hover:not(:disabled),
 .paginacao button:focus:not(:disabled) {
   background-color: var(--bg-light);
   outline: none;
-}
-
-.paginacao button:focus {
   box-shadow: 0 0 0 2px var(--primary-color);
 }
 
@@ -638,19 +505,10 @@ footer a:focus {
 }
 
 /* Media queries */
-@media (max-width: 1024px) {
-  .container {
-    padding: var(--spacing-sm);
-  }
-
-  .grid-produtos {
-    grid-template-columns: repeat(auto-fit, minmax(11.25rem, 1fr));
-  }
-}
-
 @media (max-width: 768px) {
   .container {
     flex-direction: column;
+    padding: var(--spacing-sm);
   }
 
   .sidebar-toggle {
@@ -706,14 +564,5 @@ footer a:focus {
   .robo-assistente {
     bottom: var(--spacing-sm);
     right: var(--spacing-sm);
-  }
-
-  .robo-imagem {
-    width: 2.5rem;
-    height: 2.5rem;
-  }
-
-  .robo-texto {
-    font-size: 0.8rem;
   }
 }
