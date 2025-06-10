@@ -250,5 +250,17 @@
     "imagens": [
       "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_kit-10-cueca-boxer-zorba-1748956697545.jpg"
     ]
+  },
+  {
+    "_id": "1749576367667np48zwozr",
+    "nome": "Smartphone Xiaomi Poco X7 Pro 5G NFC Black (Preto) 12GB RAM 512GB ROM [2412DPC0AG] Marca: Xiaomi",
+    "descricao": "Smartphone Xiaomi Poco X7 Pro 5G NFC Black (Preto) 12GB RAM 512GB ROM [2412DPC0AG]\r\nMarca: Xiaomi",
+    "categoria": "celulares",
+    "loja": "amazon",
+    "link": "https://amzn.to/3ZVN2bi",
+    "preco": 10,
+    "imagens": [
+      "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_smartphone-xiaomi-poco-x7-pro-5g-nfc-black-(preto)-12gb-ram-512gb-rom-[2412dpc0ag]-marca:-xiaomi-1749576366490.jpg"
+    ]
   }
 ]
