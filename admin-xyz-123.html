@@ -26,6 +26,10 @@
     button.cancelar { background-color: #6c757d; }
     button.cancelar:hover { background-color: #5a6268; }
     .thumbnail { width: 50px; height: 50px; object-fit: cover; margin: 2px; cursor: pointer; border-radius: 4px; }
+    #imagens-atuais { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 5px; }
+    #loading-spinner { display: none; text-align: center; margin: 10px 0; }
+    #loading-spinner::after { content: ''; display: inline-block; width: 24px; height: 24px; border: 3px solid #ff6200; border-top: 3px solid transparent; border-radius: 50%; animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
@@ -64,11 +68,13 @@
     <input type="url" name="link" placeholder="Link do produto (https://...)" required pattern="https?://.+" />
     <input type="number" name="preco" placeholder="Preço do produto (ex.: 99.99)" step="0.01" min="0" required />
     <input type="file" name="imagens" accept="image/*" multiple />
+    <div id="imagens-atuais"></div>
     <div class="form-buttons">
       <button type="submit">Salvar</button>
       <button type="button" class="cancelar" id="cancelar-edicao" style="display: none;">Cancelar</button>
     </div>
   </form>
+  <div id="loading-spinner"></div>
   <div id="mensagem"></div>
   <div id="erro"></div>
 
@@ -98,11 +104,14 @@
 
     async function carregarProdutos() {
       try {
-        const res = await fetch(`${API_URL}/api/produtos`);
-        if (!res.ok) throw new Error('Falha ao buscar produtos');
+        console.log('Carregando produtos de:', `${API_URL}/api/produtos`);
+        const res = await fetch(`${API_URL}/api/produtos?_t=${Date.now()}`, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`Falha ao buscar produtos: ${res.status}`);
         const produtos = await res.json();
+        console.log('Produtos carregados:', produtos.map(p => ({ id: p._id, nome: p.nome })));
         preencherTabela(produtos);
       } catch (err) {
+        console.error('Erro ao carregar produtos:', err);
         document.getElementById('lista-produtos').innerHTML = `<tr><td colspan="8" style="color:red;text-align:center;">${err.message}</td></tr>`;
       }
     }
@@ -115,19 +124,20 @@
         return;
       }
       produtos.forEach((produto) => {
+        console.log('Exibindo produto com ID:', produto._id);
         const precoFormatado = `R$ ${parseFloat(produto.preco).toFixed(2).replace('.', ',')}`;
-        const imagens = produto.imagens || [];
+        const imagens = Array.isArray(produto.imagens) ? produto.imagens : [];
         const miniaturas = imagens.length > 0
-          ? imagens.map((img, i) => `<img src="${img}" class="thumbnail" alt="Imagem ${i + 1}" />`).join('')
+          ? imagens.map((img, i) => `<img src="${img}" class="thumbnail" alt="Imagem ${i + 1}" onerror="this.src='imagens/placeholder.jpg'" />`).join('')
           : 'Sem imagens';
 
         tbody.innerHTML += `
           <tr>
-            <td>${produto.nome}</td>
+            <td>${produto.nome || 'N/A'}</td>
             <td>${produto.descricao || 'N/A'}</td>
-            <td>${produto.categoria}</td>
-            <td>${produto.loja}</td>
-            <td><a href="${produto.link}" target="_blank" rel="noopener noreferrer">Link</a></td>
+            <td>${produto.categoria || 'N/A'}</td>
+            <td>${produto.loja || 'N/A'}</td>
+            <td><a href="${produto.link || '#'}" target="_blank" rel="noopener noreferrer">Link</a></td>
             <td>${precoFormatado}</td>
             <td>${miniaturas}</td>
             <td>
@@ -140,53 +150,73 @@
     }
 
     async function editarProduto(id) {
+      const loadingSpinner = document.getElementById('loading-spinner');
       try {
-        const res = await fetch(`${API_URL}/api/produtos/${id}`);
-        if (!res.ok) throw new Error('Erro ao buscar produto');
+        loadingSpinner.style.display = 'block';
+        console.log('Tentando editar produto com ID:', id);
+        const res = await fetch(`${API_URL}/api/produtos/${id}`, { cache: 'no-store' });
+        console.log('Status da resposta:', res.status);
+        if (!res.ok) {
+          if (res.status === 404) {
+            throw new Error('Produto não encontrado. Pode ter sido excluído.');
+          }
+          throw new Error(`Erro ao buscar produto: ${res.status}`);
+        }
         const produto = await res.json();
+        console.log('Produto retornado:', produto);
 
-        // Preencher o formulário com os dados do produto
         const form = document.getElementById('form-produto');
         form.querySelector('[name="id"]').value = produto._id;
-        form.querySelector('[name="nome"]').value = produto.nome;
+        form.querySelector('[name="nome"]').value = produto.nome || '';
         form.querySelector('[name="descricao"]').value = produto.descricao || '';
-        form.querySelector('[name="categoria"]').value = produto.categoria;
-        form.querySelector('[name="loja"]').value = produto.loja;
-        form.querySelector('[name="link"]').value = produto.link;
-        form.querySelector('[name="preco"]').value = produto.preco;
-        form.querySelector('[name="imagens"]').required = false; // Imagens não são obrigatórias na edição
+        form.querySelector('[name="categoria"]').value = produto.categoria || '';
+        form.querySelector('[name="loja"]').value = produto.loja || '';
+        form.querySelector('[name="link"]').value = produto.link || '';
+        form.querySelector('[name="preco"]').value = produto.preco || '';
+        form.querySelector('[name="imagens"]').required = false;
 
-        // Atualizar título e mostrar botão "Cancelar"
+        const imagensAtuais = document.getElementById('imagens-atuais');
+        imagensAtuais.innerHTML = produto.imagens && produto.imagens.length > 0
+          ? produto.imagens.map((img, i) => `<img src="${img}" class="thumbnail" alt="Imagem ${i + 1}" onerror="this.src='imagens/placeholder.jpg'" />`).join('')
+          : 'Nenhuma imagem atual';
+
         document.getElementById('titulo-form').textContent = 'Editar Produto';
         document.getElementById('cancelar-edicao').style.display = 'inline-block';
         form.querySelector('button[type="submit"]').textContent = 'Salvar Alterações';
       } catch (err) {
+        console.error('Erro na edição:', err);
         document.getElementById('erro').textContent = err.message;
+      } finally {
+        loadingSpinner.style.display = 'none';
       }
     }
 
     async function excluirProduto(id) {
       if (!confirm('Confirma a exclusão deste produto?')) return;
       try {
+        console.log('Excluindo produto com ID:', id);
         const res = await fetch(`${API_URL}/api/produtos/${id}`, { method: 'DELETE' });
-        if (!res.ok) throw new Error('Erro ao excluir produto');
+        if (!res.ok) throw new Error(`Erro ao excluir produto: ${res.status}`);
         alert('Produto excluído com sucesso');
         carregarProdutos();
       } catch (err) {
+        console.error('Erro ao excluir:', err);
         alert(err.message);
       }
     }
 
-    function resetarFormulario() {
+_ATTACH_ function resetarFormulario() {
       const form = document.getElementById('form-produto');
       form.reset();
       form.querySelector('[name="id"]').value = '';
+      form.querySelector('[name="imagens"]').value = '';
       form.querySelector('[name="imagens"]').required = true;
+      document.getElementById('imagens-atuais').innerHTML = '';
       document.getElementById('titulo-form').textContent = 'Adicionar Produto';
       document.getElementById('cancelar-edicao').style.display = 'none';
       document.getElementById('mensagem').textContent = '';
       document.getElementById('erro').textContent = '';
-      form.querySelector('button[type="submit"]').textContent = 'Salvar';
+      form.querySelector('button[type="submit"]').textContent = 'Adicionar';
     }
 
     document.getElementById('form-produto').addEventListener('submit', async (event) => {
@@ -194,11 +224,18 @@
       const form = event.target;
       const formData = new FormData(form);
       const id = form.querySelector('[name="id"]').value;
+      const imagens = form.querySelector('[name="imagens"]').files;
+
+      if (!id && imagens.length === 0) {
+        document.getElementById('erro').textContent = 'Pelo menos uma imagem é obrigatória ao adicionar um produto.';
+        return;
+      }
 
       document.getElementById('mensagem').textContent = '';
       document.getElementById('erro').textContent = '';
 
       try {
+        console.log('Enviando', id ? 'atualização' : 'novo produto', 'para:', `${API_URL}/api/produtos${id ? '/' + id : ''}`);
         const url = id ? `${API_URL}/api/produtos/${id}` : `${API_URL}/api/produtos`;
         const method = id ? 'PUT' : 'POST';
         const res = await fetch(url, {
@@ -207,19 +244,23 @@
         });
         if (!res.ok) {
           const erroJson = await res.json().catch(() => null);
-          throw new Error(erroJson?.error || `Erro ao ${id ? 'editar' : 'adicionar'} produto`);
+          throw new Error(erroJson?.error || `Erro ao ${id ? 'editar' : 'adicionar'} produto: ${res.status}`);
         }
         document.getElementById('mensagem').textContent = id ? 'Produto atualizado com sucesso!' : 'Produto adicionado com sucesso!';
         resetarFormulario();
         carregarProdutos();
       } catch (error) {
+        console.error('Erro ao salvar:', error);
         document.getElementById('erro').textContent = error.message;
       }
     });
 
     document.getElementById('cancelar-edicao').addEventListener('click', resetarFormulario);
 
-    document.addEventListener('DOMContentLoaded', carregarProdutos);
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('Inicializando página de administração');
+      carregarProdutos();
+    });
   </script>
 </body>
 </html>
