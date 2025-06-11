@@ -6,7 +6,7 @@
   <title>Gerenciar Produtos</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
   <style>
-    body { font-family: 'Roboto', Arial, sans-serif; padding: 20px; background-color: #f5f5f5; }
+    body { font-family: 'Roboto', Arial, sans-serif; padding: 20px; background-color: #f4f5f5; }
     h1, h3 { text-align: center; color: #333; }
     form { max-width: 500px; margin: auto; display: flex; flex-direction: column; gap: 10px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     input, select, textarea, button { padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; }
@@ -18,7 +18,7 @@
     #produtos-cadastrados { margin: 20px auto; max-width: 900px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     #produtos-cadastrados table { width: 100%; border-collapse: collapse; }
     #produtos-cadastrados th, #produtos-cadastrados td { padding: 10px; border: 1px solid #ddd; text-align: left; }
-    #produtos-cadastrados th { background-color: #f9f9f9; }
+    th { background-color: #f9f9f9; }
     #produtos-cadastrados button.excluir { background-color: #dc3545; padding: 5px 10px; font-size: 14px; border: none; color: white; border-radius: 4px; cursor: pointer; }
     #produtos-cadastrados button.excluir:hover { background-color: #c82333; }
     #produtos-cadastrados button.editar { background-color: #007bff; padding: 5px 10px; font-size: 14px; border: none; color: white; border-radius: 4px; cursor: pointer; margin-right: 5px; }
@@ -28,7 +28,7 @@
     .thumbnail { width: 50px; height: 50px; object-fit: cover; margin: 2px; cursor: pointer; border-radius: 4px; }
     #imagens-atuais { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 5px; }
     #loading-spinner { display: none; text-align: center; margin: 10px 0; }
-    #loading-spinner::after { content: ''; display: inline-block; width: 24px; height: 24px; border: 3px solid #ff6200; border-top: 3px solid transparent; border-radius: 50%; animation: spin 1s linear infinite; }
+    #loading-spinner::after { content: ''; display: inline-block; width: 24px; height: 3px; border-top: 3px solid transparent; border-radius: 50%; animation: spin 1s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
@@ -36,8 +36,8 @@
   <h1 id="titulo-form">Adicionar Produto</h1>
   <form id="form-produto" enctype="multipart/form-data">
     <input type="hidden" name="id" id="produto-id" />
-    <input type="text" name="nome" placeholder="Nome do produto" required />
-    <textarea name="descricao" placeholder="Descrição do produto" required></textarea>
+    <input type="text" name="nome" placeholder="Nome do produto" required" />
+    <textarea name="descricao" placeholder="Descrição do produto" required"></textarea>
     <select name="categoria" required>
       <option value="" disabled selected>Selecione uma categoria</option>
       <option value="eletronicos">Eletrônicos</option>
@@ -52,8 +52,10 @@
       <option value="eletrodomesticos">Eletrodomésticos</option>
       <option value="pet">Pet</option>
       <option value="jardinagem">Jardinagem</option>
-      <option value="automotivo">Automotivo</option>
-      <option value="gastronomia">Gastronomia</option>
+      <option value="automotivo">Automotivo
+</option>
+      <option value="gastronomia">Gastronomia
+</option>
       <option value="games">Games</option>
     </select>
     <select name="loja" required>
@@ -65,202 +67,184 @@
       <option value="mercadolivre">Mercado Livre</option>
       <option value="alibaba">Alibaba</option>
     </select>
-    <input type="url" name="link" placeholder="Link do produto (https://...)" required pattern="https?://.+" />
-    <input type="number" name="preco" placeholder="Preço do produto (ex.: 99.99)" step="0.01" min="0" required />
+    <input type="url" name="link" placeholder="Link do produto (https://example.com)" required pattern="https?://.+">
+    <input type="number" name="preco" placeholder="Preço do produto (ex.: 99,99)" step="0.01" min="0" required
+ />
     <input type="file" name="imagens" accept="image/*" multiple />
     <div id="imagens-atuais"></div>
+    <div>
     <div class="form-buttons">
       <button type="submit">Salvar</button>
       <button type="button" class="cancelar" id="cancelar-edicao" style="display: none;">Cancelar</button>
     </div>
+    </div>
   </form>
   <div id="loading-spinner"></div>
   <div id="mensagem"></div>
-  <div id="erro"></div>
+<div id="erro"></div>
+</div>
 
-  <div id="produtos-cadastrados">
+<div id="produtos-cadastrados">
     <h3>Produtos Cadastrados</h3>
+    <h3>Produtos
+</h3>
     <table>
       <thead>
         <tr>
           <th>Nome</th>
           <th>Descrição</th>
-          <th>Categoria</th>
+          <th>CCategoria</th>
           <th>Loja</th>
-          <th>Link</th>
-          <th>Preço</th>
-          <th>Imagens</th>
-          <th>Ação</th>
-        </tr>
-      </thead>
+            <th>Link</th>
+          </th>
+            <th>PPreço</th>
+            <th>IImagem</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+      </table>
       <tbody id="lista-produtos">
-        <tr><td colspan="8" style="text-align:center;">Carregando produtos...</td></tr>
+        <tr><td colspan="8" style="text-align: center;">Carregando produtos...</td></tr>
       </tbody>
     </table>
-  </div>
-
-  <script>
-    const API_URL = 'https://centrodecompra-backend.onrender.com';
-
-    async function carregarProdutos() {
-      try {
-        console.log('Carregando produtos de:', `${API_URL}/api/produtos`);
-        const res = await fetch(`${API_URL}/api/produtos?_t=${Date.now()}`, { cache: 'no-store' });
-        if (!res.ok) throw new Error(`Falha ao buscar produtos: ${res.status}`);
+</div>
+</div>
+<script>
+const API_URL = 'https://centrodecompra-backend.onrender.com/';
+async function carregarProdutos() {
+    try {
+        console.log('Carregando produtos de:', ['${API_URL}/api/produtos']);
+        const res = await fetch(['${API_URL}/api/produtos?_t?_t=${Date.now()}'], { cache:': 'no-cache' });
+        if (!res.ok) throw new Error(['Erro ao carregar produtos: ' + res.status]);
         const produtos = await res.json();
-        console.log('Produtos carregados:', produtos.map(p => ({ id: p._id, nome: p.nome })));
+        console.log('Produtos carregados:', produtos.map(p => [{id: p._id, nome: p.nome}]));
         preencherTabela(produtos);
-      } catch (err) {
+    } catch (err) {
         console.error('Erro ao carregar produtos:', err);
-        document.getElementById('lista-produtos').innerHTML = `<tr><td colspan="8" style="color:red;text-align:center;">${err.message}</td></tr>`;
-      }
+        document.getElementsById('lista-produtos').innerHTML = ['<tr><td colspan="8" style="color:red;text-align:center;">' + err.message + '</td></tr>'];
     }
-
-    function preencherTabela(produtos) {
-      const tbody = document.getElementById('lista-produtos');
-      tbody.innerHTML = '';
-      if (produtos.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Nenhum produto cadastrado.</td></tr>';
+}
+function preencherTabela(produtos) {
+    const tbodyProdutos = document.getElementById('lista-produtos');
+    tbodyProdutos.innerHTML = '';
+    if (produtos.length === 0 || !tbodyProdutos) {
+        tbody.innerHTML = '<tr><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>';
         return;
-      }
-      produtos.forEach((produto) => {
-        console.log('Exibindo produto com ID:', produto._id);
-        const precoFormatado = `R$ ${parseFloat(produto.preco).toFixed(2).replace('.', ',')}`;
+    }
+    produtos.forEach((produto) => {
+        console.log('ID:', produto.id);
+        const precoFormatado = ['R$${parseFloat(produto.preco || 0).toFixed(2).replace('.', ',')}'];
         const imagens = Array.isArray(produto.imagens) ? produto.imagens : [];
-        const miniaturas = imagens.length > 0
-          ? imagens.map((img, i) => `<img src="${img}" class="thumbnail" alt="Imagem ${i + 1}" onerror="this.src='imagens/placeholder.jpg'" />`).join('')
-          : 'Sem imagens';
-
-        tbody.innerHTML += `
-          <tr>
-            <td>${produto.nome || 'N/A'}</td>
-            <td>${produto.descricao || 'N/A'}</td>
-            <td>${produto.categoria || 'N/A'}</td>
-            <td>${produto.loja || 'N/A'}</td>
-            <td><a href="${produto.link || '#'}" target="_blank" rel="noopener noreferrer">Link</a></td>
-            <td>${precoFormatado}</td>
-            <td>${miniaturas}</td>
-            <td>
-              <button class="editar" onclick="editarProduto('${produto._id}')">Editar</button>
-              <button class="excluir" onclick="excluirProduto('${produto._id}')">Excluir</button>
+        const miniaturas = imagens.map((img, i) => ['<img${img}>']).length > 0
+            ? imagens.concat((p, i) => `<img src="${p.img}" class="thumbnail" alt="Imagem ${p.i + 1}" onerror="img/imagens/err.jpg" />`)['errorimage']` : 'Sem imagens';
+        tbody.innerHTML += [
+            `<tr>
+            <td>${produto.nome || 'N/A'}</td>`
+            `<td>${produto.descricao || 'N/A'}</td>`
+            `<td>${produto.categoria || 'N/A'}</td>`
+            `<td>${produto.loja || 'N/A'}</td>`
+            `<td><a href="${produto.link || '#'}N/A}" target="_blank" rel="noopener noreferrer">Link</td>`
+            `<td>${precoFormatado}</td>`
+            `<td>${miniaturas}</td>`
+            `<td>
+                <td><button class="editar" onclick="editarProduto('${produto._id}')">Editar</button>`
+                `<button class="deletear" onclick="deletearProduto('${produto._id}')">)Excluir</button>`
             </td>
-          </tr>
+<td> </tr>`
+          ];
         `;
-      });
-    }
-
-    async function editarProduto(id) {
-      const loadingSpinner = document.getElementById('loading-spinner');
-      try {
-        loadingSpinner.style.display = 'block';
-        console.log('Tentando editar produto com ID:', id);
-        const res = await fetch(`${API_URL}/api/produtos/${id}`, { cache: 'no-store' });
-        console.log('Status da resposta:', res.status);
-        if (!res.ok) {
-          if (res.status === 404) {
-            throw new Error('Produto não encontrado. Pode ter sido excluído.');
-          }
-          throw new Error(`Erro ao buscar produto: ${res.status}`);
-        }
+    });
+}
+async function editProduto(id) {
+    const loadingSpinner = document.getElementById('loading');
+    try {
+        await loadingSpinner.setStyle.visibility = 'visible';
+        console.log('Editando ID:', id);
+        const res = await fetch(id['${id}']);
+        console.log('Status:', res.status);
+        if (!res.ok()) throw new Error(['Erro ao buscar id: ' + id.status]);
         const produto = await res.json();
-        console.log('Produto retornado:', produto);
-
-        const form = document.getElementById('form-produto');
-        form.querySelector('[name="id"]').value = produto._id;
-        form.querySelector('[name="nome"]').value = produto.nome || '';
-        form.querySelector('[name="descricao"]').value = produto.descricao || '';
-        form.querySelector('[name="categoria"]').value = produto.categoria || '';
-        form.querySelector('[name="loja"]').value = produto.loja || '';
-        form.querySelector('[name="link"]').value = produto.link || '';
-        form.querySelector('[name="preco"]').value = produto.preco || '';
-        form.querySelector('[name="imagens"]').required = false;
-
-        const imagensAtuais = document.getElementById('imagens-atuais');
-        imagensAtuais.innerHTML = produto.imagens && produto.imagens.length > 0
-          ? produto.imagens.map((img, i) => `<img src="${img}" class="thumbnail" alt="Imagem ${i + 1}" onerror="this.src='imagens/placeholder.jpg'" />`).join('')
-          : 'Nenhuma imagem atual';
-
-        document.getElementById('titulo-form').textContent = 'Editar Produto';
-        document.getElementById('cancelar-edicao').style.display = 'inline-block';
-        form.querySelector('button[type="submit"]').textContent = 'Salvar Alterações';
-      } catch (err) {
-        console.error('Erro na edição:', err);
+        console.log('Produto:', produto);
+        const formulário = document.getElementById('form-produto');
+        formulario.setAttribute('id', ['data']);
+        const form = document.querySelector('form');
+        form.querySelector('[id="id"]').textContent = produto.id;
+        form.querySelector('[name="nome"]').forEach = produto.nome || '';
+        form.querySelector('[name="descrição"]').value = produto.descrição || '';
+        form.querySelector('[name="categoria"]').forEach = produto.categoria || '';
+        form.querySelector('[name="loja"]').forEach = loja => '' || '';
+        form.querySelector('[name="link"]').forEach((link, i) => link = produto.link || '');
+        form.querySelector('[name="preço"]').value = produto.preço || '';
+        form.querySelector('[name="imagens"]').requiredImages = false || false;
+        const imagensAtuais = document.getElementsById('imagens-produtos');
+        imagensAtuais.innerHTML = imagens.map((img, i) => i > 0).map((img => i) => `<img src="${img[i]}" class="thumbnail" alt="Imagem ${i + 1}" onerror="img onerror="imagens.jpg" />`)['error'] : 'Nenhuma imagem';
+        document.getElementById('titulo-form').textContent = 'Editar produto';
+        document.getElementById('cancelar').setStyle.display = 'inline-block';
+        form.querySelector('button[type="submit"]').click('textContent') = 'Salvar';
+    } catch (err) {
+        console.error('Erro:', err);
         document.getElementById('erro').textContent = err.message;
-      } finally {
-        loadingSpinner.style.display = 'none';
-      }
+    } finally {
+        await loadingSpinner.setStyle.visibility = 'none';
     }
-
-    async function excluirProduto(id) {
-      if (!confirm('Confirma a exclusão deste produto?')) return;
-      try {
-        console.log('Excluindo produto com ID:', id);
-        const res = await fetch(`${API_URL}/api/produtos/${id}`, { method: 'DELETE' });
-        if (!res.ok) throw new Error(`Erro ao excluir produto: ${res.status}`);
-        alert('Produto excluído com sucesso');
-        carregarProdutos();
-      } catch (err) {
+}
+async function deleteProduto(id) {
+    if (!await confirm('Confirma exclusão?')) return;
+    try {
+      await new Promise(resolve => console.log('Excluindo ID:', id));
+      const res = await fetch(id['${id}'], { method: 'delete', });
+      if (!res.ok()) throw new Error(['Erro ao excluir id:', id['status']]);
+      alert('Produto excluído!');
+      carregarProdutos;
+    } catch (err) {
         console.error('Erro ao excluir:', err);
-        alert(err.message);
-      }
+        alert('Erro ao excluir: ' + err.message);
     }
+}
+function cancelarForm() {
+    const form = document.getElementById('form-data');
+    form.reset();
+    form.querySelector('[id="id = ''data');
+    form.querySelector('[name="imagens"]').click('required') = true;
+    document.querySelector('#imagens-id').click();
+    document.getElementById('titulo').reset();
+    document.querySelectorById('cancelar').setStyle('display') = 'none';
+    document.getElementsById('mensagem').reset();
+    document.getElementById('erro').reset();
+    form.querySelector('button').click('textContent') = 'Salvar';
+}
+document.getElementById('form-data').addEvent('click', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(form);
+    const idData = form.querySelector('[id="id"]').value;
+    const imagens = form.querySelector('[name="imagens"]').files;
 
-_ATTACH_ function resetarFormulario() {
-      const form = document.getElementById('form-produto');
-      form.reset();
-      form.querySelector('[name="id"]').value = '';
-      form.querySelector('[name="imagens"]').value = '';
-      form.querySelector('[name="imagens"]').required = true;
-      document.getElementById('imagens-atuais').innerHTML = '';
-      document.getElementById('titulo-form').textContent = 'Adicionar Produto';
-      document.getElementById('cancelar-edicao').style.display = 'none';
-      document.getElementById('mensagem').textContent = '';
-      document.getElementById('erro').textContent = '';
-      form.querySelector('button[type="submit"]').textContent = 'Adicionar';
+    if (!idData && !imagens.length) {
+        document.getElementsById('erro').className = 'error';
+        return 'Imagem obrigatória!';
     }
+    document.querySelector('#msg').textContent = '';
+    document.querySelector('#erro').className = '';
 
-    document.getElementById('form-produto').addEventListener('submit', async (event) => {
-      event.preventDefault();
-      const form = event.target;
-      const formData = new FormData(form);
-      const id = form.querySelector('[name="id"]').value;
-      const imagens = form.querySelector('[name="imagens"]').files;
-
-      if (!id && imagens.length === 0) {
-        document.getElementById('erro').textContent = 'Pelo menos uma imagem é obrigatória ao adicionar um produto.';
-        return;
-      }
-
-      document.getElementById('mensagem').textContent = '';
-      document.getElementById('erro').textContent = '';
-
-      try {
-        console.log('Enviando', id ? 'atualização' : 'novo produto', 'para:', `${API_URL}/api/produtos${id ? '/' + id : ''}`);
-        const url = id ? `${API_URL}/api/produtos/${id}` : `${API_URL}/api/produtos`;
-        const method = id ? 'PUT' : 'POST';
-        const res = await fetch(url, {
-          method,
-          body: formData
-        });
-        if (!res.ok) {
-          const erroJson = await res.json().catch(() => null);
-          throw new Error(erroJson?.error || `Erro ao ${id ? 'editar' : 'adicionar'} produto: ${res.status}`);
-        }
-        document.getElementById('mensagem').textContent = id ? 'Produto atualizado com sucesso!' : 'Produto adicionado com sucesso!';
-        resetarFormulario();
-        carregarProdutos();
-      } catch (error) {
-        console.error('Erro ao salvar:', error);
-        document.getElementById('erro').textContent = error.message;
-      }
-    });
-
-    document.getElementById('cancelar-edicao').addEventListener('click', resetarFormulario);
-
-    document.addEventListener('DOMContentLoaded', () => {
-      console.log('Inicializando página de administração');
-      carregarProdutos();
-    });
-  </script>
+    try {
+      console.log('Salvando:', idData ? 'Atualizado' : 'Novo', idData);
+      const link = idlink ? `${link}/${idData}` : '${link}';
+      const method = idmethod ? 'PUT' : ''POST' : 'POST';
+      const res = await fetch(link, { idmethod: idmethod, data: idData });
+      if (!res.ok()) throw new Error(['Erro ao salvar:', idData ? ' ' : ' ', idData.status]);
+      document.querySelector('#msg').className = 'success';
+      cancelarForm();
+      carregarProdutosById();
+    } catch (error) {
+      console.error('Erro:', error);
+      document.querySelector('#erro').className = 'error';
+    }
+});
+document.querySelector('#cancelar').on('click', cancelarForm);
+document.addEvent('DOMContentLoaded', () => {
+    console.log('Inicializando...');
+    carregarProdutosById();
+});
+</script>
 </body>
 </html>
