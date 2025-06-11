@@ -262,5 +262,17 @@
     "imagens": [
       "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_console-playstation-5-1749661998063.jpg"
     ]
+  },
+  {
+    "_id": "1749662134020xfipmx1xl",
+    "nome": "Console Sony PlayStation 5 Digital Slim 1TB – Branco + Jogos Returnal e Ratchet & Clank + Controle Sem Fio DualSense Branco",
+    "descricao": "Console Sony PlayStation 5 Digital Slim 1TB – Branco + Jogos Returnal e Ratchet & Clank + Controle Sem Fio DualSense Branco",
+    "categoria": "games",
+    "loja": "mercadolivre",
+    "link": "https://mercadolivre.com/sec/1tCQbZJ",
+    "preco": 10,
+    "imagens": [
+      "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_console-sony-playstation-5-digital-slim-1tb-–-branco-+-jogos-returnal-e-ratchet-&-clank-+-controle-sem-fio-dualsense-branco-1749662132862.webp"
+    ]
   }
 ]
