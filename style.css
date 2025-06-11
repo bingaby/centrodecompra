@@ -1,15 +1,15 @@
 /* Variáveis */
 :root {
-  --primary-color: #ff4d00; /* Laranja, alinhado com theme_color do manifest */
-  --secondary-color: #2E8B57; /* Verde */
+  --primary-color: #ff4d00;
+  --secondary-color: #2E8B57;
   --text-color: #333;
   --border-color: #e0e0e0;
   --bg-light: #f9f9f9;
   --white: #fff;
   --whatsapp-color: #25D366;
   --telegram-color: #0088cc;
-  --spacing-sm: 0.625rem; /* 10px */
-  --spacing-md: 1.25rem; /* 20px */
+  --spacing-sm: 0.625rem;
+  --spacing-md: 1.25rem;
 }
 
 /* Reset */
@@ -22,14 +22,14 @@
 html, body {
   width: 100%;
   height: 100%;
-  background-color: var(--white); /* Consistente com background_color do manifest */
+  background-color: var(--white);
   font-family: 'Roboto', sans-serif;
   color: var(--text-color);
   font-size: 1rem;
   overflow-x: hidden;
 }
 
-/* Fade-in para transição da splash screen */
+/* Fade-in com fallback */
 body {
   opacity: 0;
   transition: opacity 0.3s ease;
@@ -39,12 +39,19 @@ body.loaded {
   opacity: 1;
 }
 
+@keyframes showBody {
+  to { opacity: 1; }
+}
+body:not(.loaded) {
+  animation: showBody 0s ease 2s forwards;
+}
+
 a {
   color: inherit;
   text-decoration: none;
 }
 
-/* Suporte a áreas seguras no modo standalone */
+/* Suporte a áreas seguras */
 @media (display-mode: standalone) {
   body {
     padding-top: env(safe-area-inset-top);
@@ -341,50 +348,21 @@ h2 {
   box-shadow: 0 0 0 2px var(--white);
 }
 
-/* Modal */
-.modal {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.8);
-  z-index: 1000;
-  justify-content: center;
-  align-items: center;
+/* Carrossel */
+.carrossel {
+  position: relative;
+  overflow: hidden;
 }
 
-.modal-content {
-  max-width: 90%;
-  max-height: 80vh;
-  position: relative;
+.carrossel-imagens {
+  display: flex;
+  transition: transform 0.3s ease;
 }
 
 .carrossel-imagens img {
-  max-width: 100%;
-  max-height: 80vh;
+  width: 100%;
+  flex: 0 0 100%;
   object-fit: contain;
-}
-
-.modal-close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: var(--primary-color);
-  color: var(--white);
-  border: none;
-  padding: 0.5rem 0.75rem;
-  border-radius: 50%;
-  cursor: pointer;
-  min-height: 44px;
-}
-
-.modal-close:hover,
-.modal-close:focus {
-  background: #e64500;
-  outline: none;
-  box-shadow: 0 0 0 2px var(--white);
 }
 
 .carrossel-prev,
@@ -422,7 +400,7 @@ h2 {
   margin-top: 10px;
 }
 
-.carrossel-dots span {
+.carrossel-dot {
   display: inline-block;
   width: 10px;
   height: 10px;
@@ -432,8 +410,54 @@ h2 {
   cursor: pointer;
 }
 
-.carrossel-dots span.active {
+.carrossel-dot.ativa {
   background: var(--primary-color);
+}
+
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  max-width: 90%;
+  max-height: 80vh;
+  position: relative;
+}
+
+.modal-image {
+  max-width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--primary-color);
+  color: var(--white);
+  border: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 50%;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.modal-close:hover,
+.modal-close:focus {
+  background: #e64500;
+  outline: none;
+  box-shadow: 0 0 0 2px var(--white);
 }
 
 /* Links sociais */
@@ -617,7 +641,7 @@ footer a:focus {
   align-items: center;
 }
 
-/* Media queries para responsividade */
+/* Media queries */
 @media (max-width: 768px) {
   .container {
     flex-direction: column;
