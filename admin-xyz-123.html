@@ -21,12 +21,17 @@
     #produtos-cadastrados th { background-color: #f9f9f9; }
     #produtos-cadastrados button.excluir { background-color: #dc3545; padding: 5px 10px; font-size: 14px; border: none; color: white; border-radius: 4px; cursor: pointer; }
     #produtos-cadastrados button.excluir:hover { background-color: #c82333; }
+    #produtos-cadastrados button.editar { background-color: #007bff; padding: 5px 10px; font-size: 14px; border: none; color: white; border-radius: 4px; cursor: pointer; margin-right: 5px; }
+    #produtos-cadastrados button.editar:hover { background-color: #0056b3; }
+    button.cancelar { background-color: #6c757d; }
+    button.cancelar:hover { background-color: #5a6268; }
     .thumbnail { width: 50px; height: 50px; object-fit: cover; margin: 2px; cursor: pointer; border-radius: 4px; }
   </style>
 </head>
 <body>
-  <h1>Adicionar Produto</h1>
+  <h1 id="titulo-form">Adicionar Produto</h1>
   <form id="form-produto" enctype="multipart/form-data">
+    <input type="hidden" name="id" id="produto-id" />
     <input type="text" name="nome" placeholder="Nome do produto" required />
     <textarea name="descricao" placeholder="Descrição do produto" required></textarea>
     <select name="categoria" required>
@@ -58,8 +63,11 @@
     </select>
     <input type="url" name="link" placeholder="Link do produto (https://...)" required pattern="https?://.+" />
     <input type="number" name="preco" placeholder="Preço do produto (ex.: 99.99)" step="0.01" min="0" required />
-    <input type="file" name="imagens" accept="image/*" multiple required />
-    <button type="submit">Adicionar</button>
+    <input type="file" name="imagens" accept="image/*" multiple />
+    <div class="form-buttons">
+      <button type="submit">Salvar</button>
+      <button type="button" class="cancelar" id="cancelar-edicao" style="display: none;">Cancelar</button>
+    </div>
   </form>
   <div id="mensagem"></div>
   <div id="erro"></div>
@@ -122,10 +130,39 @@
             <td><a href="${produto.link}" target="_blank" rel="noopener noreferrer">Link</a></td>
             <td>${precoFormatado}</td>
             <td>${miniaturas}</td>
-            <td><button class="excluir" onclick="excluirProduto('${produto._id}')">Excluir</button></td>
+            <td>
+              <button class="editar" onclick="editarProduto('${produto._id}')">Editar</button>
+              <button class="excluir" onclick="excluirProduto('${produto._id}')">Excluir</button>
+            </td>
           </tr>
         `;
       });
+    }
+
+    async function editarProduto(id) {
+      try {
+        const res = await fetch(`${API_URL}/api/produtos/${id}`);
+        if (!res.ok) throw new Error('Erro ao buscar produto');
+        const produto = await res.json();
+
+        // Preencher o formulário com os dados do produto
+        const form = document.getElementById('form-produto');
+        form.querySelector('[name="id"]').value = produto._id;
+        form.querySelector('[name="nome"]').value = produto.nome;
+        form.querySelector('[name="descricao"]').value = produto.descricao || '';
+        form.querySelector('[name="categoria"]').value = produto.categoria;
+        form.querySelector('[name="loja"]').value = produto.loja;
+        form.querySelector('[name="link"]').value = produto.link;
+        form.querySelector('[name="preco"]').value = produto.preco;
+        form.querySelector('[name="imagens"]').required = false; // Imagens não são obrigatórias na edição
+
+        // Atualizar título e mostrar botão "Cancelar"
+        document.getElementById('titulo-form').textContent = 'Editar Produto';
+        document.getElementById('cancelar-edicao').style.display = 'inline-block';
+        form.querySelector('button[type="submit"]').textContent = 'Salvar Alterações';
+      } catch (err) {
+        document.getElementById('erro').textContent = err.message;
+      }
     }
 
     async function excluirProduto(id) {
@@ -140,30 +177,47 @@
       }
     }
 
+    function resetarFormulario() {
+      const form = document.getElementById('form-produto');
+      form.reset();
+      form.querySelector('[name="id"]').value = '';
+      form.querySelector('[name="imagens"]').required = true;
+      document.getElementById('titulo-form').textContent = 'Adicionar Produto';
+      document.getElementById('cancelar-edicao').style.display = 'none';
+      document.getElementById('mensagem').textContent = '';
+      document.getElementById('erro').textContent = '';
+      form.querySelector('button[type="submit"]').textContent = 'Salvar';
+    }
+
     document.getElementById('form-produto').addEventListener('submit', async (event) => {
       event.preventDefault();
       const form = event.target;
       const formData = new FormData(form);
+      const id = form.querySelector('[name="id"]').value;
 
       document.getElementById('mensagem').textContent = '';
       document.getElementById('erro').textContent = '';
 
       try {
-        const res = await fetch(`${API_URL}/api/produtos`, {
-          method: 'POST',
+        const url = id ? `${API_URL}/api/produtos/${id}` : `${API_URL}/api/produtos`;
+        const method = id ? 'PUT' : 'POST';
+        const res = await fetch(url, {
+          method,
           body: formData
         });
         if (!res.ok) {
           const erroJson = await res.json().catch(() => null);
-          throw new Error(erroJson?.error || 'Erro ao adicionar produto');
+          throw new Error(erroJson?.error || `Erro ao ${id ? 'editar' : 'adicionar'} produto`);
         }
-        document.getElementById('mensagem').textContent = 'Produto adicionado com sucesso!';
-        form.reset();
+        document.getElementById('mensagem').textContent = id ? 'Produto atualizado com sucesso!' : 'Produto adicionado com sucesso!';
+        resetarFormulario();
         carregarProdutos();
       } catch (error) {
         document.getElementById('erro').textContent = error.message;
       }
     });
+
+    document.getElementById('cancelar-edicao').addEventListener('click', resetarFormulario);
 
     document.addEventListener('DOMContentLoaded', carregarProdutos);
   </script>
