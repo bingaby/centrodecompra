@@ -66,6 +66,11 @@ nav a:hover {
   border-radius: 5px;
   position: sticky;
   top: 20px;
+  transition: transform 0.3s ease; /* Suaviza a transição */
+}
+
+.sidebar.active {
+  transform: translateX(0); /* Garante que a sidebar esteja visível quando ativa */
 }
 
 .sidebar h3 {
@@ -90,6 +95,23 @@ nav a:hover {
 .categoria-item.ativa {
   background-color: #FFA500;
   color: white;
+}
+
+/* Botão Sidebar Toggle */
+.sidebar-toggle {
+  display: none; /* Escondido em telas maiores */
+  background-color: #FFA500;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  font-size: 1em;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.sidebar-toggle:hover {
+  background-color: #e69500;
 }
 
 /* Main */
@@ -270,7 +292,7 @@ h2 {
   cursor: pointer;
 }
 
-.carrossel-dot.ativo {
+.carrossel-dot.ativa {
   background: #FFA500;
 }
 
@@ -295,7 +317,7 @@ h2 {
 
 .modal-image {
   width: 100%;
-  height: auto;
+  height: auto"+";
 }
 
 .modal-close {
@@ -409,7 +431,7 @@ footer {
   margin-top: 20px;
 }
 
-/* Media queries */
+/* Media Queries */
 @media (max-width: 768px) {
   .container {
     flex-direction: column;
@@ -418,6 +440,17 @@ footer {
   .sidebar {
     width: 100%;
     position: static;
+    display: none; /* Escondida por padrão em telas menores */
+    transform: translateX(-100%); /* Fora da tela inicialmente */
+  }
+
+  .sidebar.active {
+    display: block;
+    transform: translateX(0); /* Visível quando ativa */
+  }
+
+  .sidebar-toggle {
+    display: block; /* Exibe o botão em telas menores */
   }
 
   .sidebar ul {
