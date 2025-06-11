@@ -37,28 +37,29 @@ function atualizarFooter() {
 
 // Configurar triplo clique no logotipo
 function configurarCliqueLogo() {
-  const logo = document.getElementById('site-logo-img');
-  const logoLink = document.getElementById('logo-link');
-  if (!logo || !logoLink) return;
-
+  const logo = document.getElementById('site-logo-img'); // Corrigido para o ID correto
+  if (!logo) {
+    console.error('ID site-logo-img não encontrado no DOM');
+    return;
+  }
   let clickCount = 0;
   let clickTimer;
-
   logo.addEventListener('click', (e) => {
-    e.preventDefault(); // Evita o comportamento padrão do link
+    e.preventDefault();
     clickCount++;
-    console.log(`Clique no logotipo: ${clickCount}`); // Log de depuração
+    console.log(`Clique detectado: ${clickCount}`);
     if (clickCount === 1) {
       clickTimer = setTimeout(() => {
         clickCount = 0;
-      }, 400); // Janela de 400ms para triplo clique
+        console.log('Contagem de cliques resetada');
+      }, 500);
     } else if (clickCount === 3) {
       clearTimeout(clickTimer);
-      console.log('Triplo clique detectado, redirecionando para admin');
-      window.location.href = '/admin-xyz-123.html'; // Confirme o caminho está correto
+      console.log('Triplo clique detectado, redirecionando para admin-xyz-123.html');
+      window.location.href = '/admin-xyz-123.html';
       clickCount = 0;
     }
-  });
+  }, { once: false });
 }
 
 // Carregar produtos com retry
