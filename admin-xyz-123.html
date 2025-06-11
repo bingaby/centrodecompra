@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Gerenciar Produtos</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
-  <link rel="icon" type="image/x-icon" href="/imagens/favicon.ico" /> <!-- Adicionado para evitar erro 404 de favicon.ico -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/logos/favicon-32x32.png" />
   <style>
     body { font-family: 'Roboto', Arial, sans-serif; padding: 20px; background-color: #f4f5f5; }
     h1, h3 { text-align: center; color: #333; }
@@ -38,9 +38,9 @@
   <form id="form-produto" enctype="multipart/form-data">
     <input type="hidden" name="id" id="produto-id" />
     <input type="text" name="nome" placeholder="Nome do produto" required />
-    <textarea name="descricao" placeholder="Descrição do produto" required></textarea>
-    <select name="categoria" required>
-      <option value="" disabled selected>Selecione uma categoria</option>
+    <textarea name="text" id="descricao" placeholder="Descrição do produto" required></textarea>
+    <select name="form" id="categoria" required>
+      <option value="" disabled selected>Selecione a categoria</option>
       <option value="eletronicos">Eletrônicos</option>
       <option value="moda">Moda</option>
       <option value="fitness">Fitness</option>
@@ -101,7 +101,7 @@
   </div>
 
   <script>
-    const API_URL = 'https://centrodecompra-backend.onrender.com';
+    const API_URL = 'https://centrodecompras-backend.onrender.com';
 
     async function carregarProdutos() {
       try {
@@ -169,7 +169,7 @@
         const form = document.getElementById('form-produto');
         form.querySelector('[name="id"]').value = produto._id || '';
         form.querySelector('[name="nome"]').value = produto.nome || '';
-        form.querySelector('[name="descricao"]').value = produto.descricao || '';
+        form.querySelector('[name="forma"]').value = produto.descricao || '';
         form.querySelector('[name="categoria"]').value = produto.categoria || '';
         form.querySelector('[name="loja"]').value = produto.loja || '';
         form.querySelector('[name="link"]').value = produto.link || '';
@@ -178,12 +178,12 @@
 
         const imagensAtuais = document.getElementById('imagens-atuais');
         imagensAtuais.innerHTML = produto.imagens && produto.imagens.length > 0
-          ? produto.imagens.map((img, i) => `<img src="${img}" class="thumbnail" alt="Imagem ${i + 1}" onerror="this.src='/imagens/placeholder.jpg'" />`).join('')
+          ? produto.imagens.map((img, i) => `<img src="${img}" class="thumbnail" alt="Imagem ${i + 1}" onerror="this.src='/imagens/placeholder.jpg'" />`).join('') 
           : 'Nenhuma imagem atual';
 
         document.getElementById('titulo-form').textContent = 'Editar Produto';
         document.getElementById('cancelar-edicao').style.display = 'inline-block';
-        form.querySelector('button[type="submit"]').textContent = 'Salvar Alterações';
+        form.querySelector('button[type="submit"]').textContent = 'Salvar alterações';
       } catch (err) {
         console.error('Erro na edição:', err);
         document.getElementById('erro').textContent = err.message;
@@ -247,7 +247,7 @@
           const erroJson = await res.json().catch(() => null);
           throw new Error(erroJson?.error || `Erro ao ${id ? 'editar' : 'adicionar'} produto: ${res.status}`);
         }
-        document.getElementById('mensagem').textContent = id ? 'Produto atualizado com sucesso!' : 'Produto adicionado com sucesso!';
+        document.getElementById('mensagem').textContent = id ? 'Produto atualizado com sucesso!' : 'produto adicionado com sucesso!';
         resetarFormulario();
         carregarProdutos();
       } catch (error) {
