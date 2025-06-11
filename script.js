@@ -1,4 +1,4 @@
-const API_URL = 'https://centrodecompra-backend.onrender.com'; // Use 'http://localhost:10000' para testes locais
+const API_URL = 'https://centrodecompra-backend.onrender.com';
 
 // Variáveis globais
 let produtos = [];
@@ -54,7 +54,7 @@ async function carregarProdutos() {
   const gridProdutos = document.getElementById('grid-produtos');
 
   if (!gridProdutos || !mensagemVazia || !errorMessage || !loadingSpinner) {
-    console.error('Elementos essenciais (grid-produtos, mensagem-vazia, error-message, loading-spinner) não encontrados');
+    console.error('Elementos essenciais não encontrados');
     return;
   }
 
@@ -86,8 +86,7 @@ async function carregarProdutos() {
       produtos = data;
       console.log('Produtos recebidos:', produtos.length, produtos.map(p => ({ id: p._id, nome: p.nome })));
 
-      // Atualizar totalProdutos se a API fornecer
-      const totalHeader = response.headers.get('X-Total-Count'); // Exemplo de header para total
+      const totalHeader = response.headers.get('X-Total-Count');
       if (totalHeader) {
         totalProdutos = parseInt(totalHeader, 10);
         console.log(`Total de produtos atualizado: ${totalProdutos}`);
@@ -156,8 +155,8 @@ function filtrarProdutos() {
   produtosFiltrados.forEach((produto, produtoIndex) => {
     const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0
       ? produto.imagens.filter(img => typeof img === 'string' && img)
-      : ['imagens/placeholder.jpg'];
-    const carrosselId = `carrossel-${produtoIndex}-${produto._id}`; // Usar _id para consistência
+      : ['/imagens/placeholder.jpg'];
+    const carrosselId = `carrossel-${produtoIndex}-${produto._id}`;
 
     const produtoDiv = document.createElement('div');
     produtoDiv.classList.add('produto-card', 'visible');
@@ -168,7 +167,7 @@ function filtrarProdutos() {
       <div class="carrossel" id="${carrosselId}">
         <div class="carrossel-imagens">
           ${imagens.map((img, i) => `
-            <img src="${img}" alt="${produto.nome || 'Produto'} ${i + 1}" loading="lazy" width="200" height="200" onerror="this.src='imagens/placeholder.jpg'" onclick="openModal(${produtoIndex}, ${i})">
+            <img src="${img}" alt="${produto.nome || 'Produto'} ${i + 1}" loading="lazy" width="200" height="200" onerror="this.src='/imagens/placeholder.jpg'" onclick="openModal(${produtoIndex}, ${i})">
           `).join('')}
         </div>
         ${imagens.length > 1 ? `
@@ -228,23 +227,24 @@ async function openModal(produtoIndex, imageIndex) {
   try {
     currentImages = Array.isArray(produtos[produtoIndex]?.imagens) && produtos[produtoIndex].imagens.length > 0
       ? produtos[produtoIndex].imagens.filter(img => typeof img === 'string' && img)
-      : ['imagens/placeholder.jpg'];
+      : ['/imagens/placeholder.jpg'];
     currentImageIndex = imageIndex;
 
-    console.log('🔍 Abrindo modal:', { produtoIndex, imageIndex, imagens: currentImages });
+    console.log('🔍 Carregando modal:', { produtoIndex, imageIndex, imagens: currentImages });
 
     const validImages = await Promise.all(currentImages.map(img => {
       return new Promise(resolve => {
         const testImg = new Image();
         testImg.src = img;
         testImg.onload = () => resolve(img);
-        testImg.onerror = () => resolve('imagens/placeholder.jpg');
+        testImg.onerror = () => resolve('/imagens/placeholder.jpg');
       });
     }));
+
     currentImages = validImages;
 
     carrosselImagens.innerHTML = currentImages.map((img, i) => `
-      <img src="${img}" alt="Imagem ${i + 1}" class="modal-image" loading="lazy" width="600" height="600" onerror="this.src='imagens/placeholder.jpg'">
+      <img src="${img}" alt="Imagem ${i + 1}" class="modal-image" loading="lazy" width="600" height="600" onerror="this.src='/imagens/placeholder.jpg'">
     `).join('');
 
     requestAnimationFrame(() => {
@@ -261,7 +261,7 @@ async function openModal(produtoIndex, imageIndex) {
     });
 
     carrosselDots.innerHTML = currentImages.map((_, i) => `
-      <span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})"></span>
+      <span class="carrossel ${dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})"></span>
     `).join('');
 
     modal.style.display = 'flex';
@@ -272,7 +272,7 @@ async function openModal(produtoIndex, imageIndex) {
 
 function moveModalCarrossel(direction) {
   const carrosselImagens = document.getElementById('modalCarrosselImagens');
-  const carrosselDots = document.getElementById('modalCarrosselDots')?.children;
+  const carrosselDots = document.getElementById('modalCarrosselDots').children;
   const totalImagens = currentImages.length;
 
   currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
