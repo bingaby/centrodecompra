@@ -55,7 +55,7 @@ function configurarCliqueLogo() {
     } else if (clickCount === 3) {
       clearTimeout(clickTimer);
       console.log('Triplo clique detectado, redirecionando para admin');
-      window.location.href = '/admin.html'; // Confirme o caminho está correto
+      window.location.href = '/admin-xyz-123.html'; // Confirme o caminho está correto
       clickCount = 0;
     }
   });
