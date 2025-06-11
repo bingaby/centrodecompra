@@ -9,7 +9,7 @@ let currentImages = [];
 let currentImageIndex = 0;
 let currentPage = 1;
 const produtosPorPagina = 20;
-const totalProdutos = 1000;
+let totalProdutos = 1000; // Será atualizado dinamicamente, se possível
 
 // Atualizar ano no footer
 function atualizarAnoFooter() {
@@ -21,7 +21,7 @@ function atualizarAnoFooter() {
 
 // Detectar triplo clique no logotipo
 function configurarCliqueLogo() {
-  const logo = document.getElementById('site-logo-img'); // Corrigido para o ID correto
+  const logo = document.getElementById('site-logo-img');
   if (!logo) {
     console.error('ID site-logo-img não encontrado no DOM');
     return;
@@ -70,20 +70,36 @@ async function carregarProdutos() {
 
       console.log(`Tentativa ${attempt}: Carregando produtos de ${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`);
       const response = await fetch(
-        `${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`,
+        `${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}&_t=${Date.now()}`,
         { cache: 'no-store' }
       );
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.details || `Erro ${response.status}`);
       }
-      produtos = await response.json();
+      const data = await response.json();
 
-      if (!Array.isArray(produtos)) {
+      if (!Array.isArray(data)) {
         throw new Error('Resposta inválida da API: não é um array');
       }
 
-      console.log(`Produtos recebidos: ${produtos.length}`);
+      produtos = data;
+      console.log('Produtos recebidos:', produtos.length, produtos.map(p => ({ id: p._id, nome: p.nome })));
+
+      // Atualizar totalProdutos se a API fornecer
+      const totalHeader = response.headers.get('X-Total-Count'); // Exemplo de header para total
+      if (totalHeader) {
+        totalProdutos = parseInt(totalHeader, 10);
+        console.log(`Total de produtos atualizado: ${totalProdutos}`);
+      }
+
+      if (produtos.length === 0) {
+        mensagemVazia.textContent = 'Nenhum produto encontrado.';
+        mensagemVazia.style.display = 'block';
+        gridProdutos.style.display = 'none';
+        return;
+      }
+
       filtrarProdutos();
       atualizarPaginacao();
       return;
@@ -127,6 +143,7 @@ function filtrarProdutos() {
 
   gridProdutos.innerHTML = '';
   if (produtosFiltrados.length === 0) {
+    mensagemVazia.textContent = 'Nenhum produto corresponde aos filtros selecionados.';
     mensagemVazia.style.display = 'block';
     gridProdutos.style.display = 'none';
     console.log('Nenhum produto filtrado encontrado');
@@ -140,7 +157,7 @@ function filtrarProdutos() {
     const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0
       ? produto.imagens.filter(img => typeof img === 'string' && img)
       : ['imagens/placeholder.jpg'];
-    const carrosselId = `carrossel-${produtoIndex}-${produto.id || Date.now()}`; // Corrigido
+    const carrosselId = `carrossel-${produtoIndex}-${produto._id}`; // Usar _id para consistência
 
     const produtoDiv = document.createElement('div');
     produtoDiv.classList.add('produto-card', 'visible');
@@ -183,7 +200,7 @@ function moveCarrossel(carrosselId, direction) {
 
   currentIndex = (currentIndex + direction + totalImagens) % totalImagens;
   requestAnimationFrame(() => {
-    imagens.style.transform = `translateX(-${currentIndex * 100}%)`; // Corrigido
+    imagens.style.transform = `translateX(-${currentIndex * 100}%)`;
     imagens.dataset.index = currentIndex;
     dots.forEach((dot, i) => dot.classList.toggle('ativo', i === currentIndex));
   });
@@ -196,7 +213,7 @@ function setCarrosselImage(carrosselId, index) {
   const dots = carrossel.querySelectorAll('.carrossel-dot');
 
   requestAnimationFrame(() => {
-    imagens.style.transform = `translateX(-${index * 100}%)`; // Corrigido
+    imagens.style.transform = `translateX(-${index * 100}%)`;
     imagens.dataset.index = index;
     dots.forEach((dot, i) => dot.classList.toggle('ativo', i === index));
   });
@@ -260,7 +277,7 @@ function moveModalCarrossel(direction) {
 
   currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
   requestAnimationFrame(() => {
-    carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`; // Corrigido
+    carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
     Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
   });
 }
@@ -270,7 +287,7 @@ function setModalCarrosselImage(index) {
   const carrosselDots = document.getElementById('modalCarrosselDots')?.children;
   currentImageIndex = index;
   requestAnimationFrame(() => {
-    carrosselImagens.style.transform = `translateX(-${index * 100}%)`; // Corrigido
+    carrosselImagens.style.transform = `translateX(-${index * 100}%)`;
     Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
   });
 }
@@ -346,7 +363,7 @@ function atualizarPaginacao() {
 
   prevButton.disabled = currentPage === 1;
   nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
-  pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina)}`; // Corrigido
+  pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina)}`;
 }
 
 // Filtrar por categoria
