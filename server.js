@@ -1,263 +1,389 @@
-const express = require('express');
-const multer = require('multer');
-const { Octokit } = require('@octokit/core');
-const path = require('path');
-const cors = require('cors');
-const fs = require('fs').promises;
-const fsSync = require('fs');
-require('dotenv').config();
+const API_URL = 'https://centrodecompra-backend.onrender.com';
 
-const app = express();
-const PORT = process.env.PORT || 10000;
+let produtos = [];
+let categoriaSelecionada = 'todas';
+let lojaSelecionada = 'todas';
+let termoBusca = '';
+let currentImages = [];
+let currentImageIndex = 0;
+let currentPage = 1;
+const produtosPorPagina = 20;
+let totalProdutos = 1000;
 
-// CORS
-app.use(cors({
-  origin: 'https://www.centrodecompra.com.br',
-  methods: ['GET', 'POST', 'DELETE'],
-  allowedHeaders: ['Content-Type'],
-  credentials: false
-}));
+function atualizarAnoFooter() {
+  const yearElement = document.getElementById('year');
+  if (yearElement) yearElement.textContent = new Date().getFullYear();
+}
 
-app.use(express.json());
+function configurarCliqueLogo() {
+  const logo = document.getElementById('site-logo-img');
+  if (!logo) {
+    console.error('ID site-logo-img não encontrado');
+    return;
+  }
+  let clickCount = 0;
+  let clickTimer;
+  logo.addEventListener('click', (e) => {
+    e.preventDefault();
+    clickCount++;
+    console.log(`Clique detectado: ${clickCount}`);
+    if (clickCount === 1) {
+      clickTimer = setTimeout(() => {
+        clickCount = 0;
+        console.log('Contagem de cliques resetada');
+      }, 500);
+    } else if (clickCount === 3) {
+      clearTimeout(clickTimer);
+      console.log('Triplo clique detectado, redirecionando para admin-xyz-123.html');
+      window.location.href = '/admin-xyz-123.html';
+      clickCount = 0;
+    }
+  });
+}
 
-// Garantir que a pasta "upload" exista e tenha permissão de escrita
-async function garantePastaUpload() {
-  try {
-    await fs.mkdir('upload', { recursive: true });
-    // Testar permissão de escrita criando um arquivo temporário e removendo em seguida
-    const testPath = path.join('upload', '.perm_test');
-    await fs.writeFile(testPath, 'teste');
-    await fs.unlink(testPath);
-  } catch (err) {
-    console.error('Erro ao garantir pasta upload com permissão de escrita:', err);
-    process.exit(1);
+async function carregarProdutos() {
+  const loadingSpinner = document.getElementById('loading-spinner');
+  const mensagemVazia = document.getElementById('mensagem-vazia');
+  const errorMessage = document.getElementById('error-message');
+  const gridProdutos = document.getElementById('grid-produtos');
+
+  if (!gridProdutos || !mensagemVazia || !errorMessage || !loadingSpinner) {
+    console.error('Elementos essenciais não encontrados');
+    return;
+  }
+
+  const maxRetries = 3;
+  let attempt = 1;
+
+  while (attempt <= maxRetries) {
+    try {
+      loadingSpinner.style.display = 'block';
+      mensagemVazia.style.display = 'none';
+      errorMessage.style.display = 'none';
+      gridProdutos.innerHTML = '';
+
+      console.log(`Tentativa ${attempt}: Carregando produtos de ${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`);
+      const response = await fetch(
+        `${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}&_t=${Date.now()}`,
+        { cache: 'no-store' }
+      );
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.details || `Erro ${response.status}`);
+      }
+      const data = await response.json();
+
+      if (!Array.isArray(data)) {
+        throw new Error('Resposta inválida da API: não é um array');
+      }
+
+      produtos = data;
+      console.log('Produtos recebidos:', produtos.length, produtos.map(p => ({ id: p._id, nome: p.nome })));
+
+      const totalHeader = response.headers.get('X-Total-Count');
+      if (totalHeader) {
+        totalProdutos = parseInt(totalHeader, 10);
+        console.log(`Total de produtos atualizado: ${totalProdutos}`);
+      }
+
+      if (produtos.length === 0) {
+        mensagemVazia.textContent = 'Nenhum produto encontrado.';
+        mensagemVazia.style.display = 'block';
+        gridProdutos.style.display = 'none';
+        return;
+      }
+
+      filtrarProdutos();
+      atualizarPaginacao();
+      return;
+    } catch (error) {
+      console.error(`⚠️ Tentativa ${attempt} falhou: ${error.message}`);
+      if (attempt === maxRetries) {
+        errorMessage.textContent = `Erro ao carregar produtos após ${maxRetries} tentativas: ${error.message}.`;
+        errorMessage.style.display = 'block';
+        mensagemVazia.style.display = 'none';
+        gridProdutos.style.display = 'none';
+      }
+      attempt++;
+      await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+    } finally {
+      loadingSpinner.style.display = 'none';
+    }
   }
 }
-garantePastaUpload();
 
-app.use('/upload', express.static(path.join(__dirname, 'upload')));
+function filtrarProdutos() {
+  const gridProdutos = document.getElementById('grid-produtos');
+  const mensagemVazia = document.getElementById('mensagem-vazia');
 
-const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
-
-// Configuração do multer
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, 'upload/'),
-  filename: (req, file, cb) => {
-    const timestamp = Date.now();
-    const nomeProduto = req.body.nome ? req.body.nome.replace(/\s+/g, '-').toLowerCase() : 'produto';
-    const ext = path.extname(file.originalname);
-    cb(null, `produto_${nomeProduto}-${timestamp}${ext}`);
-  },
-});
-
-const fileFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith('image/')) {
-    cb(null, true);
-  } else {
-    cb(new Error('Apenas imagens são permitidas!'), false);
-  }
-};
-
-const upload = multer({
-  storage,
-  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
-  fileFilter,
-});
-
-// Função para upload da imagem para GitHub
-async function uploadImagemGitHub(nomeArquivo, caminhoLocal) {
-  const conteudoBuffer = await fs.readFile(caminhoLocal);
-  const conteudoBase64 = conteudoBuffer.toString('base64');
-  const caminhoGitHub = `imagens/${nomeArquivo}`;
-  let sha;
-
-  try {
-    const resGet = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
-      owner: 'bingaby',
-      repo: 'centrodecompra',
-      path: caminhoGitHub,
-    });
-    sha = resGet.data.sha;
-  } catch (e) {
-    if (e.status !== 404) throw e;
+  if (!gridProdutos || !mensagemVazia) {
+    console.error('grid-produtos ou mensagem-vazia não encontrados');
+    return;
   }
 
-  await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
-    owner: 'bingaby',
-    repo: 'centrodecompra',
-    path: caminhoGitHub,
-    message: `Upload da imagem ${nomeArquivo}`,
-    content: conteudoBase64,
-    sha,
-    branch: 'main',
+  const produtosFiltrados = produtos.filter((produto) => {
+    const matchCategoria =
+      categoriaSelecionada === 'todas' ||
+      produto.categoria?.toLowerCase() === categoriaSelecionada.toLowerCase();
+    const matchLoja =
+      lojaSelecionada === 'todas' ||
+      produto.loja?.toLowerCase() === lojaSelecionada.toLowerCase();
+    const matchBusca =
+      !termoBusca || produto.nome?.toLowerCase().includes(termoBusca.toLowerCase());
+    return matchCategoria && matchLoja && matchBusca;
   });
 
-  return `https://raw.githubusercontent.com/bingaby/centrodecompra/main/${caminhoGitHub}`;
+  gridProdutos.innerHTML = '';
+  if (produtosFiltrados.length === 0) {
+    mensagemVazia.textContent = 'Nenhum produto corresponde aos filtros selecionados.';
+    mensagemVazia.style.display = 'block';
+    gridProdutos.style.display = 'none';
+    console.log('Nenhum produto filtrado encontrado');
+    return;
+  }
+
+  mensagemVazia.style.display = 'none';
+  gridProdutos.style.display = 'grid';
+
+  produtosFiltrados.forEach((produto, produtoIndex) => {
+    const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0
+      ? produto.imagens.filter(img => typeof img === 'string' && img)
+      : ['/imagens/placeholder.jpg'];
+    const carrosselId = `carrossel-${produtoIndex}-${produto._id}`;
+
+    const produtoDiv = document.createElement('div');
+    produtoDiv.classList.add('produto-card', 'visible');
+    produtoDiv.setAttribute('data-categoria', produto.categoria?.toLowerCase() || 'todas');
+    produtoDiv.setAttribute('data-loja', produto.loja?.toLowerCase() || 'todas');
+
+    produtoDiv.innerHTML = `
+      <div class="carrossel" id="${carrosselId}">
+        <div class="carrossel-imagens">
+          ${imagens.map((img, i) => `
+            <img src="${img}" alt="${produto.nome || 'Produto'} ${i + 1}" loading="lazy" width="200" height="200" onerror="this.src='/imagens/placeholder.jpg'" onclick="openModal(${produtoIndex}, ${i})">
+          `).join('')}
+        </div>
+        ${imagens.length > 1 ? `
+          <button class="carrossel-prev" onclick="moveCarrossel('${carrosselId}', -1)">◄</button>
+          <button class="carrossel-next" onclick="moveCarrossel('${carrosselId}', 1)">▶</button>
+          <div class="carrossel-dots">
+            ${imagens.map((_, i) => `<span class="carrossel-dot ${i === 0 ? 'ativo' : ''}" onclick="setCarrosselImage('${carrosselId}', ${i})"></span>`).join('')}
+          </div>
+        ` : ''}
+      </div>
+      <span>${produto.nome || 'Produto sem nome'}</span>
+      <span class="descricao">Loja: ${produto.loja || 'Desconhecida'}</span>
+      <p class="preco"><a href="${produto.link || '#'}" target="_blank" class="ver-preco">Clique aqui para ver o preço</a></p>
+      <a href="${produto.link || '#'}" target="_blank" class="ver-na-loja ${produto.loja?.toLowerCase() || 'default'}">Comprar</a>
+    `;
+    gridProdutos.appendChild(produtoDiv);
+  });
+  console.log(`Exibidos ${produtosFiltrados.length} produtos`);
 }
 
-// Função para deletar imagem do GitHub
-async function deletarArquivoGitHub(caminhoArquivo) {
-  try {
-    const resGet = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
-      owner: 'bingaby',
-      repo: 'centrodecompra',
-      path: caminhoArquivo,
-    });
-    const sha = resGet.data.sha;
-    await octokit.request('DELETE /repos/{owner}/{repo}/contents/{path}', {
-      owner: 'bingaby',
-      repo: 'centrodecompra',
-      path: caminhoArquivo,
-      message: `Remove arquivo ${caminhoArquivo}`,
-      sha,
-      branch: 'main',
-    });
-  } catch (error) {
-    console.warn(`Aviso: erro ao deletar imagem no GitHub (${caminhoArquivo}): ${error.message}`);
-    // Não lança erro para não travar o processo
-  }
+function moveCarrossel(carrosselId, direction) {
+  const carrossel = document.getElementById(carrosselId);
+  if (!carrossel) return;
+  const imagens = carrossel.querySelector('.carrossel-imagens');
+  const dots = carrossel.querySelectorAll('.carrossel-dot');
+  let currentIndex = parseInt(imagens.dataset.index || 0);
+  const totalImagens = imagens.children.length;
+
+  currentIndex = (currentIndex + direction + totalImagens) % totalImagens;
+  requestAnimationFrame(() => {
+    imagens.style.transform = `translateX(-${currentIndex * 100}%)`;
+    imagens.dataset.index = currentIndex;
+    dots.forEach((dot, i) => dot.classList.toggle('ativo', i === currentIndex));
+  });
 }
 
-// GET produtos
-app.get('/api/produtos', async (req, res) => {
+function setCarrosselImage(carrosselId, index) {
+  const carrossel = document.getElementById(carrosselId);
+  if (!carrossel) return;
+  const imagens = carrossel.querySelector('.carrossel-imagens');
+  const dots = carrossel.querySelectorAll('.carrossel-dot');
+
+  requestAnimationFrame(() => {
+    imagens.style.transform = `translateX(-${index * 100}%)`;
+    imagens.dataset.index = index;
+    dots.forEach((dot, i) => dot.classList.toggle('ativo', i === index));
+  });
+}
+
+async function openModal(produtoIndex, imageIndex) {
+  const modal = document.getElementById('imageModal');
+  const carrosselImagens = document.getElementById('modalCarrosselImagens');
+  const carrosselDots = document.getElementById('modalCarrosselDots');
+
   try {
-    const response = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
-      owner: 'bingaby',
-      repo: 'centrodecompra',
-      path: 'produtos.json',
-    });
-    const produtos = JSON.parse(Buffer.from(response.data.content, 'base64').toString());
-    res.json(produtos);
-  } catch (error) {
-    if (error.status === 404) return res.json([]);
-    console.error(error);
-    res.status(500).json({ error: 'Erro ao carregar produtos' });
-  }
-});
+    currentImages = Array.isArray(produtos[produtoIndex]?.imagens) && produtos[produtoIndex].imagens.length > 0
+      ? produtos[produtoIndex].imagens.filter(img => typeof img === 'string' && img)
+      : ['/imagens/placeholder.jpg'];
+    currentImageIndex = imageIndex;
 
-// POST produto com imagens
-app.post('/api/produtos', upload.array('imagens', 3), async (req, res) => {
-  try {
-    const { nome, descricao, categoria, loja, link, preco } = req.body;
+    console.log('🔍 Carregando modal:', { produtoIndex, imageIndex, imagens: currentImages });
 
-    if (!nome || !categoria || !loja || !link || !preco) {
-      return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
-    }
-
-    const precoFloat = parseFloat(preco);
-    if (isNaN(precoFloat) || precoFloat < 0) {
-      return res.status(400).json({ error: 'Preço inválido' });
-    }
-
-    if (!req.files || req.files.length === 0) {
-      return res.status(400).json({ error: 'Pelo menos uma imagem é necessária' });
-    }
-
-    const imagens = [];
-    for (const file of req.files) {
-      const urlImagem = await uploadImagemGitHub(file.filename, file.path);
-      imagens.push(urlImagem);
-      await fs.unlink(file.path);
-    }
-
-    // Buscar e atualizar produtos.json
-    let produtos = [];
-    let sha;
-    try {
-      const response = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
-        owner: 'bingaby',
-        repo: 'centrodecompra',
-        path: 'produtos.json',
+    const validImages = await Promise.all(currentImages.map(img => {
+      return new Promise(resolve => {
+        const testImg = new Image();
+        testImg.src = img;
+        testImg.onload = () => resolve(img);
+        testImg.onerror = () => resolve('/imagens/placeholder.jpg');
       });
-      produtos = JSON.parse(Buffer.from(response.data.content, 'base64').toString());
-      sha = response.data.sha;
-    } catch (error) {
-      if (error.status !== 404) throw error;
-    }
+    }));
+    currentImages = validImages;
 
-    const novoProduto = {
-      _id: `${Date.now()}${Math.random().toString(36).substr(2, 9)}`,
-      nome,
-      descricao,
-      categoria,
-      loja,
-      link,
-      preco: precoFloat,
-      imagens,
-    };
+    carrosselImagens.innerHTML = currentImages.map((img, i) => `
+      <img src="${img}" alt="Imagem ${i + 1}" class="modal-image" loading="lazy" width="600" height="600" onerror="this.src='/imagens/placeholder.jpg'">
+    `).join('');
 
-    produtos.push(novoProduto);
+    requestAnimationFrame(() => {
+      carrosselImagens.style.width = '100%';
+      carrosselImagens.style.display = 'flex';
+      carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
 
-    const jsonContent = JSON.stringify(produtos, null, 2);
-
-    await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
-      owner: 'bingaby',
-      repo: 'centrodecompra',
-      path: 'produtos.json',
-      message: 'Adiciona novo produto via API',
-      content: Buffer.from(jsonContent).toString('base64'),
-      sha,
-      branch: 'main',
+      const imagens = carrosselImagens.querySelectorAll('img');
+      imagens.forEach(img => {
+        img.style.width = '100%';
+        img.style.flex = '0 0 100%';
+        img.style.objectFit = 'contain';
+      });
     });
 
-    res.status(201).json({ message: 'Produto adicionado com sucesso', produto: novoProduto });
+    carrosselDots.innerHTML = currentImages.map((_, i) => `
+      <span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})"></span>
+    `).join('');
 
+    modal.style.display = 'flex';
   } catch (error) {
-    console.error('Erro ao adicionar produto:', error);
-    res.status(500).json({ error: error.message || 'Erro ao adicionar produto' });
+    console.error('Erro ao abrir modal:', error);
   }
-});
+}
 
-// DELETE produto
-app.delete('/api/produtos/:id', async (req, res) => {
-  try {
-    const id = req.params.id;
+function moveModalCarrossel(direction) {
+  const carrosselImagens = document.getElementById('modalCarrosselImagens');
+  const carrosselDots = document.getElementById('modalCarrosselDots')?.children;
+  const totalImagens = currentImages.length;
 
-    const response = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
-      owner: 'bingaby',
-      repo: 'centrodecompra',
-      path: 'produtos.json',
-    });
+  currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
+  requestAnimationFrame(() => {
+    carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+    Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
+  });
+}
 
-    const produtos = JSON.parse(Buffer.from(response.data.content, 'base64').toString());
-    const sha = response.data.sha;
+function setModalCarrosselImage(index) {
+  const carrosselImagens = document.getElementById('modalCarrosselImagens');
+  const carrosselDots = document.getElementById('modalCarrosselDots')?.children;
+  currentImageIndex = index;
+  requestAnimationFrame(() => {
+    carrosselImagens.style.transform = `translateX(-${index * 100}%)`;
+    Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
+  });
+}
 
-    const produtoIndex = produtos.findIndex(p => p._id === id);
-    if (produtoIndex === -1) {
-      return res.status(404).json({ error: 'Produto não encontrado' });
+function closeModal() {
+  const modal = document.getElementById('imageModal');
+  modal.style.display = 'none';
+  currentImages = [];
+  currentImageIndex = 0;
+}
+
+function configurarBusca() {
+  const inputBusca = document.getElementById('busca');
+  const buscaFeedback = document.getElementById('busca-feedback');
+  let debounceTimer;
+
+  if (!inputBusca || !buscaFeedback) {
+    console.error('Elementos de busca não encontrados');
+    return;
+  }
+
+  inputBusca.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    termoBusca = inputBusca.value.trim();
+
+    if (termoBusca) {
+      buscaFeedback.style.display = 'block';
+      buscaFeedback.textContent = `Buscando por "${termoBusca}"...`;
+    } else {
+      buscaFeedback.style.display = 'none';
     }
 
-    const produto = produtos[produtoIndex];
-    if (produto.imagens && produto.imagens.length > 0) {
-      for (const urlImagem of produto.imagens) {
-        const urlObj = new URL(urlImagem);
-        const caminhoArquivo = urlObj.pathname.split('/').slice(4).join('/');
-        await deletarArquivoGitHub(caminhoArquivo);
-      }
-    }
+    currentPage = 1;
+    debounceTimer = setTimeout(() => carregarProdutos(), 300);
+  });
+}
 
-    produtos.splice(produtoIndex, 1);
+function configurarPaginacao() {
+  const prevButton = document.getElementById('prev-page');
+  const nextButton = document.getElementById('next-page');
 
-    const jsonContent = JSON.stringify(produtos, null, 2);
-
-    await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
-      owner: 'bingaby',
-      repo: 'centrodecompra',
-      path: 'produtos.json',
-      message: `Remove produto ${id} via API`,
-      content: Buffer.from(jsonContent).toString('base64'),
-      sha,
-      branch: 'main',
-    });
-
-    res.json({ message: 'Produto excluído com sucesso' });
-
-  } catch (error) {
-    console.error('Erro ao excluir produto:', error);
-    res.status(500).json({ error: 'Erro ao excluir produto' });
+  if (!prevButton || !nextButton) {
+    console.error('Botões de paginação não encontrados');
+    return;
   }
-});
 
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
+  prevButton.addEventListener('click', () => {
+    if (currentPage > 1) {
+      currentPage--;
+      carregarProdutos();
+    }
+  });
+
+  nextButton.addEventListener('click', () => {
+    if (currentPage < Math.ceil(totalProdutos / produtosPorPagina)) {
+      currentPage++;
+      carregarProdutos();
+    }
+  });
+}
+
+function atualizarPaginacao() {
+  const prevButton = document.getElementById('prev-page');
+  const nextButton = document.getElementById('next-page');
+  const pageInfo = document.getElementById('page-info');
+
+  if (!prevButton || !nextButton || !pageInfo) {
+    console.error('Elementos de paginação não encontrados');
+    return;
+  }
+
+  prevButton.disabled = currentPage === 1;
+  nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
+  pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina)}`;
+}
+
+function filtrarPorCategoria(categoria) {
+  categoriaSelecionada = categoria;
+  currentPage = 1;
+  document.querySelectorAll('.categoria-item').forEach(item => {
+    item.classList.toggle('ativa', item.dataset.categoria.toLowerCase() === categoria.toLowerCase());
+  });
+  carregarProdutos();
+}
+
+function filtrarPorLoja(loja) {
+  lojaSelecionada = loja;
+  currentPage = 1;
+  document.querySelectorAll('.loja, .loja-todas').forEach(item => {
+    item.classList.toggle('ativa', item.dataset.loja.toLowerCase() === loja.toLowerCase());
+  });
+  carregarProdutos();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('Inicializando página');
+  carregarProdutos();
+  configurarBusca();
+  configurarPaginacao();
+  atualizarAnoFooter();
+  configurarCliqueLogo();
+
+  const modal = document.getElementById('imageModal');
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) closeModal();
+    });
+  }
 });
