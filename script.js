@@ -11,6 +11,19 @@ let currentPage = 1;
 const produtosPorPagina = 20;
 const totalProdutos = 1000;
 
+// Registrar Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(registration => {
+        console.log('Service Worker registrado com sucesso:', registration);
+      })
+      .catch(error => {
+        console.error('Falha ao registrar Service Worker:', error);
+      });
+  });
+}
+
 // Atualizar ano no footer
 function atualizarAnoFooter() {
   const yearElement = document.getElementById('year');
@@ -21,7 +34,7 @@ function atualizarAnoFooter() {
 
 // Detectar triplo clique no logotipo
 function configurarCliqueLogo() {
-  const logo = document.getElementById('site-logo-img'); // Corrigido para o ID correto
+  const logo = document.getElementById('site-logo-img');
   if (!logo) {
     console.error('ID site-logo-img não encontrado no DOM');
     return;
@@ -31,19 +44,16 @@ function configurarCliqueLogo() {
   logo.addEventListener('click', (e) => {
     e.preventDefault();
     clickCount++;
-    console.log(`Clique detectado: ${clickCount}`);
     if (clickCount === 1) {
       clickTimer = setTimeout(() => {
         clickCount = 0;
-        console.log('Contagem de cliques resetada');
       }, 500);
     } else if (clickCount === 3) {
       clearTimeout(clickTimer);
-      console.log('Triplo clique detectado, redirecionando para admin-xyz-123.html');
       window.location.href = '/admin-xyz-123.html';
       clickCount = 0;
     }
-  }, { once: false });
+  });
 }
 
 // Carregar produtos com retry
@@ -54,7 +64,7 @@ async function carregarProdutos() {
   const gridProdutos = document.getElementById('grid-produtos');
 
   if (!gridProdutos || !mensagemVazia || !errorMessage || !loadingSpinner) {
-    console.error('Elementos essenciais (grid-produtos, mensagem-vazia, error-message, loading-spinner) não encontrados');
+    console.error('Elementos essenciais não encontrados');
     return;
   }
 
@@ -68,7 +78,6 @@ async function carregarProdutos() {
       errorMessage.style.display = 'none';
       gridProdutos.innerHTML = '';
 
-      console.log(`Tentativa ${attempt}: Carregando produtos de ${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`);
       const response = await fetch(
         `${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`,
         { cache: 'no-store' }
@@ -83,14 +92,12 @@ async function carregarProdutos() {
         throw new Error('Resposta inválida da API: não é um array');
       }
 
-      console.log(`Produtos recebidos: ${produtos.length}`);
       filtrarProdutos();
       atualizarPaginacao();
       return;
     } catch (error) {
-      console.error(`⚠️ Tentativa ${attempt} falhou: ${error.message}`);
       if (attempt === maxRetries) {
-        errorMessage.textContent = `Erro ao carregar produtos após ${maxRetries} tentativas: ${error.message}.`;
+        errorMessage.textContent = `Erro ao carregar produtos após ${maxRetries} tentativas: ${error.message}. Tente novamente mais tarde.`;
         errorMessage.style.display = 'block';
         mensagemVazia.style.display = 'none';
         gridProdutos.style.display = 'none';
@@ -129,7 +136,6 @@ function filtrarProdutos() {
   if (produtosFiltrados.length === 0) {
     mensagemVazia.style.display = 'block';
     gridProdutos.style.display = 'none';
-    console.log('Nenhum produto filtrado encontrado');
     return;
   }
 
@@ -140,7 +146,7 @@ function filtrarProdutos() {
     const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0
       ? produto.imagens.filter(img => typeof img === 'string' && img)
       : ['imagens/placeholder.jpg'];
-    const carrosselId = `carrossel-${produtoIndex}-${produto.id || Date.now()}`; // Corrigido
+    const carrosselId = `carrossel-${produtoIndex}-${produto.id || Date.now()}`;
 
     const produtoDiv = document.createElement('div');
     produtoDiv.classList.add('produto-card', 'visible');
@@ -155,10 +161,10 @@ function filtrarProdutos() {
           `).join('')}
         </div>
         ${imagens.length > 1 ? `
-          <button class="carrossel-prev" onclick="moveCarrossel('${carrosselId}', -1)">◄</button>
-          <button class="carrossel-next" onclick="moveCarrossel('${carrosselId}', 1)">▶</button>
+          <button class="carrossel-prev" aria-label="Imagem anterior" onclick="moveCarrossel('${carrosselId}', -1)">◄</button>
+          <button class="carrossel-next" aria-label="Próxima imagem" onclick="moveCarrossel('${carrosselId}', 1)">▶</button>
           <div class="carrossel-dots">
-            ${imagens.map((_, i) => `<span class="carrossel-dot ${i === 0 ? 'ativo' : ''}" onclick="setCarrosselImage('${carrosselId}', ${i})"></span>`).join('')}
+            ${imagens.map((_, i) => `<span class="carrossel-dot ${i === 0 ? 'ativa' : ''}" onclick="setCarrosselImage('${carrosselId}', ${i})"></span>`).join('')}
           </div>
         ` : ''}
       </div>
@@ -169,7 +175,6 @@ function filtrarProdutos() {
     `;
     gridProdutos.appendChild(produtoDiv);
   });
-  console.log(`Exibidos ${produtosFiltrados.length} produtos`);
 }
 
 // Funções do carrossel
@@ -183,9 +188,9 @@ function moveCarrossel(carrosselId, direction) {
 
   currentIndex = (currentIndex + direction + totalImagens) % totalImagens;
   requestAnimationFrame(() => {
-    imagens.style.transform = `translateX(-${currentIndex * 100}%)`; // Corrigido
+    imagens.style.transform = `translateX(-${currentIndex * 100}%)`;
     imagens.dataset.index = currentIndex;
-    dots.forEach((dot, i) => dot.classList.toggle('ativo', i === currentIndex));
+    dots.forEach((dot, i) => dot.classList.toggle('ativa', i === currentIndex));
   });
 }
 
@@ -196,10 +201,10 @@ function setCarrosselImage(carrosselId, index) {
   const dots = carrossel.querySelectorAll('.carrossel-dot');
 
   requestAnimationFrame(() => {
-    imagens.style.transform = `translateX(-${index * 100}%)`; // Corrigido
+    imagens.style.transform = `translateX(-${index * 100}%)`;
     imagens.dataset.index = index;
-    dots.forEach((dot, i) => dot.classList.toggle('ativo', i === index));
-  });
+    dots.forEach((dot, i) => dot.classList.toggle('ativa', i === index));
+  }));
 }
 
 // Funções do modal
@@ -208,13 +213,16 @@ async function openModal(produtoIndex, imageIndex) {
   const carrosselImagens = document.getElementById('modalCarrosselImagens');
   const carrosselDots = document.getElementById('modalCarrosselDots');
 
+  if (!modal || !carrosselImagens || !carrosselDots || !produtos[produtoIndex]) {
+    console.error('Elementos do modal ou produto não encontrados');
+    return;
+  }
+
   try {
-    currentImages = Array.isArray(produtos[produtoIndex]?.imagens) && produtos[produtoIndex].imagens.length > 0
+    currentImages = Array.isArray(produtos[produtoIndex].imagens) && produtos[produtoIndex].imagens.length > 0
       ? produtos[produtoIndex].imagens.filter(img => typeof img === 'string' && img)
       : ['imagens/placeholder.jpg'];
     currentImageIndex = imageIndex;
-
-    console.log('🔍 Abrindo modal:', { produtoIndex, imageIndex, imagens: currentImages });
 
     const validImages = await Promise.all(currentImages.map(img => {
       return new Promise(resolve => {
@@ -244,7 +252,7 @@ async function openModal(produtoIndex, imageIndex) {
     });
 
     carrosselDots.innerHTML = currentImages.map((_, i) => `
-      <span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})"></span>
+      <span class="carrossel-dot ${i === currentImageIndex ? 'ativa' : ''}" onclick="setModalCarrosselImage(${i})"></span>
     `).join('');
 
     modal.style.display = 'flex';
@@ -260,8 +268,8 @@ function moveModalCarrossel(direction) {
 
   currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
   requestAnimationFrame(() => {
-    carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`; // Corrigido
-    Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
+    carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+    Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativa', i === currentImageIndex));
   });
 }
 
@@ -270,16 +278,18 @@ function setModalCarrosselImage(index) {
   const carrosselDots = document.getElementById('modalCarrosselDots')?.children;
   currentImageIndex = index;
   requestAnimationFrame(() => {
-    carrosselImagens.style.transform = `translateX(-${index * 100}%)`; // Corrigido
-    Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
+    carrosselImagens.style.transform = `translateX(-${index * 100}%)`;
+    Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativa', i === currentImageIndex));
   });
 }
 
 function closeModal() {
   const modal = document.getElementById('imageModal');
-  modal.style.display = 'none';
-  currentImages = [];
-  currentImageIndex = 0;
+  if (modal) {
+    modal.style.display = 'none';
+    currentImages = [];
+    currentImageIndex = 0;
+  }
 }
 
 // Configurar busca com debounce
@@ -346,7 +356,7 @@ function atualizarPaginacao() {
 
   prevButton.disabled = currentPage === 1;
   nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
-  pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina)}`; // Corrigido
+  pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina)}`;
 }
 
 // Filtrar por categoria
@@ -369,14 +379,31 @@ function filtrarPorLoja(loja) {
   carregarProdutos();
 }
 
+// Configurar toggle da sidebar
+function configurarSidebarToggle() {
+  const sidebarToggle = document.querySelector('.sidebar-toggle');
+  const sidebar = document.querySelector('.sidebar');
+  if (sidebarToggle && sidebar) {
+    sidebarToggle.addEventListener('click', () => {
+      const isExpanded = sidebarToggle.getAttribute('aria-expanded') === 'true';
+      sidebarToggle.setAttribute('aria-expanded', !isExpanded);
+      sidebar.classList.toggle('active');
+      sidebarToggle.textContent = isExpanded ? '☰ Categorias' : '✕ Fechar';
+    });
+  }
+}
+
 // Inicialização
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('Inicializando página');
+  // Aplicar fade-in para transição da splash screen
+  document.body.classList.add('loaded');
+
   carregarProdutos();
   configurarBusca();
   configurarPaginacao();
   atualizarAnoFooter();
   configurarCliqueLogo();
+  configurarSidebarToggle();
 
   const modal = document.getElementById('imageModal');
   if (modal) {
