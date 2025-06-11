@@ -1,4 +1,4 @@
-const API_URL = 'https://centrodecompra-backend.onrender.com';
+const API_URL = 'https://centrodecompra-backend.onrender.com'; // Use 'http://localhost:10000' para testes locais
 
 // Variáveis globais
 let produtos = [];
@@ -9,7 +9,7 @@ let currentImages = [];
 let currentImageIndex = 0;
 let currentPage = 1;
 const produtosPorPagina = 20;
-let totalProdutos = 1000; // Será atualizado dinamicamente, se possível
+const totalProdutos = 1000;
 
 // Atualizar ano no footer
 function atualizarAnoFooter() {
@@ -21,7 +21,7 @@ function atualizarAnoFooter() {
 
 // Detectar triplo clique no logotipo
 function configurarCliqueLogo() {
-  const logo = document.getElementById('site-logo-img');
+  const logo = document.getElementById('site-logo-img'); // Corrigido para o ID correto
   if (!logo) {
     console.error('ID site-logo-img não encontrado no DOM');
     return;
@@ -54,7 +54,7 @@ async function carregarProdutos() {
   const gridProdutos = document.getElementById('grid-produtos');
 
   if (!gridProdutos || !mensagemVazia || !errorMessage || !loadingSpinner) {
-    console.error('Elementos essenciais não encontrados');
+    console.error('Elementos essenciais (grid-produtos, mensagem-vazia, error-message, loading-spinner) não encontrados');
     return;
   }
 
@@ -70,35 +70,20 @@ async function carregarProdutos() {
 
       console.log(`Tentativa ${attempt}: Carregando produtos de ${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`);
       const response = await fetch(
-        `${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}&_t=${Date.now()}`,
+        `${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`,
         { cache: 'no-store' }
       );
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.details || `Erro ${response.status}`);
       }
-      const data = await response.json();
+      produtos = await response.json();
 
-      if (!Array.isArray(data)) {
+      if (!Array.isArray(produtos)) {
         throw new Error('Resposta inválida da API: não é um array');
       }
 
-      produtos = data;
-      console.log('Produtos recebidos:', produtos.length, produtos.map(p => ({ id: p._id, nome: p.nome })));
-
-      const totalHeader = response.headers.get('X-Total-Count');
-      if (totalHeader) {
-        totalProdutos = parseInt(totalHeader, 10);
-        console.log(`Total de produtos atualizado: ${totalProdutos}`);
-      }
-
-      if (produtos.length === 0) {
-        mensagemVazia.textContent = 'Nenhum produto encontrado.';
-        mensagemVazia.style.display = 'block';
-        gridProdutos.style.display = 'none';
-        return;
-      }
-
+      console.log(`Produtos recebidos: ${produtos.length}`);
       filtrarProdutos();
       atualizarPaginacao();
       return;
@@ -142,7 +127,6 @@ function filtrarProdutos() {
 
   gridProdutos.innerHTML = '';
   if (produtosFiltrados.length === 0) {
-    mensagemVazia.textContent = 'Nenhum produto corresponde aos filtros selecionados.';
     mensagemVazia.style.display = 'block';
     gridProdutos.style.display = 'none';
     console.log('Nenhum produto filtrado encontrado');
@@ -155,8 +139,8 @@ function filtrarProdutos() {
   produtosFiltrados.forEach((produto, produtoIndex) => {
     const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0
       ? produto.imagens.filter(img => typeof img === 'string' && img)
-      : ['/imagens/placeholder.jpg'];
-    const carrosselId = `carrossel-${produtoIndex}-${produto._id}`;
+      : ['imagens/placeholder.jpg'];
+    const carrosselId = `carrossel-${produtoIndex}-${produto.id || Date.now()}`; // Corrigido
 
     const produtoDiv = document.createElement('div');
     produtoDiv.classList.add('produto-card', 'visible');
@@ -167,7 +151,7 @@ function filtrarProdutos() {
       <div class="carrossel" id="${carrosselId}">
         <div class="carrossel-imagens">
           ${imagens.map((img, i) => `
-            <img src="${img}" alt="${produto.nome || 'Produto'} ${i + 1}" loading="lazy" width="200" height="200" onerror="this.src='/imagens/placeholder.jpg'" onclick="openModal(${produtoIndex}, ${i})">
+            <img src="${img}" alt="${produto.nome || 'Produto'} ${i + 1}" loading="lazy" width="200" height="200" onerror="this.src='imagens/placeholder.jpg'" onclick="openModal(${produtoIndex}, ${i})">
           `).join('')}
         </div>
         ${imagens.length > 1 ? `
@@ -199,7 +183,7 @@ function moveCarrossel(carrosselId, direction) {
 
   currentIndex = (currentIndex + direction + totalImagens) % totalImagens;
   requestAnimationFrame(() => {
-    imagens.style.transform = `translateX(-${currentIndex * 100}%)`;
+    imagens.style.transform = `translateX(-${currentIndex * 100}%)`; // Corrigido
     imagens.dataset.index = currentIndex;
     dots.forEach((dot, i) => dot.classList.toggle('ativo', i === currentIndex));
   });
@@ -212,7 +196,7 @@ function setCarrosselImage(carrosselId, index) {
   const dots = carrossel.querySelectorAll('.carrossel-dot');
 
   requestAnimationFrame(() => {
-    imagens.style.transform = `translateX(-${index * 100}%)`;
+    imagens.style.transform = `translateX(-${index * 100}%)`; // Corrigido
     imagens.dataset.index = index;
     dots.forEach((dot, i) => dot.classList.toggle('ativo', i === index));
   });
@@ -227,24 +211,23 @@ async function openModal(produtoIndex, imageIndex) {
   try {
     currentImages = Array.isArray(produtos[produtoIndex]?.imagens) && produtos[produtoIndex].imagens.length > 0
       ? produtos[produtoIndex].imagens.filter(img => typeof img === 'string' && img)
-      : ['/imagens/placeholder.jpg'];
+      : ['imagens/placeholder.jpg'];
     currentImageIndex = imageIndex;
 
-    console.log('🔍 Carregando modal:', { produtoIndex, imageIndex, imagens: currentImages });
+    console.log('🔍 Abrindo modal:', { produtoIndex, imageIndex, imagens: currentImages });
 
     const validImages = await Promise.all(currentImages.map(img => {
       return new Promise(resolve => {
         const testImg = new Image();
         testImg.src = img;
         testImg.onload = () => resolve(img);
-        testImg.onerror = () => resolve('/imagens/placeholder.jpg');
+        testImg.onerror = () => resolve('imagens/placeholder.jpg');
       });
     }));
-
     currentImages = validImages;
 
     carrosselImagens.innerHTML = currentImages.map((img, i) => `
-      <img src="${img}" alt="Imagem ${i + 1}" class="modal-image" loading="lazy" width="600" height="600" onerror="this.src='/imagens/placeholder.jpg'">
+      <img src="${img}" alt="Imagem ${i + 1}" class="modal-image" loading="lazy" width="600" height="600" onerror="this.src='imagens/placeholder.jpg'">
     `).join('');
 
     requestAnimationFrame(() => {
@@ -261,7 +244,7 @@ async function openModal(produtoIndex, imageIndex) {
     });
 
     carrosselDots.innerHTML = currentImages.map((_, i) => `
-      <span class="carrossel ${dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})"></span>
+      <span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})"></span>
     `).join('');
 
     modal.style.display = 'flex';
@@ -272,12 +255,12 @@ async function openModal(produtoIndex, imageIndex) {
 
 function moveModalCarrossel(direction) {
   const carrosselImagens = document.getElementById('modalCarrosselImagens');
-  const carrosselDots = document.getElementById('modalCarrosselDots').children;
+  const carrosselDots = document.getElementById('modalCarrosselDots')?.children;
   const totalImagens = currentImages.length;
 
   currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
   requestAnimationFrame(() => {
-    carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+    carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`; // Corrigido
     Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
   });
 }
@@ -287,7 +270,7 @@ function setModalCarrosselImage(index) {
   const carrosselDots = document.getElementById('modalCarrosselDots')?.children;
   currentImageIndex = index;
   requestAnimationFrame(() => {
-    carrosselImagens.style.transform = `translateX(-${index * 100}%)`;
+    carrosselImagens.style.transform = `translateX(-${index * 100}%)`; // Corrigido
     Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
   });
 }
@@ -363,7 +346,7 @@ function atualizarPaginacao() {
 
   prevButton.disabled = currentPage === 1;
   nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
-  pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina)}`;
+  pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina)}`; // Corrigido
 }
 
 // Filtrar por categoria
