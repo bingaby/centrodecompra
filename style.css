@@ -1,6 +1,6 @@
 /* Variáveis */
 :root {
-  --primary-color: #ff4d00;
+  --primary-color: #ff4d00; /* Laranja */
   --secondary-color: #2E8B57;
   --text-color: #333;
   --border-color: #e0e0e0;
@@ -132,6 +132,8 @@ nav a:focus {
   cursor: pointer;
   font-size: 1rem;
   min-height: 44px;
+  width: 100%;
+  text-align: left;
 }
 
 .sidebar {
@@ -343,7 +345,7 @@ h2 {
 
 .ver-na-loja:hover,
 .ver-na-loja:focus {
-  background-color: #e64500;
+  background-color: #e64500; /* Tom mais escuro de laranja */
   outline: none;
   box-shadow: 0 0 0 2px var(--white);
 }
@@ -683,7 +685,7 @@ footer a:focus {
 
   .sidebar-toggle {
     display: block;
-    margin: var(--spacing-sm) auto;
+    margin: var(--spacing-sm);
   }
 
   .sidebar {
@@ -693,7 +695,7 @@ footer a:focus {
     padding: var(--spacing-sm);
   }
 
-  .sidebar.active {
+  .sidebar.open {
     display: block;
   }
 
