@@ -274,5 +274,17 @@
     "imagens": [
       "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_console-playstation-5-1749661998063.jpg"
     ]
+  },
+  {
+    "_id": "174966200078599rkc3lkf",
+    "nome": "Console PlayStation 5",
+    "descricao": "Console PlayStation 5",
+    "categoria": "games",
+    "loja": "amazon",
+    "link": "https://amzn.to/3Zqo3gi",
+    "preco": 10,
+    "imagens": [
+      "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_console-playstation-5-1749661999737.jpg"
+    ]
   }
 ]
