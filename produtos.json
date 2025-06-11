@@ -262,5 +262,17 @@
     "imagens": [
       "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_smartphone-xiaomi-poco-x7-pro-5g-nfc-black-(preto)-12gb-ram-512gb-rom-[2412dpc0ag]-marca:-xiaomi-1749576366490.jpg"
     ]
+  },
+  {
+    "_id": "1749661907798pjz6e1z7k",
+    "nome": "Microsoft Xbox Series S 512gb Standard Cor BrancoMicrosoft Xbox Series S 512gb Standard Cor Branco",
+    "descricao": "Microsoft Xbox Series S 512gb Standard Cor BrancoMicrosoft Xbox Series S 512gb Standard Cor Branco",
+    "categoria": "games",
+    "loja": "mercadolivre",
+    "link": "https://mercadolivre.com/sec/1kmtMoC",
+    "preco": 10,
+    "imagens": [
+      "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_microsoft-xbox-series-s-512gb-standard-cor-brancomicrosoft-xbox-series-s-512gb-standard-cor-branco-1749661906858.webp"
+    ]
   }
 ]
