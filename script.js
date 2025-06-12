@@ -9,7 +9,6 @@ let currentImageIndex = 0;
 let currentPage = 1;
 const produtosPorPagina = 20;
 const totalProdutos = 1000;
-let lojasCarrosselIndex = 0;
 
 function atualizarAnoFooter() {
   const yearElement = document.getElementById('year');
@@ -147,7 +146,7 @@ function filtrarProdutos() {
       <div class="carrossel" id="${carrosselId}">
         <div class="carrossel-imagens">
           ${imagens.map((img, i) => `
-            <img src="${img}" alt="${produto.nome || 'Produto'} ${i + 1}" loading="lazy" width="150" height="150" onerror="this.src='imagens/placeholder.jpg'" onclick="openModal(${produtoIndex}, ${i})">
+            <img src="${img}" alt="${produto.nome || 'Produto'} ${i + 1}" loading="lazy" width="200" height="200" onerror="this.src='imagens/placeholder.jpg'" onclick="openModal(${produtoIndex}, ${i})">
           `).join('')}
         </div>
         ${imagens.length > 1 ? `
@@ -194,22 +193,6 @@ function setCarrosselImage(carrosselId, index) {
     imagens.style.transform = `translateX(-${index * 100}%)`;
     imagens.dataset.index = index;
     dots.forEach((dot, i) => dot.classList.toggle('ativo', i === index));
-  });
-}
-
-function moveLojasCarrossel(direction) {
-  const gridLojas = document.getElementById('grid-lojas');
-  if (!gridLojas) return;
-  const lojas = gridLojas.children;
-  const totalLojas = lojas.length;
-  const visibleLojas = window.innerWidth < 768 ? 2.5 : 4; // Mostra 2.5 lojas no mobile
-
-  lojasCarrosselIndex += direction;
-  if (lojasCarrosselIndex < 0) lojasCarrosselIndex = 0;
-  if (lojasCarrosselIndex > totalLojas - visibleLojas) lojasCarrosselIndex = totalLojas - visibleLojas;
-
-  requestAnimationFrame(() => {
-    gridLojas.style.transform = `translateX(-${(lojasCarrosselIndex * 100) / visibleLojas}%)`;
   });
 }
 
