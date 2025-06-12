@@ -92,6 +92,8 @@
 
     <main>
       <section>
+        <input type="text" id="busca" placeholder="Busque por produtos..." class="barra-busca">
+        <div id="busca-feedback" class="busca-feedback"></div>
         <h2>🛍️ Ofertas do Dia</h2>
         <ins class="adsbygoogle"
              style="display:inline-block;width:728px;height:90px"
@@ -102,30 +104,32 @@
         </script>
         <div class="lojas-parceiras">
           <h3>🌟 Lojas Parceiras</h3>
-          <div class="grid-lojas">
-            <div class="loja-todas ativa" onclick="filtrarPorLoja('todas')"><span>Todas as Lojas</span></div>
-            <div class="loja" data-loja="amazon" onclick="filtrarPorLoja('amazon')">
-              <img src="logos/amazon.png" alt="Amazon" loading="lazy" width="100" height="40"><span>Amazon</span>
+          <div class="carrossel-lojas">
+            <button class="carrossel-prev-lojas" onclick="moveLojasCarrossel(-1)">◄</button>
+            <div class="grid-lojas" id="grid-lojas">
+              <div class="loja-todas ativa" data-loja="todas" onclick="filtrarPorLoja('todas')"><span>Todas as Lojas</span></div>
+              <div class="loja" data-loja="amazon" onclick="filtrarPorLoja('amazon')">
+                <img src="logos/amazon.png" alt="Amazon" loading="lazy" width="100" height="40"><span>Amazon</span>
+              </div>
+              <div class="loja" data-loja="magalu" onclick="filtrarPorLoja('magalu')">
+                <img src="logos/magalu.png" alt="Magalu" loading="lazy" width="100" height="40"><span>Magalu</span>
+              </div>
+              <div class="loja" data-loja="shein" onclick="filtrarPorLoja('shein')">
+                <img src="logos/shein.png" alt="Shein" loading="lazy" width="100" height="40"><span>Shein</span>
+              </div>
+              <div class="loja" data-loja="shopee" onclick="filtrarPorLoja('shopee')">
+                <img src="logos/shopee.png" alt="Shopee" loading="lazy" width="100" height="40"><span>Shopee</span>
+              </div>
+              <div class="loja" data-loja="mercadolivre" onclick="filtrarPorLoja('mercadolivre')">
+                <img src="logos/mercadolivre.jpg" alt="Mercado Livre" loading="lazy" width="100" height="40"><span>Mercado Livre</span>
+              </div>
+              <div class="loja" data-loja="alibaba" onclick="filtrarPorLoja('alibaba')">
+                <img src="logos/alibaba.png" alt="Alibaba" loading="lazy" width="100" height="40"><span>Alibaba</span>
+              </div>
             </div>
-            <div class="loja" data-loja="magalu" onclick="filtrarPorLoja('magalu')">
-              <img src="logos/magalu.png" alt="Magalu" loading="lazy" width="100" height="40"><span>Magalu</span>
-            </div>
-            <div class="loja" data-loja="shein" onclick="filtrarPorLoja('shein')">
-              <img src="logos/shein.png" alt="Shein" loading="lazy" width="100" height="40"><span>Shein</span>
-            </div>
-            <div class="loja" data-loja="shopee" onclick="filtrarPorLoja('shopee')">
-              <img src="logos/shopee.png" alt="Shopee" loading="lazy" width="100" height="40"><span>Shopee</span>
-            </div>
-            <div class="loja" data-loja="mercadolivre" onclick="filtrarPorLoja('mercadolivre')">
-              <img src="logos/mercadolivre.jpg" alt="Mercado Livre" loading="lazy" width="100" height="40"><span>Mercado Livre</span>
-            </div>
-            <div class="loja" data-loja="alibaba" onclick="filtrarPorLoja('alibaba')">
-              <img src="logos/alibaba.png" alt="Alibaba" loading="lazy" width="100" height="40"><span>Alibaba</span>
-            </div>
+            <button class="carrossel-next-lojas" onclick="moveLojasCarrossel(1)">▶</button>
           </div>
         </div>
-        <input type="text" id="busca" placeholder="Busque por produtos..." class="barra-busca">
-        <div id="busca-feedback" class="busca-feedback"></div>
         <div class="loading-spinner" id="loading-spinner"></div>
         <div class="grid-produtos" id="grid-produtos"></div>
         <p class="mensagem-vazia" id="mensagem-vazia" style="display: none;">Nenhum produto encontrado.</p>
