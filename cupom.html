@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
@@ -69,58 +70,54 @@
   <main class="cupons-container">
     <h1>🎟️ Cupons Promocionais</h1>
     <p>Use os cupons abaixo nos sites oficiais e aproveite descontos exclusivos!</p>
-
-    <div class="cupons-grid">
-      <div class="cupom-card">
-        <img src="logos/amazon.png" alt="Amazon">
-        <div class="cupom-codigo" id="cupom1"></div>
-        <button class="btn-copiar" onclick="copiarCupom('cupom1')">Copiar Cupom</button>
-      </div>
-
-      <div class="cupom-card">
-        <img src="logos/shein.png" alt="Shein">
-        <div class="cupom-codigo" id="cupom2"></div>
-        <button class="btn-copiar" onclick="copiarCupom('cupom2')">Copiar Cupom</button>
-      </div>
-
-      <div class="cupom-card">
-        <img src="logos/magalu.png" alt="Magalu">
-        <div class="cupom-codigo" id="cupom3"></div>
-        <button class="btn-copiar" onclick="copiarCupom('cupom3')">Copiar Cupom</button>
-      </div>
-
-      <div class="cupom-card">
-        <img src="logos/mercadolivre.jpg" alt="Mercado Livre">
-        <div class="cupom-codigo" id="cupom4"></div>
-        <button class="btn-copiar" onclick="copiarCupom('cupom4')">Copiar Cupom</button>
-      </div>
-
-      <div class="cupom-card">
-        <img src="logos/shopee.png" alt="Shopee">
-        <div class="cupom-codigo" id="cupom5"></div>
-        <button class="btn-copiar" onclick="copiarCupom('cupom5')">Copiar Cupom</button>
-      </div>
-
-      <div class="cupom-card">
-        <img src="logos/aliexpress.png" alt="AliExpress">
-        <div class="cupom-codigo" id="cupom6"></div>
-        <button class="btn-copiar" onclick="copiarCupom('cupom6')">Copiar Cupom</button>
-      </div>
-    </div>
+    <div class="cupons-grid" id="cupons-grid"></div>
   </main>
 
   <script>
+    // Array de cupons (pode ser atualizado facilmente)
+    const cupons = [
+      { id: 'cupom1', loja: 'Amazon', codigo: 'AMZ10OFF', imagem: 'logos/amazon.png' },
+      { id: 'cupom2', loja: 'Shein', codigo: 'SHEIN20', imagem: 'logos/shein.png' },
+      { id: 'cupom3', loja: 'Magalu', codigo: 'MAGALU15', imagem: 'logos/magalu.png' },
+      { id: 'cupom4', loja: 'Mercado Livre', codigo: 'ML10', imagem: 'logos/mercadolivre.jpg' },
+      { id: 'cupom5', loja: 'Shopee', codigo: 'SHOPEE5', imagem: 'logos/shopee.png' },
+      { id: 'cupom6', loja: 'AliExpress', codigo: 'ALI20', imagem: 'logos/aliexpress.png' },
+      // Adicione mais cupons aqui, por exemplo:
+      // { id: 'cupom7', loja: 'Nova Loja', codigo: 'NOVA10', imagem: 'logos/novaloja.png' }
+    ];
+
+    // Função para renderizar os cupons
+    function renderizarCupons() {
+      const grid = document.getElementById('cupons-grid');
+      grid.innerHTML = ''; // Limpa o grid antes de renderizar
+
+      cupons.forEach(cupom => {
+        const cupomCard = document.createElement('div');
+        cupomCard.className = 'cupom-card';
+        cupomCard.innerHTML = `
+          <img src="${cupom.imagem}" alt="${cupom.loja}">
+          <div class="cupom-codigo" id="${cupom.id}">${cupom.codigo}</div>
+          <button class="btn-copiar" onclick="copiarCupom('${cupom.id}')">Copiar Cupom</button>
+        `;
+        grid.appendChild(cupomCard);
+      });
+    }
+
+    // Função para copiar cupom
     function copiarCupom(cupomId) {
       const cupom = document.getElementById(cupomId);
       const range = document.createRange();
       range.selectNode(cupom);
-      window.getSelection().removeAllRanges();  // Limpa as seleções anteriores
-      window.getSelection().addRange(range);    // Seleciona o texto do cupom
-      document.execCommand('copy');             // Copia o conteúdo selecionado
-      window.getSelection().removeAllRanges();  // Limpa a seleção
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
+      document.execCommand('copy');
+      window.getSelection().removeAllRanges();
 
       alert('Cupom copiado: ' + cupom.innerText);
     }
+
+    // Chama a função para renderizar os cupons ao carregar a página
+    renderizarCupons();
   </script>
 </body>
 </html>
