@@ -1,6 +1,5 @@
-const API_URL = 'https://centrodecompra-backend.onrender.com'; // Use 'http://localhost:10000' para testes locais
+const API_URL = 'https://centrodecompra-backend.onrender.com';
 
-// Variáveis globais
 let produtos = [];
 let categoriaSelecionada = 'todas';
 let lojaSelecionada = 'todas';
@@ -11,7 +10,6 @@ let currentPage = 1;
 const produtosPorPagina = 20;
 const totalProdutos = 1000;
 
-// Atualizar ano no footer
 function atualizarAnoFooter() {
   const yearElement = document.getElementById('year');
   if (yearElement) {
@@ -19,9 +17,8 @@ function atualizarAnoFooter() {
   }
 }
 
-// Detectar triplo clique no logotipo
 function configurarCliqueLogo() {
-  const logo = document.getElementById('site-logo-img'); // Corrigido para o ID correto
+  const logo = document.getElementById('site-logo-img');
   if (!logo) {
     console.error('ID site-logo-img não encontrado no DOM');
     return;
@@ -46,7 +43,6 @@ function configurarCliqueLogo() {
   }, { once: false });
 }
 
-// Carregar produtos com retry
 async function carregarProdutos() {
   const loadingSpinner = document.getElementById('loading-spinner');
   const mensagemVazia = document.getElementById('mensagem-vazia');
@@ -54,7 +50,7 @@ async function carregarProdutos() {
   const gridProdutos = document.getElementById('grid-produtos');
 
   if (!gridProdutos || !mensagemVazia || !errorMessage || !loadingSpinner) {
-    console.error('Elementos essenciais (grid-produtos, mensagem-vazia, error-message, loading-spinner) não encontrados');
+    console.error('Elementos essenciais não encontrados');
     return;
   }
 
@@ -68,7 +64,7 @@ async function carregarProdutos() {
       errorMessage.style.display = 'none';
       gridProdutos.innerHTML = '';
 
-      console.log(`Tentativa ${attempt}: Carregando produtos de ${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`);
+      console.log(`Tentativa ${attempt}: Carregando produtos`);
       const response = await fetch(
         `${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`,
         { cache: 'no-store' }
@@ -103,7 +99,6 @@ async function carregarProdutos() {
   }
 }
 
-// Filtrar e exibir produtos
 function filtrarProdutos() {
   const gridProdutos = document.getElementById('grid-produtos');
   const mensagemVazia = document.getElementById('mensagem-vazia');
@@ -140,7 +135,7 @@ function filtrarProdutos() {
     const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0
       ? produto.imagens.filter(img => typeof img === 'string' && img)
       : ['imagens/placeholder.jpg'];
-    const carrosselId = `carrossel-${produtoIndex}-${produto.id || Date.now()}`; // Corrigido
+    const carrosselId = `carrossel-${produtoIndex}-${produto.id || Date.now()}`;
 
     const produtoDiv = document.createElement('div');
     produtoDiv.classList.add('produto-card', 'visible');
@@ -172,7 +167,6 @@ function filtrarProdutos() {
   console.log(`Exibidos ${produtosFiltrados.length} produtos`);
 }
 
-// Funções do carrossel
 function moveCarrossel(carrosselId, direction) {
   const carrossel = document.getElementById(carrosselId);
   if (!carrossel) return;
@@ -183,7 +177,7 @@ function moveCarrossel(carrosselId, direction) {
 
   currentIndex = (currentIndex + direction + totalImagens) % totalImagens;
   requestAnimationFrame(() => {
-    imagens.style.transform = `translateX(-${currentIndex * 100}%)`; // Corrigido
+    imagens.style.transform = `translateX(-${currentIndex * 100}%)`;
     imagens.dataset.index = currentIndex;
     dots.forEach((dot, i) => dot.classList.toggle('ativo', i === currentIndex));
   });
@@ -196,13 +190,12 @@ function setCarrosselImage(carrosselId, index) {
   const dots = carrossel.querySelectorAll('.carrossel-dot');
 
   requestAnimationFrame(() => {
-    imagens.style.transform = `translateX(-${index * 100}%)`; // Corrigido
+    imagens.style.transform = `translateX(-${index * 100}%)`;
     imagens.dataset.index = index;
     dots.forEach((dot, i) => dot.classList.toggle('ativo', i === index));
   });
 }
 
-// Funções do modal
 async function openModal(produtoIndex, imageIndex) {
   const modal = document.getElementById('imageModal');
   const carrosselImagens = document.getElementById('modalCarrosselImagens');
@@ -260,7 +253,7 @@ function moveModalCarrossel(direction) {
 
   currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
   requestAnimationFrame(() => {
-    carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`; // Corrigido
+    carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
     Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
   });
 }
@@ -270,7 +263,7 @@ function setModalCarrosselImage(index) {
   const carrosselDots = document.getElementById('modalCarrosselDots')?.children;
   currentImageIndex = index;
   requestAnimationFrame(() => {
-    carrosselImagens.style.transform = `translateX(-${index * 100}%)`; // Corrigido
+    carrosselImagens.style.transform = `translateX(-${index * 100}%)`;
     Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
   });
 }
@@ -282,7 +275,6 @@ function closeModal() {
   currentImageIndex = 0;
 }
 
-// Configurar busca com debounce
 function configurarBusca() {
   const inputBusca = document.getElementById('busca');
   const buscaFeedback = document.getElementById('busca-feedback');
@@ -309,7 +301,6 @@ function configurarBusca() {
   });
 }
 
-// Configurar paginação
 function configurarPaginacao() {
   const prevButton = document.getElementById('prev-page');
   const nextButton = document.getElementById('next-page');
@@ -346,10 +337,9 @@ function atualizarPaginacao() {
 
   prevButton.disabled = currentPage === 1;
   nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
-  pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina)}`; // Corrigido
+  pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina)}`;
 }
 
-// Filtrar por categoria
 function filtrarPorCategoria(categoria) {
   categoriaSelecionada = categoria;
   currentPage = 1;
@@ -359,7 +349,6 @@ function filtrarPorCategoria(categoria) {
   carregarProdutos();
 }
 
-// Filtrar por loja
 function filtrarPorLoja(loja) {
   lojaSelecionada = loja;
   currentPage = 1;
@@ -369,7 +358,6 @@ function filtrarPorLoja(loja) {
   carregarProdutos();
 }
 
-// Inicialização
 document.addEventListener('DOMContentLoaded', () => {
   console.log('Inicializando página');
   carregarProdutos();
@@ -382,6 +370,24 @@ document.addEventListener('DOMContentLoaded', () => {
   if (modal) {
     modal.addEventListener('click', (e) => {
       if (e.target === e.currentTarget) closeModal();
+    });
+  }
+
+  const menuToggle = document.querySelector('.menu-toggle');
+  const mobileMenu = document.getElementById('mobileMenu');
+  if (menuToggle && mobileMenu) {
+    menuToggle.addEventListener('click', () => {
+      mobileMenu.classList.toggle('active');
+    });
+    mobileMenu.querySelectorAll('.categoria-item').forEach(item => {
+      item.addEventListener('click', () => {
+        mobileMenu.classList.remove('active');
+      });
+    });
+    mobileMenu.querySelectorAll('.mobile-nav a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.remove('active');
+      });
     });
   }
 });
