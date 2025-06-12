@@ -7,7 +7,7 @@ let termoBusca = '';
 let currentImages = [];
 let currentImageIndex = 0;
 let currentPage = 1;
-const produtosPorPagina = 20;
+const produtosPorPagina = 10;
 const totalProdutos = 1000;
 
 function atualizarAnoFooter() {
