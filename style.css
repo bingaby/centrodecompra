@@ -176,23 +176,28 @@ main {
 }
 
 section {
-  padding: 20px;
-  border: 1px solid #e0e0e0;
-  border-radius: 5px;
+  padding: 15px;
+  border: none; /* Removido borda para parecer mais com Mercado Livre */
 }
 
 h2 {
   font-size: 1.5em;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 .lojas-parceiras h3 {
   font-size: 1.2em;
+  margin-bottom: 10px;
+}
+
+.carrossel-lojas {
+  position: relative;
+  overflow: hidden;
 }
 
 .grid-lojas {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  display: flex;
+  transition: transform 0.3s ease;
   gap: 10px;
 }
 
@@ -202,6 +207,7 @@ h2 {
   border: 1px solid #ddd;
   border-radius: 4px;
   cursor: pointer;
+  flex: 0 0 120px;
 }
 
 .loja.ativa, .loja-todas.ativa {
@@ -210,16 +216,30 @@ h2 {
 }
 
 .loja img {
-  width: 100px;
-  height: 40px;
+  width: 80px;
+  height: 30px;
   object-fit: contain;
 }
 
+.carrossel-prev-lojas, .carrossel-next-lojas {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.carrossel-prev-lojas { left: 5px; }
+.carrossel-next-lojas { right: 5px; }
+
 .barra-busca {
   width: 100%;
-  max-width: 500px;
   padding: 12px 12px 12px 40px;
-  margin: 10px 0;
+  margin-bottom: 15px;
   border: 1px solid #ccc;
   border-radius: 25px;
   font-size: 1em;
@@ -232,6 +252,7 @@ h2 {
   display: none;
   font-size: 0.9em;
   color: #666;
+  margin-bottom: 10px;
 }
 
 .loading-spinner {
@@ -257,15 +278,15 @@ h2 {
 .grid-produtos {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
+  gap: 15px;
 }
 
 .produto-card {
   background-color: #fff;
-  padding: 15px;
+  padding: 10px;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
-  text-align: center;
+  text-align: left;
   transition: transform 0.2s;
 }
 
@@ -275,14 +296,16 @@ h2 {
 
 .produto-card img {
   width: 100%;
-  height: 180px;
+  height: 150px;
   object-fit: contain;
+  border-radius: 4px;
 }
 
 .produto-card span {
   display: block;
   margin: 8px 0;
-  font-size: 1em;
+  font-size: 0.95em;
+  line-height: 1.3;
 }
 
 .descricao {
@@ -293,6 +316,7 @@ h2 {
 .preco a {
   color: #FFA500;
   text-decoration: none;
+  font-weight: bold;
 }
 
 .preco a:hover {
@@ -300,14 +324,15 @@ h2 {
 }
 
 .ver-na-loja {
-  display: inline-block;
-  padding: 10px 20px;
+  display: block;
+  padding: 10px;
   background-color: #FFA500;
   color: white;
   text-decoration: none;
   border-radius: 4px;
   margin-top: 10px;
   font-size: 0.9em;
+  text-align: center;
 }
 
 .ver-na-loja:hover {
@@ -521,46 +546,80 @@ footer {
     padding-left: 60px;
   }
 
-  .grid-lojas {
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 8px;
-  }
-
-  .loja, .loja-todas {
-    padding: 8px;
-  }
-
-  .loja img {
-    width: 80px;
-    height: 30px;
-  }
-
-  .grid-produtos {
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 15px;
-  }
-
-  .produto-card {
-    padding: 10px;
-  }
-
-  .produto-card img {
-    height: 150px;
-  }
-
-  .produto-card span {
-    font-size: 0.95em;
-  }
-
-  .ver-na-loja {
-    padding: 8px 16px;
-    font-size: 0.85em;
-  }
-
   .barra-busca {
     font-size: 0.95em;
     padding: 10px 10px 10px 35px;
     background-size: 18px;
+    margin: 10px 0;
+  }
+
+  .grid-lojas {
+    gap: 8px;
+  }
+
+  .loja, .loja-todas {
+    flex: 0 0 100px;
+    padding: 8px;
+  }
+
+  .loja img {
+    width: 70px;
+    height: 25px;
+  }
+
+  .grid-produtos {
+    grid-template-columns: repeat(2, 1fr); /* Duas colunas fixas como Mercado Livre */
+    gap: 10px;
+  }
+
+  .produto-card {
+    padding: 8px;
+  }
+
+  .produto-card img {
+    height: 120px;
+  }
+
+  .produto-card span {
+    font-size: 0.9em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .descricao {
+    font-size: 0.8em;
+  }
+
+  .ver-na-loja {
+    padding: 8px;
+    font-size: 0.85em;
+  }
+
+  .paginacao {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 15px 0;
+  }
+
+  .paginacao button {
+    padding: 8px 12px;
+    background-color: #FFA500;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .paginacao button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+
+  .paginacao span {
+    font-size: 0.9em;
+    align-self: center;
   }
 
   .robo-imagem {
