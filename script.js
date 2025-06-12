@@ -6,7 +6,7 @@ let lojaSelecionada = 'todas';
 let termoBusca = '';
 let currentImages = [];
 let currentImageIndex = 0;
-let currentPage = 10;
+let currentPage = 1;
 const produtosPorPagina = 20;
 const totalProdutos = 1000;
 
