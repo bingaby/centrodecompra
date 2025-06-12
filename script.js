@@ -6,8 +6,8 @@ let lojaSelecionada = 'todas';
 let termoBusca = '';
 let currentImages = [];
 let currentImageIndex = 0;
-let currentPage = 50;
-const produtosPorPagina = 10;
+let currentPage = 10;
+const produtosPorPagina = 20;
 const totalProdutos = 1000;
 
 function atualizarAnoFooter() {
