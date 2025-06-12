@@ -24,6 +24,7 @@ body {
   color: white;
   padding: 20px;
   text-align: center;
+  position: relative;
 }
 
 .logo-container img {
@@ -38,6 +39,83 @@ body {
 
 .header-text p {
   font-size: 1.1em;
+}
+
+/* Menu hamburguer */
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.8em;
+  color: white;
+  cursor: pointer;
+  position: absolute;
+  left: 20px;
+  top: 20px;
+}
+
+.mobile-menu {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100%;
+  background-color: #f9f9f9;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+.mobile-menu.active {
+  display: block;
+  transform: translateX(0);
+}
+
+.mobile-nav {
+  padding: 20px;
+}
+
+.mobile-nav a {
+  display: block;
+  color: #333;
+  padding: 10px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.mobile-nav a:hover {
+  background-color: #e0e0e0;
+}
+
+.mobile-sidebar {
+  padding: 20px;
+}
+
+.mobile-sidebar h3 {
+  font-size: 1.2em;
+  margin-bottom: 10px;
+}
+
+.mobile-sidebar ul {
+  list-style: none;
+}
+
+.mobile-sidebar .categoria-item {
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.mobile-sidebar .categoria-item:hover {
+  background-color: #e0e0e0;
+}
+
+.mobile-sidebar .categoria-item.ativa {
+  background-color: #FFA500;
+  color: white;
 }
 
 /* Navegação */
@@ -140,10 +218,14 @@ h2 {
 .barra-busca {
   width: 100%;
   max-width: 500px;
-  padding: 10px;
+  padding: 12px 12px 12px 40px;
   margin: 10px 0;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 25px;
+  font-size: 1em;
+  background: url('imagens/search-icon.png') no-repeat 10px center;
+  background-size: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .busca-feedback {
@@ -180,25 +262,31 @@ h2 {
 
 .produto-card {
   background-color: #fff;
-  padding: 10px;
+  padding: 15px;
   border: 1px solid #e0e0e0;
-  border-radius: 5px;
+  border-radius: 8px;
   text-align: center;
+  transition: transform 0.2s;
+}
+
+.produto-card:hover {
+  transform: translateY(-5px);
 }
 
 .produto-card img {
   width: 100%;
-  height: 200px;
+  height: 180px;
   object-fit: contain;
 }
 
 .produto-card span {
   display: block;
-  margin: 5px 0;
+  margin: 8px 0;
+  font-size: 1em;
 }
 
 .descricao {
-  font-size: 0.9em;
+  font-size: 0.85em;
   color: #666;
 }
 
@@ -213,12 +301,13 @@ h2 {
 
 .ver-na-loja {
   display: inline-block;
-  padding: 8px 16px;
+  padding: 10px 20px;
   background-color: #FFA500;
   color: white;
   text-decoration: none;
   border-radius: 4px;
   margin-top: 10px;
+  font-size: 0.9em;
 }
 
 .ver-na-loja:hover {
@@ -246,7 +335,7 @@ h2 {
   background: rgba(0, 0, 0, 0.5);
   color: white;
   border: none;
-  padding: 5px 10px;
+  padding: 8px 12px;
   cursor: pointer;
 }
 
@@ -413,30 +502,65 @@ footer {
 @media (max-width: 768px) {
   .container {
     flex-direction: column;
+    padding: 10px;
+  }
+
+  .menu-toggle {
+    display: block;
+  }
+
+  nav {
+    display: none;
   }
 
   .sidebar {
-    width: 100%;
-    position: static;
+    display: none;
   }
 
-  .sidebar ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
-  .categoria-item {
-    padding: 8px 12px;
-    border: 1px solid #ddd;
+  .site-header {
+    padding-left: 60px;
   }
 
   .grid-lojas {
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 8px;
+  }
+
+  .loja, .loja-todas {
+    padding: 8px;
+  }
+
+  .loja img {
+    width: 80px;
+    height: 30px;
   }
 
   .grid-produtos {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 15px;
+  }
+
+  .produto-card {
+    padding: 10px;
+  }
+
+  .produto-card img {
+    height: 150px;
+  }
+
+  .produto-card span {
+    font-size: 0.95em;
+  }
+
+  .ver-na-loja {
+    padding: 8px 16px;
+    font-size: 0.85em;
+  }
+
+  .barra-busca {
+    font-size: 0.95em;
+    padding: 10px 10px 10px 35px;
+    background-size: 18px;
   }
 
   .robo-imagem {
@@ -446,5 +570,19 @@ footer {
 
   .robo-texto {
     font-size: 0.8em;
+  }
+
+  .social-links {
+    gap: 15px;
+  }
+
+  .social-links .icon {
+    width: 35px;
+    height: 35px;
+  }
+
+  .social-links img {
+    width: 20px;
+    height: 20px;
   }
 }
