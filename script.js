@@ -147,7 +147,7 @@ function filtrarProdutos() {
       <div class="carrossel" id="${carrosselId}">
         <div class="carrossel-imagens">
           ${imagens.map((img, i) => `
-            <img src="${img}" alt="${produto.nome || 'Produto'} ${i + 1}" loading="lazy" width="200" height="200" onerror="this.src='imagens/placeholder.jpg'" onclick="openModal(${produtoIndex}, ${i})">
+            <img src="${img}" alt="${produto.nome || 'Produto'} ${i + 1}" loading="lazy" width="150" height="150" onerror="this.src='imagens/placeholder.jpg'" onclick="openModal(${produtoIndex}, ${i})">
           `).join('')}
         </div>
         ${imagens.length > 1 ? `
@@ -202,10 +202,10 @@ function moveLojasCarrossel(direction) {
   if (!gridLojas) return;
   const lojas = gridLojas.children;
   const totalLojas = lojas.length;
-  const visibleLojas = window.innerWidth < 768 ? 3 : 5; // Ajusta quantas lojas são visíveis
+  const visibleLojas = window.innerWidth < 768 ? 2.5 : 4; // Mostra 2.5 lojas no mobile
 
-  lojasCarrosselIndex = (lojasCarrosselIndex + direction + totalLojas) % totalLojas;
-  if (lojasCarrosselIndex < 0) lojasCarrosselIndex = totalLojas - visibleLojas;
+  lojasCarrosselIndex += direction;
+  if (lojasCarrosselIndex < 0) lojasCarrosselIndex = 0;
   if (lojasCarrosselIndex > totalLojas - visibleLojas) lojasCarrosselIndex = totalLojas - visibleLojas;
 
   requestAnimationFrame(() => {
