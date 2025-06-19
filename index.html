@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="google-adsense-account" content="ca-pub-4531749081462125">
   <meta name="twitter:card" content="summary_large_image">
   <title>Centro de Compras - Ofertas do Dia</title>
@@ -10,12 +8,12 @@
   <link rel="preload" href="logos/logoscentrodecompras.jpeg" as="image">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="logos/favicon-16x16.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="logos/apple-touch-icon.png">
-  <link rel="manifest" href="logos/site.webmanifest">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="style.css" media="print" onload="this.media='all'">
+  <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32x32.png"> <!-- Favicon principal -->
+  <link rel="icon" type="image/png" sizes="16x16" href="logos/favicon-16x16.png"> <!-- Favicon adicional -->
+  <link rel="apple-touch-icon" sizes="180x180" href="logos/apple-touch-icon.png"> <!-- Ícone para dispositivos Apple -->
+  <link rel="manifest" href="logos/site.webmanifest"> <!-- Manifesto para PWA -->
 </head>
 <body>
   <header class="site-header">
@@ -25,22 +23,21 @@
       </a>
     </div>
     <div class="header-text">
-      <h1>Centro de Compras</h1>
+      <h1>Centro de Compra</h1>
       <p>O maior portal de compras do Brasil! Encontre as melhores ofertas.</p>
     </div>
   </header>
 
-  <nav class="nav-bar">
+  <nav>
     <a href="index">Promoções</a>
-    <a href="cupom">Cupons</a>
+    <a href="cupom">Cupom de Desconto</a>
     <a href="sobre">Sobre</a>
     <a href="contato">Contato</a>
   </nav>
 
-  <main class="app-container">
+  <div class="container">
     <aside class="sidebar">
       <h3>Categorias</h3>
-      <ul id="lista-categorias"></ul>
       <ul>
         <li class="categoria-item ativa" data-categoria="todas" onclick="filtrarPorCategoria('todas')"><i class="fas fa-list mr-2"></i>Todas</li>
         <li class="categoria-item" data-categoria="eletronicos" onclick="filtrarPorCategoria('eletronicos')"><i class="fas fa-laptop mr-2"></i>Eletrônicos</li>
@@ -61,21 +58,42 @@
       </ul>
     </aside>
 
-    <section class="conteudo-principal">
-      <h2>🛍️ Ofertas do Dia</h2>
-      <ins class="adsbygoogle"
-           style="display:block"
-           data-ad-client="ca-pub-4531749081462125"
-           data-ad-slot="5690664546"
-           data-ad-format="auto"
-           data-full-width-responsive="true"></ins>
-
-      <div class="lojas-parceiras">
-        <h3>🌟 Lojas Parceiras</h3>
-        <div class="grid-lojas" id="lista-lojas"></div>
-      </div>
-
-      <i<input type="text" id="busca" placeholder="Busque por produtos..." class="barra-busca">
+    <main>
+      <section>
+        <h2>🛍️ Ofertas do Dia</h2>
+        <!-- Bloco de anúncio do AdSense -->
+        <ins class="adsbygoogle"
+             style="display:inline-block;width:728px;height:90px"
+             data-ad-client="ca-pub-4531749081462125"
+             data-ad-slot="5690664546"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+        <div class="lojas-parceiras">
+          <h3>🌟 Lojas Parceiras</h3>
+          <div class="grid-lojas">
+            <div class="loja-todas ativa" onclick="filtrarPorLoja('todas')"><span>Todas as Lojas</span></div>
+            <div class="loja" data-loja="amazon" onclick="filtrarPorLoja('amazon')">
+              <img src="logos/amazon.png" alt="Amazon" loading="lazy" width="100" height="40"><span>Amazon</span>
+            </div>
+            <div class="loja" data-loja="magalu" onclick="filtrarPorLoja('magalu')">
+              <img src="logos/magalu.png" alt="Magalu" loading="lazy" width="100" height="40"><span>Magalu</span>
+            </div>
+            <div class="loja" data-loja="shein" onclick="filtrarPorLoja('shein')">
+              <img src="logos/shein.png" alt="Shein" loading="lazy" width="100" height="40"><span>Shein</span>
+            </div>
+            <div class="loja" data-loja="shopee" onclick="filtrarPorLoja('shopee')">
+              <img src="logos/shopee.png" alt="Shopee" loading="lazy" width="100" height="40"><span>Shopee</span>
+            </div>
+            <div class="loja" data-loja="mercadolivre" onclick="filtrarPorLoja('mercadolivre')">
+              <img src="logos/mercadolivre.jpg" alt="Mercado Livre" loading="lazy" width="100" height="40"><span>Mercado Livre</span>
+            </div>
+            <div class="loja" data-lojaconforte-loja="alibaba" onclick="filtrarPorLoja('alibaba')">
+              <img src="logos/alibaba.png" alt="Alibaba" loading="lazy" width="100" height="40"><span>Alibaba</span>
+            </div>
+          </div>
+        </div>
+        <input type="text" id="busca" placeholder="Busque por produtos..." class="barra-busca">
         <div id="busca-feedback" class="busca-feedback"></div>
         <div class="loading-spinner" id="loading-spinner"></div>
         <div class="grid-produtos" id="grid-produtos"></div>
@@ -85,39 +103,29 @@
           <button id="prev-page" disabled>Anterior</button>
           <span id="page-info">Página 1</span>
           <button id="next-page">Próxima</button>
-
+        </div>
+      </section>
       <div class="social-links">
         <a href="https://www.tiktok.com/@cdc.centraldecompras" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><img src="logos/tiktok.png" alt="TikTok"></div><span>TikTok</span>
+          <div class="icon"><img src="logos/tiktok.png" alt="TikTok" loading="lazy" width="40" height="40"></div>
+          <span>TikTok</span>
         </a>
         <a href="https://www.instagram.com/cdccentrodecompras/" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><img src="logos/Instagram.png" alt="Instagram"></div><span>Instagram</span>
+          <div class="icon"><img src="logos/Instagram.png" alt="Instagram" loading="lazy" width="40" height="40"></div>
+          <span>Instagram</span>
         </a>
         <a href="https://x.com/ComprasCdc" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><img src="logos/X.png" alt="X"></div><span>X</span>
+          <div class="icon"><img src="logos/X.png" alt="X" loading="lazy" width="40" height="40"></div>
+          <span>X</span>
         </a>
         <a href="https://www.youtube.com/channel/UCaKHlI-hWqwdAXS6Xsv3ZzA" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><img src="logos/youtube.png" alt="YouTube"></div><span>YouTube</span>
+          <div class="icon"><img src="logos/youtube.png" alt="YouTube" loading="lazy" width="40" height="40"></div>
+          <span>YouTube</span>
         </a>
       </div>
-
-      <a href="https://api.whatsapp.com/send?phone=5521975179737" class="whatsapp">📲 WhatsApp</a>
-      <a href="https://t.me/centraldecomprascdc" class="telegram">📢 Telegram</a>
-    </section>
-  </main>
-
-  <footer>
-    <p>🔧 Todos os direitos reservados <strong>Grupo Centro de Compra "CdC"</strong> © <span id="year"></span></p>
-    <div class="credibilidade-nota">
-      <p><strong>Sobre credibilidade:</strong> Este site é um portal de descontos afiliado. Você será redirecionado para plataformas terceiras. Verifique sempre a validade dos cupons nas lojas parceiras.</p>
-    </div>
-  </footer>
-
-  <div class="robo-assistente">
-    <a href="https://api.whatsapp.com/send?phone=5521975179737" target="_blank" rel="noopener noreferrer">
-      <img src="imagens/robo.jpg" alt="Robô Assistente" class="robo-imagem">
-      <div class="robo-texto">Posso ajudar?</div>
-    </a>
+      <a href="https://api.whatsapp.com/send?phone=5521975179737" class="whatsapp" target="_blank" rel="noopener noreferrer">📲 WhatsApp</a>
+      <a href="https://t.me/centraldecomprascdc" class="telegram" target="_blank" rel="noopener noreferrer">📢 Telegram</a>
+    </main>
   </div>
 
   <div class="modal" id="imageModal">
@@ -128,6 +136,20 @@
       <button class="carrossel-next" onclick="moveModalCarrossel(1)">▶</button>
       <div class="carrossel-dots" id="modalCarrosselDots"></div>
     </div>
+  </div>
+
+  <footer>
+    <p>🔧 Todos os direitos reservados <strong>Grupo Centro de Compra "CdC"</strong> © <span id="year"></span></p>
+    <div class="credibilidade-nota">
+  <p><strong>Sobre credibilidade:</strong> É importante notar que esse site é apenas um portal de descontos e afiliado, não uma loja direta. Ele redireciona para plataformas terceiras. Verifique sempre se o cupom é válido diretamente na loja original, pois promoções podem expirar ou não se aplicar a certos produtos.</p>
+</div>
+  </footer>
+
+  <div class="robo-assistente">
+    <a href="https://api.whatsapp.com/send?phone=5521975179737" target="_blank" rel="noopener noreferrer">
+      <img src="imagens/robo.jpg" alt="Robô Assistente" class="robo-imagem" loading="lazy" width="60" height="60">
+      <div class="robo-texto">Posso ajudar?</div>
+    </a>
   </div>
 
   <script defer src="script.js"></script>
