@@ -1,4 +1,4 @@
-const API_URL = 'https://centrodecompra-backend.onrender.com'; // Use 'http://localhost:10000' para testes locais
+const API_URL = 'https://centrodecompra.vercel.app/'; // Use 'http://localhost:10000' para testes locais
 
 // Variáveis globais
 let produtos = [];
