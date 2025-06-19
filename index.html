@@ -13,6 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="style.css" media="print" onload="this.media='all'">
   <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="logos/favicon-16x16.png">
@@ -23,7 +24,7 @@
   <header class="site-header">
     <div class="hamburger" onclick="toggleMenu()">☰</div>
     <div class="logo-container">
-      <a href="index.html">
+      <a href="index">
         <picture>
           <source srcset="logos/logoscentrodecompras.webp" type="image/webp">
           <img src="logos/logoscentrodecompras.jpeg" alt="Centro de Compras" id="site-logo-img" width="150" height="50">
@@ -37,7 +38,7 @@
   </header>
 
   <nav id="main-nav" class="hidden">
-    <a href="">Promoções</a>
+    <a href="promocoes">Promoções</a>
     <a href="cupom">Cupom de Desconto</a>
     <a href="sobre">Sobre</a>
     <a href="contato">Contato</a>
@@ -47,10 +48,7 @@
     <aside id="sidebar" class="sidebar hidden">
       <h3>Categorias</h3>
       <ul>
-        <li class="categoria-item ativa" data-categoria="todas" onclick="filtrarPorCategoria('todas')" aria-label="Filtrar por todas as categorias">
-          <svg class="mr-2" width="16" height="16" viewBox="0 0 512 512"><path fill="currentColor" d="M0 96C0 78.3 14.3 64 32 64H480c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H480c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM0 416c0-17.7 14.3-32 32-32H480c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32z"/></svg>
-          Todas
-        </li>
+        <li class="categoria-item ativa" data-categoria="todas" onclick="filtrarPorCategoria('todas')" aria-label="Filtrar por todas as categorias"><i class="fas fa-list mr-2"></i>Todas</li>
         <li class="categoria-item" data-categoria="eletronicos" onclick="filtrarPorCategoria('eletronicos')" aria-label="Filtrar por eletrônicos"><i class="fas fa-laptop mr-2"></i>Eletrônicos</li>
         <li class="categoria-item" data-categoria="moda" onclick="filtrarPorCategoria('moda')" aria-label="Filtrar por moda"><i class="fas fa-tshirt mr-2"></i>Moda</li>
         <li class="categoria-item" data-categoria="fitness" onclick="filtrarPorCategoria('fitness')" aria-label="Filtrar por fitness"><i class="fas fa-dumbbell mr-2"></i>Fitness</li>
@@ -107,7 +105,7 @@
         </div>
         <div class="search-container">
           <input type="text" id="busca" placeholder="Busque por produtos..." class="barra-busca" aria-label="Pesquisar produtos">
-          <svg class="search-icon" width="16" height="16" viewBox="0 0 512 512"><path fill="currentColor" d="M508.5 481.6l-129-129c-2.3-2.3-5.3-3.5-8.5-3.5h-10.3C395 312.1 416 262.5 416 208 416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c54.5 0 104.1-21 141.1-55.2V371c0 3.2 1.3 6.2 3.5 8.5l129 129c4.7 4.7 12.3 4.7 17 0l9.9-9.9c4.7-4.7 4.7-12.3 0-17zM208 384c-97.3 0-176-78.7-176-176S110.7 32 208 32s176 78.7 176 176-78.7 176-176 176z"/></svg>
+          <i class="fas fa-search search-icon"></i>
         </div>
         <div id="busca-feedback" class="busca-feedback"></div>
         <div class="loading-spinner" id="loading-spinner"></div>
