@@ -17,6 +17,12 @@ const mockProdutos = [
   { id: 2, nome: 'Produto Mock 2', categoria: 'moda', loja: 'shein', imagens: ['imagens/placeholder.jpg'], link: '#' }
 ];
 
+// Menu hambúrguer
+function toggleMenu() {
+  document.getElementById('main-nav').classList.toggle('active');
+  document.getElementById('sidebar').classList.toggle('active');
+}
+
 // Atualizar ano no footer
 function atualizarAnoFooter() {
   const yearElement = document.getElementById('year');
@@ -45,8 +51,8 @@ function configurarCliqueLogo() {
       }, 500);
     } else if (clickCount === 3) {
       clearTimeout(clickTimer);
-      console.log('Triplo clique detectado, redirecionando para admin-xyz-123.html');
-      window.location.href = '/admin-xyz-123.html';
+      console.log('Triplo clique detectado, redirecionando para admin-xyz-123');
+      window.location.href = '/admin-xyz-123';
       clickCount = 0;
     }
   }, { once: false });
@@ -91,13 +97,10 @@ async function carregarProdutos() {
         throw new Error(data.details || data.message || `Erro HTTP ${response.status}`);
       }
 
-      // Logar a resposta para depuração
       console.log('Resposta da API:', data);
 
-      // Verificar se 'produtos' existe e é um array
       let produtosRecebidos = data.produtos;
       if (!Array.isArray(produtosRecebidos)) {
-        // Tentar alternativas: 'data', 'items', ou array direto
         if (Array.isArray(data)) {
           produtosRecebidos = data;
         } else if (Array.isArray(data.data)) {
@@ -110,7 +113,7 @@ async function carregarProdutos() {
       }
 
       produtos = produtosRecebidos;
-      totalProdutos = Number(data.total) || totalProdutos; // Garantir que total é número
+      totalProdutos = Number(data.total) || totalProdutos;
 
       console.log(`Produtos recebidos: ${produtos.length}, Total: ${totalProdutos}`);
       filtrarProdutos();
@@ -119,7 +122,6 @@ async function carregarProdutos() {
     } catch (error) {
       console.error(`⚠️ Tentativa ${attempt} falhou: ${error.message}`);
       if (attempt === maxRetries) {
-        // Usar dados mockados como fallback
         console.warn('Usando dados mockados devido a falha na API');
         produtos = mockProdutos;
         totalProdutos = mockProdutos.length;
@@ -316,6 +318,33 @@ function closeModal() {
   currentImageIndex = 0;
 }
 
+// Suporte a gestos no carrossel do modal
+function configurarGestosModal() {
+  const carrossel = document.getElementById('modalCarrosselImagens');
+  let startX = 0;
+  carrossel.addEventListener('touchstart', (e) => {
+    startX = e.touches[0].clientX;
+  });
+  carrossel.addEventListener('touchend', (e) => {
+    const endX = e.changedTouches[0].clientX;
+    if (startX - endX > 50) {
+      moveModalCarrossel(1);
+    } else if (endX - startX > 50) {
+      moveModalCarrossel(-1);
+    }
+  });
+}
+
+// Rolar para barra de busca em mobile
+function configurarRolarBusca() {
+  document.getElementById('busca').addEventListener('focus', () => {
+    window.scrollTo({
+      top: document.getElementById('busca').offsetTop - 20,
+      behavior: 'smooth'
+    });
+  });
+}
+
 // Configurar busca com debounce
 function configurarBusca() {
   const inputBusca = document.getElementById('busca');
@@ -411,23 +440,26 @@ document.addEventListener('DOMContentLoaded', () => {
   configurarPaginacao();
   atualizarAnoFooter();
   configurarCliqueLogo();
+  configurarGestosModal();
+  configurarRolarBusca();
 
   const modal = document.getElementById('imageModal');
   if (modal) {
     modal.addEventListener('click', (e) => {
       if (e.target === e.currentTarget) closeModal();
     });
-    // Adicionar navegação por teclado no modal
     document.addEventListener('keydown', (e) => {
       if (modal.style.display === 'flex') {
         if (e.key === 'ArrowLeft') moveModalCarrossel(-1);
         if (e.key === 'ArrowRight') moveModalCarrossel(1);
         if (e.key === 'Escape') closeModal();
       }
-document.addEventListener('DOMContentLoaded', () => {
+    });
+  }
+
+  // Remover .html dos links
   document.querySelectorAll('a[href$=".html"]').forEach(link => {
     const href = link.getAttribute('href');
     link.setAttribute('href', href.replace('.html', ''));
   });
-
-
+});
