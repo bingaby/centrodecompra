@@ -447,4 +447,23 @@ footer {
   .robo-texto {
     font-size: 0.8em;
   }
+  .credibilidade-nota {
+  background-color: #28a745; /* Verde */
+  color: #fff; /* Texto branco */
+  padding: 15px;
+  text-align: center;
+  font-size: 14px;
+  margin: 0;
+  border-top: 1px solid #218838; /* Borda superior mais escura */
+  border-bottom: 1px solid #218838; /* Borda inferior mais escura */
+}
+
+.credibilidade-nota p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.credibilidade-nota strong {
+  font-weight: 700;
+}
 }
