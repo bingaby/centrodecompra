@@ -177,7 +177,7 @@ h2 {
 
 .barra-busca {
   width: 100%;
-  padding: 12px;
+  padding: 12px 40px 12px 12px;
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 1rem;
@@ -201,11 +201,13 @@ h2 {
   display: none;
   font-size: 0.9em;
   color: #666;
+  margin-top: 5px;
 }
 
 .loading-spinner {
   display: none;
   text-align: center;
+  margin: 20px 0;
 }
 
 .loading-spinner::after {
@@ -239,7 +241,7 @@ h2 {
 
 .produto-card img {
   width: 100%;
-  height: 200px;
+  height: 180px;
   object-fit: contain;
 }
 
@@ -327,7 +329,7 @@ h2 {
   cursor: pointer;
 }
 
-.carrossel-dot.ativa {
+.carrossel-dot.ativo {
   background: #FFA500;
 }
 
