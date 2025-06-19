@@ -466,4 +466,9 @@ footer {
 .credibilidade-nota strong {
   font-weight: 700;
 }
+  @media (max-width: 768px) {
+  .credibilidade-nota {
+    padding: 10px;
+    font-size: 12px;
+  }
 }
