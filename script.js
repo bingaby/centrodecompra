@@ -1,4 +1,4 @@
-const API_URL = 'https://<backend>.northflank.app';
+const API_URL = 'https://centrodecompra-backend.onrender.com';
 
 let produtos = [];
 let categoriaSelecionada = 'todas';
