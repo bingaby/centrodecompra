@@ -274,7 +274,7 @@ h2 {
 }
 
 .produto-card img {
-  width: 100%;
+  max-width: 100%; /* Adicionado: Garante que a imagem não exceda a largura do container */
   height: 180px;
   object-fit: contain;
 }
@@ -361,6 +361,35 @@ h2 {
 
 .carrossel-dot.ativo {
   background: #FFA500;
+}
+
+/* Paginação */
+.paginacao { /* Adicionado: Estilização para os controles de paginação */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.paginacao button {
+  padding: 8px 16px;
+  background-color: #FFA500;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.paginacao button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.paginacao span {
+  font-size: 1em;
+  color: #333;
 }
 
 /* Modal */
@@ -584,5 +613,26 @@ footer {
   .social-links img {
     width: 20px;
     height: 20px;
+  }
+}
+
+/* Adicionado: Media query para telas muito pequenas (≤400px) para melhor exibição de 25 itens */
+@media (max-width: 400px) {
+  .grid-produtos {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+  }
+  .produto-card img {
+    height: 120px;
+  }
+  .produto-card {
+    padding: 8px;
+  }
+  .produto-card span {
+    font-size: 0.9em;
+  }
+  .ver-na-loja {
+    padding: 6px 12px;
+    font-size: 0.8em;
   }
 }
