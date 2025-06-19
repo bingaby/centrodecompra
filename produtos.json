@@ -298,5 +298,17 @@
     "imagens": [
       "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_antigo-testamento-interpretado:-5-volumes:-versículo-por-versículo,-de-champlin,-russell-norman.-editorial-editora-hagnos-ltda,-capa-dura-em-português,-20-1750334224606.webp"
     ]
+  },
+  {
+    "_id": "1750355532079dzv6510mo",
+    "nome": "Fogão Electrolux 4 bocas Efficient com PerfectCook Prata FE4GS",
+    "descricao": "Fogão Electrolux 4 bocas Efficient com PerfectCook Prata FE4GS",
+    "categoria": "eletrodomesticos",
+    "loja": "amazon",
+    "link": "https://amzn.to/3ZE50PC",
+    "preco": 10,
+    "imagens": [
+      "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_fogão-electrolux-4-bocas-efficient-com-perfectcook-prata-fe4gs-1750355531088.jpg"
+    ]
   }
 ]
