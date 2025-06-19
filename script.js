@@ -11,6 +11,12 @@ let currentPage = 1;
 const produtosPorPagina = 20;
 let totalProdutos = 1000; // Inicialmente fixo, atualizado pela API
 
+// Dados mockados como fallback
+const mockProdutos = [
+  { id: 1, nome: 'Produto Mock 1', categoria: 'eletronicos', loja: 'amazon', imagens: ['imagens/placeholder.jpg'], link: '#' },
+  { id: 2, nome: 'Produto Mock 2', categoria: 'moda', loja: 'shein', imagens: ['imagens/placeholder.jpg'], link: '#' }
+];
+
 // Atualizar ano no footer
 function atualizarAnoFooter() {
   const yearElement = document.getElementById('year');
@@ -73,18 +79,38 @@ async function carregarProdutos() {
         `${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`,
         { cache: 'no-store' }
       );
+
+      let data;
+      try {
+        data = await response.json();
+      } catch (e) {
+        throw new Error('Resposta da API não é JSON válido');
+      }
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.details || `Erro ${response.status}`);
-      }
-      const data = await response.json();
-
-      if (!Array.isArray(data.produtos)) {
-        throw new Error('Resposta inválida da API: produtos não é um array');
+        throw new Error(data.details || data.message || `Erro HTTP ${response.status}`);
       }
 
-      produtos = data.produtos;
-      totalProdutos = data.total || totalProdutos; // Atualiza totalProdutos se API fornecer
+      // Logar a resposta para depuração
+      console.log('Resposta da API:', data);
+
+      // Verificar se 'produtos' existe e é um array
+      let produtosRecebidos = data.produtos;
+      if (!Array.isArray(produtosRecebidos)) {
+        // Tentar alternativas: 'data', 'items', ou array direto
+        if (Array.isArray(data)) {
+          produtosRecebidos = data;
+        } else if (Array.isArray(data.data)) {
+          produtosRecebidos = data.data;
+        } else if (Array.isArray(data.items)) {
+          produtosRecebidos = data.items;
+        } else {
+          throw new Error('Resposta inválida da API: propriedade "produtos" não é um array');
+        }
+      }
+
+      produtos = produtosRecebidos;
+      totalProdutos = Number(data.total) || totalProdutos; // Garantir que total é número
 
       console.log(`Produtos recebidos: ${produtos.length}, Total: ${totalProdutos}`);
       filtrarProdutos();
@@ -93,10 +119,14 @@ async function carregarProdutos() {
     } catch (error) {
       console.error(`⚠️ Tentativa ${attempt} falhou: ${error.message}`);
       if (attempt === maxRetries) {
-        errorMessage.textContent = `Erro ao carregar produtos após ${maxRetries} tentativas: ${error.message}.`;
+        // Usar dados mockados como fallback
+        console.warn('Usando dados mockados devido a falha na API');
+        produtos = mockProdutos;
+        totalProdutos = mockProdutos.length;
+        errorMessage.textContent = 'Não foi possível carregar os produtos. Exibindo conteúdo de demonstração.';
         errorMessage.style.display = 'block';
-        mensagemVazia.style.display = 'none';
-        gridProdutos.style.display = 'none';
+        filtrarProdutos();
+        atualizarPaginacao();
       }
       attempt++;
       await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
