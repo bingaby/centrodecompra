@@ -424,6 +424,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'ArrowRight') moveModalCarrossel(1);
         if (e.key === 'Escape') closeModal();
       }
-    });
-  }
-});
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('a[href$=".html"]').forEach(link => {
+    const href = link.getAttribute('href');
+    link.setAttribute('href', href.replace('.html', ''));
+  });
+
+
