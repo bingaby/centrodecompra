@@ -1,4 +1,6 @@
-const API_URL = 'https://centrodecompra-backend.onrender.com'; // Use 'http://localhost:10000' para testes locais// Variáveis globais
+const API_URL = 'https://centrodecompra-backend.onrender.com'; // Use 'http://localhost:10000' para testes locais
+
+// Variáveis globais
 let produtos = [];
 let categoriaSelecionada = 'todas';
 let lojaSelecionada = 'todas';
@@ -7,19 +9,19 @@ let currentImages = [];
 let currentImageIndex = 0;
 let currentPage = 1;
 const produtosPorPagina = 20;
-let totalProdutos = 1000; // Inicialmente fixo, atualizado pela API// Dados mockados como fallback
-const mockProdutos = [
-  { id: 1, nome: 'Produto Mock 1', categoria: 'eletronicos', loja: 'amazon', imagens: ['imagens/placeholder.jpg'], link: '#' },
-  { id: 2, nome: 'Produto Mock 2', categoria: 'moda', loja: 'shein', imagens: ['imagens/placeholder.jpg'], link: '#' }
-];// Atualizar ano no footer
+const totalProdutos = 1000;
+
+// Atualizar ano no footer
 function atualizarAnoFooter() {
   const yearElement = document.getElementById('year');
   if (yearElement) {
     yearElement.textContent = new Date().getFullYear();
   }
-}// Detectar triplo clique no logotipo
+}
+
+// Detectar triplo clique no logotipo
 function configurarCliqueLogo() {
-  const logo = document.getElementById('site-logo-img');
+  const logo = document.getElementById('site-logo-img'); // Corrigido para o ID correto
   if (!logo) {
     console.error('ID site-logo-img não encontrado no DOM');
     return;
@@ -29,7 +31,7 @@ function configurarCliqueLogo() {
   logo.addEventListener('click', (e) => {
     e.preventDefault();
     clickCount++;
-    console.log(Clique detectado: ${clickCount});
+    console.log(`Clique detectado: ${clickCount}`);
     if (clickCount === 1) {
       clickTimer = setTimeout(() => {
         clickCount = 0;
@@ -42,266 +44,312 @@ function configurarCliqueLogo() {
       clickCount = 0;
     }
   }, { once: false });
-}// Carregar produtos com retry
+}
+
+// Carregar produtos com retry
 async function carregarProdutos() {
   const loadingSpinner = document.getElementById('loading-spinner');
   const mensagemVazia = document.getElementById('mensagem-vazia');
   const errorMessage = document.getElementById('error-message');
-  const gridProdutos = document.getElementById('grid-produtos');  if (!gridProdutos || !mensagemVazia || !errorMessage || !loadingSpinner) {
-    console.error('Elementos essenciais não encontrados');
+  const gridProdutos = document.getElementById('grid-produtos');
+
+  if (!gridProdutos || !mensagemVazia || !errorMessage || !loadingSpinner) {
+    console.error('Elementos essenciais (grid-produtos, mensagem-vazia, error-message, loading-spinner) não encontrados');
     return;
-  }  const maxRetries = 3;
-  let attempt = 1;  while (attempt <= maxRetries) {
+  }
+
+  const maxRetries = 3;
+  let attempt = 1;
+
+  while (attempt <= maxRetries) {
     try {
       loadingSpinner.style.display = 'block';
       mensagemVazia.style.display = 'none';
       errorMessage.style.display = 'none';
-      gridProdutos.innerHTML = '';  console.log(`Tentativa ${attempt}: Carregando produtos de ${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`);
-  const response = await fetch(
-    `${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`,
-    { cache: 'no-store' }
-  );
+      gridProdutos.innerHTML = '';
 
-  let data;
-  try {
-    data = await response.json();
-  } catch (e) {
-    throw new Error('Resposta da API não é JSON válido');
-  }
+      console.log(`Tentativa ${attempt}: Carregando produtos de ${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`);
+      const response = await fetch(
+        `${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`,
+        { cache: 'no-store' }
+      );
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.details || `Erro ${response.status}`);
+      }
+      produtos = await response.json();
 
-  if (!response.ok) {
-    throw new Error(data.details || data.message || `Erro HTTP ${response.status}`);
-  }
+      if (!Array.isArray(produtos)) {
+        throw new Error('Resposta inválida da API: não é um array');
+      }
 
-  // Logar a resposta para depuração
-  console.log('Resposta da API:', data);
-
-  // Verificar se 'produtos' existe e é um array
-  let produtosRecebidos = data.produtos;
-  if (!Array.isArray(produtosRecebidos)) {
-    // Tentar alternativas: 'data', 'items', ou array direto
-    if (Array.isArray(data)) {
-      produtosRecebidos = data;
-    } else if (Array.isArray(data.data)) {
-      produtosRecebidos = data.data;
-    } else if (Array.isArray(data.items)) {
-      produtosRecebidos = data.items;
-    } else {
-      throw new Error('Resposta inválida da API: propriedade "produtos" não é um array');
+      console.log(`Produtos recebidos: ${produtos.length}`);
+      filtrarProdutos();
+      atualizarPaginacao();
+      return;
+    } catch (error) {
+      console.error(`⚠️ Tentativa ${attempt} falhou: ${error.message}`);
+      if (attempt === maxRetries) {
+        errorMessage.textContent = `Erro ao carregar produtos após ${maxRetries} tentativas: ${error.message}.`;
+        errorMessage.style.display = 'block';
+        mensagemVazia.style.display = 'none';
+        gridProdutos.style.display = 'none';
+      }
+      attempt++;
+      await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+    } finally {
+      loadingSpinner.style.display = 'none';
     }
   }
+}
 
-  produtos = produtosRecebidos;
-  totalProdutos = Number(data.total) || totalProdutos; // Garantir que total é número
-
-  console.log(`Produtos recebidos: ${produtos.length}, Total: ${totalProdutos}`);
-  filtrarProdutos();
-  atualizarPaginacao();
-  return;
-} catch (error) {
-  console.error(` Tentativa ${attempt} falhou: ${error.message}`);
-  if (attempt === maxRetries) {
-    // Usar dados mockados como fallback
-    console.warn('Usando dados mockados devido a falha na API');
-    produtos = mockProdutos;
-    totalProdutos = mockProdutos.length;
-    errorMessage.textContent = 'Não foi possível carregar os produtos. Exibindo conteúdo de demonstração.';
-    errorMessage.style.display = 'block';
-    filtrarProdutos();
-    atualizarPaginacao();
-  }
-  attempt++;
-  await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
-} finally {
-  loadingSpinner.style.display = 'none';
-}  }
-}// Filtrar e exibir produtos
+// Filtrar e exibir produtos
 function filtrarProdutos() {
   const gridProdutos = document.getElementById('grid-produtos');
-  const mensagemVazia = document.getElementById('mensagem-vazia');  if (!gridProdutos || !mensagemVazia) {
+  const mensagemVazia = document.getElementById('mensagem-vazia');
+
+  if (!gridProdutos || !mensagemVazia) {
     console.error('grid-produtos ou mensagem-vazia não encontrados');
     return;
-  }  const produtosFiltrados = produtos.filter((produto) => {
+  }
+
+  const produtosFiltrados = produtos.filter((produto) => {
     const matchCategoria =
       categoriaSelecionada === 'todas' ||
-      (produto.categoria && typeof produto.categoria === 'string' && produto.categoria.toLowerCase() === categoriaSelecionada.toLowerCase());
+      produto.categoria?.toLowerCase() === categoriaSelecionada.toLowerCase();
     const matchLoja =
       lojaSelecionada === 'todas' ||
-      (produto.loja && typeof produto.loja === 'string' && produto.loja.toLowerCase() === lojaSelecionada.toLowerCase());
+      produto.loja?.toLowerCase() === lojaSelecionada.toLowerCase();
     const matchBusca =
-      !termoBusca ||
-      (produto.nome && typeof produto.nome === 'string' && produto.nome.toLowerCase().includes(termoBusca.toLowerCase()));
+      !termoBusca || produto.nome?.toLowerCase().includes(termoBusca.toLowerCase());
     return matchCategoria && matchLoja && matchBusca;
-  });  gridProdutos.innerHTML = '';
+  });
+
+  gridProdutos.innerHTML = '';
   if (produtosFiltrados.length === 0) {
     mensagemVazia.style.display = 'block';
     gridProdutos.style.display = 'none';
     console.log('Nenhum produto filtrado encontrado');
     return;
-  }  mensagemVazia.style.display = 'none';
-  gridProdutos.style.display = 'grid';  produtosFiltrados.forEach((produto, produtoIndex) => {
+  }
+
+  mensagemVazia.style.display = 'none';
+  gridProdutos.style.display = 'grid';
+
+  produtosFiltrados.forEach((produto, produtoIndex) => {
     const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0
       ? produto.imagens.filter(img => typeof img === 'string' && img)
       : ['imagens/placeholder.jpg'];
-    const carrosselId = carrossel-${produtoIndex}-${produto.id || Date.now()};const produtoDiv = document.createElement('div');
-produtoDiv.classList.add('produto-card', 'visible');
-produtoDiv.setAttribute('data-categoria', (produto.categoria && typeof produto.categoria === 'string' ? produto.categoria.toLowerCase() : 'todas'));
-produtoDiv.setAttribute('data-loja', (produto.loja && typeof produto.loja === 'string' ? produto.loja.toLowerCase() : 'todas'));
+    const carrosselId = `carrossel-${produtoIndex}-${produto.id || Date.now()}`; // Corrigido
 
-produtoDiv.innerHTML = `
-  <div class="carrossel" id="${carrosselId}">
-    <div class="carrossel-imagens">
-      ${imagens.map((img, i) => `
-        <img src="${img}" alt="${produto.nome || 'Produto'} ${i + 1}" loading="lazy" width="180" height="180" onerror="this.src='imagens/placeholder.jpg'" onclick="openModal(${produtoIndex}, ${i})">
-      `).join('')}
-    </div>
-    ${imagens.length > 1 ? `
-      <button class="carrossel-prev" onclick="moveCarrossel('${carrosselId}', -1)" aria-label="Imagem anterior">◄</button>
-      <button class="carrossel-next" onclick="moveCarrossel('${carrosselId}', 1)" aria-label="Próxima imagem"></button>
-      <div class="carrossel-dots">
-        ${imagens.map((_, i) => `<span class="carrossel-dot ${i === 0 ? 'ativo' : ''}" onclick="setCarrosselImage('${carrosselId}', ${i})" aria-label="Selecionar imagem ${i + 1}"></span>`).join('')}
+    const produtoDiv = document.createElement('div');
+    produtoDiv.classList.add('produto-card', 'visible');
+    produtoDiv.setAttribute('data-categoria', produto.categoria?.toLowerCase() || 'todas');
+    produtoDiv.setAttribute('data-loja', produto.loja?.toLowerCase() || 'todas');
+
+    produtoDiv.innerHTML = `
+      <div class="carrossel" id="${carrosselId}">
+        <div class="carrossel-imagens">
+          ${imagens.map((img, i) => `
+            <img src="${img}" alt="${produto.nome || 'Produto'} ${i + 1}" loading="lazy" width="200" height="200" onerror="this.src='imagens/placeholder.jpg'" onclick="openModal(${produtoIndex}, ${i})">
+          `).join('')}
+        </div>
+        ${imagens.length > 1 ? `
+          <button class="carrossel-prev" onclick="moveCarrossel('${carrosselId}', -1)">◄</button>
+          <button class="carrossel-next" onclick="moveCarrossel('${carrosselId}', 1)">▶</button>
+          <div class="carrossel-dots">
+            ${imagens.map((_, i) => `<span class="carrossel-dot ${i === 0 ? 'ativo' : ''}" onclick="setCarrosselImage('${carrosselId}', ${i})"></span>`).join('')}
+          </div>
+        ` : ''}
       </div>
-    ` : ''}
-  </div>
-  <span>${produto.nome && typeof produto.nome === 'string' ? produto.nome : 'Produto sem nome'}</span>
-  <span class="descricao">Loja: ${produto.loja && typeof produto.loja === 'string' ? produto.loja : 'Desconhecida'}</span>
-  <p class="preco"><a href="${produto.link && typeof produto.link === 'string' ? produto.link : '#'}" target="_blank" class="ver-preco">Clique aqui para ver o preço</a></p>
-  <a href="${produto.link && typeof produto.link === 'string' ? produto.link : '#'}" target="_blank" class="ver-na-loja ${produto.loja && typeof produto.loja === 'string' ? produto.loja.toLowerCase() : 'default'}" aria-label="Comprar ${produto.nome || 'produto'} na ${produto.loja || 'loja'}">Comprar</a>
-`;
-gridProdutos.appendChild(produtoDiv);  });
-  console.log(Exibidos ${produtosFiltrados.length} produtos);
-}// Funções do carrossel
+      <span>${produto.nome || 'Produto sem nome'}</span>
+      <span class="descricao">Loja: ${produto.loja || 'Desconhecida'}</span>
+      <p class="preco"><a href="${produto.link || '#'}" target="_blank" class="ver-preco">Clique aqui para ver o preço</a></p>
+      <a href="${produto.link || '#'}" target="_blank" class="ver-na-loja ${produto.loja?.toLowerCase() || 'default'}">Comprar</a>
+    `;
+    gridProdutos.appendChild(produtoDiv);
+  });
+  console.log(`Exibidos ${produtosFiltrados.length} produtos`);
+}
+
+// Funções do carrossel
 function moveCarrossel(carrosselId, direction) {
   const carrossel = document.getElementById(carrosselId);
   if (!carrossel) return;
   const imagens = carrossel.querySelector('.carrossel-imagens');
   const dots = carrossel.querySelectorAll('.carrossel-dot');
   let currentIndex = parseInt(imagens.dataset.index || 0);
-  const totalImagens = imagens.children.length;  currentIndex = (currentIndex + direction + totalImagens) % totalImagens;
+  const totalImagens = imagens.children.length;
+
+  currentIndex = (currentIndex + direction + totalImagens) % totalImagens;
   requestAnimationFrame(() => {
-    imagens.style.transform = translateX(-${currentIndex * 100}%);
+    imagens.style.transform = `translateX(-${currentIndex * 100}%)`; // Corrigido
     imagens.dataset.index = currentIndex;
     dots.forEach((dot, i) => dot.classList.toggle('ativo', i === currentIndex));
   });
-}function setCarrosselImage(carrosselId, index) {
+}
+
+function setCarrosselImage(carrosselId, index) {
   const carrossel = document.getElementById(carrosselId);
   if (!carrossel) return;
   const imagens = carrossel.querySelector('.carrossel-imagens');
-  const dots = carrossel.querySelectorAll('.carrossel-dot');  requestAnimationFrame(() => {
-    imagens.style.transform = translateX(-${index * 100}%);
+  const dots = carrossel.querySelectorAll('.carrossel-dot');
+
+  requestAnimationFrame(() => {
+    imagens.style.transform = `translateX(-${index * 100}%)`; // Corrigido
     imagens.dataset.index = index;
     dots.forEach((dot, i) => dot.classList.toggle('ativo', i === index));
   });
-}// Funções do modal
+}
+
+// Funções do modal
 async function openModal(produtoIndex, imageIndex) {
   const modal = document.getElementById('imageModal');
   const carrosselImagens = document.getElementById('modalCarrosselImagens');
-  const carrosselDots = document.getElementById('modalCarrosselDots');  try {
+  const carrosselDots = document.getElementById('modalCarrosselDots');
+
+  try {
     currentImages = Array.isArray(produtos[produtoIndex]?.imagens) && produtos[produtoIndex].imagens.length > 0
       ? produtos[produtoIndex].imagens.filter(img => typeof img === 'string' && img)
       : ['imagens/placeholder.jpg'];
-    currentImageIndex = imageIndex;console.log(' Abrindo modal:', { produtoIndex, imageIndex, imagens: currentImages });
+    currentImageIndex = imageIndex;
 
-const validImages = await Promise.all(currentImages.map(img => {
-  return new Promise(resolve => {
-    const testImg = new Image();
-    testImg.src = img;
-    testImg.onload = () => resolve(img);
-    testImg.onerror = () => resolve('imagens/placeholder.jpg');
-  });
-}));
-currentImages = validImages;
+    console.log('🔍 Abrindo modal:', { produtoIndex, imageIndex, imagens: currentImages });
 
-carrosselImagens.innerHTML = currentImages.map((img, i) => `
-  <img src="${img}" alt="Imagem ${i + 1}" class="modal-image" loading="lazy" width="600" height="600" onerror="this.src='imagens/placeholder.jpg'">
-`).join('');
+    const validImages = await Promise.all(currentImages.map(img => {
+      return new Promise(resolve => {
+        const testImg = new Image();
+        testImg.src = img;
+        testImg.onload = () => resolve(img);
+        testImg.onerror = () => resolve('imagens/placeholder.jpg');
+      });
+    }));
+    currentImages = validImages;
 
-requestAnimationFrame(() => {
-  carrosselImagens.style.width = '100%';
-  carrosselImagens.style.display = 'flex';
-  carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+    carrosselImagens.innerHTML = currentImages.map((img, i) => `
+      <img src="${img}" alt="Imagem ${i + 1}" class="modal-image" loading="lazy" width="600" height="600" onerror="this.src='imagens/placeholder.jpg'">
+    `).join('');
 
-  const imagens = carrosselImagens.querySelectorAll('img');
-  imagens.forEach(img => {
-    img.style.width = '100%';
-    img.style.flex = '0 0 100%';
-    img.style.objectFit = 'contain';
-  });
-});
+    requestAnimationFrame(() => {
+      carrosselImagens.style.width = '100%';
+      carrosselImagens.style.display = 'flex';
+      carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
 
-carrosselDots.innerHTML = currentImages.map((_, i) => `
-  <span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})" aria-label="Selecionar imagem ${i + 1}"></span>
-`).join('');
+      const imagens = carrosselImagens.querySelectorAll('img');
+      imagens.forEach(img => {
+        img.style.width = '100%';
+        img.style.flex = '0 0 100%';
+        img.style.objectFit = 'contain';
+      });
+    });
 
-modal.style.display = 'flex';  } catch (error) {
+    carrosselDots.innerHTML = currentImages.map((_, i) => `
+      <span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})"></span>
+    `).join('');
+
+    modal.style.display = 'flex';
+  } catch (error) {
     console.error('Erro ao abrir modal:', error);
   }
-}function moveModalCarrossel(direction) {
+}
+
+function moveModalCarrossel(direction) {
   const carrosselImagens = document.getElementById('modalCarrosselImagens');
   const carrosselDots = document.getElementById('modalCarrosselDots')?.children;
-  const totalImagens = currentImages.length;  currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
+  const totalImagens = currentImages.length;
+
+  currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
   requestAnimationFrame(() => {
-    carrosselImagens.style.transform = translateX(-${currentImageIndex * 100}%);
+    carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`; // Corrigido
     Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
   });
-}function setModalCarrosselImage(index) {
+}
+
+function setModalCarrosselImage(index) {
   const carrosselImagens = document.getElementById('modalCarrosselImagens');
   const carrosselDots = document.getElementById('modalCarrosselDots')?.children;
   currentImageIndex = index;
   requestAnimationFrame(() => {
-    carrosselImagens.style.transform = translateX(-${index * 100}%);
+    carrosselImagens.style.transform = `translateX(-${index * 100}%)`; // Corrigido
     Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
   });
-}function closeModal() {
+}
+
+function closeModal() {
   const modal = document.getElementById('imageModal');
   modal.style.display = 'none';
   currentImages = [];
   currentImageIndex = 0;
-}// Configurar busca com debounce
+}
+
+// Configurar busca com debounce
 function configurarBusca() {
   const inputBusca = document.getElementById('busca');
   const buscaFeedback = document.getElementById('busca-feedback');
-  let debounceTimer;  if (!inputBusca || !buscaFeedback) {
+  let debounceTimer;
+
+  if (!inputBusca || !buscaFeedback) {
     console.error('Elementos de busca não encontrados');
     return;
-  }  inputBusca.addEventListener('input', () => {
+  }
+
+  inputBusca.addEventListener('input', () => {
     clearTimeout(debounceTimer);
-    termoBusca = inputBusca.value.trim();if (termoBusca) {
-  buscaFeedback.style.display = 'block';
-  buscaFeedback.textContent = `Buscando por "${termoBusca}"...`;
-} else {
-  buscaFeedback.style.display = 'none';
+    termoBusca = inputBusca.value.trim();
+
+    if (termoBusca) {
+      buscaFeedback.style.display = 'block';
+      buscaFeedback.textContent = `Buscando por "${termoBusca}"...`;
+    } else {
+      buscaFeedback.style.display = 'none';
+    }
+
+    currentPage = 1;
+    debounceTimer = setTimeout(() => carregarProdutos(), 300);
+  });
 }
 
-currentPage = 1;
-debounceTimer = setTimeout(() => carregarProdutos(), 300);  });
-}// Configurar paginação
+// Configurar paginação
 function configurarPaginacao() {
   const prevButton = document.getElementById('prev-page');
-  const nextButton = document.getElementById('next-page');  if (!prevButton || !nextButton) {
+  const nextButton = document.getElementById('next-page');
+
+  if (!prevButton || !nextButton) {
     console.error('Botões de paginação não encontrados');
     return;
-  }  prevButton.addEventListener('click', () => {
+  }
+
+  prevButton.addEventListener('click', () => {
     if (currentPage > 1) {
       currentPage--;
       carregarProdutos();
     }
-  });  nextButton.addEventListener('click', () => {
+  });
+
+  nextButton.addEventListener('click', () => {
     if (currentPage < Math.ceil(totalProdutos / produtosPorPagina)) {
       currentPage++;
       carregarProdutos();
     }
   });
-}function atualizarPaginacao() {
+}
+
+function atualizarPaginacao() {
   const prevButton = document.getElementById('prev-page');
   const nextButton = document.getElementById('next-page');
-  const pageInfo = document.getElementById('page-info');  if (!prevButton || !nextButton || !pageInfo) {
+  const pageInfo = document.getElementById('page-info');
+
+  if (!prevButton || !nextButton || !pageInfo) {
     console.error('Elementos de paginação não encontrados');
     return;
-  }  prevButton.disabled = currentPage === 1;
+  }
+
+  prevButton.disabled = currentPage === 1;
   nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
-  pageInfo.textContent = Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina)};
-}// Filtrar por categoria
+  pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina)}`; // Corrigido
+}
+
+// Filtrar por categoria
 function filtrarPorCategoria(categoria) {
   categoriaSelecionada = categoria;
   currentPage = 1;
@@ -309,7 +357,9 @@ function filtrarPorCategoria(categoria) {
     item.classList.toggle('ativa', item.dataset.categoria.toLowerCase() === categoria.toLowerCase());
   });
   carregarProdutos();
-}// Filtrar por loja
+}
+
+// Filtrar por loja
 function filtrarPorLoja(loja) {
   lojaSelecionada = loja;
   currentPage = 1;
@@ -317,28 +367,21 @@ function filtrarPorLoja(loja) {
     item.classList.toggle('ativa', item.dataset.loja.toLowerCase() === loja.toLowerCase());
   });
   carregarProdutos();
-}// Inicialização
+}
+
+// Inicialização
 document.addEventListener('DOMContentLoaded', () => {
   console.log('Inicializando página');
   carregarProdutos();
   configurarBusca();
   configurarPaginacao();
   atualizarAnoFooter();
-  configurarCliqueLogo();  const modal = document.getElementById('imageModal');
+  configurarCliqueLogo();
+
+  const modal = document.getElementById('imageModal');
   if (modal) {
     modal.addEventListener('click', (e) => {
       if (e.target === e.currentTarget) closeModal();
     });
-    // Adicionar navegação por teclado no modal
-    document.addEventListener('keydown', (e) => {
-      if (modal.style.display === 'flex') {
-        if (e.key === 'ArrowLeft') moveModalCarrossel(-1);
-        if (e.key === 'ArrowRight') moveModalCarrossel(1);
-        if (e.key === 'Escape') closeModal();
-      }
-document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('a[href$=".html"]').forEach(link => {
-    const href = link.getAttribute('href');
-    link.setAttribute('href', href.replace('.html', ''));
-  });
-
+  }
+});
