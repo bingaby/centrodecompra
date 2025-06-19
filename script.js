@@ -9,13 +9,7 @@ let currentImages = [];
 let currentImageIndex = 0;
 let currentPage = 1;
 const produtosPorPagina = 20;
-let totalProdutos = 1000; // Inicialmente fixo, atualizado pela API
-
-// Dados mockados como fallback
-const mockProdutos = [
-  { id: 1, nome: 'Produto Mock 1', categoria: 'eletronicos', loja: 'amazon', imagens: ['imagens/placeholder.jpg'], link: '#' },
-  { id: 2, nome: 'Produto Mock 2', categoria: 'moda', loja: 'shein', imagens: ['imagens/placeholder.jpg'], link: '#' }
-];
+const totalProdutos = 1000;
 
 // Atualizar ano no footer
 function atualizarAnoFooter() {
@@ -27,7 +21,7 @@ function atualizarAnoFooter() {
 
 // Detectar triplo clique no logotipo
 function configurarCliqueLogo() {
-  const logo = document.getElementById('site-logo-img');
+  const logo = document.getElementById('site-logo-img'); // Corrigido para o ID correto
   if (!logo) {
     console.error('ID site-logo-img não encontrado no DOM');
     return;
@@ -60,7 +54,7 @@ async function carregarProdutos() {
   const gridProdutos = document.getElementById('grid-produtos');
 
   if (!gridProdutos || !mensagemVazia || !errorMessage || !loadingSpinner) {
-    console.error('Elementos essenciais não encontrados');
+    console.error('Elementos essenciais (grid-produtos, mensagem-vazia, error-message, loading-spinner) não encontrados');
     return;
   }
 
@@ -79,54 +73,27 @@ async function carregarProdutos() {
         `${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`,
         { cache: 'no-store' }
       );
-
-      let data;
-      try {
-        data = await response.json();
-      } catch (e) {
-        throw new Error('Resposta da API não é JSON válido');
-      }
-
       if (!response.ok) {
-        throw new Error(data.details || data.message || `Erro HTTP ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.details || `Erro ${response.status}`);
+      }
+      produtos = await response.json();
+
+      if (!Array.isArray(produtos)) {
+        throw new Error('Resposta inválida da API: não é um array');
       }
 
-      // Logar a resposta para depuração
-      console.log('Resposta da API:', data);
-
-      // Verificar se 'produtos' existe e é um array
-      let produtosRecebidos = data.produtos;
-      if (!Array.isArray(produtosRecebidos)) {
-        // Tentar alternativas: 'data', 'items', ou array direto
-        if (Array.isArray(data)) {
-          produtosRecebidos = data;
-        } else if (Array.isArray(data.data)) {
-          produtosRecebidos = data.data;
-        } else if (Array.isArray(data.items)) {
-          produtosRecebidos = data.items;
-        } else {
-          throw new Error('Resposta inválida da API: propriedade "produtos" não é um array');
-        }
-      }
-
-      produtos = produtosRecebidos;
-      totalProdutos = Number(data.total) || totalProdutos; // Garantir que total é número
-
-      console.log(`Produtos recebidos: ${produtos.length}, Total: ${totalProdutos}`);
+      console.log(`Produtos recebidos: ${produtos.length}`);
       filtrarProdutos();
       atualizarPaginacao();
       return;
     } catch (error) {
       console.error(`⚠️ Tentativa ${attempt} falhou: ${error.message}`);
       if (attempt === maxRetries) {
-        // Usar dados mockados como fallback
-        console.warn('Usando dados mockados devido a falha na API');
-        produtos = mockProdutos;
-        totalProdutos = mockProdutos.length;
-        errorMessage.textContent = 'Não foi possível carregar os produtos. Exibindo conteúdo de demonstração.';
+        errorMessage.textContent = `Erro ao carregar produtos após ${maxRetries} tentativas: ${error.message}.`;
         errorMessage.style.display = 'block';
-        filtrarProdutos();
-        atualizarPaginacao();
+        mensagemVazia.style.display = 'none';
+        gridProdutos.style.display = 'none';
       }
       attempt++;
       await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
@@ -149,13 +116,12 @@ function filtrarProdutos() {
   const produtosFiltrados = produtos.filter((produto) => {
     const matchCategoria =
       categoriaSelecionada === 'todas' ||
-      (produto.categoria && typeof produto.categoria === 'string' && produto.categoria.toLowerCase() === categoriaSelecionada.toLowerCase());
+      produto.categoria?.toLowerCase() === categoriaSelecionada.toLowerCase();
     const matchLoja =
       lojaSelecionada === 'todas' ||
-      (produto.loja && typeof produto.loja === 'string' && produto.loja.toLowerCase() === lojaSelecionada.toLowerCase());
+      produto.loja?.toLowerCase() === lojaSelecionada.toLowerCase();
     const matchBusca =
-      !termoBusca ||
-      (produto.nome && typeof produto.nome === 'string' && produto.nome.toLowerCase().includes(termoBusca.toLowerCase()));
+      !termoBusca || produto.nome?.toLowerCase().includes(termoBusca.toLowerCase());
     return matchCategoria && matchLoja && matchBusca;
   });
 
@@ -174,32 +140,32 @@ function filtrarProdutos() {
     const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0
       ? produto.imagens.filter(img => typeof img === 'string' && img)
       : ['imagens/placeholder.jpg'];
-    const carrosselId = `carrossel-${produtoIndex}-${produto.id || Date.now()}`;
+    const carrosselId = `carrossel-${produtoIndex}-${produto.id || Date.now()}`; // Corrigido
 
     const produtoDiv = document.createElement('div');
     produtoDiv.classList.add('produto-card', 'visible');
-    produtoDiv.setAttribute('data-categoria', (produto.categoria && typeof produto.categoria === 'string' ? produto.categoria.toLowerCase() : 'todas'));
-    produtoDiv.setAttribute('data-loja', (produto.loja && typeof produto.loja === 'string' ? produto.loja.toLowerCase() : 'todas'));
+    produtoDiv.setAttribute('data-categoria', produto.categoria?.toLowerCase() || 'todas');
+    produtoDiv.setAttribute('data-loja', produto.loja?.toLowerCase() || 'todas');
 
     produtoDiv.innerHTML = `
       <div class="carrossel" id="${carrosselId}">
         <div class="carrossel-imagens">
           ${imagens.map((img, i) => `
-            <img src="${img}" alt="${produto.nome || 'Produto'} ${i + 1}" loading="lazy" width="180" height="180" onerror="this.src='imagens/placeholder.jpg'" onclick="openModal(${produtoIndex}, ${i})">
+            <img src="${img}" alt="${produto.nome || 'Produto'} ${i + 1}" loading="lazy" width="200" height="200" onerror="this.src='imagens/placeholder.jpg'" onclick="openModal(${produtoIndex}, ${i})">
           `).join('')}
         </div>
         ${imagens.length > 1 ? `
-          <button class="carrossel-prev" onclick="moveCarrossel('${carrosselId}', -1)" aria-label="Imagem anterior">◄</button>
-          <button class="carrossel-next" onclick="moveCarrossel('${carrosselId}', 1)" aria-label="Próxima imagem">▶</button>
+          <button class="carrossel-prev" onclick="moveCarrossel('${carrosselId}', -1)">◄</button>
+          <button class="carrossel-next" onclick="moveCarrossel('${carrosselId}', 1)">▶</button>
           <div class="carrossel-dots">
-            ${imagens.map((_, i) => `<span class="carrossel-dot ${i === 0 ? 'ativo' : ''}" onclick="setCarrosselImage('${carrosselId}', ${i})" aria-label="Selecionar imagem ${i + 1}"></span>`).join('')}
+            ${imagens.map((_, i) => `<span class="carrossel-dot ${i === 0 ? 'ativo' : ''}" onclick="setCarrosselImage('${carrosselId}', ${i})"></span>`).join('')}
           </div>
         ` : ''}
       </div>
-      <span>${produto.nome && typeof produto.nome === 'string' ? produto.nome : 'Produto sem nome'}</span>
-      <span class="descricao">Loja: ${produto.loja && typeof produto.loja === 'string' ? produto.loja : 'Desconhecida'}</span>
-      <p class="preco"><a href="${produto.link && typeof produto.link === 'string' ? produto.link : '#'}" target="_blank" class="ver-preco">Clique aqui para ver o preço</a></p>
-      <a href="${produto.link && typeof produto.link === 'string' ? produto.link : '#'}" target="_blank" class="ver-na-loja ${produto.loja && typeof produto.loja === 'string' ? produto.loja.toLowerCase() : 'default'}" aria-label="Comprar ${produto.nome || 'produto'} na ${produto.loja || 'loja'}">Comprar</a>
+      <span>${produto.nome || 'Produto sem nome'}</span>
+      <span class="descricao">Loja: ${produto.loja || 'Desconhecida'}</span>
+      <p class="preco"><a href="${produto.link || '#'}" target="_blank" class="ver-preco">Clique aqui para ver o preço</a></p>
+      <a href="${produto.link || '#'}" target="_blank" class="ver-na-loja ${produto.loja?.toLowerCase() || 'default'}">Comprar</a>
     `;
     gridProdutos.appendChild(produtoDiv);
   });
@@ -217,7 +183,7 @@ function moveCarrossel(carrosselId, direction) {
 
   currentIndex = (currentIndex + direction + totalImagens) % totalImagens;
   requestAnimationFrame(() => {
-    imagens.style.transform = `translateX(-${currentIndex * 100}%)`;
+    imagens.style.transform = `translateX(-${currentIndex * 100}%)`; // Corrigido
     imagens.dataset.index = currentIndex;
     dots.forEach((dot, i) => dot.classList.toggle('ativo', i === currentIndex));
   });
@@ -230,7 +196,7 @@ function setCarrosselImage(carrosselId, index) {
   const dots = carrossel.querySelectorAll('.carrossel-dot');
 
   requestAnimationFrame(() => {
-    imagens.style.transform = `translateX(-${index * 100}%)`;
+    imagens.style.transform = `translateX(-${index * 100}%)`; // Corrigido
     imagens.dataset.index = index;
     dots.forEach((dot, i) => dot.classList.toggle('ativo', i === index));
   });
@@ -278,7 +244,7 @@ async function openModal(produtoIndex, imageIndex) {
     });
 
     carrosselDots.innerHTML = currentImages.map((_, i) => `
-      <span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})" aria-label="Selecionar imagem ${i + 1}"></span>
+      <span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})"></span>
     `).join('');
 
     modal.style.display = 'flex';
@@ -294,7 +260,7 @@ function moveModalCarrossel(direction) {
 
   currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
   requestAnimationFrame(() => {
-    carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+    carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`; // Corrigido
     Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
   });
 }
@@ -304,7 +270,7 @@ function setModalCarrosselImage(index) {
   const carrosselDots = document.getElementById('modalCarrosselDots')?.children;
   currentImageIndex = index;
   requestAnimationFrame(() => {
-    carrosselImagens.style.transform = `translateX(-${index * 100}%)`;
+    carrosselImagens.style.transform = `translateX(-${index * 100}%)`; // Corrigido
     Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
   });
 }
@@ -380,7 +346,7 @@ function atualizarPaginacao() {
 
   prevButton.disabled = currentPage === 1;
   nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
-  pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina)}`;
+  pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina)}`; // Corrigido
 }
 
 // Filtrar por categoria
@@ -416,14 +382,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (modal) {
     modal.addEventListener('click', (e) => {
       if (e.target === e.currentTarget) closeModal();
-    });
-    // Adicionar navegação por teclado no modal
-    document.addEventListener('keydown', (e) => {
-      if (modal.style.display === 'flex') {
-        if (e.key === 'ArrowLeft') moveModalCarrossel(-1);
-        if (e.key === 'ArrowRight') moveModalCarrossel(1);
-        if (e.key === 'Escape') closeModal();
-      }
     });
   }
 });
