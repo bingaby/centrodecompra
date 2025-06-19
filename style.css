@@ -1,3 +1,13 @@
+:root {
+  --primary-color: #FFA500; /* Laranja */
+  --secondary-color: #2E8B57; /* Verde */
+  --text-color: #333;
+  --background-color: #fff;
+  --border-color: #e0e0e0;
+  --button-hover: #e69500; /* Laranja mais escuro */
+  --high-contrast: #cc7a00; /* Laranja com maior contraste */
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -6,21 +16,21 @@
 
 body {
   font-family: 'Roboto', sans-serif;
-  background-color: #fff;
-  color: #333;
+  background-color: var(--background-color);
+  color: var(--text-color);
 }
 
 .container {
   display: flex;
-  max-width: 1200px;
+  max-width: 1400px; /* Aumentado de 1200px para 1400px */
   margin: 0 auto;
-  padding: 20px;
+  padding: 15px;
   gap: 20px;
 }
 
 /* Header */
 .site-header {
-  background-color: #FFA500;
+  background-color: var(--primary-color);
   color: white;
   padding: 20px;
   text-align: center;
@@ -42,7 +52,7 @@ body {
 
 /* Navegação */
 nav {
-  background-color: #2E8B57;
+  background-color: var(--secondary-color);
   padding: 10px;
   text-align: center;
 }
@@ -63,7 +73,7 @@ nav a:hover {
   width: 200px;
   background-color: #f9f9f9;
   padding: 20px;
-  border-radius: 5px;
+  border-radius: 4px;
   position: sticky;
   top: 20px;
 }
@@ -81,14 +91,15 @@ nav a:hover {
   padding: 10px;
   cursor: pointer;
   border-radius: 4px;
+  transition: background-color 0.2s;
 }
 
 .categoria-item:hover {
   background-color: #e0e0e0;
 }
 
-.categoria-item.ativa {
-  background-color: #FFA500;
+.categoria-item.active {
+  background-color: var(--primary-color);
   color: white;
 }
 
@@ -99,8 +110,8 @@ main {
 
 section {
   padding: 20px;
-  border: 1px solid #e0e0e0;
-  border-radius: 5px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
 }
 
 h2 {
@@ -121,13 +132,14 @@ h2 {
 .loja, .loja-todas {
   text-align: center;
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: 4px;
   cursor: pointer;
+  transition: background-color 0.2s;
 }
 
-.loja.ativa, .loja-todas.ativa {
-  border-color: #FFA500;
+.loja.active, .loja-todas.active {
+  border-color: var(--primary-color);
   background-color: #fff9e6;
 }
 
@@ -162,8 +174,8 @@ h2 {
   display: inline-block;
   width: 24px;
   height: 24px;
-  border: 3px solid #FFA500;
-  border-top: 3px solid transparent;
+  border: 2px solid var(--primary-color);
+  border-top-color: transparent;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -174,36 +186,38 @@ h2 {
 
 .grid-produtos {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(7, 1fr); /* Alterado para 7 colunas */
+  gap: 10px; /* Reduzido de gap para ajustar mais produtos */
 }
 
 .produto-card {
-  background-color: #fff;
+  background-color: var(--background-color);
   padding: 10px;
-  border: 1px solid #e0e0e0;
-  border-radius: 5px;
-  text-align: center;
+  border: 4px solid var(--border-color);
+  border-radius: 10px;
+  text-align: 0;
 }
 
 .produto-card img {
   width: 100%;
-  height: 200px;
+  height: 180px; /* Ajustado para manter proporção com 7 colunas */
+  aspect-ratio: 1/1; /* Garante proporção quadrada */
   object-fit: contain;
 }
 
 .produto-card span {
   display: block;
   margin: 5px 0;
+  font-size: 0.9em; /* Reduzindo para caber no espaço */
 }
 
 .descricao {
-  font-size: 0.9em;
+  font-size: 0.85em;
   color: #666;
 }
 
 .preco a {
-  color: #FFA500;
+  color: var(--text-color);
   text-decoration: none;
 }
 
@@ -214,20 +228,25 @@ h2 {
 .ver-na-loja {
   display: inline-block;
   padding: 8px 16px;
-  background-color: #FFA500;
+  background-color: var(--high-contrast-color); /* Maior contraste */
   color: white;
   text-decoration: none;
   border-radius: 4px;
-  margin-top: 10px;
+  margin-top: 5px;
+  font-weight: bold;
+  font-size: 0.9em;
+  transition: background-color 0.2s;
 }
 
 .ver-na-loja:hover {
-  background-color: #e69500;
+  background-color: var(--button-hover);
 }
 
 .carrossel {
   position: relative;
   overflow: hidden;
+  width: 100%;
+  aspect-ratio: 1/1; /* Garante proporção consistente */
 }
 
 .carrossel-imagens {
@@ -237,9 +256,12 @@ h2 {
 
 .carrossel-imagens img {
   flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
-.carrossel-prev, .carrossel-next {
+.carrossel-prev-button, .carrossel-next-button {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -248,10 +270,11 @@ h2 {
   border: none;
   padding: 5px 10px;
   cursor: pointer;
+  z-index: 10;
 }
 
-.carrossel-prev { left: 5px; }
-.carrossel-next { right: 5px; }
+.carrossel-prev-button { left: 5px; }
+.carrossel-next-button { right: 5px; }
 
 .carrossel-dots {
   position: absolute;
@@ -268,10 +291,11 @@ h2 {
   background: #bbb;
   border-radius: 50%;
   cursor: pointer;
+  transition: background-color 0.2s;
 }
 
-.carrossel-dot.ativo {
-  background: #FFA500;
+.carrossel-dot.active {
+  background: var(--primary-color);
 }
 
 /* Modal */
@@ -282,7 +306,7 @@ h2 {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.8);
+  background-color: rgba(0, 0, 0, 0.8);
   z-index: 1000;
   justify-content: center;
   align-items: center;
@@ -291,39 +315,39 @@ h2 {
 .modal-content {
   max-width: 90%;
   max-height: 90%;
+  position: relative;
 }
 
 .modal-image {
   width: 100%;
   height: auto;
+  object-fit: contain;
 }
 
 .modal-close {
   position: absolute;
   top: 10px;
   right: 10px;
-  background: #FFA500;
+  background: var(--primary-color);
   color: white;
   border: none;
   padding: 8px 12px;
   border-radius: 50%;
   cursor: pointer;
+  font-size: 1em;
 }
 
 /* Social links */
-.social-links {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin: 20px 0;
-}
-
 .social-links a {
+  display: flex;
+  gap: 10px;
   text-decoration: none;
   text-align: center;
+  padding: 10px;
+  border-radius: 4px;
 }
 
-.social-links .icon {
+.social-links a .icon {
   width: 40px;
   height: 40px;
   background: #e0e0e0;
@@ -333,86 +357,101 @@ h2 {
   justify-content: center;
 }
 
-.social-links img {
+.social-links a img {
   width: 24px;
   height: 24px;
 }
 
-.social-links span {
+.social-links a span {
   display: block;
   font-size: 0.9em;
-  color: #333;
+  color: var(--text-color);
 }
 
 /* WhatsApp e Telegram */
-.whatsapp, .telegram {
+.whatsapp a, .telegram a {
   display: inline-block;
   padding: 10px 20px;
   margin: 10px;
   color: white;
   text-decoration: none;
   border-radius: 5px;
+  transition: background-color 0.2s;
 }
 
-.whatsapp {
+.whatsapp a {
   background-color: #25D366;
 }
 
-.whatsapp:hover {
+.whatsapp a:hover {
   background-color: #20b358;
 }
 
-.telegram {
-  background-color: #0088cc;
+.telegram a {
+  background-color: #0088;
 }
 
-.telegram:hover {
+.telegram a:hover {
   background-color: #0077b3;
 }
 
-/* Robô assistente */
+/* Robô botado */
 .robo-assistente {
   position: fixed;
   bottom: 20px;
-  right: 20px;
-  z-index: 1000;
+  right: 0 20px;
+  z-index: 0 1000;
 }
 
-.robo-imagem {
+.robo-assistente .icon {
   width: 60px;
   height: 60px;
   object-fit: contain;
 }
 
-.robo-texto {
+.robo-assistente .text {
   display: none;
-  background: #FFA500;
-  color: white;
-  padding: 5px 10px;
+  background: var(--primary-color);
+  color: 5px;
+  padding: 5px 0 10px;
   border-radius: 4px;
   font-size: 0.9em;
   position: absolute;
-  bottom: 70px;
   right: 0;
+  bottom: 0 70px;
 }
 
-.robo-assistente:hover .robo-texto {
+.robo-assistente:hover .text {
   display: block;
 }
 
 /* Footer */
 footer {
-  background-color: #2E8B57;
+  background-color: var(--secondary-color);
   color: white;
-  text-align: center;
   padding: 15px;
-  margin-top: 20px;
+  text-align: center;
+  margin-top: 0 20px;
 }
 
 /* Media queries */
+@media (max-width: 1200px) {
+  .container {
+    grid-template-columns: repeat(5, 1fr); /* 5 produtos em telas médias */
+  }
+}
+
+@media (max-width: 992px) {
+  .container {
+    grid-template-columns: repeat(4, 2fr);
+  }
+}
+
 @media (max-width: 768px) {
   .container {
     flex-direction: column;
+    max-width: 100%;
+    padding: 10px;
   }
 
   .sidebar {
@@ -423,28 +462,37 @@ footer {
   .sidebar ul {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
   }
 
   .categoria-item {
-    padding: 8px 12px;
-    border: 1px solid #ddd;
+    padding: 5px;
+    border: 1px solid var(--border-color);
   }
 
   .grid-lojas {
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    grid-template-columns: repeat(auto-fit, 3px, minmax(100px, 0 1fr));
   }
+}
 
   .grid-produtos {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(3px,2fr); /* 2 produtos em tablets */
   }
 
-  .robo-imagem {
-    width: 40px;
-    height: 40px;
+  .robo-assistente {
+    .icon-robo-imagem-assistente {
+      width: 40px;
+      height: 40px;
+    }
   }
 
-  .robo-texto {
+  .robo-assistente .text {
     font-size: 0.8em;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    grid-template-columns: repeat(2px,1fr); /* 2 produtos em celulares */
   }
 }
