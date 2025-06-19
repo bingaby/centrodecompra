@@ -7,7 +7,7 @@ let termoBusca = '';
 let currentImages = [];
 let currentImageIndex = 0;
 let currentPage = 1;
-const produtosPorPagina = 20;
+const produtosPorPagina = 25; // Alterado de 20 para 25 para exibir 25 itens por página
 const totalProdutos = 1000;
 
 function atualizarAnoFooter() {
@@ -66,7 +66,7 @@ async function carregarProdutos() {
 
       console.log(`Tentativa ${attempt}: Carregando produtos`);
       const response = await fetch(
-        `${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`,
+        `${API_URL}/api/products?page=${currentPage}&limit=${produtosPorPagina}`,
         { cache: 'no-store' }
       );
       if (!response.ok) {
@@ -111,12 +111,12 @@ function filtrarProdutos() {
   const produtosFiltrados = produtos.filter((produto) => {
     const matchCategoria =
       categoriaSelecionada === 'todas' ||
-      produto.categoria?.toLowerCase() === categoriaSelecionada.toLowerCase();
+      produto.categoria.toLowerCase() === categoriaSelecionada.toLowerCase();
     const matchLoja =
       lojaSelecionada === 'todas' ||
-      produto.loja?.toLowerCase() === lojaSelecionada.toLowerCase();
+      produto.loja.toLowerCase() === lojaSelecionada.toLowerCase();
     const matchBusca =
-      !termoBusca || produto.nome?.toLowerCase().includes(termoBusca.toLowerCase());
+      !termoBusca || produto.nome.toLowerCase().includes(termoBusca.toLowerCase());
     return matchCategoria && matchLoja && matchBusca;
   });
 
@@ -139,8 +139,8 @@ function filtrarProdutos() {
 
     const produtoDiv = document.createElement('div');
     produtoDiv.classList.add('produto-card', 'visible');
-    produtoDiv.setAttribute('data-categoria', produto.categoria?.toLowerCase() || 'todas');
-    produtoDiv.setAttribute('data-loja', produto.loja?.toLowerCase() || 'todas');
+    produtoDiv.setAttribute('data-categoria', produto.categoria.toLowerCase() || 'todas');
+    produtoDiv.setAttribute('data-loja', produto.loja.toLowerCase() || 'todas');
 
     produtoDiv.innerHTML = `
       <div class="carrossel" id="${carrosselId}">
@@ -160,7 +160,7 @@ function filtrarProdutos() {
       <span>${produto.nome || 'Produto sem nome'}</span>
       <span class="descricao">Loja: ${produto.loja || 'Desconhecida'}</span>
       <p class="preco"><a href="${produto.link || '#'}" target="_blank" class="ver-preco">Clique aqui para ver o preço</a></p>
-      <a href="${produto.link || '#'}" target="_blank" class="ver-na-loja ${produto.loja?.toLowerCase() || 'default'}">Comprar</a>
+      <a href="${produto.link || '#'}" target="_blank" class="ver-na-loja ${produto.loja.toLowerCase() || 'default'}">Comprar</a>
     `;
     gridProdutos.appendChild(produtoDiv);
   });
@@ -202,7 +202,7 @@ async function openModal(produtoIndex, imageIndex) {
   const carrosselDots = document.getElementById('modalCarrosselDots');
 
   try {
-    currentImages = Array.isArray(produtos[produtoIndex]?.imagens) && produtos[produtoIndex].imagens.length > 0
+    currentImages = Array.isArray(produtos[produtoIndex].imagens) && produtos[produtoIndex].imagens.length > 0
       ? produtos[produtoIndex].imagens.filter(img => typeof img === 'string' && img)
       : ['imagens/placeholder.jpg'];
     currentImageIndex = imageIndex;
@@ -248,7 +248,7 @@ async function openModal(produtoIndex, imageIndex) {
 
 function moveModalCarrossel(direction) {
   const carrosselImagens = document.getElementById('modalCarrosselImagens');
-  const carrosselDots = document.getElementById('modalCarrosselDots')?.children;
+  const carrosselDots = document.getElementById('modalCarrosselDots').children;
   const totalImagens = currentImages.length;
 
   currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
@@ -260,7 +260,7 @@ function moveModalCarrossel(direction) {
 
 function setModalCarrosselImage(index) {
   const carrosselImagens = document.getElementById('modalCarrosselImagens');
-  const carrosselDots = document.getElementById('modalCarrosselDots')?.children;
+  const carrosselDots = document.getElementById('modalCarrosselDots').children;
   currentImageIndex = index;
   requestAnimationFrame(() => {
     carrosselImagens.style.transform = `translateX(-${index * 100}%)`;
