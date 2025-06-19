@@ -22,8 +22,18 @@ body {
 .site-header {
   background-color: #FFA500;
   color: white;
-  padding: 20px;
-  text-align: center;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hamburger {
+  display: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 10px;
+  color: white;
 }
 
 .logo-container img {
@@ -33,29 +43,32 @@ body {
 }
 
 .header-text h1 {
-  font-size: 2em;
+  font-size: 1.8em;
 }
 
 .header-text p {
-  font-size: 1.1em;
+  font-size: 1em;
 }
 
 /* Navegação */
-nav {
+#main-nav {
   background-color: #2E8B57;
   padding: 10px;
   text-align: center;
 }
 
-nav a {
+#main-nav a {
   color: white;
   margin: 0 15px;
   text-decoration: none;
   font-weight: bold;
+  padding: 12px;
+  min-height: 44px;
+  display: inline-block;
 }
 
-nav a:hover {
-  text-decoration: underline;
+#main-nav a:active {
+  background-color: #e69500;
 }
 
 /* Sidebar */
@@ -78,18 +91,27 @@ nav a:hover {
 }
 
 .categoria-item {
-  padding: 10px;
+  padding: 12px;
   cursor: pointer;
   border-radius: 4px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  touch-action: manipulation;
 }
 
-.categoria-item:hover {
-  background-color: #e0e0e0;
-}
-
-.categoria-item.ativa {
+.categoria-item:active, .categoria-item.ativa {
   background-color: #FFA500;
   color: white;
+}
+
+.categoria-item:focus {
+  outline: 2px solid #FFA500;
+  outline-offset: 2px;
+}
+
+.mr-2 {
+  margin-right: 8px;
 }
 
 /* Main */
@@ -120,15 +142,25 @@ h2 {
 
 .loja, .loja-todas {
   text-align: center;
-  padding: 10px;
+  padding: 12px;
   border: 1px solid #ddd;
   border-radius: 4px;
   cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  touch-action: manipulation;
 }
 
 .loja.ativa, .loja-todas.ativa {
   border-color: #FFA500;
   background-color: #fff9e6;
+}
+
+.loja:active, .loja-todas:active {
+  background-color: #e69500;
+  color: white;
 }
 
 .loja img {
@@ -137,13 +169,32 @@ h2 {
   object-fit: contain;
 }
 
+.search-container {
+  position: relative;
+  max-width: 500px;
+  margin: 10px 0;
+}
+
 .barra-busca {
   width: 100%;
-  max-width: 500px;
-  padding: 10px;
-  margin: 10px 0;
+  padding: 12px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  font-size: 1rem;
+}
+
+.barra-busca:focus {
+  border-color: #FFA500;
+  box-shadow: 0 0 5px rgba(255, 165, 0, 0.5);
+  outline: none;
+}
+
+.search-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666;
 }
 
 .busca-feedback {
@@ -207,7 +258,7 @@ h2 {
   text-decoration: none;
 }
 
-.preco a:hover {
+.preco a:active {
   text-decoration: underline;
 }
 
@@ -219,9 +270,13 @@ h2 {
   text-decoration: none;
   border-radius: 4px;
   margin-top: 10px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.ver-na-loja:hover {
+.ver-na-loja:active {
   background-color: #e69500;
 }
 
@@ -246,8 +301,10 @@ h2 {
   background: rgba(0, 0, 0, 0.5);
   color: white;
   border: none;
-  padding: 5px 10px;
+  padding: 10px;
   cursor: pointer;
+  min-height: 44px;
+  min-width: 44px;
 }
 
 .carrossel-prev { left: 5px; }
@@ -270,7 +327,7 @@ h2 {
   cursor: pointer;
 }
 
-.carrossel-dot.ativo {
+.carrossel-dot.ativa {
   background: #FFA500;
 }
 
@@ -308,6 +365,8 @@ h2 {
   padding: 8px 12px;
   border-radius: 50%;
   cursor: pointer;
+  min-height: 44px;
+  min-width: 44px;
 }
 
 /* Social links */
@@ -321,6 +380,8 @@ h2 {
 .social-links a {
   text-decoration: none;
   text-align: center;
+  padding: 12px;
+  min-height: 44px;
 }
 
 .social-links .icon {
@@ -347,18 +408,21 @@ h2 {
 /* WhatsApp e Telegram */
 .whatsapp, .telegram {
   display: inline-block;
-  padding: 10px 20px;
+  padding: 12px 20px;
   margin: 10px;
   color: white;
   text-decoration: none;
   border-radius: 5px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
 }
 
 .whatsapp {
   background-color: #25D366;
 }
 
-.whatsapp:hover {
+.whatsapp:active {
   background-color: #20b358;
 }
 
@@ -366,7 +430,7 @@ h2 {
   background-color: #0088cc;
 }
 
-.telegram:hover {
+.telegram:active {
   background-color: #0077b3;
 }
 
@@ -415,28 +479,62 @@ footer {
     flex-direction: column;
   }
 
+  .hamburger {
+    display: block;
+  }
+
+  .site-header {
+    flex-wrap: wrap;
+  }
+
+  .logo-container img {
+    width: 120px;
+    height: auto;
+  }
+
+  .header-text h1 {
+    font-size: 1.5em;
+  }
+
+  .header-text p {
+    font-size: 0.9em;
+  }
+
+  #main-nav, #sidebar {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+
+  #main-nav.active, #sidebar.active {
+    max-height: 1000px;
+  }
+
+  #main-nav {
+    flex-direction: column;
+    padding: 10px 0;
+  }
+
+  #main-nav a {
+    display: block;
+    margin: 5px 0;
+  }
+
   .sidebar {
     width: 100%;
     position: static;
   }
 
   .sidebar ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
-  .categoria-item {
-    padding: 8px 12px;
-    border: 1px solid #ddd;
+    display: block;
   }
 
   .grid-lojas {
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   }
 
   .grid-produtos {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: 1fr;
   }
 
   .robo-imagem {
@@ -446,5 +544,12 @@ footer {
 
   .robo-texto {
     font-size: 0.8em;
+  }
+}
+
+@media (min-width: 769px) {
+  #main-nav.hidden, #sidebar.hidden {
+    display: block !important;
+    max-height: none;
   }
 }
