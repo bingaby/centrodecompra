@@ -12,7 +12,7 @@ body {
 
 .container {
   display: flex;
-  max-width: 1200px;
+  max-width: 1600px; /* Aumentado para suportar 8 itens */
   margin: 0 auto;
   padding: 20px;
   gap: 20px;
@@ -174,8 +174,9 @@ h2 {
 
 .grid-produtos {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(8, 1fr); /* 8 colunas para 8 itens na horizontal */
   gap: 20px;
+  padding: 20px;
 }
 
 .produto-card {
@@ -270,7 +271,7 @@ h2 {
   cursor: pointer;
 }
 
-.carrossel-dot.ativo {
+.carrossel-dot.ativa {
   background: #FFA500;
 }
 
@@ -409,53 +410,15 @@ footer {
   margin-top: 20px;
 }
 
-/* Media queries */
-@media (max-width: 768px) {
-  .container {
-    flex-direction: column;
-  }
-
-  .sidebar {
-    width: 100%;
-    position: static;
-  }
-
-  .sidebar ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
-  .categoria-item {
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-  }
-
-  .grid-lojas {
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  }
-
-  .grid-produtos {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  }
-
-  .robo-imagem {
-    width: 40px;
-    height: 40px;
-  }
-
-  .robo-texto {
-    font-size: 0.8em;
-  }
-  .credibilidade-nota {
-  background-color: #28a745; /* Verde */
-  color: #fff; /* Texto branco */
+.credibilidade-nota {
+  background-color: #28a745;
+  color: #fff;
   padding: 15px;
   text-align: center;
   font-size: 14px;
   margin: 0;
-  border-top: 1px solid #218838; /* Borda superior mais escura */
-  border-bottom: 1px solid #218838; /* Borda inferior mais escura */
+  border-top: 1px solid #218838;
+  border-bottom: 1px solid #218838;
 }
 
 .credibilidade-nota p {
@@ -466,9 +429,64 @@ footer {
 .credibilidade-nota strong {
   font-weight: 700;
 }
-  @media (max-width: 768px) {
+
+/* Media queries */
+@media (max-width: 1400px) {
+  .container {
+    max-width: 1200px;
+  }
+  .grid-produtos {
+    grid-template-columns: repeat(6, 1fr); /* 6 colunas */
+  }
+}
+
+@media (max-width: 1024px) {
+  .container {
+    max-width: 100%;
+  }
+  .grid-produtos {
+    grid-template-columns: repeat(4, 1fr); /* 4 colunas */
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    position: static;
+  }
+  .sidebar ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .categoria-item {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+  }
+  .grid-lojas {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  }
+  .grid-produtos {
+    grid-template-columns: repeat(3, 1fr); /* 3 colunas */
+  }
+  .robo-imagem {
+    width: 40px;
+    height: 40px;
+  }
+  .robo-texto {
+    font-size: 0.8em;
+  }
   .credibilidade-nota {
     padding: 10px;
     font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .grid-produtos {
+    grid-template-columns: repeat(2, 1fr); /* 2 colunas */
   }
 }
