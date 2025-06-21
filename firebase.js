@@ -1,29 +1,36 @@
 // firebase.js
 import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
-import { getAnalytics } from 'firebase/analytics';
+import {
+  getFirestore,
+  collection,
+  query,
+  orderBy,
+  limit,
+  startAfter,
+  getDocs
+} from 'firebase/firestore';
 
-// Configuração do Firebase - substitua pelos seus dados reais
+// Sua config do Firebase (preencha com seus dados)
 const firebaseConfig = {
   apiKey: "AIzaSyDryJc0Y7JV_Os5DZdEDts5XaFUEtJ7wDk",
   authDomain: "centrodecompra-5fa91.firebaseapp.com",
   projectId: "centrodecompra-5fa91",
-  storageBucket: "centrodecompra-5fa91.appspot.com",
+  storageBucket: "centrodecompra-5fa91.appspot.com", // corrigido .app -> .appspot.com
   messagingSenderId: "276696026262",
   appId: "1:276696026262:web:979a68c0796ea1d17346b7",
   measurementId: "G-PM11NQL61N"
 };
 
-// Inicializa o app Firebase
+// Inicializa Firebase
 const app = initializeApp(firebaseConfig);
-
-// Inicializa os serviços Firebase que você vai usar
 const db = getFirestore(app);
-const storage = getStorage(app);
-const analytics = getAnalytics(app);
 
-// Exporta para uso global (para que outros scripts possam usar)
-window.firebaseDb = db;
-window.firebaseStorage = storage;
-window.firebaseAnalytics = analytics;
+export {
+  db,
+  collection,
+  query,
+  orderBy,
+  limit,
+  startAfter,
+  getDocs
+};
