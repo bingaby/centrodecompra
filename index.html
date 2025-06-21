@@ -8,55 +8,100 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
-  <header>
-    <img id="site-logo-img" src="/logos/logoscentrodecompras.jpeg" alt="Logo">
-    <nav>
-      <div class="categorias">
-        <span class="categoria-item ativa" data-categoria="todas" onclick="filtrarPorCategoria('todas')">Todas</span>
-        <span class="categoria-item" data-categoria="eletronicos" onclick="filtrarPorCategoria('eletronicos')">Eletrônicos</span>
-        <span class="categoria-item" data-categoria="moda" onclick="filtrarPorCategoria('moda')">Moda</span>
-        <span class="categoria-item" data-categoria="fitness" onclick="filtrarPorCategoria('fitness')">Fitness</span>
-        <span class="categoria-item" data-categoria="casa" onclick="filtrarPorCategoria('casa')">Casa</span>
-        <span class="categoria-item" data-categoria="beleza" onclick="filtrarPorCategoria('beleza')">Beleza</span>
-        <span class="categoria-item" data-categoria="esportes" onclick="filtrarPorCategoria('esportes')">Esportes</span>
-        <span class="categoria-item" data-categoria="livros" onclick="filtrarPorCategoria('livros')">Livros</span>
-        <span class="categoria-item" data-categoria="infantil" onclick="filtrarPorCategoria('infantil')">Infantil</span>
-        <span class="categoria-item" data-categoria="celulares" onclick="filtrarPorCategoria('celulares')">Celulares</span>
-        <span class="categoria-item" data-categoria="eletrodomesticos" onclick="filtrarPorCategoria('eletrodomesticos')">Eletrodomésticos</span>
-        <span class="categoria-item" data-categoria="pet" onclick="filtrarPorCategoria('pet')">Pet</span>
-        <span class="categoria-item" data-categoria="jardinagem" onclick="filtrarPorCategoria('jardinagem')">Jardinagem</span>
-        <span class="categoria-item" data-categoria="automotivo" onclick="filtrarPorCategoria('automotivo')">Automotivo</span>
-        <span class="categoria-item" data-categoria="gastronomia" onclick="filtrarPorCategoria('gastronomia')">Gastronomia</span>
-        <span class="categoria-item" data-categoria="games" onclick="filtrarPorCategoria('games')">Games</span>
-      </div>
-      <div class="lojas">
-        <span class="loja-todas ativa" data-loja="todas" onclick="filtrarPorLoja('todas')">Todas</span>
-        <span class="loja" data-loja="amazon" onclick="filtrarPorLoja('amazon')">Amazon</span>
-        <span class="loja" data-loja="magalu" onclick="filtrarPorLoja('magalu')">Magalu</span>
-        <span class="loja" data-loja="shein" onclick="filtrarPorLoja('shein')">Shein</span>
-        <span class="loja" data-loja="shopee" onclick="filtrarPorLoja('shopee')">Shopee</span>
-        <span class="loja" data-loja="mercadolivre" onclick="filtrarPorLoja('mercadolivre')">Mercado Livre</span>
-        <span class="loja" data-loja="alibaba" onclick="filtrarPorLoja('alibaba')">Alibaba</span>
-      </div>
-    </nav>
+  <header class="site-header">
+    <div class="logo-container">
+      <img id="site-logo-img" src="/logos/logoscentrodecompras.jpeg" alt="Logo Centro de Compra">
+    </div>
+    <div class="header-text">
+      <h1>Centro de Compra</h1>
+      <p>Encontre os melhores produtos das melhores lojas</p>
+    </div>
   </header>
-  <main>
-    <input type="text" id="busca" placeholder="Buscar produtos...">
-    <div id="busca-feedback"></div>
-    <div id="loading-spinner" style="display: none;">Carregando...</div>
-    <div id="mensagem-vazia" style="display: none;">Nenhum produto encontrado.</div>
-    <div id="error-message" style="display: none;"></div>
-    <div id="grid-produtos" class="grid-produtos"></div>
-    <div id="paginacao">
-      <button id="prev-page">◄ Anterior</button>
-      <span id="page-info">Página 1 de 1</span>
-      <button id="next-page">Próxima ▶</button>
+  <nav>
+    <div class="grid-lojas">
+      <div class="loja-todas ativa" data-loja="todas" onclick="filtrarPorLoja('todas')">
+        <span>Todas</span>
+      </div>
+      <div class="loja" data-loja="amazon" onclick="filtrarPorLoja('amazon')">
+        <img src="/imagens/amazon-logo.png" alt="Amazon">
+        <span>Amazon</span>
+      </div>
+      <div class="loja" data-loja="magalu" onclick="filtrarPorLoja('magalu')">
+        <img src="/imagens/magalu-logo.png" alt="Magalu">
+        <span>Magalu</span>
+      </div>
+      <div class="loja" data-loja="shein" onclick="filtrarPorLoja('shein')">
+        <img src="/imagens/shein-logo.png" alt="Shein">
+        <span>Shein</span>
+      </div>
+      <div class="loja" data-loja="shopee" onclick="filtrarPorLoja('shopee')">
+        <img src="/imagens/shopee-logo.png" alt="Shopee">
+        <span>Shopee</span>
+      </div>
+      <div class="loja" data-loja="mercadolivre" onclick="filtrarPorLoja('mercadolivre')">
+        <img src="/imagens/mercadolivre-logo.png" alt="Mercado Livre">
+        <span>Mercado Livre</span>
+      </div>
+      <div class="loja" data-loja="alibaba" onclick="filtrarPorLoja('alibaba')">
+        <img src="/imagens/alibaba-logo.png" alt="Alibaba">
+        <span>Alibaba</span>
+      </div>
     </div>
-    <div id="imageModal" style="display: none;">
-      <div id="modalCarrosselImagens"></div>
-      <div id="modalCarrosselDots"></div>
-    </div>
-  </main>
+  </nav>
+  <div class="container">
+    <aside class="sidebar-categorias">
+      <h3>Categorias</h3>
+      <ul>
+        <li class="categoria-item ativa" data-categoria="todas" onclick="filtrarPorCategoria('todas')">Todas</li>
+        <li class="categoria-item" data-categoria="eletronicos" onclick="filtrarPorCategoria('eletronicos')">Eletrônicos</li>
+        <li class="categoria-item" data-categoria="moda" onclick="filtrarPorCategoria('moda')">Moda</li>
+        <li class="categoria-item" data-categoria="fitness" onclick="filtrarPorCategoria('fitness')">Fitness</li>
+        <li class="categoria-item" data-categoria="casa" onclick="filtrarPorCategoria('casa')">Casa</li>
+        <li class="categoria-item" data-categoria="beleza" onclick="filtrarPorCategoria('beleza')">Beleza</li>
+        <li class="categoria-item" data-categoria="esportes" onclick="filtrarPorCategoria('esportes')">Esportes</li>
+        <li class="categoria-item" data-categoria="livros" onclick="filtrarPorCategoria('livros')">Livros</li>
+        <li class="categoria-item" data-categoria="infantil" onclick="filtrarPorCategoria('infantil')">Infantil</li>
+        <li class="categoria-item" data-categoria="celulares" onclick="filtrarPorCategoria('celulares')">Celulares</li>
+        <li class="categoria-item" data-categoria="eletrodomesticos" onclick="filtrarPorCategoria('eletrodomesticos')">Eletrodomésticos</li>
+        <li class="categoria-item" data-categoria="pet" onclick="filtrarPorCategoria('pet')">Pet</li>
+        <li class="categoria-item" data-categoria="jardinagem" onclick="filtrarPorCategoria('jardinagem')">Jardinagem</li>
+        <li class="categoria-item" data-categoria="automotivo" onclick="filtrarPorCategoria('automotivo')">Automotivo</li>
+        <li class="categoria-item" data-categoria="gastronomia" onclick="filtrarPorCategoria('gastronomia')">Gastronomia</li>
+        <li class="categoria-item" data-categoria="games" onclick="filtrarPorCategoria('games')">Games</li>
+      </ul>
+    </aside>
+    <main>
+      <input type="text" id="busca" class="barra-busca" placeholder="Buscar produtos...">
+      <div id="busca-feedback" class="busca-feedback"></div>
+      <div id="loading-spinner" class="loading-spinner"></div>
+      <div id="mensagem-vazia" class="mensagem-vazia">Nenhum produto encontrado.</div>
+      <div id="error-message" style="display: none;"></div>
+      <div id="grid-produtos" class="grid-produtos"></div>
+      <div id="paginacao">
+        <button id="prev-page">◄ Anterior</button>
+        <span id="page-info">Página 1 de 1</span>
+        <button id="next-page">Próxima ▶</button>
+      </div>
+      <div class="social-links">
+        <a href="https://wa.me/5511999999999" target="_blank" class="whatsapp">
+          <div class="icon"><img src="/imagens/whatsapp-icon.png" alt="WhatsApp"></div>
+          <span>WhatsApp</span>
+        </a>
+        <a href="https://t.me/centrodecompra" target="_blank" class="telegram">
+          <div class="icon"><img src="/imagens/telegram-icon.png" alt="Telegram"></div>
+          <span>Telegram</span>
+        </a>
+      </div>
+      <div class="robo-assistente">
+        <img class="robo-imagem" src="/imagens/robo-assistente.png" alt="Assistente">
+        <div class="robo-texto">Fale com nosso assistente!</div>
+      </div>
+    </main>
+  </div>
+  <div id="imageModal" style="display: none;">
+    <div id="modalCarrosselImagens"></div>
+    <div id="modalCarrosselDots"></div>
+  </div>
   <footer>
     <span id="year"></span>
   </footer>
