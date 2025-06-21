@@ -12,7 +12,7 @@ body {
 
 .container {
   display: flex;
-  max-width: 1600px; /* Aumentado para suportar 8 itens */
+  max-width: 1600px;
   margin: 0 auto;
   padding: 20px;
   gap: 20px;
@@ -174,7 +174,7 @@ h2 {
 
 .grid-produtos {
   display: grid;
-  grid-template-columns: repeat(8, 1fr); /* 8 colunas para 8 itens na horizontal */
+  grid-template-columns: repeat(8, 1fr);
   gap: 20px;
   padding: 20px;
 }
@@ -430,13 +430,114 @@ footer {
   font-weight: 700;
 }
 
+/* Estilos para admin-xyz-123.html */
+h1, h3 {
+  text-align: center;
+  color: #333;
+}
+
+form {
+  max-width: 500px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+input, select, textarea, button {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+button {
+  background-color: #FFA500;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+button:hover {
+  background-color: #e69500;
+}
+
+#mensagem {
+  margin-top: 10px;
+  color: green;
+  text-align: center;
+}
+
+#erro {
+  margin-top: 10px;
+  color: red;
+  text-align: center;
+}
+
+#produtos-cadastrados {
+  margin: 20px auto;
+  max-width: 900px;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#produtos-cadastrados table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#produtos-cadastrados th, #produtos-cadastrados td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+#produtos-cadastrados th {
+  background-color: #f9f9f9;
+}
+
+#produtos-cadastrados button.excluir {
+  background-color: #dc3545;
+  padding: 5px 10px;
+  font-size: 14px;
+  border: none;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#produtos-cadastrados button.excluir:hover {
+  background-color: #c82333;
+}
+
+.thumbnail {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  margin: 2px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
 /* Media queries */
 @media (max-width: 1400px) {
   .container {
     max-width: 1200px;
   }
   .grid-produtos {
-    grid-template-columns: repeat(6, 1fr); /* 6 colunas */
+    grid-template-columns: repeat(6, 1fr);
   }
 }
 
@@ -445,7 +546,7 @@ footer {
     max-width: 100%;
   }
   .grid-produtos {
-    grid-template-columns: repeat(4, 1fr); /* 4 colunas */
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 
@@ -470,7 +571,7 @@ footer {
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   }
   .grid-produtos {
-    grid-template-columns: repeat(3, 1fr); /* 3 colunas */
+    grid-template-columns: repeat(3, 1fr);
   }
   .robo-imagem {
     width: 40px;
@@ -487,6 +588,6 @@ footer {
 
 @media (max-width: 480px) {
   .grid-produtos {
-    grid-template-columns: repeat(2, 1fr); /* 2 colunas */
+    grid-template-columns: repeat(2, 1fr);
   }
 }
