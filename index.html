@@ -1,155 +1,89 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta name="google-adsense-account" content="ca-pub-4531749081462125">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Centro de Compras - Ofertas do Dia</title>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4531749081462125" crossorigin="anonymous"></script>
-  <link rel="preload" href="logos/logoscentrodecompras.jpeg" as="image">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="style.css" media="print" onload="this.media='all'">
-  <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="logos/favicon-16x16.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="logos/apple-touch-icon.png">
-  <link rel="manifest" href="logos/site.webmanifest">
-</head>
-<body>
-  <header class="site-header">
-    <div class="logo-container">
-      <a href="index.html">
-        <img src="logos/logoscentrodecompras.jpeg" alt="Centro de Compras" id="site-logo-img" width="200" height="70">
-      </a>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Welcome to Firebase Hosting</title>
+
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/11.9.1/firebase-app-compat.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script defer src="/__/firebase/11.9.1/firebase-auth-compat.js"></script>
+    <script defer src="/__/firebase/11.9.1/firebase-database-compat.js"></script>
+    <script defer src="/__/firebase/11.9.1/firebase-firestore-compat.js"></script>
+    <script defer src="/__/firebase/11.9.1/firebase-functions-compat.js"></script>
+    <script defer src="/__/firebase/11.9.1/firebase-messaging-compat.js"></script>
+    <script defer src="/__/firebase/11.9.1/firebase-storage-compat.js"></script>
+    <script defer src="/__/firebase/11.9.1/firebase-analytics-compat.js"></script>
+    <script defer src="/__/firebase/11.9.1/firebase-remote-config-compat.js"></script>
+    <script defer src="/__/firebase/11.9.1/firebase-performance-compat.js"></script>
+    <!-- 
+      initialize the SDK after all desired features are loaded, set useEmulator to false
+      to avoid connecting the SDK to running emulators.
+    -->
+    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+
+    <style media="screen">
+      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
+      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
+      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
+      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
+      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
+      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
+      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
+      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
+      @media (max-width: 600px) {
+        body, #message { margin-top: 0; background: white; box-shadow: none; }
+        body { border-top: 16px solid #ffa100; }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="message">
+      <h2>Welcome</h2>
+      <h1>Firebase Hosting Setup Complete</h1>
+      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
+      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
     </div>
-    <nav>
-      <a href="index">Promoções</a>
-      <a href="cupom">Cupom de Desconto</a>
-      <a href="sobre">Sobre</a>
-      <a href="contato">Contato</a>
-    </nav>
-  </header>
+    <p id="load">Firebase SDK Loading&hellip;</p>
 
-  <div class="container">
-    <aside class="sidebar">
-      <h3>Categorias</h3>
-      <ul>
-        <li class="categoria-item ativa" data-categoria="todas" onclick="filtrarPorCategoria('todas')"><i class="fas fa-list"></i> Todas</li>
-        <li class="categoria-item" data-categoria="eletronicos" onclick="filtrarPorCategoria('eletronicos')"><i class="fas fa-laptop"></i> Eletrônicos</li>
-        <li class="categoria-item" data-categoria="moda" onclick="filtrarPorCategoria('moda')"><i class="fas fa-tshirt"></i> Moda</li>
-        <li class="categoria-item" data-categoria="fitness" onclick="filtrarPorCategoria('fitness')"><i class="fas fa-dumbbell"></i> Fitness</li>
-        <li class="categoria-item" data-categoria="casa" onclick="filtrarPorCategoria('casa')"><i class="fas fa-home"></i> Casa</li>
-        <li class="categoria-item" data-categoria="beleza" onclick="filtrarPorCategoria('beleza')"><i class="fas fa-magic"></i> Beleza</li>
-        <li class="categoria-item" data-categoria="esportes" onclick="filtrarPorCategoria('esportes')"><i class="fas fa-futbol"></i> Esportes</li>
-        <li class="categoria-item" data-categoria="livros" onclick="filtrarPorCategoria('livros')"><i class="fas fa-book"></i> Livros</li>
-        <li class="categoria-item" data-categoria="infantil" onclick="filtrarPorCategoria('infantil')"><i class="fas fa-baby"></i> Infantil</li>
-        <li class="categoria-item" data-categoria="celulares" onclick="filtrarPorCategoria('celulares')"><i class="fas fa-mobile-alt"></i> Celulares</li>
-        <li class="categoria-item" data-categoria="eletrodomesticos" onclick="filtrarPorCategoria('eletrodomesticos')"><i class="fas fa-blender"></i> Eletrodomésticos</li>
-        <li class="categoria-item" data-categoria="pet" onclick="filtrarPorCategoria('pet')"><i class="fas fa-paw"></i> Pet</li>
-        <li class="categoria-item" data-categoria="jardinagem" onclick="filtrarPorCategoria('jardinagem')"><i class="fas fa-leaf"></i> Jardinagem</li>
-        <li class="categoria-item" data-categoria="automotivo" onclick="filtrarPorCategoria('automotivo')"><i class="fas fa-car"></i> Automotivo</li>
-        <li class="categoria-item" data-categoria="gastronomia" onclick="filtrarPorCategoria('gastronomia')"><i class="fas fa-utensils"></i> Gastronomia</li>
-        <li class="categoria-item" data-categoria="games" onclick="filtrarPorCategoria('games')"><i class="fas fa-gamepad"></i> Games</li>
-      </ul>
-    </aside>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const loadEl = document.querySelector('#load');
+        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+        // // The Firebase SDK is initialized and available here!
+        //
+        // firebase.auth().onAuthStateChanged(user => { });
+        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
+        // firebase.firestore().doc('/foo/bar').get().then(() => { });
+        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
+        // firebase.messaging().requestPermission().then(() => { });
+        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
+        // firebase.analytics(); // call to activate
+        // firebase.analytics().logEvent('tutorial_completed');
+        // firebase.performance(); // call to activate
+        //
+        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
 
-    <main>
-      <section>
-        <h2>🛍️ Ofertas do Dia</h2>
-        <ins class="adsbygoogle" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-4531749081462125" data-ad-slot="5690664546"></ins>
-        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-        <div class="lojas-parceiras">
-          <h3>🌟 Lojas Parceiras</h3>
-          <div class="grid-lojas">
-            <div class="loja-todas ativa" onclick="filtrarPorLoja('todas')"><span>Todas as Lojas</span></div>
-            <div class="loja" data-loja="amazon" onclick="filtrarPorLoja('amazon')">
-              <img src="https://via.placeholder.com/120x50?text=Amazon" alt="Amazon" loading="lazy" width="120" height="50"><span>Amazon</span>
-            </div>
-            <div class="loja" data-loja="magalu" onclick="filtrarPorLoja('magalu')">
-              <img src="https://via.placeholder.com/120x50?text=Magalu" alt="Magalu" loading="lazy" width="120" height="50"><span>Magalu</span>
-            </div>
-            <div class="loja" data-loja="shein" onclick="filtrarPorLoja('shein')">
-              <img src="https://via.placeholder.com/120x50?text=Shein" alt="Shein" loading="lazy" width="120" height="50"><span>Shein</span>
-            </div>
-            <div class="loja" data-loja="shopee" onclick="filtrarPorLoja('shopee')">
-              <img src="https://via.placeholder.com/120x50?text=Shopee" alt="Shopee" loading="lazy" width="120" height="50"><span>Shopee</span>
-            </div>
-            <div class="loja" data-loja="mercadolivre" onclick="filtrarPorLoja('mercadolivre')">
-              <img src="https://via.placeholder.com/120x50?text=Mercado+Livre" alt="Mercado Livre" loading="lazy" width="120" height="50"><span>Mercado Livre</span>
-            </div>
-            <div class="loja" data-loja="alibaba" onclick="filtrarPorLoja('alibaba')">
-              <img src="https://via.placeholder.com/120x50?text=Alibaba" alt="Alibaba" loading="lazy" width="120" height="50"><span>Alibaba</span>
-            </div>
-          </div>
-        </div>
-        <input type="text" id="busca" placeholder="Busque por produtos..." class="barra-busca">
-        <div id="busca-feedback" class="busca-feedback"></div>
-        <div class="loading-spinner" id="loading-spinner"></div>
-        <div class="grid-produtos" id="grid-produtos"></div>
-        <p class="mensagem-vazia" id="mensagem-vazia" style="display: none;">Nenhum produto encontrado.</p>
-        <p class="error-message" id="error-message" style="display: none;"></p>
-        <div class="paginacao" id="paginacao">
-          <button id="prev-page" disabled>Anterior</button>
-          <span id="page-info">Página 1</span>
-          <button id="next-page">Próxima</button>
-        </div>
-      </section>
-      <div class="social-links">
-        <a href="https://www.tiktok.com/@cdc.centraldecompras" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><img src="logos/tiktok.png" alt="TikTok" loading="lazy" width="50" height="50"></div>
-          <span>TikTok</span>
-        </a>
-        <a href="https://www.instagram.com/cdccentrodecompras/" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><img src="logos/Instagram.png" alt="Instagram" loading="lazy" width="50" height="50"></div>
-          <span>Instagram</span>
-        </a>
-        <a href="https://x.com/ComprasCdc" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><img src="logos/X.png" alt="X" loading="lazy" width="50" height="50"></div>
-          <span>X</span>
-        </a>
-        <a href="https://www.youtube.com/channel/UCaKHlI-hWqwdAXS6Xsv3ZzA" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><img src="logos/youtube.png" alt="YouTube" loading="lazy" width="50" height="50"></div>
-          <span>YouTube</span>
-        </a>
-      </div>
-      <a href="https://api.whatsapp.com/send?phone=5521975179737" class="whatsapp" target="_blank" rel="noopener noreferrer">📲 WhatsApp</a>
-      <a href="https://t.me/centraldecomprascdc" class="telegram" target="_blank" rel="noopener noreferrer">📢 Telegram</a>
-    </main>
-  </div>
-
-  <div class="modal" id="imageModal">
-    <button class="modal-close" onclick="closeModal()">✕</button>
-    <div class="modal-content">
-      <div class="carrossel-imagens" id="modalCarrosselImagens"></div>
-      <button class="carrossel-prev" onclick="moveModalCarrossel(-1)">◄</button>
-      <button class="carrossel-next" onclick="moveModalCarrossel(1)">▶</button>
-      <div class="carrossel-dots" id="modalCarrosselDots"></div>
-    </div>
-  </div>
-
-  <footer>
-    <div class="footer-content">
-      <p>🔧 Todos os direitos reservados <strong>Grupo Centro de Compra "CdC"</strong> © <span id="year"></span></p>
-      <div class="footer-links">
-        <a href="/termos">Termos de Uso</a>
-        <a href="/privacidade">Política de Privacidade</a>
-        <a href="/faq">FAQ</a>
-      </div>
-    </div>
-    <div class="credibilidade-nota">
-      <span class="credibilidade-icon">⚠️</span>
-      <p><strong>Sobre credibilidade:</strong> Este site é um portal de descontos e afiliado, não uma loja direta. Redirecionamos para plataformas terceiras. Verifique a validade dos cupons diretamente na loja original, pois promoções podem expirar ou não se aplicar a certos produtos.</p>
-    </div>
-  </footer>
-
-  <div class="robo-assistente">
-    <a href="https://api.whatsapp.com/send?phone=5521975179737" target="_blank" rel="noopener noreferrer">
-      <img src="imagens/robo.jpg" alt="Robô Assistente" class="robo-imagem" loading="lazy" width="60" height="60">
-      <div class="robo-texto">Precisa de ajuda?</div>
-    </a>
-  </div>
-
-  <script defer src="script.js"></script>
-</body>
+        try {
+          let app = firebase.app();
+          let features = [
+            'auth', 
+            'database', 
+            'firestore',
+            'functions',
+            'messaging', 
+            'storage', 
+            'analytics', 
+            'remoteConfig',
+            'performance',
+          ].filter(feature => typeof app[feature] === 'function');
+          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
+        } catch (e) {
+          console.error(e);
+          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
+        }
+      });
+    </script>
+  </body>
 </html>
