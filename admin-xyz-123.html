@@ -5,178 +5,76 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Gerenciar Produtos</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <h1>Adicionar Produto</h1>
-  <form id="form-produto" enctype="multipart/form-data">
-    <input type="text" name="nome" placeholder="Nome do produto" required />
-    <textarea name="descricao" placeholder="Descrição do produto" required></textarea>
-    <select name="categoria" required>
-      <option value="" disabled selected>Selecione uma categoria</option>
-      <option value="eletronicos">Eletrônicos</option>
-      <option value="moda">Moda</option>
-      <option value="fitness">Fitness</option>
-      <option value="casa">Casa e Decoração</option>
-      <option value="beleza">Beleza</option>
-      <option value="esportes">Esportes</option>
-      <option value="livros">Livros</option>
-      <option value="infantil">Infantil</option>
-      <option value="celulares">Celulares</option>
-      <option value="eletrodomesticos">Eletrodomésticos</option>
-      <option value="pet">Pet</option>
-      <option value="jardinagem">Jardinagem</option>
-      <option value="automotivo">Automotivo</option>
-      <option value="gastronomia">Gastronomia</option>
-      <option value="games">Games</option>
-    </select>
-    <select name="loja" required>
-      <option value="" disabled selected>Selecione uma loja</option>
-      <option value="amazon">Amazon</option>
-      <option value="magalu">Magalu</option>
-      <option value="shein">Shein</option>
-      <option value="shopee">Shopee</option>
-      <option value="mercadolivre">Mercado Livre</option>
-      <option value="alibaba">Alibaba</option>
-    </select>
-    <input type="url" name="link" placeholder="Link do produto (https://...)" required pattern="https?://.+" />
-    <input type="number" name="preco" placeholder="Preço do produto (ex.: 99.99)" step="0.01" min="0" required />
-    <input type="file" name="imagens" accept="image/*" multiple required />
-    <button type="submit">Adicionar</button>
-  </form>
-  <div id="mensagem"></div>
-  <div id="erro"></div>
-
-  <div id="produtos-cadastrados">
-    <h3>Produtos Cadastrados</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Nome</th>
-          <th>Descrição</th>
-          <th>Categoria</th>
-          <th>Loja</th>
-          <th>Link</th>
-          <th>Preço</th>
-          <th>Imagens</th>
-          <th>Ação</th>
-        </tr>
-      </thead>
-      <tbody id="lista-produtos">
-        <tr><td colspan="8" style="text-align:center;">Carregando produtos...</td></tr>
-      </tbody>
-    </table>
+  <div id="login-form" style="display: block;">
+    <h2>Login</h2>
+    <input type="email" id="email" placeholder="E-mail" required />
+    <input type="password" id="password" placeholder="Senha" required />
+    <button onclick="login()">Entrar</button>
   </div>
+  <div id="form-container" style="display: none;">
+    <h1>Adicionar Produto</h1>
+    <form id="form-produto" enctype="multipart/form-data">
+      <input type="text" name="nome" placeholder="Nome do produto" required />
+      <textarea name="descricao" placeholder="Descrição do produto" required></textarea>
+      <select name="categoria" required>
+        <option value="" disabled selected>Selecione uma categoria</option>
+        <option value="eletronicos">Eletrônicos</option>
+        <option value="moda">Moda</option>
+        <option value="fitness">Fitness</option>
+        <option value="casa">Casa e Decoração</option>
+        <option value="beleza">Beleza</option>
+        <option value="esportes">Esportes</option>
+        <option value="livros">Livros</option>
+        <option value="infantil">Infantil</option>
+        <option value="celulares">Celulares</option>
+        <option value="eletrodomesticos">Eletrodomésticos</option>
+        <option value="pet">Pet</option>
+        <option value="jardinagem">Jardinagem</option>
+        <option value="automotivo">Automotivo</option>
+        <option value="gastronomia">Gastronomia</option>
+        <option value="games">Games</option>
+      </select>
+      <select name="loja" required>
+        <option value="" disabled selected>Selecione uma loja</option>
+        <option value="amazon">Amazon</option>
+        <option value="magalu">Magalu</option>
+        <option value="shein">Shein</option>
+        <option value="shopee">Shopee</option>
+        <option value="mercadolivre">Mercado Livre</option>
+        <option value="alibaba">Alibaba</option>
+      </select>
+      <input type="url" name="link" placeholder="Link do produto (https://...)" required pattern="https?://.+" />
+      <input type="number" name="preco" placeholder="Preço do produto (ex.: 99.99)" step="0.01" min="0" required />
+      <input type="file" name="imagens" accept="image/*" multiple required />
+      <button type="submit">Adicionar</button>
+    </form>
+    <div id="mensagem"></div>
+    <div id="erro"></div>
 
-  <script type="module" src="firebase.js"></script>
-  <script type="module">
-    import { collection, addDoc, getDocs, deleteDoc, doc } from 'firebase/firestore';
-    import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-
-    const db = window.firebaseDb;
-    const storage = window.firebaseStorage;
-
-    const formProduto = document.getElementById('form-produto');
-    const mensagem = document.getElementById('mensagem');
-    const erro = document.getElementById('erro');
-    const listaProdutos = document.getElementById('lista-produtos');
-
-    async function carregarProdutos() {
-      try {
-        listaProdutos.innerHTML = '<tr><td colspan="8" style="text-align:center;">Carregando produtos...</td></tr>';
-        const querySnapshot = await getDocs(collection(db, 'produtos'));
-        const produtos = [];
-        querySnapshot.forEach((doc) => {
-          produtos.push({ id: doc.id, ...doc.data() });
-        });
-        preencherTabela(produtos);
-      } catch (err) {
-        listaProdutos.innerHTML = `<tr><td colspan="8" style="color:red;text-align:center;">Erro ao carregar produtos: ${err.message}</td></tr>`;
-      }
-    }
-
-    function preencherTabela(produtos) {
-      listaProdutos.innerHTML = '';
-      if (produtos.length === 0) {
-        listaProdutos.innerHTML = '<tr><td colspan="8" style="text-align:center;">Nenhum produto cadastrado.</td></tr>';
-        return;
-      }
-      produtos.forEach((produto) => {
-        const precoFormatado = `R$ ${parseFloat(produto.preco).toFixed(2).replace('.', ',')}`;
-        const imagens = produto.imagens || [];
-        const miniaturas = imagens.length > 0
-          ? imagens.map((img, i) => `<img src="${img}" class="thumbnail" alt="Imagem ${i + 1}" />`).join('')
-          : 'Sem imagens';
-
-        listaProdutos.innerHTML += `
+    <div id="produtos-cadastrados">
+      <h3>Produtos Cadastrados</h3>
+      <table>
+        <thead>
           <tr>
-            <td>${produto.nome}</td>
-            <td>${produto.descricao || 'N/A'}</td>
-            <td>${produto.categoria}</td>
-            <td>${produto.loja}</td>
-            <td><a href="${produto.link}" target="_blank" rel="noopener noreferrer">Link</a></td>
-            <td>${precoFormatado}</td>
-            <td>${miniaturas}</td>
-            <td><button class="excluir" onclick="excluirProduto('${produto.id}')">Excluir</button></td>
+            <th>Nome</th>
+            <th>Descrição</th>
+            <th>Categoria</th>
+            <th>Loja</th>
+            <th>Link</th>
+            <th>Preço</th>
+            <th>Imagens</th>
+            <th>Ação</th>
           </tr>
-        `;
-      });
-    }
-
-    async function excluirProduto(id) {
-      if (!confirm('Confirma a exclusão deste produto?')) return;
-      try {
-        await deleteDoc(doc(db, 'produtos', id));
-        alert('Produto excluído com sucesso');
-        carregarProdutos();
-      } catch (err) {
-        alert(`Erro ao excluir produto: ${err.message}`);
-      }
-    }
-
-    async function uploadImagens(files) {
-      const imageUrls = [];
-      for (const file of files) {
-        const storageRef = ref(storage, `imagens/${Date.now()}_${file.name}`);
-        await uploadBytes(storageRef, file);
-        const url = await getDownloadURL(storageRef);
-        imageUrls.push(url);
-      }
-      return imageUrls;
-    }
-
-    formProduto.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      const formData = new FormData(event.target);
-      mensagem.textContent = '';
-      erro.textContent = '';
-
-      try {
-        const imagens = formData.getAll('imagens');
-        const imageUrls = await uploadImagens(imagens);
-
-        const produto = {
-          nome: formData.get('nome'),
-          descricao: formData.get('descricao'),
-          categoria: formData.get('categoria'),
-          loja: formData.get('loja'),
-          link: formData.get('link'),
-          preco: parseFloat(formData.get('preco')),
-          imagens: imageUrls,
-          criadoEm: new Date().toISOString()
-        };
-
-        await addDoc(collection(db, 'produtos'), produto);
-
-        mensagem.textContent = 'Produto adicionado com sucesso!';
-        formProduto.reset();
-        carregarProdutos();
-      } catch (error) {
-        erro.textContent = `Erro ao adicionar produto: ${error.message}`;
-      }
-    });
-
-    document.addEventListener('DOMContentLoaded', carregarProdutos);
-  </script>
+        </thead>
+        <tbody id="lista-produtos">
+          <tr><td colspan="8" style="text-align:center;">Carregando produtos...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <script type="module" src="/admin.js"></script>
 </body>
 </html>
