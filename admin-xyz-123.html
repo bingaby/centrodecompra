@@ -1,95 +1,171 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Gerenciar Produtos</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/style.css">
+  <style>
+    body { font-family: 'Roboto', Arial, sans-serif; padding: 20px; background-color: #f5f5f5; }
+    h1, h3 { text-align: center; color: #333; }
+    form { max-width: 500px; margin: auto; display: flex; flex-direction: column; gap: 10px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    input, select, textarea, button { padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; }
+    textarea { resize: vertical; min-height: 100px; }
+    button { background-color: #ff6200; color: white; border: none; cursor: pointer; font-weight: bold; }
+    button:hover { background-color: #e55a00; }
+    #mensagem { margin-top: 10px; color: green; text-align: center; }
+    #erro { margin-top: 10px; color: red; text-align: center; }
+    #produtos-cadastrados { margin: 20px auto; max-width: 900px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    #produtos-cadastrados table { width: 100%; border-collapse: collapse; }
+    #produtos-cadastrados th, #produtos-cadastrados td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+    #produtos-cadastrados th { background-color: #f9f9f9; }
+    #produtos-cadastrados button.excluir { background-color: #dc3545; padding: 5px 10px; font-size: 14px; border: none; color: white; border-radius: 4px; cursor: pointer; }
+    #produtos-cadastrados button.excluir:hover { background-color: #c82333; }
+    .thumbnail { width: 50px; height: 50px; object-fit: cover; margin: 2px; cursor: pointer; border-radius: 4px; }
+  </style>
 </head>
 <body>
-  <header class="site-header">
-    <div class="logo-container">
-      <img src="/logos/logoscentrodecompras.jpeg" alt="Logo Centro de Compra">
-    </div>
-    <div class="header-text">
-      <h1>Gerenciar Produtos</h1>
-      <p>Adicione, edite ou remova produtos do Centro de Compra</p>
-    </div>
-  </header>
-  <div class="container">
-    <main>
-      <div id="login-form" style="display: block;">
-        <h2>Login</h2>
-        <input type="email" id="email" class="barra-busca" placeholder="E-mail" required />
-        <input type="password" id="password" class="barra-busca" placeholder="Senha" required />
-        <button onclick="login()">Entrar</button>
-      </div>
-      <div id="form-container" style="display: none;">
-        <h2>Adicionar Produto</h2>
-        <form id="form-produto" enctype="multipart/form-data">
-          <input type="text" name="nome" class="barra-busca" placeholder="Nome do produto" required />
-          <textarea name="descricao" placeholder="Descrição do produto" required></textarea>
-          <select name="categoria" required>
-            <option value="" disabled selected>Selecione uma categoria</option>
-            <option value="eletronicos">Eletrônicos</option>
-            <option value="moda">Moda</option>
-            <option value="fitness">Fitness</option>
-            <option value="casa">Casa e Decoração</option>
-            <option value="beleza">Beleza</option>
-            <option value="esportes">Esportes</option>
-            <option value="livros">Livros</option>
-            <option value="infantil">Infantil</option>
-            <option value="celulares">Celulares</option>
-            <option value="eletrodomesticos">Eletrodomésticos</option>
-            <option value="pet">Pet</option>
-            <option value="jardinagem">Jardinagem</option>
-            <option value="automotivo">Automotivo</option>
-            <option value="gastronomia">Gastronomia</option>
-            <option value="games">Games</option>
-          </select>
-          <select name="loja" required>
-            <option value="" disabled selected>Selecione uma loja</option>
-            <option value="amazon">Amazon</option>
-            <option value="magalu">Magalu</option>
-            <option value="shein">Shein</option>
-            <option value="shopee">Shopee</option>
-            <option value="mercadolivre">Mercado Livre</option>
-            <option value="alibaba">Alibaba</option>
-          </select>
-          <input type="url" name="link" class="barra-busca" placeholder="Link do produto (https://...)" required pattern="https?://.+" />
-          <input type="number" name="preco" class="barra-busca" placeholder="Preço do produto (ex.: 99.99)" step="0.01" min="0" required />
-          <input type="file" name="imagens" accept="image/*" multiple required />
-          <button type="submit">Adicionar</button>
-        </form>
-        <div id="mensagem"></div>
-        <div id="erro"></div>
-        <div id="produtos-cadastrados">
-          <h3>Produtos Cadastrados</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>Nome</th>
-                <th>Descrição</th>
-                <th>Categoria</th>
-                <th>Loja</th>
-                <th>Link</th>
-                <th>Preço</th>
-                <th>Imagens</th>
-                <th>Ação</th>
-              </tr>
-            </thead>
-            <tbody id="lista-produtos">
-              <tr><td colspan="8" style="text-align:center;">Carregando produtos...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </main>
+  <h1>Adicionar Produto</h1>
+  <form id="form-produto" enctype="multipart/form-data">
+    <input type="text" name="nome" placeholder="Nome do produto" required />
+    <textarea name="descricao" placeholder="Descrição do produto" required></textarea>
+    <select name="categoria" required>
+      <option value="" disabled selected>Selecione uma categoria</option>
+      <option value="eletronicos">Eletrônicos</option>
+      <option value="moda">Moda</option>
+      <option value="fitness">Fitness</option>
+      <option value="casa">Casa e Decoração</option>
+      <option value="beleza">Beleza</option>
+      <option value="esportes">Esportes</option>
+      <option value="livros">Livros</option>
+      <option value="infantil">Infantil</option>
+      <option value="celulares">Celulares</option>
+      <option value="eletrodomesticos">Eletrodomésticos</option>
+      <option value="pet">Pet</option>
+      <option value="jardinagem">Jardinagem</option>
+      <option value="automotivo">Automotivo</option>
+      <option value="gastronomia">Gastronomia</option>
+      <option value="games">Games</option>
+    </select>
+    <select name="loja" required>
+      <option value="" disabled selected>Selecione uma loja</option>
+      <option value="amazon">Amazon</option>
+      <option value="magalu">Magalu</option>
+      <option value="shein">Shein</option>
+      <option value="shopee">Shopee</option>
+      <option value="mercadolivre">Mercado Livre</option>
+      <option value="alibaba">Alibaba</option>
+    </select>
+    <input type="url" name="link" placeholder="Link do produto (https://...)" required pattern="https?://.+" />
+    <input type="number" name="preco" placeholder="Preço do produto (ex.: 99.99)" step="0.01" min="0" required />
+    <input type="file" name="imagens" accept="image/*" multiple required />
+    <button type="submit">Adicionar</button>
+  </form>
+  <div id="mensagem"></div>
+  <div id="erro"></div>
+
+  <div id="produtos-cadastrados">
+    <h3>Produtos Cadastrados</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Descrição</th>
+          <th>Categoria</th>
+          <th>Loja</th>
+          <th>Link</th>
+          <th>Preço</th>
+          <th>Imagens</th>
+          <th>Ação</th>
+        </tr>
+      </thead>
+      <tbody id="lista-produtos">
+        <tr><td colspan="8" style="text-align:center;">Carregando produtos...</td></tr>
+      </tbody>
+    </table>
   </div>
-  <footer>
-    <span id="year"></span>
-  </footer>
-  <script type="module" src="/admin.js"></script>
+
+  <script>
+    const API_URL = 'https://centrodecompra-backend.onrender.com';
+
+    async function carregarProdutos() {
+      try {
+        const res = await fetch(${API_URL}/api/produtos);
+        if (!res.ok) throw new Error('Falha ao buscar produtos');
+        const produtos = await res.json();
+        preencherTabela(produtos);
+      } catch (err) {
+        document.getElementById('lista-produtos').innerHTML = <tr><td colspan="8" style="color:red;text-align:center;">${err.message}</td></tr>;
+      }
+    }
+
+    function preencherTabela(produtos) {
+      const tbody = document.getElementById('lista-produtos');
+      tbody.innerHTML = '';
+      if (produtos.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Nenhum produto cadastrado.</td></tr>';
+        return;
+      }
+      produtos.forEach((produto) => {
+        const precoFormatado = R$ ${parseFloat(produto.preco).toFixed(2).replace('.', ',')};
+        const imagens = produto.imagens || [];
+        const miniaturas = imagens.length > 0
+          ? imagens.map((img, i) => <img src="${img}" class="thumbnail" alt="Imagem ${i + 1}" />).join('')
+          : 'Sem imagens';
+
+        tbody.innerHTML += 
+          <tr>
+            <td>${produto.nome}</td>
+            <td>${produto.descricao || 'N/A'}</td>
+            <td>${produto.categoria}</td>
+            <td>${produto.loja}</td>
+            <td><a href="${produto.link}" target="_blank" rel="noopener noreferrer">Link</a></td>
+            <td>${precoFormatado}</td>
+            <td>${miniaturas}</td>
+            <td><button class="excluir" onclick="excluirProduto('${produto._id}')">Excluir</button></td>
+          </tr>
+        ;
+      });
+    }
+
+    async function excluirProduto(id) {
+      if (!confirm('Confirma a exclusão deste produto?')) return;
+      try {
+        const res = await fetch(${API_URL}/api/produtos/${id}, { method: 'DELETE' });
+        if (!res.ok) throw new Error('Erro ao excluir produto');
+        alert('Produto excluído com sucesso');
+        carregarProdutos();
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    document.getElementById('form-produto').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const form = event.target;
+      const formData = new FormData(form);
+
+      document.getElementById('mensagem').textContent = '';
+      document.getElementById('erro').textContent = '';
+
+      try {
+        const res = await fetch(${API_URL}/api/produtos, {
+          method: 'POST',
+          body: formData
+        });
+        if (!res.ok) {
+          const erroJson = await res.json().catch(() => null);
+          throw new Error(erroJson?.error || 'Erro ao adicionar produto');
+        }
+        document.getElementById('mensagem').textContent = 'Produto adicionado com sucesso!';
+        form.reset();
+        carregarProdutos();
+      } catch (error) {
+        document.getElementById('erro').textContent = error.message;
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', carregarProdutos);
+  </script>
 </body>
 </html>
