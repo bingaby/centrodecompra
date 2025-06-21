@@ -2,11 +2,15 @@
   "name": "centro-de-compras",
   "version": "1.0.0",
   "scripts": {
-    "start": "serve -s .",
-    "build": "vite build"
+    "start": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "deploy": "vite build && firebase deploy"
+  },
+  "dependencies": {
+    "firebase": "^10.12.0"
   },
   "devDependencies": {
-    "vite": "^4.0.0",
-    "serve": "^14.0.0"
+    "vite": "^5.0.0"
   }
 }
