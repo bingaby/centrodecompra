@@ -1,10 +1,9 @@
 // admin.js
-import { db, storage, app } from './firebase.js';
+import { db, storage, app, auth } from './firebase.js';
 import { collection, addDoc, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
-const auth = getAuth(app);
 const formProduto = document.getElementById('form-produto');
 const mensagem = document.getElementById('mensagem');
 const erro = document.getElementById('erro');
