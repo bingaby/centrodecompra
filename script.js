@@ -1,6 +1,6 @@
-// Acessa o Firestore e Storage inicializados no firebase.js
-const db = window.firebaseDb;
-const storage = window.firebaseStorage;
+// script.js
+import { db, storage } from './firebase.js';
+import { collection, query, orderBy, limit, startAfter, getDocs } from 'firebase/firestore';
 
 // Variáveis globais
 let produtos = [];
@@ -73,7 +73,6 @@ async function carregarProdutos() {
 
       console.log(`Tentativa ${attempt}: Carregando produtos da página ${currentPage}`);
 
-      const { query, collection, orderBy, limit, startAfter, getDocs } = await import('firebase/firestore');
       let q = query(
         collection(db, 'produtos'),
         orderBy('criadoEm', 'desc'),
