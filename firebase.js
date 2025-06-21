@@ -1,9 +1,10 @@
+// firebase.js
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { getAnalytics } from 'firebase/analytics';
 
-// Configuração do Firebase (copiada do seu projeto Firebase)
+// Configuração do Firebase - substitua pelos seus dados reais
 const firebaseConfig = {
   apiKey: "AIzaSyDryJc0Y7JV_Os5DZdEDts5XaFUEtJ7wDk",
   authDomain: "centrodecompra-5fa91.firebaseapp.com",
@@ -14,15 +15,15 @@ const firebaseConfig = {
   measurementId: "G-PM11NQL61N"
 };
 
-// Inicializa o Firebase
+// Inicializa o app Firebase
 const app = initializeApp(firebaseConfig);
 
-// Inicializa os serviços que irá usar
+// Inicializa os serviços Firebase que você vai usar
 const db = getFirestore(app);
 const storage = getStorage(app);
 const analytics = getAnalytics(app);
 
-// Exporta para uso global (no navegador)
+// Exporta para uso global (para que outros scripts possam usar)
 window.firebaseDb = db;
 window.firebaseStorage = storage;
 window.firebaseAnalytics = analytics;
