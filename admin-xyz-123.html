@@ -178,6 +178,35 @@
 
     document.addEventListener('DOMContentLoaded', carregarProdutos);
     <script type="module" src="firebase.js"></script>
+<!-- Firebase App (core) -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+
+<!-- Firestore -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+<!-- Storage -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+
+<!-- Analytics -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDryJc0Y7JV_Os5DZdEDts5XaFUEtJ7wDk",
+    authDomain: "centrodecompra-5fa91.firebaseapp.com",
+    projectId: "centrodecompra-5fa91",
+    storageBucket: "centrodecompra-5fa91.appspot.com",
+    messagingSenderId: "276696026262",
+    appId: "1:276696026262:web:979a68c0796ea1d17346b7",
+    measurementId: "G-PM11NQL61N"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  firebase.analytics();
+
+  window.firebaseDb = firebase.firestore();
+  window.firebaseStorage = firebase.storage();
+</script>
 
   </script>
 </body>
