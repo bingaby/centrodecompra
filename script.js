@@ -79,9 +79,8 @@ async function carregarProdutos() {
       }
       const data = await response.json();
       produtos = Array.isArray(data) ? data : data.produtos || [];
-      // Adicionado: Atualizar totalProdutos dinamicamente
-      totalProdutos = data.total || produtos.length;
-      console.log('Resposta da API:', { produtos, totalProdutos }); // Adicionado para depuração
+      totalProdutos = data.total || produtos.length; // Atualizar dinamicamente
+      console.log('Resposta da API:', { produtos, totalProdutos });
 
       if (!Array.isArray(produtos)) {
         throw new Error('Resposta inválida da API: não é um array');
@@ -117,8 +116,7 @@ function filtrarProdutos() {
     return;
   }
 
-  // Adicionado: Desativar filtros temporariamente para depuração
-  // Comentado o código original para facilitar reversão
+  // Temporariamente desativado para depuração (exibir todos os produtos)
   /*
   const produtosFiltrados = produtos.filter((produto) => {
     const matchCategoria =
@@ -132,8 +130,6 @@ function filtrarProdutos() {
     return matchCategoria && matchLoja && matchBusca;
   });
   */
-
-  // Usar todos os produtos sem filtro para testar
   const produtosFiltrados = produtos;
 
   gridProdutos.innerHTML = '';
@@ -335,14 +331,14 @@ function configurarPaginacao() {
       currentPage--;
       carregarProdutos();
     }
-  }));
+  });
 
   nextButton.addEventListener('click', () => {
     if (currentPage < Math.ceil(totalProdutos / produtosPorPagina)) {
       currentPage++;
       carregarProdutos();
     }
-  }));
+  });
 }
 
 function atualizarPaginacao() {
@@ -356,8 +352,8 @@ function atualizarPaginacao() {
   }
 
   prevButton.disabled = currentPage === 1;
-  nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPaginaTotal);
-  pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPaginaTotal)}}`;
+  nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina); // Corrigido
+  pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina)}`;
 }
 
 // Filtrar por categoria
@@ -366,7 +362,7 @@ function filtrarPorCategoria(categoria) {
   currentPage = 1;
   document.querySelectorAll('.categoria-item').forEach(item => {
     item.classList.toggle('ativa', item.dataset.categoria.toLowerCase() === categoria.toLowerCase());
-  }));
+  });
   carregarProdutos();
 }
 
@@ -376,4 +372,23 @@ function filtrarPorLoja(loja) {
   currentPage = 1;
   document.querySelectorAll('.loja, .loja-todas').forEach(item => {
     item.classList.toggle('ativa', item.dataset.loja.toLowerCase() === loja.toLowerCase());
-  }));
+  });
+  carregarProdutos();
+}
+
+// Inicialização
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('Inicializando página');
+  carregarProdutos();
+  configurarBusca();
+  configurarPaginacao();
+  atualizarAnoFooter();
+  configurarCliqueLogo();
+
+  const modal = document.getElementById('imageModal');
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) closeModal();
+    });
+  }
+});
