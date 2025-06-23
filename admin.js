@@ -1,72 +1,41 @@
-import { db, storage, app, auth } from './firebase.js';
-import { collection, addDoc, getDocs, deleteDoc, doc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+const API_URL = 'https://centrodecompra-backend.onrender.com'; // Use 'http://localhost:10000' para testes locais
 
 const formProduto = document.getElementById('form-produto');
 const mensagem = document.getElementById('mensagem');
 const erro = document.getElementById('erro');
 const listaProdutos = document.getElementById('lista-produtos');
-const loginForm = document.getElementById('login-form');
-const formContainer = document.getElementById('form-container');
 
 // Verificar elementos DOM
-if (!formProduto || !mensagem || !erro || !listaProdutos || !loginForm || !formContainer) {
+if (!formProduto || !mensagem || !erro || !listaProdutos) {
   console.error('Elementos essenciais não encontrados:', {
     formProduto: !!formProduto,
     mensagem: !!mensagem,
     erro: !!erro,
-    listaProdutos: !!listaProdutos,
-    loginForm: !!loginForm,
-    formContainer: !!formContainer
+    listaProdutos: !!listaProdutos
   });
 }
 
-window.login = async () => {
-  const emailInput = document.getElementById('email');
-  const passwordInput = document.getElementById('password');
-  if (!emailInput || !passwordInput) {
-    console.error('Campos de email e senha não encontrados');
-    alert('Erro: Campos de email ou senha não encontrados');
-    return;
-  }
-
-  const email = emailInput.value;
-  const password = passwordInput.value;
-
-  try {
-    console.log('Tentando login com email);
-    await signInWithEmailAndPassword(auth, email, email);
-    console.log('Login bem-sucedido');
-    loginForm.style.display = 'none';
-    formContainer.style.display = 'block';
-    carregarProdutos();
-  } catch (error) {
-    console.error('Erro ao fazer login:', error.message);
-    alert('Erro no login: ${error.message}');
-  }
-};
-
 async function carregarProdutos() {
   try {
-    console.log('Carregando produtos do Firestore...');
+    console.log(`Carregando produtos de ${API_URL}/api/produtos`);
     if (!listaProdutos) throw new Error('Elemento lista-produtos não encontrado');
-    listaProdutos.innerHTML = '<tr><td colspan="8" style="text-align: center;">Carregando produtos...</td></tr>';
-    const querySnapshot = await getDocs(collection(db, 'produtos'));
-    const produtos = [];
-    querySnapshot.forEach((doc) => {
-      produtos.push({ id: doc.id, ...doc.data() });
-    });
-    console.log('Produtos carregados: ${produtos.length}');
+    listaProdutos.innerHTML = '<tr><td colspan="8" style="text-align:center;">Carregando produtos...</td></tr>';
+
+    const response = await fetch(`${API_URL}/api/produtos`, { cache: 'no-store' });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.details || `Erro ${response.status}`);
+    }
+    const data = await response.json();
+    const produtos = Array.isArray(data.produtos) ? data.produtos : [];
+    console.log(`Produtos carregados: ${produtos.length}, Total: ${data.total || 0}`);
     preencherTabela(produtos);
   } catch (err) {
     console.error('Erro ao carregar produtos:', err.message);
     if (listaProdutos) {
-      listaProdutos.innerHTML = '<tr><td colspan="8" style="color:red;text-align:center;">Erro ao carregar produtos: ${err.message}</td></tr>';
+      listaProdutos.innerHTML = `<tr><td colspan="8" style="color:red;text-align:center;">Erro ao carregar produtos: ${err.message}</td></tr>`;
     }
-    if (erro) {
-      erro.textContent = 'Erro ao carregar produtos: ${err.message}';
-    }
+    if (erro) erro.textContent = `Erro ao carregar produtos: ${err.message}`;
   }
 }
 
@@ -77,19 +46,19 @@ function preencherTabela(produtos) {
     return;
   }
   listaProdutos.innerHTML = '';
-  if (produtos.length === 0) {
+  if (!Array.isArray(produtos) || produtos.length === 0) {
     listaProdutos.innerHTML = '<tr><td colspan="8" style="text-align:center;">Nenhum produto cadastrado.</td></tr>';
     console.log('Nenhum produto para exibir');
     return;
   }
   produtos.forEach((produto) => {
-    const precoFormatado = 'R$ ${parseFloat(produto.preco || 0).toFixed(2).replace('.', ',')}';
+    const precoFormatado = `R$ ${(parseFloat(produto.preco || 0).toFixed(2)).replace('.', ',')}`;
     const imagens = Array.isArray(produto.imagens) ? produto.imagens : [];
     const miniaturas = imagens.length > 0
-      ? imagens.map((img, i) => '<img src="${img}" class="thumbnail" alt="Imagem ${i + 1}" width="50" height="50" onerror="this.src='imagens/placeholder.jpg'" />').join('')
+      ? imagens.map((img, i) => `<img src="${img}" class="thumbnail" alt="Imagem ${i + 1}" width="50" height="50" onerror="this.src='imagens/placeholder.jpg'" />`).join('')
       : 'Sem imagens';
 
-    listaProdutos.innerHTML += '
+    listaProdutos.innerHTML += `
       <tr>
         <td>${produto.nome || 'N/A'}</td>
         <td>${produto.descricao || 'N/A'}</td>
@@ -98,9 +67,9 @@ function preencherTabela(produtos) {
         <td><a href="${produto.link || '#'}" target="_blank" rel="noopener noreferrer">Link</a></td>
         <td>${precoFormatado}</td>
         <td>${miniaturas}</td>
-        <td><button class="excluir" onclick="excluirProduto('${produto.id}')">Excluir</button></td>
+        <td><button class="excluir" onclick="excluirProduto('${produto._id}')">Excluir</button></td>
       </tr>
-    ';
+    `;
   });
   console.log('Tabela preenchida com sucesso');
 }
@@ -108,29 +77,20 @@ function preencherTabela(produtos) {
 window.excluirProduto = async (id) => {
   if (!confirm('Confirma a exclusão deste produto?')) return;
   try {
-    console.log('Excluindo produto com ID:', id);
-    await deleteDoc(doc(db, 'produtos', id));
+    console.log(`Excluindo produto com ID: ${id}`);
+    const response = await fetch(`${API_URL}/api/produtos/${id}`, { method: 'DELETE' });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Erro ao excluir produto');
+    }
     console.log('Produto excluído com sucesso');
     alert('Produto excluído com sucesso');
     carregarProdutos();
   } catch (err) {
     console.error('Erro ao excluir produto:', err.message);
-    alert('Erro ao excluir produto: ${err.message}');
+    alert(`Erro ao excluir produto: ${err.message}`);
   }
 };
-
-async function uploadImagens(files) {
-  const imageUrls = [];
-  for (const file of files) {
-    console.log('Fazendo upload da imagem:', file.name);
-    const storageRef = ref(storage, 'imagens/${Date.now()}_${file.name}');
-    await uploadBytes(storageRef, file);
-    const url = await getDownloadURL(storageRef);
-    imageUrls.push(url);
-    console.log('Imagem carregada:', url);
-  }
-  return imageUrls;
-}
 
 if (formProduto) {
   formProduto.addEventListener('submit', async (event) => {
@@ -140,13 +100,10 @@ if (formProduto) {
     if (erro) erro.textContent = '';
 
     try {
-      console.log('Processando envio do formulário');
+      console.log('Enviando novo produto via formulário');
       const imagens = formData.getAll('imagens').filter(file => file.size > 0);
-      let imageUrls = [];
-      if (imagens.length > 0) {
-        imageUrls = await uploadImagens(imagens);
-      } else {
-        console.warn('Nenhuma imagem selecionada');
+      if (imagens.length === 0) {
+        throw new Error('Pelo menos uma imagem é necessária');
       }
 
       const produto = {
@@ -155,32 +112,39 @@ if (formProduto) {
         categoria: formData.get('categoria'),
         loja: formData.get('loja'),
         link: formData.get('link'),
-        preco: parseFloat(formData.get('preco')),
-        imagens: imageUrls,
-        criadoEm: new Date().toISOString()
+        preco: formData.get('preco')
       };
 
-      console.log('Adicionando produto:', produto);
-      await addDoc(collection(db, 'produtos'), produto);
+      const formDataToSend = new FormData();
+      for (const [key, value] of Object.entries(produto)) {
+        formDataToSend.append(key, value);
+      }
+      imagens.forEach((img) => formDataToSend.append('imagens', img));
 
+      const response = await fetch(`${API_URL}/api/produtos`, {
+        method: 'POST',
+        body: formDataToSend
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Erro ao adicionar produto');
+      }
+
+      const data = await response.json();
+      console.log('Produto adicionado:', data.produto);
       if (mensagem) mensagem.textContent = 'Produto adicionado com sucesso!';
       formProduto.reset();
       carregarProdutos();
     } catch (error) {
       console.error('Erro ao adicionar produto:', error.message);
-      if (erro) erro.textContent = 'Erro ao adicionar produto: ${error.message}';
+      if (erro) erro.textContent = `Erro ao adicionar produto: ${error.message}`;
     }
   });
 }
 
-auth.onAuthStateChanged((user) => {
-  console.log('Estado de autenticação alterado:', user ? 'Logado' : 'Não logado');
-  if (user) {
-    loginForm.style.display = 'none';
-    formContainer.style.display = 'block';
-    carregarProdutos();
-  } else {
-    loginForm.style.display = 'block';
-    formContainer.style.display = 'none';
-  }
+// Inicialização
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('Inicializando página de administração');
+  carregarProdutos();
 });
