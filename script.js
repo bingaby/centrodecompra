@@ -9,7 +9,7 @@ let currentImages = [];
 let currentImageIndex = 0;
 let currentPage = 1;
 const produtosPorPagina = 20;
-const totalProdutos = 1000;
+let totalProdutos = 1000; // Alterado para let, será atualizado dinamicamente
 
 // Atualizar ano no footer
 function atualizarAnoFooter() {
@@ -21,7 +21,7 @@ function atualizarAnoFooter() {
 
 // Detectar triplo clique no logotipo
 function configurarCliqueLogo() {
-  const logo = document.getElementById('site-logo-img'); // Corrigido para o ID correto
+  const logo = document.getElementById('site-logo-img');
   if (!logo) {
     console.error('ID site-logo-img não encontrado no DOM');
     return;
@@ -77,7 +77,11 @@ async function carregarProdutos() {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.details || `Erro ${response.status}`);
       }
-      produtos = await response.json();
+      const data = await response.json();
+      produtos = Array.isArray(data) ? data : data.produtos || [];
+      // Adicionado: Atualizar totalProdutos dinamicamente
+      totalProdutos = data.total || produtos.length;
+      console.log('Resposta da API:', { produtos, totalProdutos }); // Adicionado para depuração
 
       if (!Array.isArray(produtos)) {
         throw new Error('Resposta inválida da API: não é um array');
@@ -113,6 +117,9 @@ function filtrarProdutos() {
     return;
   }
 
+  // Adicionado: Desativar filtros temporariamente para depuração
+  // Comentado o código original para facilitar reversão
+  /*
   const produtosFiltrados = produtos.filter((produto) => {
     const matchCategoria =
       categoriaSelecionada === 'todas' ||
@@ -124,6 +131,10 @@ function filtrarProdutos() {
       !termoBusca || produto.nome?.toLowerCase().includes(termoBusca.toLowerCase());
     return matchCategoria && matchLoja && matchBusca;
   });
+  */
+
+  // Usar todos os produtos sem filtro para testar
+  const produtosFiltrados = produtos;
 
   gridProdutos.innerHTML = '';
   if (produtosFiltrados.length === 0) {
@@ -140,7 +151,7 @@ function filtrarProdutos() {
     const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0
       ? produto.imagens.filter(img => typeof img === 'string' && img)
       : ['imagens/placeholder.jpg'];
-    const carrosselId = `carrossel-${produtoIndex}-${produto.id || Date.now()}`; // Corrigido
+    const carrosselId = `carrossel-${produtoIndex}-${produto.id || Date.now()}`;
 
     const produtoDiv = document.createElement('div');
     produtoDiv.classList.add('produto-card', 'visible');
@@ -183,7 +194,7 @@ function moveCarrossel(carrosselId, direction) {
 
   currentIndex = (currentIndex + direction + totalImagens) % totalImagens;
   requestAnimationFrame(() => {
-    imagens.style.transform = `translateX(-${currentIndex * 100}%)`; // Corrigido
+    imagens.style.transform = `translateX(-${currentIndex * 100}%)`;
     imagens.dataset.index = currentIndex;
     dots.forEach((dot, i) => dot.classList.toggle('ativo', i === currentIndex));
   });
@@ -196,7 +207,7 @@ function setCarrosselImage(carrosselId, index) {
   const dots = carrossel.querySelectorAll('.carrossel-dot');
 
   requestAnimationFrame(() => {
-    imagens.style.transform = `translateX(-${index * 100}%)`; // Corrigido
+    imagens.style.transform = `translateX(-${index * 100}%)`;
     imagens.dataset.index = index;
     dots.forEach((dot, i) => dot.classList.toggle('ativo', i === index));
   });
@@ -260,7 +271,7 @@ function moveModalCarrossel(direction) {
 
   currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
   requestAnimationFrame(() => {
-    carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`; // Corrigido
+    carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
     Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
   });
 }
@@ -270,7 +281,7 @@ function setModalCarrosselImage(index) {
   const carrosselDots = document.getElementById('modalCarrosselDots')?.children;
   currentImageIndex = index;
   requestAnimationFrame(() => {
-    carrosselImagens.style.transform = `translateX(-${index * 100}%)`; // Corrigido
+    carrosselImagens.style.transform = `translateX(-${index * 100}%)`;
     Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
   });
 }
@@ -324,14 +335,14 @@ function configurarPaginacao() {
       currentPage--;
       carregarProdutos();
     }
-  });
+  }));
 
   nextButton.addEventListener('click', () => {
     if (currentPage < Math.ceil(totalProdutos / produtosPorPagina)) {
       currentPage++;
       carregarProdutos();
     }
-  });
+  }));
 }
 
 function atualizarPaginacao() {
@@ -345,8 +356,8 @@ function atualizarPaginacao() {
   }
 
   prevButton.disabled = currentPage === 1;
-  nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
-  pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina)}`; // Corrigido
+  nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPaginaTotal);
+  pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPaginaTotal)}}`;
 }
 
 // Filtrar por categoria
@@ -355,7 +366,7 @@ function filtrarPorCategoria(categoria) {
   currentPage = 1;
   document.querySelectorAll('.categoria-item').forEach(item => {
     item.classList.toggle('ativa', item.dataset.categoria.toLowerCase() === categoria.toLowerCase());
-  });
+  }));
   carregarProdutos();
 }
 
@@ -365,23 +376,4 @@ function filtrarPorLoja(loja) {
   currentPage = 1;
   document.querySelectorAll('.loja, .loja-todas').forEach(item => {
     item.classList.toggle('ativa', item.dataset.loja.toLowerCase() === loja.toLowerCase());
-  });
-  carregarProdutos();
-}
-
-// Inicialização
-document.addEventListener('DOMContentLoaded', () => {
-  console.log('Inicializando página');
-  carregarProdutos();
-  configurarBusca();
-  configurarPaginacao();
-  atualizarAnoFooter();
-  configurarCliqueLogo();
-
-  const modal = document.getElementById('imageModal');
-  if (modal) {
-    modal.addEventListener('click', (e) => {
-      if (e.target === e.currentTarget) closeModal();
-    });
-  }
-});
+  }));
