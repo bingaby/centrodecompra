@@ -8,7 +8,7 @@ let termoBusca = '';
 let currentImages = [];
 let currentImageIndex = 0;
 let currentPage = 1;
-const produtosPorPagina = 25; // Definido como 25 itens por página
+const produtosPorPagina = 24; // Definido como 24 itens por página
 let totalProdutos = 1000; // Será atualizado dinamicamente
 
 // Atualizar ano no footer
