@@ -90,12 +90,14 @@
 
     async function carregarProdutos() {
       try {
-        const res = await fetch(${API_URL}/api/produtos);
+        const res = await fetch(`${API_URL}/api/produtos`);
         if (!res.ok) throw new Error('Falha ao buscar produtos');
         const produtos = await res.json();
+        console.log('Produtos carregados:', produtos); // Adicionado para depuração
         preencherTabela(produtos);
       } catch (err) {
-        document.getElementById('lista-produtos').innerHTML = <tr><td colspan="8" style="color:red;text-align:center;">${err.message}</td></tr>;
+        // Correção: Usar crases para template literal
+        document.getElementById('lista-produtos').innerHTML = `<tr><td colspan="8" style="color:red;text-align:center;">${err.message}</td></tr>`;
       }
     }
 
@@ -107,13 +109,14 @@
         return;
       }
       produtos.forEach((produto) => {
-        const precoFormatado = R$ ${parseFloat(produto.preco).toFixed(2).replace('.', ',')};
+        const precoFormatado = `R$ ${parseFloat(produto.preco).toFixed(2).replace('.', ',')}`;
         const imagens = produto.imagens || [];
+        // Correção: Usar crases para template literal
         const miniaturas = imagens.length > 0
-          ? imagens.map((img, i) => <img src="${img}" class="thumbnail" alt="Imagem ${i + 1}" />).join('')
+          ? imagens.map((img, i) => `<img src="${img}" class="thumbnail" alt="Imagem ${i + 1}" />`).join('')
           : 'Sem imagens';
 
-        tbody.innerHTML += 
+        tbody.innerHTML += `
           <tr>
             <td>${produto.nome}</td>
             <td>${produto.descricao || 'N/A'}</td>
@@ -124,14 +127,14 @@
             <td>${miniaturas}</td>
             <td><button class="excluir" onclick="excluirProduto('${produto._id}')">Excluir</button></td>
           </tr>
-        ;
+        `;
       });
     }
 
     async function excluirProduto(id) {
       if (!confirm('Confirma a exclusão deste produto?')) return;
       try {
-        const res = await fetch(${API_URL}/api/produtos/${id}, { method: 'DELETE' });
+        const res = await fetch(`${API_URL}/api/produtos/${id}`, { method: 'DELETE' });
         if (!res.ok) throw new Error('Erro ao excluir produto');
         alert('Produto excluído com sucesso');
         carregarProdutos();
@@ -145,17 +148,23 @@
       const form = event.target;
       const formData = new FormData(form);
 
+      // Adicionado: Log para depuração do FormData
+      for (let pair of formData.entries()) {
+        console.log(`${pair[0]}: ${pair[1]}`);
+      }
+
       document.getElementById('mensagem').textContent = '';
       document.getElementById('erro').textContent = '';
 
       try {
-        const res = await fetch(${API_URL}/api/produtos, {
+        const res = await fetch(`${API_URL}/api/produtos`, {
           method: 'POST',
           body: formData
         });
+        const responseData = await res.json(); // Adicionado para depuração
+        console.log('Resposta do POST:', responseData); // Adicionado para depuração
         if (!res.ok) {
-          const erroJson = await res.json().catch(() => null);
-          throw new Error(erroJson?.error || 'Erro ao adicionar produto');
+          throw new Error(responseData?.error || 'Erro ao adicionar produto');
         }
         document.getElementById('mensagem').textContent = 'Produto adicionado com sucesso!';
         form.reset();
