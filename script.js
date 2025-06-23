@@ -1,5 +1,5 @@
 const API_URL = 'https://centrodecompra-backend.onrender.com'; // Use 'http://localhost:10000' para testes locais
-const ITEMS_PER_PAGE = 25; // Ajustado para 25 itens por página
+const ITEMS_PER_PAGE = 25; // 25 itens por página
 let currentPage = 1;
 let totalPages = 1;
 let currentImages = [];
@@ -93,7 +93,7 @@ async function carregarProdutos(search = '', categoria = '', loja = '') {
         const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0
           ? produto.imagens.filter(img => typeof img === 'string' && img)
           : ['imagens/placeholder.jpg'];
-        const precoFormatado = produto.preco ? `R$${parseFloat(produto.preco).toFixed(2).replace('.', ',')}` : 'Ver na loja';
+        const linkAfiliado = produto.link || '#';
         const card = document.createElement('div');
         card.className = 'produto-card';
         card.innerHTML = `
@@ -101,8 +101,8 @@ async function carregarProdutos(search = '', categoria = '', loja = '') {
           <div class="produto-card-content">
             <span>${produto.nome || 'N/A'}</span>
             <div class="descricao">Loja: ${produto.loja || 'N/A'}</div>
-            <div class="preco"><a href="${produto.link || '#'}" target="_blank" rel="noopener">${precoFormatado}</a></div>
-            <a href="${produto.link || '#'}" class="ver-na-loja" target="_blank" rel="noopener">Comprar</a>
+            <div class="preco"><a href="${linkAfiliado}" target="_blank" rel="noopener">Ver oferta</a></div>
+            <a href="${linkAfiliado}" class="ver-na-loja" target="_blank" rel="noopener">Comprar</a>
           </div>
         `;
         gridProdutos.appendChild(card);
