@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="google-adsense-account" content="ca-pub-4531749081462125">
   <meta name="twitter:card" content="summary_large_image">
   <title>Centro de Compras - Ofertas do Dia</title>
@@ -8,9 +10,10 @@
   <link rel="preload" href="logos/logoscentrodecompras.jpeg" as="image">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="style.css" media="print" onload="this.media='all'">
-  <link rel="icon" type="image/x-icon" href="/favicon.ico"> <!-- Adicionado para corrigir erro 404 -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="logos/favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="logos/apple-touch-icon.png">
@@ -18,26 +21,30 @@
 </head>
 <body>
   <header class="site-header">
-    <div class="logo-container">
-      <a href="index.html">
-        <img src="logos/logoscentrodecompras.jpeg" alt="Centro de Compras" id="site-logo-img" width="150" height="50">
-      </a>
-    </div>
-    <div class="header-text">
-      <h1>Centro de Compra</h1>
-      <p>O maior portal de compras do Brasil! Encontre as melhores ofertas.</p>
+    <div class="header-content">
+      <div class="logo-container">
+        <a href="index.html">
+          <img src="logos/logoscentrodecompras.jpeg" alt="Centro de Compras" id="site-logo-img" width="150" height="50">
+        </a>
+      </div>
+      <div class="header-text">
+        <h1>Centro de Compra</h1>
+        <p>O maior portal de compras do Brasil! Encontre as melhores ofertas.</p>
+      </div>
+      <button class="nav-toggle" onclick="toggleNav()"><i class="fas fa-bars"></i></button>
     </div>
   </header>
 
-  <nav>
-    <a href="index">Promoções</a>
-    <a href="cupom">Cupom de Desconto</a>
-    <a href="sobre">Sobre</a>
-    <a href="contato">Contato</a>
+  <nav id="main-nav">
+    <a href="index.html">Promoções</a>
+    <a href="cupom.html">Cupom de Desconto</a>
+    <a href="sobre.html">Sobre</a>
+    <a href="contato.html">Contato</a>
   </nav>
 
   <div class="container">
-    <aside class="sidebar">
+    <button class="filter-toggle" onclick="toggleSidebar()"><i class="fas fa-filter"></i> Filtros</button>
+    <aside class="sidebar" id="sidebar">
       <h3>Categorias</h3>
       <ul>
         <li class="categoria-item ativa" data-categoria="todas" onclick="filtrarPorCategoria('todas')"><i class="fas fa-list mr-2"></i>Todas</li>
@@ -61,7 +68,7 @@
 
     <main>
       <section>
-        <h2>🛍️ Ofertas do Dia</h2>
+        <h2><i class="fas fa-shopping-cart"></i> Ofertas do Dia</h2>
         <ins class="adsbygoogle"
              style="display:inline-block;width:728px;height:90px"
              data-ad-client="ca-pub-4531749081462125"
@@ -70,7 +77,7 @@
              (adsbygoogle = window.adsbygoogle || []).push({});
         </script>
         <div class="lojas-parceiras">
-          <h3>🌟 Lojas Parceiras</h3>
+          <h3><i class="fas fa-store"></i> Lojas Parceiras</h3>
           <div class="grid-lojas">
             <div class="loja-todas ativa" onclick="filtrarPorLoja('todas')"><span>Todas as Lojas</span></div>
             <div class="loja" data-loja="amazon" onclick="filtrarPorLoja('amazon')">
@@ -93,8 +100,11 @@
             </div>
           </div>
         </div>
-        <input type="text" id="busca" placeholder="Busque por produtos..." class="barra-busca">
-        <div id="busca-feedback" class="busca-feedback"></div>
+        <div class="search-bar">
+          <input type="text" id="busca" placeholder="Busque por produtos...">
+          <button onclick="searchProducts()"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="busca-feedback" id="busca-feedback"></div>
         <div class="loading-spinner" id="loading-spinner"></div>
         <div class="grid-produtos" id="grid-produtos"></div>
         <p class="mensagem-vazia" id="mensagem-vazia" style="display: none;">Nenhum produto encontrado.</p>
@@ -107,33 +117,33 @@
       </section>
       <div class="social-links">
         <a href="https://www.tiktok.com/@cdc.centraldecompras" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><img src="logos/tiktok.png" alt="TikTok" loading="lazy" width="40" height="40"></div>
+          <div class="icon"><img src="logos/tiktok.png" alt="TikTok" loading="lazy" width="24" height="24"></div>
           <span>TikTok</span>
         </a>
         <a href="https://www.instagram.com/cdccentrodecompras/" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><img src="logos/Instagram.png" alt="Instagram" loading="lazy" width="40" height="40"></div>
+          <div class="icon"><img src="logos/Instagram.png" alt="Instagram" loading="lazy" width="24" height="24"></div>
           <span>Instagram</span>
         </a>
         <a href="https://x.com/ComprasCdc" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><img src="logos/X.png" alt="X" loading="lazy" width="40" height="40"></div>
+          <div class="icon"><img src="logos/X.png" alt="X" loading="lazy" width="24" height="24"></div>
           <span>X</span>
         </a>
         <a href="https://www.youtube.com/channel/UCaKHlI-hWqwdAXS6Xsv3ZzA" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><img src="logos/youtube.png" alt="YouTube" loading="lazy" width="40" height="40"></div>
+          <div class="icon"><img src="logos/youtube.png" alt="YouTube" loading="lazy" width="24" height="24"></div>
           <span>YouTube</span>
         </a>
       </div>
-      <a href="https://api.whatsapp.com/send?phone=5521975179737" class="whatsapp" target="_blank" rel="noopener noreferrer">📲 WhatsApp</a>
-      <a href="https://t.me/centraldecomprascdc" class="telegram" target="_blank" rel="noopener noreferrer">📢 Telegram</a>
+      <a href="https://api.whatsapp.com/send?phone=5521975179737" class="whatsapp" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+      <a href="https://t.me/centraldecomprascdc" class="telegram" target="_blank" rel="noopener noreferrer"><i class="fab fa-telegram"></i> Telegram</a>
     </main>
   </div>
 
   <div class="modal" id="imageModal">
-    <button class="modal-close" onclick="closeModal()">✕</button>
+    <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
     <div class="modal-content">
       <div class="carrossel-imagens" id="modalCarrosselImagens"></div>
-      <button class="carrossel-prev" onclick="moveModalCarrossel(-1)">◄</button>
-      <button class="carrossel-next" onclick="moveModalCarrossel(1)">▶</button>
+      <button class="carrossel-prev" onclick="moveModalCarrossel(-1)"><i class="fas fa-chevron-left"></i></button>
+      <button class="carrossel-next" onclick="moveModalCarrossel(1)"><i class="fas fa-chevron-right"></i></button>
       <div class="carrossel-dots" id="modalCarrosselDots"></div>
     </div>
   </div>
@@ -141,7 +151,7 @@
   <footer>
     <p>🔧 Todos os direitos reservados <strong>Grupo Centro de Compra "CdC"</strong> © <span id="year"></span></p>
     <div class="credibilidade-nota">
-      <p><strong>Sobre credibilidade:</strong> É importante notar que esse site é apenas um portal de descontos e afiliado, não uma loja direta. Ele redireciona para plataformas terceiras. Verifique sempre se o cupom é válido diretamente na loja original, pois promoções podem expirar ou não se aplicar a certos produtos.</p>
+      <p><strong>Sobre credibilidade:</strong> Este site é um portal de descontos e afiliado, não uma loja direta. Redirecionamos para plataformas terceiras. Verifique a validade do cupom na loja original, pois promoções podem expirar ou não se aplicar a certos produtos.</p>
     </div>
   </footer>
 
