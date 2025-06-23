@@ -6,15 +6,15 @@
 }
 
 :root {
-  --primary: #ff6200;
-  --primary-dark: #e55a00;
-  --secondary: #2e8b57;
-  --secondary-dark: #256f45;
-  --bg: #f5f5f5;
-  --card-bg: #fff;
-  --text: #333;
-  --border: #ddd;
-  --shadow: 0 2px 8px rgba(0,0,0,0.1);
+  --primary: #f60; /* Laranja vibrante, típico do branding */
+  --primary-dark: #d35400; /* Laranja mais escuro para hover */
+  --secondary: #003087; /* Azul escuro para navegação e footer */
+  --secondary-dark: #002066; /* Azul mais escuro para hover */
+  --bg: #f8f8f8; /* Fundo cinza claro */
+  --card-bg: #fff; /* Fundo branco para cards */
+  --text: #333; /* Texto principal */
+  --border: #e0e0e0; /* Bordas claras */
+  --shadow: 0 2px 8px rgba(0,0,0,0.1); /* Sombra suave */
 }
 
 body {
@@ -22,6 +22,7 @@ body {
   background: var(--bg);
   color: var(--text);
   line-height: 1.6;
+  padding-top: 80px; /* Espaço para o header fixo */
 }
 
 /* Container */
@@ -39,8 +40,10 @@ body {
   color: #fff;
   padding: 15px 20px;
   box-shadow: var(--shadow);
-  position: sticky;
+  position: fixed; /* Alterado de sticky para fixed */
   top: 0;
+  left: 0;
+  width: 100%;
   z-index: 100;
 }
 
@@ -117,7 +120,7 @@ nav a:hover {
   border-radius: 8px;
   box-shadow: var(--shadow);
   position: sticky;
-  top: 20px;
+  top: 100px; /* Ajustado para não sobrepor o header fixo */
 }
 
 .sidebar h3 {
@@ -604,37 +607,45 @@ footer {
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 600px) {
+  body {
+    padding-top: 70px; /* Ajustado para o header fixo em mobile */
+  }
+
   .header-content {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
   }
 
-  .header-text h1 {
-    font-size: 1.6em;
+  .header-text {
+    display: none; /* Esconde título e descrição em mobile */
   }
 
-  .header-text p {
-    font-size: 0.9em;
+  .logo-container img {
+    width: 120px;
+    height: 40px;
   }
 
   .nav-toggle {
     display: block;
-    margin-left: auto;
   }
 
   nav {
     display: none;
-    padding: 0;
-  }
-
-  nav.active {
-    display: flex;
+    position: fixed;
+    top: 70px; /* Abaixo do header */
+    left: 0;
+    width: 100%;
     flex-direction: column;
     background: var(--secondary);
   }
 
-  nav.active a {
+  nav.active {
+    display: flex;
+  }
+
+  nav a {
     padding: 15px;
     margin: 0;
     border-bottom: 1px solid rgba(255,255,255,0.1);
@@ -683,6 +694,11 @@ footer {
   .paginacao button {
     padding: 8px 15px;
     font-size: 14px;
+    }
+
+  .robo-assistente {
+    bottom: 10px;
+    right: 10px;
   }
 
   .robo-imagem {
@@ -701,7 +717,7 @@ footer {
   }
 
   .categoria-item {
-    flex: 1 0 calc(50% - 10px);
+  . flex: 1 0 calc(50% - 10px);
   }
 
   .produto-card-content span {
