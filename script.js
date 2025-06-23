@@ -8,8 +8,8 @@ let termoBusca = '';
 let currentImages = [];
 let currentImageIndex = 0;
 let currentPage = 1;
-const produtosPorPagina = 20;
-let totalProdutos = 1000; // Alterado para let, será atualizado dinamicamente
+const produtosPorPagina = 25; // Alterado para 25 itens por página
+let totalProdutos = 1000; // Será atualizado dinamicamente
 
 // Atualizar ano no footer
 function atualizarAnoFooter() {
@@ -116,8 +116,7 @@ function filtrarProdutos() {
     return;
   }
 
-  // Temporariamente desativado para depuração (exibir todos os produtos)
-  /*
+  // Filtros reativados
   const produtosFiltrados = produtos.filter((produto) => {
     const matchCategoria =
       categoriaSelecionada === 'todas' ||
@@ -129,8 +128,6 @@ function filtrarProdutos() {
       !termoBusca || produto.nome?.toLowerCase().includes(termoBusca.toLowerCase());
     return matchCategoria && matchLoja && matchBusca;
   });
-  */
-  const produtosFiltrados = produtos;
 
   gridProdutos.innerHTML = '';
   if (produtosFiltrados.length === 0) {
@@ -352,7 +349,7 @@ function atualizarPaginacao() {
   }
 
   prevButton.disabled = currentPage === 1;
-  nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina); // Corrigido
+  nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
   pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina)}`;
 }
 
