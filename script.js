@@ -8,7 +8,7 @@ let termoBusca = '';
 let currentImages = [];
 let currentImageIndex = 0;
 let currentPage = 1;
-const produtosPorPagina = 25; // Alterado para 25 itens por página
+const produtosPorPagina = 25; // Definido como 25 itens por página
 let totalProdutos = 1000; // Será atualizado dinamicamente
 
 // Atualizar ano no footer
@@ -80,7 +80,7 @@ async function carregarProdutos() {
       const data = await response.json();
       produtos = Array.isArray(data) ? data : data.produtos || [];
       totalProdutos = data.total || produtos.length; // Atualizar dinamicamente
-      console.log('Resposta da API:', { produtos, totalProdutos });
+      console.log('Resposta da API:', { produtos: produtos.length, totalProdutos });
 
       if (!Array.isArray(produtos)) {
         throw new Error('Resposta inválida da API: não é um array');
@@ -116,7 +116,7 @@ function filtrarProdutos() {
     return;
   }
 
-  // Filtros reativados
+  // Aplicar filtros
   const produtosFiltrados = produtos.filter((produto) => {
     const matchCategoria =
       categoriaSelecionada === 'todas' ||
@@ -127,7 +127,9 @@ function filtrarProdutos() {
     const matchBusca =
       !termoBusca || produto.nome?.toLowerCase().includes(termoBusca.toLowerCase());
     return matchCategoria && matchLoja && matchBusca;
-  });
+  }).slice(0, produtosPorPagina); // Forçar limite de 25 itens por página
+
+  console.log(`Produtos filtrados: ${produtosFiltrados.length} (limitado a ${produtosPorPagina})`);
 
   gridProdutos.innerHTML = '';
   if (produtosFiltrados.length === 0) {
@@ -351,6 +353,7 @@ function atualizarPaginacao() {
   prevButton.disabled = currentPage === 1;
   nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
   pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina)}`;
+  console.log(`Paginação atualizada: Página ${currentPage}, Total de produtos: ${totalProdutos}, Produtos por página: ${produtosPorPagina}`);
 }
 
 // Filtrar por categoria
