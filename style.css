@@ -12,7 +12,7 @@ body {
 
 .container {
   display: flex;
-  max-width: 1600px; /* Aumentado para suportar 8 itens */
+  max-width: 1600px;
   margin: 0 auto;
   padding: 20px;
   gap: 20px;
@@ -174,7 +174,7 @@ h2 {
 
 .grid-produtos {
   display: grid;
-  grid-template-columns: repeat(8, 1fr); /* 8 colunas para 8 itens na horizontal */
+  grid-template-columns: repeat(8, 1fr);
   gap: 20px;
   padding: 20px;
 }
@@ -436,7 +436,7 @@ footer {
     max-width: 1200px;
   }
   .grid-produtos {
-    grid-template-columns: repeat(6, 1fr); /* 6 colunas */
+    grid-template-columns: repeat(6, 1fr);
   }
 }
 
@@ -445,7 +445,7 @@ footer {
     max-width: 100%;
   }
   .grid-produtos {
-    grid-template-columns: repeat(4, 1fr); /* 4 colunas */
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 
@@ -470,7 +470,7 @@ footer {
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   }
   .grid-produtos {
-    grid-template-columns: repeat(3, 1fr); /* 3 colunas */
+    grid-template-columns: repeat(3, 1fr);
   }
   .robo-imagem {
     width: 40px;
@@ -487,6 +487,6 @@ footer {
 
 @media (max-width: 480px) {
   .grid-produtos {
-    grid-template-columns: repeat(2, 1fr); /* 2 colunas */
+    grid-template-columns: repeat(2, 1fr);
   }
 }
