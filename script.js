@@ -78,12 +78,12 @@ async function carregarProdutos() {
         throw new Error(errorData.details || `Erro ${response.status}`);
       }
       const data = await response.json();
-      produtos = Array.isArray(data) ? data : data.produtos || [];
+      produtos = Array.isArray(data.produtos) ? data.produtos.slice(0, produtosPorPagina) : []; // Forçar limite no frontend
       totalProdutos = data.total || produtos.length; // Atualizar dinamicamente
       console.log(`Produtos recebidos da API: ${produtos.length}, Total: ${totalProdutos}`);
 
       if (!Array.isArray(produtos)) {
-        throw new Error('Resposta inválida da API: não é um array');
+        throw new Error('Resposta inválida da API: produtos não é um array');
       }
 
       filtrarProdutos();
@@ -148,18 +148,18 @@ function filtrarProdutos() {
     const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0
       ? produto.imagens.filter(img => typeof img === 'string' && img)
       : ['imagens/placeholder.jpg'];
-    const carrosselId = `carrossel-${produtoIndex}-${produto.id || Date.now()}`;
+    const carrosselId = `carrossel-${produtoIndex}-${produto._id || Date.now()}`;
 
     const produtoDiv = document.createElement('div');
     produtoDiv.classList.add('produto-card', 'visible');
     produtoDiv.setAttribute('data-categoria', produto.categoria?.toLowerCase() || 'todas');
-    produtoDiv.setAttribute('data-loja', produto.loja?.toLowerCase() || 'teste');
+    produtoDiv.setAttribute('data-loja', produto.loja?.toLowerCase() || 'todas');
 
     produtoDiv.innerHTML = `
       <div class="carrossel" id="${carrosselId}">
         <div class="carrossel-imagens">
           ${imagens.map((img, i) => `
-            <img src="${img}" alt="${produto.nome || 'teste'} ${i + 1}" loading="lazy" width="200" height="200" onerror="this.src='imagens/photo.jpg'" onclick="openModal(${produtoIndex}, ${i})">
+            <img src="${img}" alt="${produto.nome || 'Produto'} ${i + 1}" loading="lazy" width="200" height="200" onerror="this.src='imagens/placeholder.jpg'" onclick="openModal(${produtoIndex}, ${i})">
           `).join('')}
         </div>
         ${imagens.length > 1 ? `
@@ -220,7 +220,7 @@ async function openModal(produtoIndex, imageIndex) {
   try {
     currentImages = Array.isArray(produtos[produtoIndex]?.imagens) && produtos[produtoIndex].imagens.length > 0
       ? produtos[produtoIndex].imagens.filter(img => typeof img === 'string' && img)
-      : ['imagens/photo.jpg'];
+      : ['imagens/placeholder.jpg'];
     currentImageIndex = imageIndex;
 
     console.log('🔍 Abrindo modal:', { produtoIndex, imageIndex, imagens: currentImages });
@@ -230,13 +230,13 @@ async function openModal(produtoIndex, imageIndex) {
         const testImg = new Image();
         testImg.src = img;
         testImg.onload = () => resolve(img);
-        testImg.onerror = () => resolve('imagens/photo.jpg');
+        testImg.onerror = () => resolve('imagens/placeholder.jpg');
       });
     }));
     currentImages = validImages;
 
     carrosselImagens.innerHTML = currentImages.map((img, i) => `
-      <img src="${img}" alt="Imagem ${i + 1}" class="modal-image" loading="lazy" width="600" height="600" onerror="this.src='imagens/photo.jpg'">
+      <img src="${img}" alt="Imagem ${i + 1}" class="modal-image" loading="lazy" width="600" height="600" onerror="this.src='imagens/placeholder.jpg'">
     `).join('');
 
     requestAnimationFrame(() => {
