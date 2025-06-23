@@ -78,15 +78,14 @@ async function carregarProdutos() {
         throw new Error(errorData.details || `Erro ${response.status}`);
       }
       const data = await response.json();
-      produtos = Array.isArray(data) ? data : data.produtos || [];
+      produtos = Array.isArray(data.produtos) ? data.produtos.slice(0, produtosPorPagina) : []; // Forçar limite no frontend
       totalProdutos = data.total || produtos.length; // Atualizar dinamicamente
-      console.log('Resposta da API:', { produtos: produtos.length, totalProdutos });
+      console.log(`Produtos recebidos da API: ${produtos.length}, Total: ${totalProdutos}`);
 
       if (!Array.isArray(produtos)) {
-        throw new Error('Resposta inválida da API: não é um array');
+        throw new Error('Resposta inválida da API: produtos não é um array');
       }
 
-      console.log(`Produtos recebidos: ${produtos.length}`);
       filtrarProdutos();
       atualizarPaginacao();
       return;
@@ -116,18 +115,20 @@ function filtrarProdutos() {
     return;
   }
 
-  // Aplicar filtros
-  const produtosFiltrados = produtos.filter((produto) => {
-    const matchCategoria =
-      categoriaSelecionada === 'todas' ||
-      produto.categoria?.toLowerCase() === categoriaSelecionada.toLowerCase();
-    const matchLoja =
-      lojaSelecionada === 'todas' ||
-      produto.loja?.toLowerCase() === lojaSelecionada.toLowerCase();
-    const matchBusca =
-      !termoBusca || produto.nome?.toLowerCase().includes(termoBusca.toLowerCase());
-    return matchCategoria && matchLoja && matchBusca;
-  }).slice(0, produtosPorPagina); // Forçar limite de 25 itens por página
+  // Aplicar filtros e limitar a 25 itens
+  const produtosFiltrados = produtos
+    .filter((produto) => {
+      const matchCategoria =
+        categoriaSelecionada === 'todas' ||
+        produto.categoria?.toLowerCase() === categoriaSelecionada.toLowerCase();
+      const matchLoja =
+        lojaSelecionada === 'todas' ||
+        produto.loja?.toLowerCase() === lojaSelecionada.toLowerCase();
+      const matchBusca =
+        !termoBusca || produto.nome?.toLowerCase().includes(termoBusca.toLowerCase());
+      return matchCategoria && matchLoja && matchBusca;
+    })
+    .slice(0, produtosPorPagina); // Forçar limite de 25 itens
 
   console.log(`Produtos filtrados: ${produtosFiltrados.length} (limitado a ${produtosPorPagina})`);
 
@@ -142,11 +143,12 @@ function filtrarProdutos() {
   mensagemVazia.style.display = 'none';
   gridProdutos.style.display = 'grid';
 
+  // Renderizar os produtos
   produtosFiltrados.forEach((produto, produtoIndex) => {
     const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0
       ? produto.imagens.filter(img => typeof img === 'string' && img)
       : ['imagens/placeholder.jpg'];
-    const carrosselId = `carrossel-${produtoIndex}-${produto.id || Date.now()}`;
+    const carrosselId = `carrossel-${produtoIndex}-${produto._id || Date.now()}`;
 
     const produtoDiv = document.createElement('div');
     produtoDiv.classList.add('produto-card', 'visible');
@@ -175,7 +177,8 @@ function filtrarProdutos() {
     `;
     gridProdutos.appendChild(produtoDiv);
   });
-  console.log(`Exibidos ${produtosFiltrados.length} produtos`);
+
+  console.log(`Exibidos ${produtosFiltrados.length} produtos no #grid-produtos`);
 }
 
 // Funções do carrossel
@@ -353,7 +356,7 @@ function atualizarPaginacao() {
   prevButton.disabled = currentPage === 1;
   nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
   pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina)}`;
-  console.log(`Paginação atualizada: Página ${currentPage}, Total de produtos: ${totalProdutos}, Produtos por página: ${produtosPorPagina}`);
+  console.log(`Paginação: Página ${currentPage}, Total de produtos: ${totalProdutos}, Itens por página: ${produtosPorPagina}`);
 }
 
 // Filtrar por categoria
