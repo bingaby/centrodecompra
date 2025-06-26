@@ -1,32 +1,132 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Gerenciar Produtos</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico"> <!-- Adicionado para corrigir erro 404 -->
+  <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32x32.png"> <!-- Adicionado -->
+  <link rel="icon" type="image/png" sizes="16x16" href="logos/favicon-16x16.png"> <!-- Adicionado -->
+  <link rel="apple-touch-icon" sizes="180x180" href="logos/apple-touch-icon.png"> <!-- Adicionado -->
   <style>
-    body { font-family: 'Roboto', Arial, sans-serif; padding: 20px; background-color: #f5f5f5; }
-    h1, h3 { text-align: center; color: #333; }
-    form { max-width: 500px; margin: auto; display: flex; flex-direction: column; gap: 10px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-    input, select, textarea, button { padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; }
-    textarea { resize: vertical; min-height: 100px; }
-    button { background-color: #ff6200; color: white; border: none; cursor: pointer; font-weight: bold; }
-    button:hover { background-color: #e55a00; }
-    #mensagem { margin-top: 10px; color: green; text-align: center; }
-    #erro { margin-top: 10px; color: red; text-align: center; }
-    #produtos-cadastrados { margin: 20px auto; max-width: 900px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-    #produtos-cadastrados table { width: 100%; border-collapse: collapse; }
-    #produtos-cadastrados th, #produtos-cadastrados td { padding: 10px; border: 1px solid #ddd; text-align: left; }
-    #produtos-cadastrados th { background-color: #f9f9f9; }
-    #produtos-cadastrados button.excluir { background-color: #dc3545; padding: 5px 10px; font-size: 14px; border: none; color: white; border-radius: 4px; cursor: pointer; }
-    #produtos-cadastrados button.excluir:hover { background-color: #c82333; }
-    .thumbnail { width: 50px; height: 50px; object-fit: cover; margin: 2px; cursor: pointer; border-radius: 4px; }
+    body { 
+      font-family: 'Roboto', Arial, sans-serif; 
+      padding: 20px; 
+      background-color: #f5f5f5; 
+    }
+    h1, h3 { 
+      text-align: center; 
+      color: #333; 
+    }
+    form { 
+      max-width: 500px; 
+      margin: auto; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 10px; 
+      background: white; 
+      padding: 20px; 
+      border-radius: 8px; 
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+    }
+    input, select, textarea, button { 
+      padding: 10px; 
+      border: 1px solid #ddd; 
+      border-radius: 4px; 
+      font-size: 16px; 
+    }
+    textarea { 
+      resize: vertical; 
+      min-height: 100px; 
+    }
+    button { 
+      background-color: #ff6200; 
+      color: white; 
+      border: none; 
+      cursor: pointer; 
+      font-weight: bold; 
+    }
+    button:hover { 
+      background-color: #e55a00; 
+    }
+    #mensagem { 
+      margin-top: 10px; 
+      color: green; 
+      text-align: center; 
+    }
+    #erro { 
+      margin-top: 10px; 
+      color: red; 
+      text-align: center; 
+    }
+    #produtos-cadastrados { 
+      margin: 20px auto; 
+      max-width: 900px; 
+      background: white; 
+      padding: 20px; 
+      border-radius: 8px; 
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+    }
+    #produtos-cadastrados table { 
+      width: 100%; 
+      border-collapse: collapse; 
+    }
+    #produtos-cadastrados th, #produtos-cadastrados td { 
+      padding: 12px; 
+      border: 1px solid #ddd; 
+      text-align: left; 
+      vertical-align: middle; /* Alinhamento vertical */
+      word-wrap: break-word; /* Evitar corte de texto */
+      max-width: 200px; /* Limitar largura das colunas */
+    }
+    #produtos-cadastrados th { 
+      background-color: #f9f9f9; 
+      font-weight: bold; 
+    }
+    #produtos-cadastrados td { 
+      font-size: 14px; /* Tamanho de fonte ajustado */
+    }
+    #produtos-cadastrados button.excluir { 
+      background-color: #dc3545; 
+      padding: 5px 10px; 
+      font-size: 14px; 
+      border: none; 
+      color: white; 
+      border-radius: 4px; 
+      cursor: pointer; 
+      margin-right: 5px; 
+    }
+    #produtos-cadastrados button.excluir:hover { 
+      background-color: #c82333; 
+    }
+    #produtos-cadastrados button.editar { /* Novo estilo para botão Editar */
+      background-color: #007bff; 
+      padding: 5px 10px; 
+      font-size: 14px; 
+      border: none; 
+      color: white; 
+      border-radius: 4px; 
+      cursor: pointer; 
+    }
+    #produtos-cadastrados button.editar:hover { 
+      background-color: #0056b3; 
+    }
+    .thumbnail { 
+      width: 50px; 
+      height: 50px; 
+      object-fit: cover; 
+      margin: 2px; 
+      cursor: pointer; 
+      border-radius: 4px; 
+      vertical-align: middle; 
+    }
   </style>
 </head>
 <body>
-  <h1>Adicionar Produto</h1>
+  <h1>Gerenciar Produtos</h1>
   <form id="form-produto" enctype="multipart/form-data">
+    <input type="hidden" name="id" id="produto-id"> <!-- Campo oculto para ID do produto em edição -->
     <input type="text" name="nome" placeholder="Nome do produto" required />
     <textarea name="descricao" placeholder="Descrição do produto" required></textarea>
     <select name="categoria" required>
@@ -58,8 +158,8 @@
     </select>
     <input type="url" name="link" placeholder="Link do produto (https://...)" required pattern="https?://.+" />
     <input type="number" name="preco" placeholder="Preço do produto (ex.: 99.99)" step="0.01" min="0" required />
-    <input type="file" name="imagens" accept="image/*" multiple required />
-    <button type="submit">Adicionar</button>
+    <input type="file" name="imagens" accept="image/*" multiple />
+    <button type="submit" id="submit-button">Adicionar</button>
   </form>
   <div id="mensagem"></div>
   <div id="erro"></div>
@@ -76,7 +176,7 @@
           <th>Link</th>
           <th>Preço</th>
           <th>Imagens</th>
-          <th>Ação</th>
+          <th>Ações</th>
         </tr>
       </thead>
       <tbody id="lista-produtos">
@@ -90,12 +190,13 @@
 
     async function carregarProdutos() {
       try {
-        const res = await fetch(${API_URL}/api/produtos);
+        const res = await fetch(`${API_URL}/api/produtos`);
         if (!res.ok) throw new Error('Falha ao buscar produtos');
         const produtos = await res.json();
+        console.log('Produtos carregados:', produtos);
         preencherTabela(produtos);
       } catch (err) {
-        document.getElementById('lista-produtos').innerHTML = <tr><td colspan="8" style="color:red;text-align:center;">${err.message}</td></tr>;
+        document.getElementById('lista-produtos').innerHTML = `<tr><td colspan="8" style="color:red;text-align:center;">${err.message}</td></tr>`;
       }
     }
 
@@ -107,36 +208,63 @@
         return;
       }
       produtos.forEach((produto) => {
-        const precoFormatado = R$ ${parseFloat(produto.preco).toFixed(2).replace('.', ',')};
+        const precoFormatado = `R$ ${parseFloat(produto.preco || 0).toFixed(2).replace('.', ',')}`;
         const imagens = produto.imagens || [];
         const miniaturas = imagens.length > 0
-          ? imagens.map((img, i) => <img src="${img}" class="thumbnail" alt="Imagem ${i + 1}" />).join('')
+          ? imagens.map((img, i) => `<img src="${img}" class="thumbnail" alt="Imagem ${i + 1}" onerror="this.src='imagens/placeholder.jpg'" />`).join('')
           : 'Sem imagens';
 
-        tbody.innerHTML += 
+        tbody.innerHTML += `
           <tr>
-            <td>${produto.nome}</td>
+            <td>${produto.nome || 'N/A'}</td>
             <td>${produto.descricao || 'N/A'}</td>
-            <td>${produto.categoria}</td>
-            <td>${produto.loja}</td>
-            <td><a href="${produto.link}" target="_blank" rel="noopener noreferrer">Link</a></td>
+            <td>${produto.categoria || 'N/A'}</td>
+            <td>${produto.loja || 'N/A'}</td>
+            <td><a href="${produto.link || '#'}" target="_blank" rel="noopener noreferrer">Link</a></td>
             <td>${precoFormatado}</td>
             <td>${miniaturas}</td>
-            <td><button class="excluir" onclick="excluirProduto('${produto._id}')">Excluir</button></td>
+            <td>
+              <button class="editar" onclick="editarProduto('${produto._id}')">Editar</button>
+              <button class="excluir" onclick="excluirProduto('${produto._id}')">Excluir</button>
+            </td>
           </tr>
-        ;
+        `;
       });
+    }
+
+    async function editarProduto(id) {
+      try {
+        const res = await fetch(`${API_URL}/api/produtos/${id}`);
+        if (!res.ok) throw new Error('Erro ao buscar produto para edição');
+        const produto = await res.json();
+        console.log('Produto para edição:', produto);
+
+        // Preencher o formulário com os dados do produto
+        document.getElementById('produto-id').value = produto._id || '';
+        document.getElementById('form-produto').nome.value = produto.nome || '';
+        document.getElementById('form-produto').descricao.value = produto.descricao || '';
+        document.getElementById('form-produto').categoria.value = produto.categoria || '';
+        document.getElementById('form-produto').loja.value = produto.loja || '';
+        document.getElementById('form-produto').link.value = produto.link || '';
+        document.getElementById('form-produto').preco.value = produto.preco || '';
+        document.getElementById('submit-button').textContent = 'Salvar Alterações';
+
+        // Nota: Imagens não são preenchidas no input type="file" por restrições de segurança
+        document.getElementById('mensagem').textContent = 'Editando produto. Envie para salvar as alterações.';
+      } catch (err) {
+        document.getElementById('erro').textContent = err.message;
+      }
     }
 
     async function excluirProduto(id) {
       if (!confirm('Confirma a exclusão deste produto?')) return;
       try {
-        const res = await fetch(${API_URL}/api/produtos/${id}, { method: 'DELETE' });
+        const res = await fetch(`${API_URL}/api/produtos/${id}`, { method: 'DELETE' });
         if (!res.ok) throw new Error('Erro ao excluir produto');
         alert('Produto excluído com sucesso');
         carregarProdutos();
       } catch (err) {
-        alert(err.message);
+        document.getElementById('erro').textContent = err.message;
       }
     }
 
@@ -144,21 +272,41 @@
       event.preventDefault();
       const form = event.target;
       const formData = new FormData(form);
+      const produtoId = formData.get('id');
+
+      for (let pair of formData.entries()) {
+        console.log(`${pair[0]}: ${pair[1]}`);
+      }
 
       document.getElementById('mensagem').textContent = '';
       document.getElementById('erro').textContent = '';
 
       try {
-        const res = await fetch(${API_URL}/api/produtos, {
-          method: 'POST',
-          body: formData
-        });
-        if (!res.ok) {
-          const erroJson = await res.json().catch(() => null);
-          throw new Error(erroJson?.error || 'Erro ao adicionar produto');
+        let res;
+        if (produtoId) {
+          // Modo edição: Enviar PUT
+          res = await fetch(`${API_URL}/api/produtos/${produtoId}`, {
+            method: 'PUT',
+            body: formData
+          });
+        } else {
+          // Modo adição: Enviar POST
+          res = await fetch(`${API_URL}/api/produtos`, {
+            method: 'POST',
+            body: formData
+          });
         }
-        document.getElementById('mensagem').textContent = 'Produto adicionado com sucesso!';
+
+        const responseData = await res.json();
+        console.log(`Resposta do ${produtoId ? 'PUT' : 'POST'}:`, responseData);
+
+        if (!res.ok) {
+          throw new Error(responseData?.error || `Erro ao ${produtoId ? 'atualizar' : 'adicionar'} produto`);
+        }
+
+        document.getElementById('mensagem').textContent = produtoId ? 'Produto atualizado com sucesso!' : 'Produto adicionado com sucesso!';
         form.reset();
+        document.getElementById('submit-button').textContent = 'Adicionar';
         carregarProdutos();
       } catch (error) {
         document.getElementById('erro').textContent = error.message;
@@ -169,4 +317,3 @@
   </script>
 </body>
 </html>
-
