@@ -1,132 +1,32 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Gerenciar Produtos</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
-  <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="logos/favicon-16x16.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="logos/apple-touch-icon.png">
   <style>
-    body { 
-      font-family: 'Roboto', Arial, sans-serif; 
-      padding: 20px; 
-      background-color: #f5f5f5; 
-    }
-    h1, h3 { 
-      text-align: center; 
-      color: #333; 
-    }
-    form { 
-      max-width: 500px; 
-      margin: auto; 
-      display: flex; 
-      flex-direction: column; 
-      gap: 10px; 
-      background: white; 
-      padding: 20px; 
-      border-radius: 8px; 
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
-    }
-    input, select, textarea, button { 
-      padding: 10px; 
-      border: 1px solid #ddd; 
-      border-radius: 4px; 
-      font-size: 16px; 
-    }
-    textarea { 
-      resize: vertical; 
-      min-height: 100px; 
-    }
-    button { 
-      background-color: #ff6200; 
-      color: white; 
-      border: none; 
-      cursor: pointer; 
-      font-weight: bold; 
-    }
-    button:hover { 
-      background-color: #e55a00; 
-    }
-    #mensagem { 
-      margin-top: 10px; 
-      color: green; 
-      text-align: center; 
-    }
-    #erro { 
-      margin-top: 10px; 
-      color: red; 
-      text-align: center; 
-    }
-    #produtos-cadastrados { 
-      margin: 20px auto; 
-      max-width: 900px; 
-      background: white; 
-      padding: 20px; 
-      border-radius: 8px; 
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
-    }
-    #produtos-cadastrados table { 
-      width: 100%; 
-      border-collapse: collapse; 
-    }
-    #produtos-cadastrados th, #produtos-cadastrados td { 
-      padding: 12px; 
-      border: 1px solid #ddd; 
-      text-align: left; 
-      vertical-align: middle;
-      word-wrap: break-word;
-      max-width: 200px;
-    }
-    #produtos-cadastrados th { 
-      background-color: #f9f9f9; 
-      font-weight: bold; 
-    }
-    #produtos-cadastrados td { 
-      font-size: 14px;
-    }
-    #produtos-cadastrados button.excluir { 
-      background-color: #dc3545; 
-      padding: 5px 10px; 
-      font-size: 14px; 
-      border: none; 
-      color: white; 
-      border-radius: 4px; 
-      cursor: pointer; 
-      margin-right: 5px; 
-    }
-    #produtos-cadastrados button.excluir:hover { 
-      background-color: #c82333; 
-    }
-    #produtos-cadastrados button.editar {
-      background-color: #007bff; 
-      padding: 5px 10px; 
-      font-size: 14px; 
-      border: none; 
-      color: white; 
-      border-radius: 4px; 
-      cursor: pointer; 
-    }
-    #produtos-cadastrados button.editar:hover { 
-      background-color: #0056b3; 
-    }
-    .thumbnail { 
-      width: 50px; 
-      height: 50px; 
-      object-fit: cover; 
-      margin: 2px; 
-      cursor: pointer; 
-      border-radius: 4px; 
-      vertical-align: middle; 
-    }
+    body { font-family: 'Roboto', Arial, sans-serif; padding: 20px; background-color: #f5f5f5; }
+    h1, h3 { text-align: center; color: #333; }
+    form { max-width: 500px; margin: auto; display: flex; flex-direction: column; gap: 10px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    input, select, textarea, button { padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; }
+    textarea { resize: vertical; min-height: 100px; }
+    button { background-color: #ff6200; color: white; border: none; cursor: pointer; font-weight: bold; }
+    button:hover { background-color: #e55a00; }
+    #mensagem { margin-top: 10px; color: green; text-align: center; }
+    #erro { margin-top: 10px; color: red; text-align: center; }
+    #produtos-cadastrados { margin: 20px auto; max-width: 900px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    #produtos-cadastrados table { width: 100%; border-collapse: collapse; }
+    #produtos-cadastrados th, #produtos-cadastrados td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+    #produtos-cadastrados th { background-color: #f9f9f9; }
+    #produtos-cadastrados button.excluir { background-color: #dc3545; padding: 5px 10px; font-size: 14px; border: none; color: white; border-radius: 4px; cursor: pointer; }
+    #produtos-cadastrados button.excluir:hover { background-color: #c82333; }
+    .thumbnail { width: 50px; height: 50px; object-fit: cover; margin: 2px; cursor: pointer; border-radius: 4px; }
   </style>
 </head>
 <body>
-  <h1>Gerenciar Produtos</h1>
+  <h1>Adicionar Produto</h1>
   <form id="form-produto" enctype="multipart/form-data">
-    <input type="hidden" name="id" id="produto-id">
     <input type="text" name="nome" placeholder="Nome do produto" required />
     <textarea name="descricao" placeholder="Descrição do produto" required></textarea>
     <select name="categoria" required>
@@ -158,8 +58,8 @@
     </select>
     <input type="url" name="link" placeholder="Link do produto (https://...)" required pattern="https?://.+" />
     <input type="number" name="preco" placeholder="Preço do produto (ex.: 99.99)" step="0.01" min="0" required />
-    <input type="file" name="imagens" accept="image/*" multiple />
-    <button type="submit" id="submit-button">Adicionar</button>
+    <input type="file" name="imagens" accept="image/*" multiple required />
+    <button type="submit">Adicionar</button>
   </form>
   <div id="mensagem"></div>
   <div id="erro"></div>
@@ -176,7 +76,7 @@
           <th>Link</th>
           <th>Preço</th>
           <th>Imagens</th>
-          <th>Ações</th>
+          <th>Ação</th>
         </tr>
       </thead>
       <tbody id="lista-produtos">
@@ -190,105 +90,53 @@
 
     async function carregarProdutos() {
       try {
-        console.log(Carregando produtos de ${API_URL}/api/produtos);
-        const res = await fetch(${API_URL}/api/produtos, { cache: 'no-store' });
-        if (!res.ok) {
-          const errorData = await res.json().catch(() => ({}));
-          throw new Error(errorData.error || Erro ao buscar produtos: ${res.status});
-        }
-        const data = await res.json();
-        const produtos = Array.isArray(data.produtos) ? data.produtos : [];
-        console.log(Produtos carregados: ${produtos.length}, Total: ${data.total || 0});
+        const res = await fetch(${API_URL}/api/produtos);
+        if (!res.ok) throw new Error('Falha ao buscar produtos');
+        const produtos = await res.json();
         preencherTabela(produtos);
       } catch (err) {
-        console.error('Erro ao carregar produtos:', err.message);
-        document.getElementById('lista-produtos').innerHTML = <tr><td colspan="8" style="color:red;text-align:center;">Erro ao carregar produtos: ${err.message}</td></tr>;
-        document.getElementById('erro').textContent = Erro: ${err.message};
+        document.getElementById('lista-produtos').innerHTML = <tr><td colspan="8" style="color:red;text-align:center;">${err.message}</td></tr>;
       }
     }
 
     function preencherTabela(produtos) {
       const tbody = document.getElementById('lista-produtos');
-      if (!tbody) {
-        console.error('Elemento lista-produtos não encontrado');
-        return;
-      }
       tbody.innerHTML = '';
-      if (!Array.isArray(produtos) || produtos.length === 0) {
+      if (produtos.length === 0) {
         tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Nenhum produto cadastrado.</td></tr>';
-        console.log('Nenhum produto para exibir');
         return;
       }
-      console.log('Preenchendo tabela com produtos:', produtos.length);
       produtos.forEach((produto) => {
-        const precoFormatado = R$ ${(parseFloat(produto.preco || 0).toFixed(2)).replace('.', ',')};
-        const imagens = Array.isArray(produto.imagens) ? produto.imagens : [];
+        const precoFormatado = R$ ${parseFloat(produto.preco).toFixed(2).replace('.', ',')};
+        const imagens = produto.imagens || [];
         const miniaturas = imagens.length > 0
-          ? imagens.map((img, i) => <img src="${img}" class="thumbnail" alt="Imagem ${i + 1}" onerror="this.src='imagens/placeholder.jpg'" />).join('')
+          ? imagens.map((img, i) => <img src="${img}" class="thumbnail" alt="Imagem ${i + 1}" />).join('')
           : 'Sem imagens';
 
         tbody.innerHTML += 
           <tr>
-            <td>${produto.nome || 'N/A'}</td>
+            <td>${produto.nome}</td>
             <td>${produto.descricao || 'N/A'}</td>
-            <td>${produto.categoria || 'N/A'}</td>
-            <td>${produto.loja || 'N/A'}</td>
-            <td><a href="${produto.link || '#'}" target="_blank" rel="noopener noreferrer">Link</a></td>
+            <td>${produto.categoria}</td>
+            <td>${produto.loja}</td>
+            <td><a href="${produto.link}" target="_blank" rel="noopener noreferrer">Link</a></td>
             <td>${precoFormatado}</td>
             <td>${miniaturas}</td>
-            <td>
-              <button class="editar" onclick="editarProduto('${produto._id}')">Editar</button>
-              <button class="excluir" onclick="excluirProduto('${produto._id}')">Excluir</button>
-            </td>
+            <td><button class="excluir" onclick="excluirProduto('${produto._id}')">Excluir</button></td>
           </tr>
         ;
       });
-      console.log('Tabela preenchida com sucesso');
-    }
-
-    async function editarProduto(id) {
-      try {
-        console.log(Buscando produto com ID: ${id} para edição);
-        const res = await fetch(${API_URL}/api/produtos/${id});
-        if (!res.ok) {
-          const errorData = await res.json().catch(() => ({}));
-          throw new Error(errorData.error || 'Erro ao buscar produto para edição');
-        }
-        const produto = await res.json();
-        console.log('Produto para edição:', produto);
-
-        // Preencher o formulário
-        const form = document.getElementById('form-produto');
-        form.querySelector('#produto-id').value = produto._id || '';
-        form.querySelector('[name="nome"]').value = produto.nome || '';
-        form.querySelector('[name="descricao"]').value = produto.descricao || '';
-        form.querySelector('[name="categoria"]').value = produto.categoria || '';
-        form.querySelector('[name="loja"]').value = produto.loja || '';
-        form.querySelector('[name="link"]').value = produto.link || '';
-        form.querySelector('[name="preco"]').value = produto.preco || '';
-        form.querySelector('#submit-button').textContent = 'Salvar Alterações';
-        document.getElementById('mensagem').textContent = 'Editando produto. Envie para salvar as alterações.';
-      } catch (err) {
-        console.error('Erro ao carregar produto para edição:', err.message);
-        document.getElementById('erro').textContent = Erro: ${err.message};
-      }
     }
 
     async function excluirProduto(id) {
       if (!confirm('Confirma a exclusão deste produto?')) return;
       try {
-        console.log(Excluindo produto com ID: ${id});
         const res = await fetch(${API_URL}/api/produtos/${id}, { method: 'DELETE' });
-        if (!res.ok) {
-          const errorData = await res.json().catch(() => ({}));
-          throw new Error(errorData.error || 'Erro ao excluir produto');
-        }
-        console.log('Produto excluído com sucesso');
+        if (!res.ok) throw new Error('Erro ao excluir produto');
         alert('Produto excluído com sucesso');
         carregarProdutos();
       } catch (err) {
-        console.error('Erro ao excluir produto:', err.message);
-        document.getElementById('erro').textContent = Erro: ${err.message};
+        alert(err.message);
       }
     }
 
@@ -296,53 +144,29 @@
       event.preventDefault();
       const form = event.target;
       const formData = new FormData(form);
-      const produtoId = formData.get('id');
-
-      console.log('Dados do formulário:', Object.fromEntries(formData));
 
       document.getElementById('mensagem').textContent = '';
       document.getElementById('erro').textContent = '';
 
       try {
-        let res;
-        if (produtoId) {
-          // Modo edição: Enviar PUT
-          console.log(Enviando PUT para produto ID: ${produtoId});
-          res = await fetch(${API_URL}/api/produtos/${produtoId}, {
-            method: 'PUT',
-            body: formData
-          });
-        } else {
-          // Modo adição: Enviar POST
-          console.log('Enviando POST para adicionar novo produto');
-          formData.append('imagens', form.querySelector('[name="imagens"]').files[0]); // Garantir que imagens sejam enviadas
-          res = await fetch(${API_URL}/api/produtos, {
-            method: 'POST',
-            body: formData
-          });
-        }
-
-        const responseData = await res.json();
-        console.log(Resposta do ${produtoId ? 'PUT' : 'POST'}:, responseData);
-
+        const res = await fetch(${API_URL}/api/produtos, {
+          method: 'POST',
+          body: formData
+        });
         if (!res.ok) {
-          throw new Error(responseData.error || Erro ao ${produtoId ? 'atualizar' : 'adicionar'} produto);
+          const erroJson = await res.json().catch(() => null);
+          throw new Error(erroJson?.error || 'Erro ao adicionar produto');
         }
-
-        document.getElementById('mensagem').textContent = produtoId ? 'Produto atualizado com sucesso!' : 'Produto adicionado com sucesso!';
+        document.getElementById('mensagem').textContent = 'Produto adicionado com sucesso!';
         form.reset();
-        document.getElementById('submit-button').textContent = 'Adicionar';
         carregarProdutos();
       } catch (error) {
-        console.error(Erro ao ${produtoId ? 'atualizar' : 'adicionar'} produto:, error.message);
-        document.getElementById('erro').textContent = Erro: ${error.message};
+        document.getElementById('erro').textContent = error.message;
       }
     });
 
-    document.addEventListener('DOMContentLoaded', () => {
-      console.log('Inicializando página de administração');
-      carregarProdutos();
-    });
+    document.addEventListener('DOMContentLoaded', carregarProdutos);
   </script>
 </body>
 </html>
+
