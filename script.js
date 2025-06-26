@@ -22,7 +22,7 @@ function configurarCliqueLogo() {
     console.error('ID site-logo-img não encontrado');
     return;
   }
-  logo.addEventListener('click', (e) => {
+  logo.addEventListener', 'click', (e) => {
     e.preventDefault();
     clickCount++;
     console.log(`Clique detectado: ${clickCount}`);
