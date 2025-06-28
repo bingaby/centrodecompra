@@ -12,7 +12,7 @@ const produtosPorPagina = 24;
 let totalProdutos = 1000;
 
 // Senha predefinida (em produção, isso deve ser armazenado no backend)
-const ADMIN_PASSWORD = 'admin123'; // Substitua por uma senha forte ou use API
+const ADMIN_PASSWORD = 'Bingo@098457'; // Substitua por uma senha forte ou use API
 
 // Função para escapar HTML e evitar XSS
 function escapeHTML(str) {
