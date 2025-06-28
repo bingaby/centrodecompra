@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Gerenciar Produtos</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
-  <link rel="icon" type="image/x-icon" href="/favicon.ico"> <!-- Adicionado para corrigir erro 404 -->
-  <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32x32.png"> <!-- Adicionado -->
-  <link rel="icon" type="image/png" sizes="16x16" href="logos/favicon-16x16.png"> <!-- Adicionado -->
-  <link rel="apple-touch-icon" sizes="180x180" href="logos/apple-touch-icon.png"> <!-- Adicionado -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="logos/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="logos/apple-touch-icon.png">
   <style>
     body { 
       font-family: 'Roboto', Arial, sans-serif; 
@@ -60,6 +60,11 @@
       color: red; 
       text-align: center; 
     }
+    #loading-spinner {
+      text-align: center;
+      display: none;
+      margin: 20px;
+    }
     #produtos-cadastrados { 
       margin: 20px auto; 
       max-width: 900px; 
@@ -76,16 +81,16 @@
       padding: 12px; 
       border: 1px solid #ddd; 
       text-align: left; 
-      vertical-align: middle; /* Alinhamento vertical */
-      word-wrap: break-word; /* Evitar corte de texto */
-      max-width: 200px; /* Limitar largura das colunas */
+      vertical-align: middle;
+      overflow-wrap: break-word;
+      max-width: 200px;
     }
     #produtos-cadastrados th { 
       background-color: #f9f9f9; 
       font-weight: bold; 
     }
     #produtos-cadastrados td { 
-      font-size: 14px; /* Tamanho de fonte ajustado */
+      font-size: 14px;
     }
     #produtos-cadastrados button.excluir { 
       background-color: #dc3545; 
@@ -100,7 +105,7 @@
     #produtos-cadastrados button.excluir:hover { 
       background-color: #c82333; 
     }
-    #produtos-cadastrados button.editar { /* Novo estilo para botão Editar */
+    #produtos-cadastrados button.editar { 
       background-color: #007bff; 
       padding: 5px 10px; 
       font-size: 14px; 
@@ -115,21 +120,42 @@
     .thumbnail { 
       width: 50px; 
       height: 50px; 
-      object-fit: cover; 
+      object-fit: contain; 
       margin: 2px; 
       cursor: pointer; 
       border-radius: 4px; 
       vertical-align: middle; 
+    }
+    #paginacao {
+      text-align: center;
+      margin: 20px 0;
+    }
+    #paginacao button {
+      margin: 0 10px;
+      padding: 8px 16px;
+      background-color: #ff6200;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    #paginacao button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    #paginacao span {
+      font-size: 16px;
+      margin: 0 10px;
     }
   </style>
 </head>
 <body>
   <h1>Gerenciar Produtos</h1>
   <form id="form-produto" enctype="multipart/form-data">
-    <input type="hidden" name="id" id="produto-id"> <!-- Campo oculto para ID do produto em edição -->
-    <input type="text" name="nome" placeholder="Nome do produto" required />
-    <textarea name="descricao" placeholder="Descrição do produto" required></textarea>
-    <select name="categoria" required>
+    <input type="hidden" name="id" id="produto-id">
+    <input type="text" name="nome" placeholder="Nome do produto" required aria-label="Nome do produto" />
+    <textarea name="descricao" placeholder="Descrição do produto" required aria-label="Descrição do produto"></textarea>
+    <select name="categoria" required aria-label="Categoria do produto">
       <option value="" disabled selected>Selecione uma categoria</option>
       <option value="eletronicos">Eletrônicos</option>
       <option value="moda">Moda</option>
@@ -147,7 +173,7 @@
       <option value="gastronomia">Gastronomia</option>
       <option value="games">Games</option>
     </select>
-    <select name="loja" required>
+    <select name="loja" required aria-label="Loja do produto">
       <option value="" disabled selected>Selecione uma loja</option>
       <option value="amazon">Amazon</option>
       <option value="magalu">Magalu</option>
@@ -156,13 +182,15 @@
       <option value="mercadolivre">Mercado Livre</option>
       <option value="alibaba">Alibaba</option>
     </select>
-    <input type="url" name="link" placeholder="Link do produto (https://...)" required pattern="https?://.+" />
-    <input type="number" name="preco" placeholder="Preço do produto (ex.: 99.99)" step="0.01" min="0" required />
-    <input type="file" name="imagens" accept="image/*" multiple />
+    <input type="url" name="link" placeholder="Link do produto (https://...)" required pattern="https?://.+" aria-label="Link do produto" />
+    <input type="number" name="preco" placeholder="Preço do produto (ex.: 99.99)" step="0.01" min="0" required aria-label="Preço do produto" />
+    <input type="file" name="imagens" accept="image/*" multiple aria-label="Imagens do produto" />
     <button type="submit" id="submit-button">Adicionar</button>
+    <button type="button" id="cancel-button" style="display:none;background-color:#6c757d;" onclick="cancelarEdicao()">Cancelar</button>
   </form>
   <div id="mensagem"></div>
   <div id="erro"></div>
+  <div id="loading-spinner">Carregando...</div>
 
   <div id="produtos-cadastrados">
     <h3>Produtos Cadastrados</h3>
@@ -184,48 +212,94 @@
       </tbody>
     </table>
   </div>
+  <div id="paginacao">
+    <button id="prev-page" disabled aria-label="Página anterior">Anterior</button>
+    <span id="page-info">Página 1</span>
+    <button id="next-page" aria-label="Próxima página">Próximo</button>
+  </div>
 
   <script>
-    const API_URL = 'https://centrodecompra-backend.onrender.com';
+    const API_URL = 'https://centrodecompra-backend.onrender.com'; // Use 'http://localhost:10000' para testes locais
+    let currentPage = 1;
+    const produtosPorPagina = 24;
+    let totalProdutos = 0;
+
+    // Função para escapar HTML e evitar XSS
+    function escapeHTML(str) {
+      return str.replace(/[&<>"']/g, (match) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[match]));
+    }
 
     async function carregarProdutos() {
-      try {
-        const res = await fetch(`${API_URL}/api/produtos`);
-        if (!res.ok) throw new Error('Falha ao buscar produtos');
-        const produtos = await res.json();
-        console.log('Produtos carregados:', produtos);
-        preencherTabela(produtos);
-      } catch (err) {
-        document.getElementById('lista-produtos').innerHTML = `<tr><td colspan="8" style="color:red;text-align:center;">${err.message}</td></tr>`;
+      const tbody = document.getElementById('lista-produtos');
+      const loadingSpinner = document.getElementById('loading-spinner');
+      loadingSpinner.style.display = 'block';
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Carregando...</td></tr>';
+
+      const maxRetries = 3;
+      let attempt = 1;
+      while (attempt <= maxRetries) {
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 5000);
+          const res = await fetch(`${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`, {
+            cache: 'no-store',
+            signal: controller.signal
+          });
+          clearTimeout(timeoutId);
+          console.log('Status da resposta:', res.status, res.statusText);
+          if (!res.ok) throw new Error(`Falha ao buscar produtos: ${res.status}`);
+          const data = await res.json();
+          console.log('Dados brutos:', data);
+          const produtos = Array.isArray(data.produtos) ? data.produtos : Array.isArray(data) ? data : [];
+          totalProdutos = data.total || produtos.length;
+          console.log('Produtos processados:', produtos, 'Total:', totalProdutos);
+          preencherTabela(produtos);
+          atualizarPaginacao();
+          loadingSpinner.style.display = 'none';
+          return;
+        } catch (err) {
+          console.error(`Tentativa ${attempt} falhou: ${err.message}`);
+          if (attempt === maxRetries) {
+            tbody.innerHTML = `<tr><td colspan="8" style="color:red;text-align:center;">Erro após ${maxRetries} tentativas: ${err.message}</td></tr>`;
+            document.getElementById('erro').textContent = `Erro ao carregar produtos: ${err.message}`;
+          }
+          attempt++;
+          await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+        } finally {
+          loadingSpinner.style.display = 'none';
+        }
       }
     }
 
     function preencherTabela(produtos) {
       const tbody = document.getElementById('lista-produtos');
       tbody.innerHTML = '';
-      if (produtos.length === 0) {
+      const produtosArray = Array.isArray(produtos) ? produtos : [];
+      if (produtosArray.length === 0) {
         tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Nenhum produto cadastrado.</td></tr>';
         return;
       }
-      produtos.forEach((produto) => {
+      produtosArray.forEach((produto) => {
         const precoFormatado = `R$ ${parseFloat(produto.preco || 0).toFixed(2).replace('.', ',')}`;
-        const imagens = produto.imagens || [];
+        const imagens = Array.isArray(produto.imagens) ? produto.imagens.filter(img => typeof img === 'string' && img) : [];
         const miniaturas = imagens.length > 0
-          ? imagens.map((img, i) => `<img src="${img}" class="thumbnail" alt="Imagem ${i + 1}" onerror="this.src='imagens/placeholder.jpg'" />`).join('')
+          ? imagens.map((img, i) => `<img src="${escapeHTML(img)}" class="thumbnail" alt="Imagem ${i + 1}" loading="lazy" onerror="this.src='imagens/placeholder.jpg'" />`).join('')
           : 'Sem imagens';
 
         tbody.innerHTML += `
           <tr>
-            <td>${produto.nome || 'N/A'}</td>
-            <td>${produto.descricao || 'N/A'}</td>
-            <td>${produto.categoria || 'N/A'}</td>
-            <td>${produto.loja || 'N/A'}</td>
-            <td><a href="${produto.link || '#'}" target="_blank" rel="noopener noreferrer">Link</a></td>
+            <td>${escapeHTML(produto.nome || 'N/A')}</td>
+            <td>${escapeHTML(produto.descricao || 'N/A')}</td>
+            <td>${escapeHTML(produto.categoria || 'N/A')}</td>
+            <td>${escapeHTML(produto.loja || 'N/A')}</td>
+            <td><a href="${escapeHTML(produto.link || '#')}" target="_blank" rel="noopener noreferrer">Link</a></td>
             <td>${precoFormatado}</td>
             <td>${miniaturas}</td>
             <td>
-              <button class="editar" onclick="editarProduto('${produto._id}')">Editar</button>
-              <button class="excluir" onclick="excluirProduto('${produto._id}')">Excluir</button>
+              <button class="editar" onclick="editarProduto('${produto._id}')" aria-label="Editar produto ${produto.nome}">Editar</button>
+              <button class="excluir" onclick="excluirProduto('${produto._id}')" aria-label="Excluir produto ${produto.nome}">Excluir</button>
             </td>
           </tr>
         `;
@@ -239,7 +313,6 @@
         const produto = await res.json();
         console.log('Produto para edição:', produto);
 
-        // Preencher o formulário com os dados do produto
         document.getElementById('produto-id').value = produto._id || '';
         document.getElementById('form-produto').nome.value = produto.nome || '';
         document.getElementById('form-produto').descricao.value = produto.descricao || '';
@@ -248,12 +321,20 @@
         document.getElementById('form-produto').link.value = produto.link || '';
         document.getElementById('form-produto').preco.value = produto.preco || '';
         document.getElementById('submit-button').textContent = 'Salvar Alterações';
-
-        // Nota: Imagens não são preenchidas no input type="file" por restrições de segurança
+        document.getElementById('cancel-button').style.display = 'inline-block';
         document.getElementById('mensagem').textContent = 'Editando produto. Envie para salvar as alterações.';
       } catch (err) {
         document.getElementById('erro').textContent = err.message;
       }
+    }
+
+    function cancelarEdicao() {
+      document.getElementById('form-produto').reset();
+      document.getElementById('produto-id').value = '';
+      document.getElementById('submit-button').textContent = 'Adicionar';
+      document.getElementById('cancel-button').style.display = 'none';
+      document.getElementById('mensagem').textContent = '';
+      document.getElementById('erro').textContent = '';
     }
 
     async function excluirProduto(id) {
@@ -261,7 +342,7 @@
       try {
         const res = await fetch(`${API_URL}/api/produtos/${id}`, { method: 'DELETE' });
         if (!res.ok) throw new Error('Erro ao excluir produto');
-        alert('Produto excluído com sucesso');
+        document.getElementById('mensagem').textContent = 'Produto excluído com sucesso';
         carregarProdutos();
       } catch (err) {
         document.getElementById('erro').textContent = err.message;
@@ -273,9 +354,16 @@
       const form = event.target;
       const formData = new FormData(form);
       const produtoId = formData.get('id');
+      const link = formData.get('link');
+      const preco = parseFloat(formData.get('preco'));
 
-      for (let pair of formData.entries()) {
-        console.log(`${pair[0]}: ${pair[1]}`);
+      if (!link.match(/^https?:\/\/.+/)) {
+        document.getElementById('erro').textContent = 'Link inválido! Deve começar com http:// ou https://';
+        return;
+      }
+      if (isNaN(preco) || preco <= 0) {
+        document.getElementById('erro').textContent = 'O preço deve ser maior que zero!';
+        return;
       }
 
       document.getElementById('mensagem').textContent = '';
@@ -284,13 +372,11 @@
       try {
         let res;
         if (produtoId) {
-          // Modo edição: Enviar PUT
           res = await fetch(`${API_URL}/api/produtos/${produtoId}`, {
             method: 'PUT',
             body: formData
           });
         } else {
-          // Modo adição: Enviar POST
           res = await fetch(`${API_URL}/api/produtos`, {
             method: 'POST',
             body: formData
@@ -306,11 +392,33 @@
 
         document.getElementById('mensagem').textContent = produtoId ? 'Produto atualizado com sucesso!' : 'Produto adicionado com sucesso!';
         form.reset();
+        document.getElementById('produto-id').value = '';
         document.getElementById('submit-button').textContent = 'Adicionar';
+        document.getElementById('cancel-button').style.display = 'none';
         carregarProdutos();
       } catch (error) {
         document.getElementById('erro').textContent = error.message;
       }
+    });
+
+    function atualizarPaginacao() {
+      const prevButton = document.getElementById('prev-page');
+      const nextButton = document.getElementById('next-page');
+      const pageInfo = document.getElementById('page-info');
+      prevButton.disabled = currentPage === 1;
+      nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
+      pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina)}`;
+    }
+
+    document.getElementById('prev-page')?.addEventListener('click', () => {
+      if (currentPage > 1) {
+        currentPage--;
+        carregarProdutos();
+      }
+    });
+    document.getElementById('next-page')?.addEventListener('click', () => {
+      currentPage++;
+      carregarProdutos();
     });
 
     document.addEventListener('DOMContentLoaded', carregarProdutos);
