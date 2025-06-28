@@ -8,8 +8,15 @@ let termoBusca = '';
 let currentImages = [];
 let currentImageIndex = 0;
 let currentPage = 1;
-const produtosPorPagina = 24; // Definido como 24 itens por página
-let totalProdutos = 1000; // Será atualizado dinamicamente
+const produtosPorPagina = 24;
+let totalProdutos = 1000;
+
+// Função para escapar HTML e evitar XSS
+function escapeHTML(str) {
+  return str.replace(/[&<>"']/g, (match) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[match]));
+}
 
 // Atualizar ano no footer
 function atualizarAnoFooter() {
@@ -54,7 +61,9 @@ async function carregarProdutos() {
   const gridProdutos = document.getElementById('grid-produtos');
 
   if (!gridProdutos || !mensagemVazia || !errorMessage || !loadingSpinner) {
-    console.error('Elementos essenciais (grid-produtos, mensagem-vazia, error-message, loading-spinner) não encontrados');
+    console.error('Elementos essenciais não encontrados');
+    errorMessage.textContent = 'Erro: Elementos da página não encontrados.';
+    errorMessage.style.display = 'block';
     return;
   }
 
@@ -68,7 +77,6 @@ async function carregarProdutos() {
       errorMessage.style.display = 'none';
       gridProdutos.innerHTML = '';
 
-      console.log(`Tentativa ${attempt}: Carregando produtos de ${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`);
       const response = await fetch(
         `${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`,
         { cache: 'no-store' }
@@ -78,9 +86,9 @@ async function carregarProdutos() {
         throw new Error(errorData.details || `Erro ${response.status}`);
       }
       const data = await response.json();
-      produtos = Array.isArray(data.produtos) ? data.produtos.slice(0, produtosPorPagina) : []; // Forçar limite no frontend
-      totalProdutos = data.total || produtos.length; // Atualizar dinamicamente
-      console.log(`Produtos recebidos da API: ${produtos.length}, Total: ${totalProdutos}`);
+      produtos = Array.isArray(data.produtos) ? data.produtos.slice(0, produtosPorPagina) : [];
+      totalProdutos = data.total || produtos.length;
+      console.log(`Produtos recebidos: ${produtos.length}, Total: ${totalProdutos}`);
 
       if (!Array.isArray(produtos)) {
         throw new Error('Resposta inválida da API: produtos não é um array');
@@ -90,7 +98,7 @@ async function carregarProdutos() {
       atualizarPaginacao();
       return;
     } catch (error) {
-      console.error(`⚠️ Tentativa ${attempt} falhou: ${error.message}`);
+      console.error(`Tentativa ${attempt} falhou: ${error.message}`);
       if (attempt === maxRetries) {
         errorMessage.textContent = `Erro ao carregar produtos após ${maxRetries} tentativas: ${error.message}.`;
         errorMessage.style.display = 'block';
@@ -115,7 +123,6 @@ function filtrarProdutos() {
     return;
   }
 
-  // Aplicar filtros e limitar a 25 itens
   const produtosFiltrados = produtos
     .filter((produto) => {
       const matchCategoria =
@@ -128,9 +135,9 @@ function filtrarProdutos() {
         !termoBusca || produto.nome?.toLowerCase().includes(termoBusca.toLowerCase());
       return matchCategoria && matchLoja && matchBusca;
     })
-    .slice(0, produtosPorPagina); // Forçar limite de 25 itens
+    .slice(0, produtosPorPagina);
 
-  console.log(`Produtos filtrados: ${produtosFiltrados.length} (limitado a ${produtosPorPagina})`);
+  console.log(`Produtos filtrados: ${produtosFiltrados.length}`);
 
   gridProdutos.innerHTML = '';
   if (produtosFiltrados.length === 0) {
@@ -143,7 +150,6 @@ function filtrarProdutos() {
   mensagemVazia.style.display = 'none';
   gridProdutos.style.display = 'grid';
 
-  // Renderizar os produtos
   produtosFiltrados.forEach((produto, produtoIndex) => {
     const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0
       ? produto.imagens.filter(img => typeof img === 'string' && img)
@@ -156,29 +162,29 @@ function filtrarProdutos() {
     produtoDiv.setAttribute('data-loja', produto.loja?.toLowerCase() || 'todas');
 
     produtoDiv.innerHTML = `
-      <div class="carrossel" id="${carrosselId}">
+      <div class="carrossel" id="${carrosselId}" role="region" aria-label="Carrossel de imagens do produto">
         <div class="carrossel-imagens">
           ${imagens.map((img, i) => `
-            <img src="${img}" alt="${produto.nome || 'Produto'} ${i + 1}" loading="lazy" width="200" height="200" onerror="this.src='imagens/placeholder.jpg'" onclick="openModal(${produtoIndex}, ${i})">
+            <img src="${escapeHTML(img)}" alt="${escapeHTML(produto.nome || 'Produto')} ${i + 1}" loading="lazy" width="200" height="200" onerror="this.src='imagens/placeholder.jpg'" onclick="openModal(${produtoIndex}, ${i})">
           `).join('')}
         </div>
         ${imagens.length > 1 ? `
-          <button class="carrossel-prev" onclick="moveCarrossel('${carrosselId}', -1)">◄</button>
-          <button class="carrossel-next" onclick="moveCarrossel('${carrosselId}', 1)">▶</button>
+          <button class="carrossel-prev" onclick="moveCarrossel('${carrosselId}', -1)" aria-label="Imagem anterior">◄</button>
+          <button class="carrossel-next" onclick="moveCarrossel('${carrosselId}', 1)" aria-label="Próxima imagem">▶</button>
           <div class="carrossel-dots">
-            ${imagens.map((_, i) => `<span class="carrossel-dot ${i === 0 ? 'ativo' : ''}" onclick="setCarrosselImage('${carrosselId}', ${i})"></span>`).join('')}
+            ${imagens.map((_, i) => `<span class="carrossel-dot ${i === 0 ? 'ativo' : ''}" onclick="setCarrosselImage('${carrosselId}', ${i})" aria-label="Selecionar imagem ${i + 1}"></span>`).join('')}
           </div>
         ` : ''}
       </div>
-      <span>${produto.nome || 'Produto sem nome'}</span>
-      <span class="descricao">Loja: ${produto.loja || 'Desconhecida'}</span>
-      <p class="preco"><a href="${produto.link || '#'}" target="_blank" class="ver-preco">Clique aqui para ver o preço</a></p>
-      <a href="${produto.link || '#'}" target="_blank" class="ver-na-loja ${produto.loja?.toLowerCase() || 'default'}">Comprar</a>
+      <span>${escapeHTML(produto.nome || 'Produto sem nome')}</span>
+      <span class="descricao">Loja: ${escapeHTML(produto.loja || 'Desconhecida')}</span>
+      <p class="preco"><a href="${escapeHTML(produto.link || '#')}" target="_blank" class="ver-preco" rel="noopener noreferrer">Clique aqui para ver o preço</a></p>
+      <a href="${escapeHTML(produto.link || '#')}" target="_blank" class="ver-na-loja ${produto.loja?.toLowerCase() || 'default'}" rel="noopener noreferrer">Comprar</a>
     `;
     gridProdutos.appendChild(produtoDiv);
   });
 
-  console.log(`Exibidos ${produtosFiltrados.length} produtos no #grid-produtos`);
+  console.log(`Exibidos ${produtosFiltrados.length} produtos`);
 }
 
 // Funções do carrossel
@@ -223,7 +229,7 @@ async function openModal(produtoIndex, imageIndex) {
       : ['imagens/placeholder.jpg'];
     currentImageIndex = imageIndex;
 
-    console.log('🔍 Abrindo modal:', { produtoIndex, imageIndex, imagens: currentImages });
+    console.log('Abrindo modal:', { produtoIndex, imageIndex, imagens: currentImages });
 
     const validImages = await Promise.all(currentImages.map(img => {
       return new Promise(resolve => {
@@ -236,7 +242,7 @@ async function openModal(produtoIndex, imageIndex) {
     currentImages = validImages;
 
     carrosselImagens.innerHTML = currentImages.map((img, i) => `
-      <img src="${img}" alt="Imagem ${i + 1}" class="modal-image" loading="lazy" width="600" height="600" onerror="this.src='imagens/placeholder.jpg'">
+      <img src="${escapeHTML(img)}" alt="Imagem ${i + 1}" class="modal-image" loading="lazy" width="600" height="600" onerror="this.src='imagens/placeholder.jpg'">
     `).join('');
 
     requestAnimationFrame(() => {
@@ -253,10 +259,11 @@ async function openModal(produtoIndex, imageIndex) {
     });
 
     carrosselDots.innerHTML = currentImages.map((_, i) => `
-      <span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})"></span>
+      <span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})" aria-label="Selecionar imagem ${i + 1}"></span>
     `).join('');
 
     modal.style.display = 'flex';
+    modal.setAttribute('aria-hidden', 'false');
   } catch (error) {
     console.error('Erro ao abrir modal:', error);
   }
@@ -287,6 +294,7 @@ function setModalCarrosselImage(index) {
 function closeModal() {
   const modal = document.getElementById('imageModal');
   modal.style.display = 'none';
+  modal.setAttribute('aria-hidden', 'true');
   currentImages = [];
   currentImageIndex = 0;
 }
@@ -308,7 +316,7 @@ function configurarBusca() {
 
     if (termoBusca) {
       buscaFeedback.style.display = 'block';
-      buscaFeedback.textContent = `Buscando por "${termoBusca}"...`;
+      buscaFeedback.textContent = `Buscando por "${escapeHTML(termoBusca)}"...`;
     } else {
       buscaFeedback.style.display = 'none';
     }
@@ -356,7 +364,6 @@ function atualizarPaginacao() {
   prevButton.disabled = currentPage === 1;
   nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
   pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina)}`;
-  console.log(`Paginação: Página ${currentPage}, Total de produtos: ${totalProdutos}, Itens por página: ${produtosPorPagina}`);
 }
 
 // Filtrar por categoria
