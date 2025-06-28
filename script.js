@@ -11,13 +11,10 @@ let currentPage = 1;
 const produtosPorPagina = 24;
 let totalProdutos = 1000;
 
-// Senha predefinida (em produção, isso deve ser armazenado no backend)
-const ADMIN_PASSWORD = 'Bingo@098457'; // Substitua por uma senha forte ou use API
-
 // Função para escapar HTML e evitar XSS
 function escapeHTML(str) {
   return str.replace(/[&<>"']/g, (match) => ({
-    '&': '&', '<': '<', '>': '>', '"': '"', "'": '''
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   }[match]));
 }
 
@@ -29,7 +26,7 @@ function atualizarAnoFooter() {
   }
 }
 
-// Detectar triplo clique no logotipo com verificação de senha
+// Detectar triplo clique no logotipo
 function configurarCliqueLogo() {
   const logo = document.getElementById('site-logo-img');
   if (!logo) {
@@ -49,33 +46,8 @@ function configurarCliqueLogo() {
       }, 500);
     } else if (clickCount === 3) {
       clearTimeout(clickTimer);
-      console.log('Triplo clique detectado, solicitando senha');
-      
-      // Exibir prompt de senha
-      const senha = prompt('Digite a senha para acessar o painel administrativo:');
-      if (senha === null) {
-        console.log('Prompt de senha cancelado');
-        clickCount = 0;
-        return;
-      }
-      
-      // Verificar senha
-      if (senha === ADMIN_PASSWORD) {
-        console.log('Senha correta, redirecionando para admin-xyz-123.html');
-        window.location.href = '/admin-xyz-123.html';
-      } else {
-        console.log('Senha incorreta');
-        const errorMessage = document.getElementById('error-message');
-        if (errorMessage) {
-          errorMessage.textContent = 'Senha incorreta. Tente novamente.';
-          errorMessage.style.display = 'block';
-          setTimeout(() => {
-            errorMessage.style.display = 'none';
-          }, 3000);
-        } else {
-          alert('Senha incorreta. Tente novamente.');
-        }
-      }
+      console.log('Triplo clique detectado, redirecionando para admin-xyz-123.html');
+      window.location.href = '/admin-xyz-123.html';
       clickCount = 0;
     }
   }, { once: false });
