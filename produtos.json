@@ -335,5 +335,17 @@
     "imagens": [
       "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_samsung-galaxy-a05s-128-gb-dual-sim-tela-infinita-de-6,7''-cor-prata-6-gb-ram-1751118148150.webp"
     ]
+  },
+  {
+    "_id": "17512824521602egv3tu19",
+    "nome": "Fechadura Eletronica Digital Com Biometria Senha Kuanttum Delta pro Tuya Wi-fi",
+    "descricao": "Fechadura Fechadura Eletronica Digital Com Biometria Senha Kuanttum Delta pro Tuya Wi-fi",
+    "categoria": "eletronicos",
+    "loja": "mercadolivre",
+    "link": "https://mercadolivre.com/sec/1zsptd5",
+    "preco": 10,
+    "imagens": [
+      "https://raw.githubusercontent.com/bingaby/centrodecompra/main/imagens/produto_fechadura-eletronica-digital-com-biometria-senha-kuanttum-delta-pro-tuya-wi-fi-1751282451230.webp"
+    ]
   }
 ]
