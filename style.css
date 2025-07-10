@@ -84,7 +84,6 @@ body {
     text-align: center;
 }
 
-
 /* --- Navegação --- */
 nav {
     background-color: var(--secondary-color);
@@ -93,25 +92,13 @@ nav {
     box-shadow: var(--shadow-light);
 }
 
-nav ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    justify-content: center; /* Centraliza os itens de navegação */
-    flex-wrap: wrap; /* Permite quebrar linha em telas menores */
-}
-
-nav li {
-    margin: 0 15px; /* Espaçamento entre os itens */
-}
-
 nav a {
     color: white;
     text-decoration: none;
     font-weight: 600; /* Mais destacado */
     padding: 8px 12px; /* Aumenta a área clicável */
     border-radius: var(--border-radius-small);
+    margin: 0 15px;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -135,7 +122,7 @@ nav a:focus {
 }
 
 /* --- Sidebar de Categorias --- */
-.sidebar { /* Renomeado de .sidebar-categorias para .sidebar para generalizar */
+.sidebar {
     width: 250px; /* Aumentado para melhor espaçamento de ícones/texto */
     background-color: #fff;
     padding: 20px;
@@ -306,9 +293,8 @@ h2 {
 .loja[data-loja="shopee"] span { color: #FF5722; }
 .loja[data-loja="alibaba"] span { color: #E02020; }
 
-
 /* --- Botões de Compartilhamento (WhatsApp/Telegram) --- */
-.social-links-buttons { /* Novo contêiner para os botões de grupos */
+.social-links-buttons {
     text-align: center;
     margin: 20px 0 40px;
 }
@@ -447,7 +433,7 @@ footer {
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Sombra mais intensa ao hover */
 }
 
-.produto-card .nome-produto { /* Nova classe para o nome do produto */
+.produto-card .nome-produto {
     display: block;
     font-weight: 600; /* Mais forte */
     color: var(--text-color-dark);
@@ -512,7 +498,7 @@ footer {
 .ver-na-loja.amazon { background-color: #FF9900; }
 .ver-na-loja.amazon:hover { background-color: #E68A00; }
 
-.ver-na-loja.mercadolivre { background-color: #FFE600; color: var(--text-color-dark); } /* Texto escuro no amarelo */
+.ver-na-loja.mercadolivre { background-color: #FFE600; color: var(--text-color-dark); }
 .ver-na-loja.mercadolivre:hover { background-color: #E6CD00; }
 
 .ver-na-loja.magalu { background-color: #ED008C; }
@@ -776,6 +762,106 @@ footer {
 .modal-carrossel-dots .carrossel-dot:hover {
     background-color: rgba(255, 255, 255, 0.8);
     transform: scale(1.1);
+}
+
+/* --- Modal de Login --- */
+#loginModal .modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: var(--border-radius-medium);
+    width: 90%;
+    max-width: 400px; /* Maior que o padrão para formulário */
+    box-shadow: var(--shadow-medium);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#loginModal .close-button {
+    color: var(--text-color-dark);
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 30px;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: transparent;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: color 0.3s, background-color 0.3s;
+}
+
+#loginModal .close-button:hover,
+#loginModal .close-button:focus {
+    color: var(--primary-color);
+    background-color: var(--background-light);
+}
+
+#loginModal h2 {
+    font-size: 1.5em;
+    color: var(--text-color-medium);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+#loginModal form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 15px;
+}
+
+#loginModal label {
+    font-size: 0.95em;
+    color: var(--text-color-dark);
+    font-weight: 500;
+    text-align: left;
+}
+
+#loginModal input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-small);
+    font-size: 1em;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#loginModal input:focus {
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 3px rgba(46, 139, 87, 0.2);
+    outline: none;
+}
+
+#loginModal button {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: var(--border-radius-medium);
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.2s, box-shadow 0.2s;
+    box-shadow: var(--shadow-light);
+}
+
+#loginModal button:hover {
+    background-color: #FF8C00; /* Tom mais escuro de laranja */
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+}
+
+#loginModal #loginError {
+    font-size: 0.9em;
+    margin-top: 10px;
+    text-align: center;
 }
 
 /* Mensagens de feedback e spinner */
@@ -1053,6 +1139,27 @@ footer {
         font-size: 0.9em;
         gap: 6px;
     }
+
+    #loginModal .modal-content {
+        width: 95%;
+        padding: 15px;
+    }
+
+    #loginModal h2 {
+        font-size: 1.3em;
+    }
+
+    #loginModal input,
+    #loginModal button {
+        padding: 8px;
+        font-size: 0.95em;
+    }
+
+    #loginModal .close-button {
+        font-size: 25px;
+        width: 35px;
+        height: 35px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -1064,13 +1171,10 @@ footer {
         font-size: 1em;
     }
 
-    nav li {
-        margin: 0 8px;
-    }
-
     nav a {
         padding: 6px 10px;
         font-size: 0.9em;
+        margin: 0 8px;
     }
 
     .container {
