@@ -29,7 +29,7 @@ function configurarCliqueLogo() {
     }
     logo.addEventListener('click', (e) => {
         e.preventDefault();
-        console.log('Clique no logo detectado, abrindo modal de login');
+        console.log(' 3 Clique no logo detectado, abrindo modal de login');
         loginModal.style.display = 'flex';
     });
 }
