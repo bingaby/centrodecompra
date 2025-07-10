@@ -275,7 +275,6 @@
     <span id="page-info">Página 1</span>
     <button id="next-page" aria-label="Próxima página">Próximo</button>
   </div>
-
   <footer>
     <p>Todos os direitos reservados <strong>Grupo Centro de Compra "CdC"</strong> © <span id="year"></span></p>
   </footer>
@@ -325,7 +324,10 @@
           });
           clearTimeout(timeoutId);
           console.log('Status da resposta:', res.status, res.statusText);
-          if (!res.ok) throw new Error(`Falha ao buscar produtos: ${res.status}`);
+          if (!res.ok) {
+            const errorData = await res.json().catch(() => ({}));
+            throw new Error(errorData.error || `Falha ao buscar produtos: ${res.status}`);
+          }
           const data = await res.json();
           console.log('Dados brutos:', data);
           const produtos = Array.isArray(data.produtos) ? data.produtos : Array.isArray(data) ? data : [];
@@ -337,8 +339,12 @@
         } catch (err) {
           console.error(`Tentativa ${attempt} falhou: ${err.message}`);
           if (attempt === maxRetries) {
-            tbody.innerHTML = `<tr><td colspan="8" style="color:red;text-align:center;">Erro após ${maxRetries} tentativas: ${err.message}</td></tr>`;
-            erro.textContent = `Erro ao carregar produtos: ${err.message}`;
+            let errorMessage = `Erro após ${maxRetries} tentativas: ${err.message}`;
+            if (err.message.includes('Failed to fetch') || err.name === 'AbortError') {
+              errorMessage = 'Erro de conexão com o servidor. Verifique sua rede ou a configuração do servidor.';
+            }
+            tbody.innerHTML = `<tr><td colspan="8" style="color:red;text-align:center;">${errorMessage}</td></tr>`;
+            erro.textContent = errorMessage;
           }
           attempt++;
           await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
@@ -388,7 +394,10 @@
             'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
           }
         });
-        if (!res.ok) throw new Error('Erro ao buscar produto para edição');
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({}));
+          throw new Error(errorData.error || 'Erro ao buscar produto para edição');
+        }
         const produto = await res.json();
         console.log('Produto para edição:', produto);
 
@@ -425,7 +434,10 @@
             'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
           }
         });
-        if (!res.ok) throw new Error('Erro ao excluir produto');
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({}));
+          throw new Error(errorData.error || 'Erro ao excluir produto');
+        }
         document.getElementById('mensagem').textContent = 'Produto excluído com sucesso';
         carregarProdutos();
       } catch (err) {
