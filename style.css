@@ -296,7 +296,7 @@ footer {
   width: auto;
   object-fit: contain;
   margin: 0 auto;
-  cursor: pointer; /* Indica que a imagem é clicável */
+  cursor: pointer;
 }
 
 .produto-card span {
@@ -567,6 +567,123 @@ footer {
   background-color: #FF8C00;
 }
 
+/* Estilos do Modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.modal.aberto {
+  display: flex;
+  opacity: 1;
+}
+
+.modal-carrossel {
+  position: relative;
+  max-width: 90%;
+  max-height: 90vh;
+  width: 100%;
+}
+
+.modal-carrossel-imagens {
+  display: flex;
+  transition: transform 0.3s ease;
+  width: 100%;
+  height: 100%;
+}
+
+.modal-carrossel-imagens img {
+  flex: 0 0 100%;
+  width: 100%;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 5px;
+  transform: scale(0.8);
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+
+.modal.aberto .modal-carrossel-imagens img {
+  transform: scale(1);
+}
+
+.modal-carrossel-imagens img.zoomed {
+  transform: scale(1.2);
+}
+
+.fechar-modal {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 40px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.fechar-modal:hover, .fechar-modal:focus {
+  color: #FFA500;
+  transform: scale(1.1);
+}
+
+.fechar-modal:focus {
+  outline: 2px solid #FFA500;
+  outline-offset: 2px;
+}
+
+.modal-carregando::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  border: 4px solid #FFA500;
+  border-top: 4px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.paginacao {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.paginacao button {
+  padding: 8px 16px;
+  margin: 0 10px;
+  background-color: #FFA500;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.paginacao button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.paginacao button:hover:not(:disabled) {
+  background-color: #FF8C00;
+}
+
 @media (max-width: 768px) {
   .container {
     flex-direction: column;
@@ -632,5 +749,16 @@ footer {
   .robo-assistente {
     bottom: 10px;
     right: 10px;
+  }
+
+  .modal-carrossel {
+    max-width: 95%;
+    max-height: 85vh;
+  }
+
+  .fechar-modal {
+    top: 10px;
+    right: 15px;
+    font-size: 30px;
   }
 }
