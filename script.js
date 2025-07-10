@@ -67,17 +67,26 @@ function configurarLogin() {
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value.trim();
 
-    // Credenciais fixas (APENAS PARA DEMONSTRAÇÃO)
-    const adminUsername = 'Princesaeloah';
-    const adminPassword = '13082015';
+    try {
+      const response = await fetch(`${API_URL}/api/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
 
-    if (username === adminUsername && password === adminPassword) {
-      console.log('Login bem-sucedido, redirecionando para admin-xyz-123.html');
-      localStorage.setItem('adminToken', 'authenticated');
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Erro ao fazer login');
+      }
+
+      console.log('Login bem-sucedido, token recebido:', data.token);
+      localStorage.setItem('adminToken', data.token); // Armazena o token JWT
       window.location.href = '/admin-xyz-123.html';
-    } else {
-      console.warn('Falha no login: credenciais inválidas');
-      loginError.textContent = 'Usuário ou senha incorretos.';
+    } catch (error) {
+      console.warn('Falha no login:', error.message);
+      loginError.textContent = error.message;
       loginError.style.display = 'block';
     }
   });
@@ -118,19 +127,23 @@ async function carregarProdutos() {
       gridProdutos.innerHTML = '';
 
       console.log(`Tentativa ${attempt}: Carregando produtos de ${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`);
+      const token = localStorage.getItem('adminToken');
       const response = await fetch(
         `${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`,
         {
           cache: 'no-store',
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
-          }
+            'Content-Type': 'application/json',
+            ...(token && { 'Authorization': `Bearer ${token}` }), // Adiciona Authorization apenas se o token existir
+          },
         }
       );
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.details || `Erro ${response.status}`);
+        throw new Error(errorData.error || `Erro ${response.status}`);
       }
+
       const data = await response.json();
       produtos = Array.isArray(data.produtos) ? data.produtos.slice(0, produtosPorPagina) : [];
       totalProdutos = data.total || produtos.length; // Atualizar dinamicamente
@@ -146,7 +159,9 @@ async function carregarProdutos() {
     } catch (error) {
       console.error(`⚠️ Tentativa ${attempt} falhou: ${error.message}`);
       if (attempt === maxRetries) {
-        errorMessage.textContent = `Erro ao carregar produtos após ${maxRetries} tentativas: ${error.message}.`;
+        errorMessage.textContent = error.message.includes('CORS')
+          ? 'Erro de CORS: Verifique a configuração do servidor backend.'
+          : `Erro ao carregar produtos após ${maxRetries} tentativas: ${error.message}`;
         errorMessage.style.display = 'block';
         mensagemVazia.style.display = 'none';
         gridProdutos.style.display = 'none';
@@ -246,7 +261,7 @@ function moveCarrossel(carrosselId, direction) {
 
   currentIndex = (currentIndex + direction + totalImagens) % totalImagens;
   requestAnimationFrame(() => {
-    imagens.style.transform = `translateX(-${currentIndex * 100}%)`;
+    imagens,style.transform = `translateX(-${currentIndex * 100}%)`;
     imagens.dataset.index = currentIndex;
     dots.forEach((dot, i) => dot.classList.toggle('ativo', i === currentIndex));
   });
