@@ -11,6 +11,10 @@ let currentPage = 1;
 const produtosPorPagina = 24; // Definido como 24 itens por página
 let totalProdutos = 1000; // Será atualizado dinamicamente
 
+// Variável para contagem de cliques no logotipo
+let clickCount = 0;
+let clickTimeout = null;
+
 // Atualizar ano no footer
 function atualizarAnoFooter() {
   const yearElement = document.getElementById('year');
@@ -19,61 +23,76 @@ function atualizarAnoFooter() {
   }
 }
 
-// Configurar clique no logotipo para abrir modal de login
+// Configurar clique triplo no logotipo para abrir modal de login
 function configurarCliqueLogo() {
-    const logo = document.getElementById('site-logo-img');
-    const loginModal = document.getElementById('loginModal');
-    if (!logo || !loginModal) {
-        console.error('ID site-logo-img ou loginModal não encontrado no DOM');
-        return;
+  const logo = document.getElementById('site-logo-img');
+  const loginModal = document.getElementById('loginModal');
+  if (!logo || !loginModal) {
+    console.error('ID site-logo-img ou loginModal não encontrado no DOM');
+    return;
+  }
+  logo.addEventListener('click', (e) => {
+    e.preventDefault();
+    clickCount++;
+    console.log(`Clique ${clickCount} no logo detectado`);
+
+    if (clickCount === 1) {
+      // Iniciar temporizador na primeira vez
+      clickTimeout = setTimeout(() => {
+        console.log('Tempo de cliques expirado, reiniciando contador');
+        clickCount = 0;
+      }, 2000); // 2 segundos para os 3 cliques
     }
-    logo.addEventListener('3 click', (e) => {
-        e.preventDefault();
-        console.log(' 3 Clique no logo detectado, abrindo modal de login');
-        loginModal.style.display = 'flex';
-    });
+
+    if (clickCount === 3) {
+      console.log('Três cliques detectados, abrindo modal de login');
+      loginModal.style.display = 'flex';
+      clearTimeout(clickTimeout);
+      clickCount = 0;
+    }
+  });
 }
 
 // Configurar login
 function configurarLogin() {
-    const loginForm = document.getElementById('loginForm');
-    const loginError = document.getElementById('loginError');
-    if (!loginForm || !loginError) {
-        console.error('Elementos loginForm ou loginError não encontrados');
-        return;
+  const loginForm = document.getElementById('loginForm');
+  const loginError = document.getElementById('loginError');
+  if (!loginForm || !loginError) {
+    console.error('Elementos loginForm ou loginError não encontrados');
+    return;
+  }
+
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+
+    // Credenciais fixas (APENAS PARA DEMONSTRAÇÃO)
+    const adminUsername = 'admin';
+    const adminPassword = 'xyz123';
+
+    if (username === adminUsername && password === adminPassword) {
+      console.log('Login bem-sucedido, redirecionando para admin-xyz-123.html');
+      localStorage.setItem('adminToken', 'authenticated');
+      window.location.href = '/admin-xyz-123.html';
+    } else {
+      console.warn('Falha no login: credenciais inválidas');
+      loginError.textContent = 'Usuário ou senha incorretos.';
+      loginError.style.display = 'block';
     }
-
-    loginForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const username = document.getElementById('username').value.trim();
-        const password = document.getElementById('password').value.trim();
-
-        // Credenciais fixas (APENAS PARA DEMONSTRAÇÃO)
-        const adminUsername = 'admin';
-        const adminPassword = 'xyz123';
-
-        if (username === adminUsername && password === adminPassword) {
-            console.log('Login bem-sucedido, redirecionando para admin-xyz-123.html');
-            localStorage.setItem('adminToken', 'authenticated');
-            window.location.href = '/admin-xyz-123.html';
-        } else {
-            console.warn('Falha no login: credenciais inválidas');
-            loginError.textContent = 'Usuário ou senha incorretos.';
-            loginError.style.display = 'block';
-        }
-    });
+  });
 }
 
 // Fechar modal de login
 function closeLoginModal() {
-    const loginModal = document.getElementById('loginModal');
-    const loginError = document.getElementById('loginError');
-    const loginForm = document.getElementById('loginForm');
-    if (loginModal && loginError && loginForm) {
-        loginModal.style.display = 'none';
-        loginError.style.display = 'none';
-        loginForm.reset();
-    }
+  const loginModal = document.getElementById('loginModal');
+  const loginError = document.getElementById('loginError');
+  const loginForm = document.getElementById('loginForm');
+  if (loginModal && loginError && loginForm) {
+    loginModal.style.display = 'none';
+    loginError.style.display = 'none';
+    loginForm.reset();
+  }
 }
 
 // Carregar produtos com retry
@@ -101,7 +120,12 @@ async function carregarProdutos() {
       console.log(`Tentativa ${attempt}: Carregando produtos de ${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`);
       const response = await fetch(
         `${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`,
-        { cache: 'no-store' }
+        {
+          cache: 'no-store',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+          }
+        }
       );
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
