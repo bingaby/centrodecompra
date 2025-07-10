@@ -3,21 +3,33 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Gerenciar Produtos</title>
+  <title>Gerenciar Produtos - Centro de Compras</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="logos/favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="logos/apple-touch-icon.png">
+  <link rel="stylesheet" href="style.css">
   <style>
+    :root {
+      --primary-color: #ff6200;
+      --secondary-color: #6c757d;
+      --text-color-dark: #333;
+      --background-light: #f5f5f5;
+      --border-color: #ddd;
+      --shadow-light: 0 2px 4px rgba(0,0,0,0.1);
+      --border-radius-small: 4px;
+      --border-radius-medium: 8px;
+    }
     body { 
       font-family: 'Roboto', Arial, sans-serif; 
       padding: 20px; 
-      background-color: #f5f5f5; 
+      background-color: var(--background-light);
+      margin: 0;
     }
     h1, h3 { 
       text-align: center; 
-      color: #333; 
+      color: var(--text-color-dark); 
     }
     form { 
       max-width: 500px; 
@@ -27,13 +39,13 @@
       gap: 10px; 
       background: white; 
       padding: 20px; 
-      border-radius: 8px; 
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+      border-radius: var(--border-radius-medium); 
+      box-shadow: var(--shadow-light); 
     }
     input, select, textarea, button { 
       padding: 10px; 
-      border: 1px solid #ddd; 
-      border-radius: 4px; 
+      border: 1px solid var(--border-color); 
+      border-radius: var(--border-radius-small); 
       font-size: 16px; 
     }
     textarea { 
@@ -41,7 +53,7 @@
       min-height: 100px; 
     }
     button { 
-      background-color: #ff6200; 
+      background-color: var(--primary-color); 
       color: white; 
       border: none; 
       cursor: pointer; 
@@ -70,8 +82,8 @@
       max-width: 900px; 
       background: white; 
       padding: 20px; 
-      border-radius: 8px; 
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+      border-radius: var(--border-radius-medium); 
+      box-shadow: var(--shadow-light); 
     }
     #produtos-cadastrados table { 
       width: 100%; 
@@ -79,7 +91,7 @@
     }
     #produtos-cadastrados th, #produtos-cadastrados td { 
       padding: 12px; 
-      border: 1px solid #ddd; 
+      border: 1px solid var(--border-color); 
       text-align: left; 
       vertical-align: middle;
       overflow-wrap: break-word;
@@ -98,7 +110,7 @@
       font-size: 14px; 
       border: none; 
       color: white; 
-      border-radius: 4px; 
+      border-radius: var(--border-radius-small); 
       cursor: pointer; 
       margin-right: 5px; 
     }
@@ -111,7 +123,7 @@
       font-size: 14px; 
       border: none; 
       color: white; 
-      border-radius: 4px; 
+      border-radius: var(--border-radius-small); 
       cursor: pointer; 
     }
     #produtos-cadastrados button.editar:hover { 
@@ -123,7 +135,7 @@
       object-fit: contain; 
       margin: 2px; 
       cursor: pointer; 
-      border-radius: 4px; 
+      border-radius: var(--border-radius-small); 
       vertical-align: middle; 
     }
     #paginacao {
@@ -133,10 +145,10 @@
     #paginacao button {
       margin: 0 10px;
       padding: 8px 16px;
-      background-color: #ff6200;
+      background-color: var(--primary-color);
       color: white;
       border: none;
-      border-radius: 4px;
+      border-radius: var(--border-radius-small);
       cursor: pointer;
     }
     #paginacao button:disabled {
@@ -147,10 +159,57 @@
       font-size: 16px;
       margin: 0 10px;
     }
+    .site-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      background-color: white;
+      box-shadow: var(--shadow-light);
+      margin-bottom: 20px;
+    }
+    .logo-container img {
+      width: 150px;
+      height: 50px;
+    }
+    .header-text h1 {
+      font-size: 1.5em;
+      margin: 0;
+    }
+    .header-text p {
+      margin: 5px 0 0;
+      color: var(--text-color-dark);
+    }
+    .logout-button {
+      background-color: var(--secondary-color);
+      padding: 8px 16px;
+      margin-left: auto;
+    }
+    .logout-button:hover {
+      background-color: #5a6268;
+    }
   </style>
 </head>
 <body>
-  <h1>Gerenciar Produtos</h1>
+  <script>
+    // Verificar autenticação
+    if (!localStorage.getItem('adminToken')) {
+      alert('Acesso não autorizado. Por favor, faça login.');
+      window.location.href = '/index.html';
+    }
+  </script>
+  <header class="site-header">
+    <div class="logo-container">
+      <a href="/index.html">
+        <img src="logos/logoscentrodecompras.jpeg" alt="Centro de Compras" id="site-logo-img" width="150" height="50">
+      </a>
+    </div>
+    <div class="header-text">
+      <h1>Gerenciar Produtos</h1>
+      <p>Adicione, edite ou remova produtos do portal</p>
+    </div>
+    <button class="logout-button" onclick="logout()">Sair</button>
+  </header>
   <form id="form-produto" enctype="multipart/form-data">
     <input type="hidden" name="id" id="produto-id">
     <input type="text" name="nome" placeholder="Nome do produto" required aria-label="Nome do produto" />
@@ -186,12 +245,11 @@
     <input type="number" name="preco" placeholder="Preço do produto (ex.: 99.99)" step="0.01" min="0" required aria-label="Preço do produto" />
     <input type="file" name="imagens" accept="image/*" multiple aria-label="Imagens do produto" />
     <button type="submit" id="submit-button">Adicionar</button>
-    <button type="button" id="cancel-button" style="display:none;background-color:#6c757d;" onclick="cancelarEdicao()">Cancelar</button>
+    <button type="button" id="cancel-button" style="display:none;background-color:var(--secondary-color);" onclick="cancelarEdicao()">Cancelar</button>
   </form>
   <div id="mensagem"></div>
   <div id="erro"></div>
   <div id="loading-spinner">Carregando...</div>
-
   <div id="produtos-cadastrados">
     <h3>Produtos Cadastrados</h3>
     <table>
@@ -218,6 +276,10 @@
     <button id="next-page" aria-label="Próxima página">Próximo</button>
   </div>
 
+  <footer>
+    <p>Todos os direitos reservados <strong>Grupo Centro de Compra "CdC"</strong> © <span id="year"></span></p>
+  </footer>
+
   <script>
     const API_URL = 'https://centrodecompra-backend.onrender.com'; // Use 'http://localhost:10000' para testes locais
     let currentPage = 1;
@@ -231,11 +293,22 @@
       }[match]));
     }
 
+    // Função de logout
+    function logout() {
+      localStorage.removeItem('adminToken');
+      window.location.href = '/index.html';
+    }
+
+    // Atualizar ano no footer
+    document.getElementById('year').textContent = new Date().getFullYear();
+
     async function carregarProdutos() {
       const tbody = document.getElementById('lista-produtos');
       const loadingSpinner = document.getElementById('loading-spinner');
+      const erro = document.getElementById('erro');
       loadingSpinner.style.display = 'block';
       tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Carregando...</td></tr>';
+      erro.textContent = '';
 
       const maxRetries = 3;
       let attempt = 1;
@@ -245,7 +318,10 @@
           const timeoutId = setTimeout(() => controller.abort(), 5000);
           const res = await fetch(`${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`, {
             cache: 'no-store',
-            signal: controller.signal
+            signal: controller.signal,
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+            }
           });
           clearTimeout(timeoutId);
           console.log('Status da resposta:', res.status, res.statusText);
@@ -257,13 +333,12 @@
           console.log('Produtos processados:', produtos, 'Total:', totalProdutos);
           preencherTabela(produtos);
           atualizarPaginacao();
-          loadingSpinner.style.display = 'none';
           return;
         } catch (err) {
           console.error(`Tentativa ${attempt} falhou: ${err.message}`);
           if (attempt === maxRetries) {
             tbody.innerHTML = `<tr><td colspan="8" style="color:red;text-align:center;">Erro após ${maxRetries} tentativas: ${err.message}</td></tr>`;
-            document.getElementById('erro').textContent = `Erro ao carregar produtos: ${err.message}`;
+            erro.textContent = `Erro ao carregar produtos: ${err.message}`;
           }
           attempt++;
           await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
@@ -308,7 +383,11 @@
 
     async function editarProduto(id) {
       try {
-        const res = await fetch(`${API_URL}/api/produtos/${id}`);
+        const res = await fetch(`${API_URL}/api/produtos/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+          }
+        });
         if (!res.ok) throw new Error('Erro ao buscar produto para edição');
         const produto = await res.json();
         console.log('Produto para edição:', produto);
@@ -340,7 +419,12 @@
     async function excluirProduto(id) {
       if (!confirm('Confirma a exclusão deste produto?')) return;
       try {
-        const res = await fetch(`${API_URL}/api/produtos/${id}`, { method: 'DELETE' });
+        const res = await fetch(`${API_URL}/api/produtos/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+          }
+        });
         if (!res.ok) throw new Error('Erro ao excluir produto');
         document.getElementById('mensagem').textContent = 'Produto excluído com sucesso';
         carregarProdutos();
@@ -374,11 +458,17 @@
         if (produtoId) {
           res = await fetch(`${API_URL}/api/produtos/${produtoId}`, {
             method: 'PUT',
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+            },
             body: formData
           });
         } else {
           res = await fetch(`${API_URL}/api/produtos`, {
             method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+            },
             body: formData
           });
         }
@@ -407,7 +497,7 @@
       const pageInfo = document.getElementById('page-info');
       prevButton.disabled = currentPage === 1;
       nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
-      pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina)}`;
+      pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina) || 1}`;
     }
 
     document.getElementById('prev-page')?.addEventListener('click', () => {
@@ -416,12 +506,15 @@
         carregarProdutos();
       }
     });
+
     document.getElementById('next-page')?.addEventListener('click', () => {
       currentPage++;
       carregarProdutos();
     });
 
-    document.addEventListener('DOMContentLoaded', carregarProdutos);
+    document.addEventListener('DOMContentLoaded', () => {
+      carregarProdutos();
+    });
   </script>
 </body>
 </html>
