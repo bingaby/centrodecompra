@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="style.css" media="print" onload="this.media='all'">
-  <link rel="icon" type="image/x-icon" href="/favicon.ico"> <!-- Adicionado para corrigir erro 404 -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="logos/favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="logos/apple-touch-icon.png">
@@ -100,9 +100,9 @@
         <p class="mensagem-vazia" id="mensagem-vazia" style="display: none;">Nenhum produto encontrado.</p>
         <p class="error-message" id="error-message" style="display: none;"></p>
         <div class="paginacao" id="paginacao">
-          <button id="prev-page" disabled>Anterior</button>
-          <span id="page-info">Página 1</span>
-          <button id="next-page">Próxima</button>
+          <button id="prev-page" disabled class="botao-paginacao" aria-label="Página anterior">Anterior</button>
+          <span id="page-info" class="informacao-pagina">Página 1</span>
+          <button id="next-page" class="botao-paginacao" aria-label="Próxima página">Próxima</button>
         </div>
       </section>
       <div class="social-links">
@@ -123,18 +123,38 @@
           <span>YouTube</span>
         </a>
       </div>
-      <a href="https://api.whatsapp.com/send?phone=5521975179737" class="whatsapp" target="_blank" rel="noopener noreferrer">📲 WhatsApp</a>
-      <a href="https://t.me/centraldecomprascdc" class="telegram" target="_blank" rel="noopener noreferrer">📢 Telegram</a>
+      <div class="social-links-buttons">
+        <a href="https://api.whatsapp.com/send?phone=5521975179737" class="whatsapp" target="_blank" rel="noopener noreferrer">📲 WhatsApp</a>
+        <a href="https://t.me/centraldecomprascdc" class="telegram" target="_blank" rel="noopener noreferrer">📢 Telegram</a>
+      </div>
     </main>
   </div>
 
   <div class="modal" id="imageModal">
-    <button class="modal-close" onclick="closeModal()">✕</button>
+    <button class="close-button" onclick="closeModal()">✕</button>
     <div class="modal-content">
-      <div class="carrossel-imagens" id="modalCarrosselImagens"></div>
-      <button class="carrossel-prev" onclick="moveModalCarrossel(-1)">◄</button>
-      <button class="carrossel-next" onclick="moveModalCarrossel(1)">▶</button>
-      <div class="carrossel-dots" id="modalCarrosselDots"></div>
+      <div class="modal-carrossel">
+        <div class="modal-carrossel-imagens" id="modalCarrosselImagens"></div>
+        <button class="modal-carrossel-prev" onclick="moveModalCarrossel(-1)">◄</button>
+        <button class="modal-carrossel-next" onclick="moveModalCarrossel(1)">▶</button>
+        <div class="modal-carrossel-dots" id="modalCarrosselDots"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Login -->
+  <div id="loginModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <span class="close-button" onclick="closeLoginModal()">×</span>
+      <h2>Área Administrativa</h2>
+      <form id="loginForm">
+        <label for="username">Usuário:</label>
+        <input type="text" id="username" name="username" required aria-label="Usuário">
+        <label for="password">Senha:</label>
+        <input type="password" id="password" name="password" required aria-label="Senha">
+        <button type="submit">Entrar</button>
+        <p id="loginError" style="color: red; display: none;"></p>
+      </form>
     </div>
   </div>
 
