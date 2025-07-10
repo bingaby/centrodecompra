@@ -27,7 +27,7 @@ function configurarCliqueLogo() {
         console.error('ID site-logo-img ou loginModal não encontrado no DOM');
         return;
     }
-    logo.addEventListener('click', (e) => {
+    logo.addEventListener('3 click', (e) => {
         e.preventDefault();
         console.log(' 3 Clique no logo detectado, abrindo modal de login');
         loginModal.style.display = 'flex';
