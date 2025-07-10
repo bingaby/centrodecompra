@@ -19,31 +19,61 @@ function atualizarAnoFooter() {
   }
 }
 
-// Detectar triplo clique no logotipo
+// Configurar clique no logotipo para abrir modal de login
 function configurarCliqueLogo() {
-  const logo = document.getElementById('site-logo-img');
-  if (!logo) {
-    console.error('ID site-logo-img não encontrado no DOM');
-    return;
-  }
-  let clickCount = 0;
-  let clickTimer;
-  logo.addEventListener('click', (e) => {
-    e.preventDefault();
-    clickCount++;
-    console.log(`Clique detectado: ${clickCount}`);
-    if (clickCount === 1) {
-      clickTimer = setTimeout(() => {
-        clickCount = 0;
-        console.log('Contagem de cliques resetada');
-      }, 500);
-    } else if (clickCount === 3) {
-      clearTimeout(clickTimer);
-      console.log('Triplo clique detectado, redirecionando para admin-xyz-123.html');
-      window.location.href = '/admin-xyz-123.html';
-      clickCount = 0;
+    const logo = document.getElementById('site-logo-img');
+    const loginModal = document.getElementById('loginModal');
+    if (!logo || !loginModal) {
+        console.error('ID site-logo-img ou loginModal não encontrado no DOM');
+        return;
     }
-  }, { once: false });
+    logo.addEventListener('click', (e) => {
+        e.preventDefault();
+        console.log('Clique no logo detectado, abrindo modal de login');
+        loginModal.style.display = 'flex';
+    });
+}
+
+// Configurar login
+function configurarLogin() {
+    const loginForm = document.getElementById('loginForm');
+    const loginError = document.getElementById('loginError');
+    if (!loginForm || !loginError) {
+        console.error('Elementos loginForm ou loginError não encontrados');
+        return;
+    }
+
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+
+        // Credenciais fixas (APENAS PARA DEMONSTRAÇÃO)
+        const adminUsername = 'admin';
+        const adminPassword = 'xyz123';
+
+        if (username === adminUsername && password === adminPassword) {
+            console.log('Login bem-sucedido, redirecionando para admin-xyz-123.html');
+            localStorage.setItem('adminToken', 'authenticated');
+            window.location.href = '/admin-xyz-123.html';
+        } else {
+            console.warn('Falha no login: credenciais inválidas');
+            loginError.textContent = 'Usuário ou senha incorretos.';
+            loginError.style.display = 'block';
+        }
+    });
+}
+
+// Fechar modal de login
+function closeLoginModal() {
+    const loginModal = document.getElementById('loginModal');
+    const loginError = document.getElementById('loginError');
+    const loginForm = document.getElementById('loginForm');
+    if (loginModal && loginError && loginForm) {
+        loginModal.style.display = 'none';
+        loginError.style.display = 'none';
+        loginForm.reset();
+    }
 }
 
 // Carregar produtos com retry
@@ -78,7 +108,7 @@ async function carregarProdutos() {
         throw new Error(errorData.details || `Erro ${response.status}`);
       }
       const data = await response.json();
-      produtos = Array.isArray(data.produtos) ? data.produtos.slice(0, produtosPorPagina) : []; // Forçar limite no frontend
+      produtos = Array.isArray(data.produtos) ? data.produtos.slice(0, produtosPorPagina) : [];
       totalProdutos = data.total || produtos.length; // Atualizar dinamicamente
       console.log(`Produtos recebidos da API: ${produtos.length}, Total: ${totalProdutos}`);
 
@@ -115,7 +145,7 @@ function filtrarProdutos() {
     return;
   }
 
-  // Aplicar filtros e limitar a 25 itens
+  // Aplicar filtros e limitar a 24 itens
   const produtosFiltrados = produtos
     .filter((produto) => {
       const matchCategoria =
@@ -128,7 +158,7 @@ function filtrarProdutos() {
         !termoBusca || produto.nome?.toLowerCase().includes(termoBusca.toLowerCase());
       return matchCategoria && matchLoja && matchBusca;
     })
-    .slice(0, produtosPorPagina); // Forçar limite de 25 itens
+    .slice(0, produtosPorPagina); // Forçar limite de 24 itens
 
   console.log(`Produtos filtrados: ${produtosFiltrados.length} (limitado a ${produtosPorPagina})`);
 
@@ -170,7 +200,7 @@ function filtrarProdutos() {
           </div>
         ` : ''}
       </div>
-      <span>${produto.nome || 'Produto sem nome'}</span>
+      <span class="nome-produto">${produto.nome || 'Produto sem nome'}</span>
       <span class="descricao">Loja: ${produto.loja || 'Desconhecida'}</span>
       <p class="preco"><a href="${produto.link || '#'}" target="_blank" class="ver-preco">Clique aqui para ver o preço</a></p>
       <a href="${produto.link || '#'}" target="_blank" class="ver-na-loja ${produto.loja?.toLowerCase() || 'default'}">Comprar</a>
@@ -211,7 +241,7 @@ function setCarrosselImage(carrosselId, index) {
   });
 }
 
-// Funções do modal
+// Funções do modal de imagens
 async function openModal(produtoIndex, imageIndex) {
   const modal = document.getElementById('imageModal');
   const carrosselImagens = document.getElementById('modalCarrosselImagens');
@@ -314,84 +344,111 @@ function configurarBusca() {
     }
 
     currentPage = 1;
-    debounceTimer = setTimeout(() => carregarProdutos(), 300);
+    debounceTimer = setTimeout(() => {
+      filtrarProdutos();
+      buscaFeedback.style.display = termoBusca ? 'block' : 'none';
+    }, 500);
   });
 }
 
-// Configurar paginação
-function configurarPaginacao() {
-  const prevButton = document.getElementById('prev-page');
-  const nextButton = document.getElementById('next-page');
+// Configurar filtros por categoria
+function filtrarPorCategoria(categoria) {
+  categoriaSelecionada = categoria;
+  currentPage = 1;
 
-  if (!prevButton || !nextButton) {
-    console.error('Botões de paginação não encontrados');
-    return;
-  }
-
-  prevButton.addEventListener('click', () => {
-    if (currentPage > 1) {
-      currentPage--;
-      carregarProdutos();
-    }
+  const itensCategoria = document.querySelectorAll('.categoria-item');
+  itensCategoria.forEach(item => {
+    item.classList.toggle('ativa', item.dataset.categoria === categoria);
   });
 
-  nextButton.addEventListener('click', () => {
-    if (currentPage < Math.ceil(totalProdutos / produtosPorPagina)) {
-      currentPage++;
-      carregarProdutos();
-    }
-  });
+  console.log(`Filtro de categoria aplicado: ${categoria}`);
+  carregarProdutos();
 }
 
+// Configurar filtros por loja
+function filtrarPorLoja(loja) {
+  lojaSelecionada = loja;
+  currentPage = 1;
+
+  const lojas = document.querySelectorAll('.loja, .loja-todas');
+  lojas.forEach(item => {
+    item.classList.toggle('ativa', item.dataset.loja === loja || (loja === 'todas' && item.classList.contains('loja-todas')));
+  });
+
+  console.log(`Filtro de loja aplicado: ${loja}`);
+  carregarProdutos();
+}
+
+// Atualizar paginação
 function atualizarPaginacao() {
-  const prevButton = document.getElementById('prev-page');
-  const nextButton = document.getElementById('next-page');
+  const prevPageButton = document.getElementById('prev-page');
+  const nextPageButton = document.getElementById('next-page');
   const pageInfo = document.getElementById('page-info');
 
-  if (!prevButton || !nextButton || !pageInfo) {
+  if (!prevPageButton || !nextPageButton || !pageInfo) {
     console.error('Elementos de paginação não encontrados');
     return;
   }
 
-  prevButton.disabled = currentPage === 1;
-  nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
-  pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina)}`;
-  console.log(`Paginação: Página ${currentPage}, Total de produtos: ${totalProdutos}, Itens por página: ${produtosPorPagina}`);
+  const totalPages = Math.ceil(totalProdutos / produtosPorPagina);
+  prevPageButton.disabled = currentPage === 1;
+  nextPageButton.disabled = currentPage >= totalPages || totalProdutos <= produtosPorPagina;
+  pageInfo.textContent = `Página ${currentPage} de ${totalPages || 1}`;
+
+  console.log(`Paginação atualizada: Página ${currentPage}, Total de páginas: ${totalPages}`);
 }
 
-// Filtrar por categoria
-function filtrarPorCategoria(categoria) {
-  categoriaSelecionada = categoria;
-  currentPage = 1;
-  document.querySelectorAll('.categoria-item').forEach(item => {
-    item.classList.toggle('ativa', item.dataset.categoria.toLowerCase() === categoria.toLowerCase());
+// Configurar botões de paginação
+function configurarPaginacao() {
+  const prevPageButton = document.getElementById('prev-page');
+  const nextPageButton = document.getElementById('next-page');
+
+  if (!prevPageButton || !nextPageButton) {
+    console.error('Botões de paginação não encontrados');
+    return;
+  }
+
+  prevPageButton.addEventListener('click', () => {
+    if (currentPage > 1) {
+      currentPage--;
+      console.log(`Navegando para página anterior: ${currentPage}`);
+      carregarProdutos();
+    }
   });
-  carregarProdutos();
-}
 
-// Filtrar por loja
-function filtrarPorLoja(loja) {
-  lojaSelecionada = loja;
-  currentPage = 1;
-  document.querySelectorAll('.loja, .loja-todas').forEach(item => {
-    item.classList.toggle('ativa', item.dataset.loja.toLowerCase() === loja.toLowerCase());
+  nextPageButton.addEventListener('click', () => {
+    currentPage++;
+    console.log(`Navegando para próxima página: ${currentPage}`);
+    carregarProdutos();
   });
-  carregarProdutos();
 }
 
-// Inicialização
+// Inicializar a página
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('Inicializando página');
-  carregarProdutos();
-  configurarBusca();
-  configurarPaginacao();
   atualizarAnoFooter();
   configurarCliqueLogo();
+  configurarLogin();
+  configurarBusca();
+  configurarPaginacao();
+  carregarProdutos();
 
-  const modal = document.getElementById('imageModal');
-  if (modal) {
-    modal.addEventListener('click', (e) => {
-      if (e.target === e.currentTarget) closeModal();
+  // Configurar fechamento do modal ao clicar fora
+  const imageModal = document.getElementById('imageModal');
+  const loginModal = document.getElementById('loginModal');
+
+  if (imageModal) {
+    imageModal.addEventListener('click', (e) => {
+      if (e.target === imageModal) {
+        closeModal();
+      }
+    });
+  }
+
+  if (loginModal) {
+    loginModal.addEventListener('click', (e) => {
+      if (e.target === loginModal) {
+        closeLoginModal();
+      }
     });
   }
 });
