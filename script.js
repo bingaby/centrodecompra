@@ -68,8 +68,8 @@ function configurarLogin() {
     const password = document.getElementById('password').value.trim();
 
     // Credenciais fixas (APENAS PARA DEMONSTRAÇÃO)
-    const adminUsername = 'admin';
-    const adminPassword = 'xyz123';
+    const adminUsername = 'Princesaeloah';
+    const adminPassword = '13082015';
 
     if (username === adminUsername && password === adminPassword) {
       console.log('Login bem-sucedido, redirecionando para admin-xyz-123.html');
