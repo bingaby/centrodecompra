@@ -14,7 +14,11 @@ let totalProdutos = 1000;
 // Função para escapar HTML e evitar XSS
 function escapeHTML(str) {
   return str.replace(/[&<>"']/g, (match) => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
   }[match]));
 }
 
@@ -223,7 +227,13 @@ async function openModal(produtoIndex, imageIndex) {
   const carrosselImagens = document.getElementById('modalCarrosselImagens');
   const carrosselDots = document.getElementById('modalCarrosselDots');
 
+  if (!modal || !carrosselImagens || !carrosselDots) {
+    console.error('Elementos do modal não encontrados');
+    return;
+  }
+
   try {
+    modal.classList.add('modal-carregando');
     currentImages = Array.isArray(produtos[produtoIndex]?.imagens) && produtos[produtoIndex].imagens.length > 0
       ? produtos[produtoIndex].imagens.filter(img => typeof img === 'string' && img)
       : ['imagens/placeholder.jpg'];
@@ -242,7 +252,7 @@ async function openModal(produtoIndex, imageIndex) {
     currentImages = validImages;
 
     carrosselImagens.innerHTML = currentImages.map((img, i) => `
-      <img src="${escapeHTML(img)}" alt="Imagem ${i + 1}" class="modal-image" loading="lazy" width="600" height="600" onerror="this.src='imagens/placeholder.jpg'">
+      <img src="${escapeHTML(img)}" alt="${escapeHTML(produtos[produtoIndex]?.nome || 'Produto')} ${i + 1}" class="modal-image" loading="lazy" width="600" height="600" onerror="this.src='imagens/placeholder.jpg'">
     `).join('');
 
     requestAnimationFrame(() => {
@@ -255,6 +265,9 @@ async function openModal(produtoIndex, imageIndex) {
         img.style.width = '100%';
         img.style.flex = '0 0 100%';
         img.style.objectFit = 'contain';
+        img.addEventListener('click', () => {
+          img.classList.toggle('zoomed');
+        });
       });
     });
 
@@ -262,10 +275,13 @@ async function openModal(produtoIndex, imageIndex) {
       <span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})" aria-label="Selecionar imagem ${i + 1}"></span>
     `).join('');
 
-    modal.style.display = 'flex';
+    modal.classList.add('aberto');
+    modal.classList.remove('modal-carregando');
     modal.setAttribute('aria-hidden', 'false');
+    modal.focus();
   } catch (error) {
     console.error('Erro ao abrir modal:', error);
+    modal.classList.remove('modal-carregando');
   }
 }
 
@@ -293,10 +309,12 @@ function setModalCarrosselImage(index) {
 
 function closeModal() {
   const modal = document.getElementById('imageModal');
-  modal.style.display = 'none';
+  const carrosselImagens = document.getElementById('modalCarrosselImagens');
+  modal.classList.remove('aberto');
   modal.setAttribute('aria-hidden', 'true');
   currentImages = [];
   currentImageIndex = 0;
+  carrosselImagens.querySelectorAll('img').forEach(img => img.classList.remove('zoomed'));
 }
 
 // Configurar busca com debounce
@@ -398,7 +416,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const modal = document.getElementById('imageModal');
   if (modal) {
     modal.addEventListener('click', (e) => {
-      if (e.target === e.currentTarget) closeModal();
+      if (e.target === modal) closeModal();
+    });
+
+    // Fechar modal com tecla Esc
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal.classList.contains('aberto')) {
+        closeModal();
+      }
     });
   }
 });
