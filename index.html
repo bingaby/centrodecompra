@@ -10,11 +10,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="style.css" media="print" onload="this.media='all'">
-  <link rel="icon" type="image/x-icon" href="/favicon.ico"> <!-- Adicionado para corrigir erro 404 -->
-  <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="logos/favicon-16x16.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="logos/apple-touch-icon.png">
-  <link rel="manifest" href="logos/site.webmanifest">
+  <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32x32.png"> <!-- Favicon principal -->
+  <link rel="icon" type="image/png" sizes="16x16" href="logos/favicon-16x16.png"> <!-- Favicon adicional -->
+  <link rel="apple-touch-icon" sizes="180x180" href="logos/apple-touch-icon.png"> <!-- Ícone para dispositivos Apple -->
+  <link rel="manifest" href="logos/site.webmanifest"> <!-- Manifesto para PWA -->
 </head>
 <body>
   <header class="site-header">
@@ -30,10 +29,10 @@
   </header>
 
   <nav>
-    <a href="index">Promoções</a>
-    <a href="cupom">Cupom de Desconto</a>
-    <a href="sobre">Sobre</a>
-    <a href="contato">Contato</a>
+    <a href="index.html">Promoções</a>
+    <a href="cupom.html">Cupom de Desconto</a>
+    <a href="sobre.html">Sobre</a>
+    <a href="contato.html">Contato</a>
   </nav>
 
   <div class="container">
@@ -62,6 +61,7 @@
     <main>
       <section>
         <h2>🛍️ Ofertas do Dia</h2>
+        <!-- Bloco de anúncio do AdSense -->
         <ins class="adsbygoogle"
              style="display:inline-block;width:728px;height:90px"
              data-ad-client="ca-pub-4531749081462125"
@@ -88,7 +88,7 @@
             <div class="loja" data-loja="mercadolivre" onclick="filtrarPorLoja('mercadolivre')">
               <img src="logos/mercadolivre.jpg" alt="Mercado Livre" loading="lazy" width="100" height="40"><span>Mercado Livre</span>
             </div>
-            <div class="loja" data-loja="alibaba" onclick="filtrarPorLoja('alibaba')">
+            <div class="loja" data-lojaconforte-loja="alibaba" onclick="filtrarPorLoja('alibaba')">
               <img src="logos/alibaba.png" alt="Alibaba" loading="lazy" width="100" height="40"><span>Alibaba</span>
             </div>
           </div>
@@ -140,9 +140,6 @@
 
   <footer>
     <p>🔧 Todos os direitos reservados <strong>Grupo Centro de Compra "CdC"</strong> © <span id="year"></span></p>
-    <div class="credibilidade-nota">
-      <p><strong>Sobre credibilidade:</strong> É importante notar que esse site é apenas um portal de descontos e afiliado, não uma loja direta. Ele redireciona para plataformas terceiras. Verifique sempre se o cupom é válido diretamente na loja original, pois promoções podem expirar ou não se aplicar a certos produtos.</p>
-    </div>
   </footer>
 
   <div class="robo-assistente">
