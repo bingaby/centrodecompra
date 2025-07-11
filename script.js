@@ -8,8 +8,8 @@ let termoBusca = '';
 let currentImages = [];
 let currentImageIndex = 0;
 let currentPage = 1;
-const produtosPorPagina = 20;
-const totalProdutos = 1000;
+const produtosPorPagina = 24; // Definido como 24 itens por página
+let totalProdutos = 1000; // Será atualizado dinamicamente
 
 // Atualizar ano no footer
 function atualizarAnoFooter() {
@@ -21,7 +21,7 @@ function atualizarAnoFooter() {
 
 // Detectar triplo clique no logotipo
 function configurarCliqueLogo() {
-  const logo = document.getElementById('site-logo-img'); // Corrigido para o ID correto
+  const logo = document.getElementById('site-logo-img');
   if (!logo) {
     console.error('ID site-logo-img não encontrado no DOM');
     return;
@@ -77,13 +77,15 @@ async function carregarProdutos() {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.details || `Erro ${response.status}`);
       }
-      produtos = await response.json();
+      const data = await response.json();
+      produtos = Array.isArray(data.produtos) ? data.produtos.slice(0, produtosPorPagina) : []; // Forçar limite no frontend
+      totalProdutos = data.total || produtos.length; // Atualizar dinamicamente
+      console.log(`Produtos recebidos da API: ${produtos.length}, Total: ${totalProdutos}`);
 
       if (!Array.isArray(produtos)) {
-        throw new Error('Resposta inválida da API: não é um array');
+        throw new Error('Resposta inválida da API: produtos não é um array');
       }
 
-      console.log(`Produtos recebidos: ${produtos.length}`);
       filtrarProdutos();
       atualizarPaginacao();
       return;
@@ -113,17 +115,22 @@ function filtrarProdutos() {
     return;
   }
 
-  const produtosFiltrados = produtos.filter((produto) => {
-    const matchCategoria =
-      categoriaSelecionada === 'todas' ||
-      produto.categoria?.toLowerCase() === categoriaSelecionada.toLowerCase();
-    const matchLoja =
-      lojaSelecionada === 'todas' ||
-      produto.loja?.toLowerCase() === lojaSelecionada.toLowerCase();
-    const matchBusca =
-      !termoBusca || produto.nome?.toLowerCase().includes(termoBusca.toLowerCase());
-    return matchCategoria && matchLoja && matchBusca;
-  });
+  // Aplicar filtros e limitar a 25 itens
+  const produtosFiltrados = produtos
+    .filter((produto) => {
+      const matchCategoria =
+        categoriaSelecionada === 'todas' ||
+        produto.categoria?.toLowerCase() === categoriaSelecionada.toLowerCase();
+      const matchLoja =
+        lojaSelecionada === 'todas' ||
+        produto.loja?.toLowerCase() === lojaSelecionada.toLowerCase();
+      const matchBusca =
+        !termoBusca || produto.nome?.toLowerCase().includes(termoBusca.toLowerCase());
+      return matchCategoria && matchLoja && matchBusca;
+    })
+    .slice(0, produtosPorPagina); // Forçar limite de 25 itens
+
+  console.log(`Produtos filtrados: ${produtosFiltrados.length} (limitado a ${produtosPorPagina})`);
 
   gridProdutos.innerHTML = '';
   if (produtosFiltrados.length === 0) {
@@ -136,11 +143,12 @@ function filtrarProdutos() {
   mensagemVazia.style.display = 'none';
   gridProdutos.style.display = 'grid';
 
+  // Renderizar os produtos
   produtosFiltrados.forEach((produto, produtoIndex) => {
     const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0
       ? produto.imagens.filter(img => typeof img === 'string' && img)
       : ['imagens/placeholder.jpg'];
-    const carrosselId = `carrossel-${produtoIndex}-${produto.id || Date.now()}`; // Corrigido
+    const carrosselId = `carrossel-${produtoIndex}-${produto._id || Date.now()}`;
 
     const produtoDiv = document.createElement('div');
     produtoDiv.classList.add('produto-card', 'visible');
@@ -169,7 +177,8 @@ function filtrarProdutos() {
     `;
     gridProdutos.appendChild(produtoDiv);
   });
-  console.log(`Exibidos ${produtosFiltrados.length} produtos`);
+
+  console.log(`Exibidos ${produtosFiltrados.length} produtos no #grid-produtos`);
 }
 
 // Funções do carrossel
@@ -183,7 +192,7 @@ function moveCarrossel(carrosselId, direction) {
 
   currentIndex = (currentIndex + direction + totalImagens) % totalImagens;
   requestAnimationFrame(() => {
-    imagens.style.transform = `translateX(-${currentIndex * 100}%)`; // Corrigido
+    imagens.style.transform = `translateX(-${currentIndex * 100}%)`;
     imagens.dataset.index = currentIndex;
     dots.forEach((dot, i) => dot.classList.toggle('ativo', i === currentIndex));
   });
@@ -196,7 +205,7 @@ function setCarrosselImage(carrosselId, index) {
   const dots = carrossel.querySelectorAll('.carrossel-dot');
 
   requestAnimationFrame(() => {
-    imagens.style.transform = `translateX(-${index * 100}%)`; // Corrigido
+    imagens.style.transform = `translateX(-${index * 100}%)`;
     imagens.dataset.index = index;
     dots.forEach((dot, i) => dot.classList.toggle('ativo', i === index));
   });
@@ -260,7 +269,7 @@ function moveModalCarrossel(direction) {
 
   currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
   requestAnimationFrame(() => {
-    carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`; // Corrigido
+    carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
     Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
   });
 }
@@ -270,7 +279,7 @@ function setModalCarrosselImage(index) {
   const carrosselDots = document.getElementById('modalCarrosselDots')?.children;
   currentImageIndex = index;
   requestAnimationFrame(() => {
-    carrosselImagens.style.transform = `translateX(-${index * 100}%)`; // Corrigido
+    carrosselImagens.style.transform = `translateX(-${index * 100}%)`;
     Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
   });
 }
@@ -346,7 +355,8 @@ function atualizarPaginacao() {
 
   prevButton.disabled = currentPage === 1;
   nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
-  pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina)}`; // Corrigido
+  pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina)}`;
+  console.log(`Paginação: Página ${currentPage}, Total de produtos: ${totalProdutos}, Itens por página: ${produtosPorPagina}`);
 }
 
 // Filtrar por categoria
