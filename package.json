@@ -10,13 +10,14 @@
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "firebase": "^11.9.1",
+    "firebase-admin": "^12.2.0", // <-- Adicionado esta linha!
     "jsonwebtoken": "^9.0.2",
     "mercadopago": "^2.7.0",
     "multer": "^2.0.1",
     "open": "^10.1.2"
   },
   "scripts": {
-    "start": "server.js"
+    "start": "node server.js" // <-- Sugiro mudar para 'node server.js' para ser explícito
   },
   "devDependencies": {
     "@capacitor/cli": "^7.2.0"
