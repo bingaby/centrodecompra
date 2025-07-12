@@ -8,7 +8,7 @@ let termoBusca = '';
 let currentImages = [];
 let currentImageIndex = 0;
 let currentPage = 1;
-const produtosPorPagina = 20; // 20 itens por página
+const produtosPorPagina = 25; // Alterado para 25 itens por página
 let totalProdutos = 1000; // será atualizado dinamicamente
 
 // Função para embaralhar um array (Fisher-Yates shuffle)
@@ -88,12 +88,15 @@ async function carregarProdutos() {
         signal: AbortSignal.timeout(10000) // Timeout de 10 segundos
       });
 
+      console.log('Status da resposta (index):', response.status, response.statusText);
+      const data = await response.json();
+      console.log('Dados recebidos (index):', data);
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
+        const errorData = data || {};
         throw new Error(errorData.details || `Erro ${response.status}: Falha ao carregar produtos`);
       }
 
-      const data = await response.json();
       if (!Array.isArray(data.produtos)) {
         throw new Error('Resposta inválida da API: produtos não é um array');
       }
@@ -101,6 +104,7 @@ async function carregarProdutos() {
       // Aqui embaralhamos os produtos para ordem aleatória sempre que carregar
       produtos = shuffleArray(data.produtos.slice(0, produtosPorPagina));
       totalProdutos = data.total || produtos.length;
+      console.log('Produtos processados (index):', produtos, 'Total:', totalProdutos);
 
       filtrarProdutos();
       atualizarPaginacao();
@@ -325,6 +329,7 @@ function atualizarPaginacao() {
 
 // Inicialização
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('script.js carregado');
   carregarProdutos();
   configurarBusca();
   configurarPaginacao();
