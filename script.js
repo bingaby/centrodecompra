@@ -16,6 +16,8 @@ function atualizarAnoFooter() {
   const yearElement = document.getElementById('year');
   if (yearElement) {
     yearElement.textContent = new Date().getFullYear();
+  } else {
+    console.warn('Elemento #year não encontrado no DOM');
   }
 }
 
@@ -55,6 +57,8 @@ async function carregarProdutos() {
 
   if (!gridProdutos || !mensagemVazia || !errorMessage || !loadingSpinner) {
     console.error('Elementos essenciais (grid-produtos, mensagem-vazia, error-message, loading-spinner) não encontrados');
+    errorMessage.textContent = 'Erro: Elementos da página não encontrados. Contate o suporte.';
+    errorMessage.style.display = 'block';
     return;
   }
 
@@ -68,23 +72,28 @@ async function carregarProdutos() {
       errorMessage.style.display = 'none';
       gridProdutos.innerHTML = '';
 
-      console.log(`Tentativa ${attempt}: Carregando produtos de ${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`);
-      const response = await fetch(
-        `${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`,
-        { cache: 'no-store' }
-      );
+      const url = `${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`;
+      console.log(`Tentativa ${attempt}: Carregando produtos de ${url}`);
+      
+      const response = await fetch(url, {
+        cache: 'no-store',
+        headers: { 'Accept': 'application/json' },
+        signal: AbortSignal.timeout(10000) // Timeout de 10 segundos
+      });
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.details || `Erro ${response.status}`);
+        throw new Error(errorData.details || `Erro ${response.status}: Falha ao carregar produtos`);
       }
-      const data = await response.json();
-      produtos = Array.isArray(data.produtos) ? data.produtos.slice(0, produtosPorPagina) : []; // Forçar limite no frontend
-      totalProdutos = data.total || produtos.length; // Atualizar dinamicamente
-      console.log(`Produtos recebidos da API: ${produtos.length}, Total: ${totalProdutos}`);
 
-      if (!Array.isArray(produtos)) {
+      const data = await response.json();
+      if (!Array.isArray(data.produtos)) {
         throw new Error('Resposta inválida da API: produtos não é um array');
       }
+
+      produtos = data.produtos.slice(0, produtosPorPagina); // Forçar limite no frontend
+      totalProdutos = data.total || produtos.length; // Atualizar dinamicamente
+      console.log(`Produtos recebidos da API: ${produtos.length}, Total: ${totalProdutos}`);
 
       filtrarProdutos();
       atualizarPaginacao();
@@ -92,7 +101,7 @@ async function carregarProdutos() {
     } catch (error) {
       console.error(`⚠️ Tentativa ${attempt} falhou: ${error.message}`);
       if (attempt === maxRetries) {
-        errorMessage.textContent = `Erro ao carregar produtos após ${maxRetries} tentativas: ${error.message}.`;
+        errorMessage.textContent = `Não foi possível carregar os produtos após ${maxRetries} tentativas: ${error.message}. Tente novamente mais tarde.`;
         errorMessage.style.display = 'block';
         mensagemVazia.style.display = 'none';
         gridProdutos.style.display = 'none';
@@ -115,7 +124,6 @@ function filtrarProdutos() {
     return;
   }
 
-  // Aplicar filtros e limitar a 25 itens
   const produtosFiltrados = produtos
     .filter((produto) => {
       const matchCategoria =
@@ -128,7 +136,7 @@ function filtrarProdutos() {
         !termoBusca || produto.nome?.toLowerCase().includes(termoBusca.toLowerCase());
       return matchCategoria && matchLoja && matchBusca;
     })
-    .slice(0, produtosPorPagina); // Forçar limite de 25 itens
+    .slice(0, produtosPorPagina);
 
   console.log(`Produtos filtrados: ${produtosFiltrados.length} (limitado a ${produtosPorPagina})`);
 
@@ -143,7 +151,6 @@ function filtrarProdutos() {
   mensagemVazia.style.display = 'none';
   gridProdutos.style.display = 'grid';
 
-  // Renderizar os produtos
   produtosFiltrados.forEach((produto, produtoIndex) => {
     const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0
       ? produto.imagens.filter(img => typeof img === 'string' && img)
@@ -216,6 +223,11 @@ async function openModal(produtoIndex, imageIndex) {
   const modal = document.getElementById('imageModal');
   const carrosselImagens = document.getElementById('modalCarrosselImagens');
   const carrosselDots = document.getElementById('modalCarrosselDots');
+
+  if (!modal || !carrosselImagens || !carrosselDots) {
+    console.error('Elementos do modal não encontrados');
+    return;
+  }
 
   try {
     currentImages = Array.isArray(produtos[produtoIndex]?.imagens) && produtos[produtoIndex].imagens.length > 0
