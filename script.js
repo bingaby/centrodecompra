@@ -9,7 +9,15 @@ let currentImages = [];
 let currentImageIndex = 0;
 let currentPage = 1;
 const produtosPorPagina = 25; // Alterado para 25 itens por página
-let totalProdutos = 1000; // será atualizado dinamicamente
+let totalProdutos = 0; // Alterado para 0, será atualizado dinamicamente
+
+// Função para normalizar strings (remover acentos e converter para minúsculas)
+function normalizarString(str) {
+  return str
+    ?.toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') || '';
+}
 
 // Função para embaralhar um array (Fisher-Yates shuffle)
 function shuffleArray(array) {
@@ -48,7 +56,6 @@ function configurarCliqueLogo() {
       }, 500);
     } else if (clickCount === 3) {
       clearTimeout(clickTimer);
-      // Adicionar um token temporário para acesso
       const tempToken = 'triple-click-access';
       window.location.href = `admin-xyz-123.html?tempToken=${tempToken}`;
       clickCount = 0;
@@ -80,8 +87,15 @@ async function carregarProdutos() {
       errorMessage.style.display = 'none';
       gridProdutos.innerHTML = '';
 
-      const url = `${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`;
-      
+      let url = `${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`;
+      if (categoriaSelecionada !== 'todas') {
+        url += `&categoria=${encodeURIComponent(categoriaSelecionada)}`;
+      }
+      if (lojaSelecionada !== 'todas') {
+        url += `&loja=${encodeURIComponent(lojaSelecionada)}`;
+      }
+
+      console.log(`Tentativa ${attempt}: Carregando produtos de ${url}`);
       const response = await fetch(url, {
         cache: 'no-store',
         headers: { 'Accept': 'application/json' },
@@ -90,7 +104,7 @@ async function carregarProdutos() {
 
       console.log('Status da resposta (index):', response.status, response.statusText);
       const data = await response.json();
-      console.log('Dados recebidos (index):', data);
+      console.log('Dados recebidos (index):', JSON.stringify(data, null, 2));
 
       if (!response.ok) {
         const errorData = data || {};
@@ -101,7 +115,6 @@ async function carregarProdutos() {
         throw new Error('Resposta inválida da API: produtos não é um array');
       }
 
-      // Aqui embaralhamos os produtos para ordem aleatória sempre que carregar
       produtos = shuffleArray(data.produtos.slice(0, produtosPorPagina));
       totalProdutos = data.total || produtos.length;
       console.log('Produtos processados (index):', produtos, 'Total:', totalProdutos);
@@ -139,14 +152,16 @@ function filtrarProdutos() {
     .filter((produto) => {
       const matchCategoria =
         categoriaSelecionada === 'todas' ||
-        produto.categoria?.toLowerCase() === categoriaSelecionada.toLowerCase();
+        normalizarString(produto.categoria) === normalizarString(categoriaSelecionada);
       const matchLoja =
         lojaSelecionada === 'todas' ||
-        produto.loja?.toLowerCase() === lojaSelecionada.toLowerCase();
+        normalizarString(produto.loja) === normalizarString(lojaSelecionada);
       const matchBusca =
-        !termoBusca || produto.nome?.toLowerCase().includes(termoBusca.toLowerCase());
+        !termoBusca || normalizarString(produto.nome).includes(normalizarString(termoBusca));
       return matchCategoria && matchLoja && matchBusca;
     });
+
+  console.log('Produtos filtrados:', produtosFiltrados);
 
   gridProdutos.innerHTML = '';
   if (produtosFiltrados.length === 0) {
@@ -166,8 +181,8 @@ function filtrarProdutos() {
 
     const produtoDiv = document.createElement('div');
     produtoDiv.classList.add('produto-card', 'visible');
-    produtoDiv.setAttribute('data-categoria', produto.categoria?.toLowerCase() || 'todas');
-    produtoDiv.setAttribute('data-loja', produto.loja?.toLowerCase() || 'todas');
+    produtoDiv.setAttribute('data-categoria', normalizarString(produto.categoria) || 'todas');
+    produtoDiv.setAttribute('data-loja', normalizarString(produto.loja) || 'todas');
 
     produtoDiv.innerHTML = `
       <div class="carrossel" id="${carrosselId}">
@@ -282,18 +297,22 @@ function configurarBusca() {
 // Configurar filtros
 function filtrarPorCategoria(categoria) {
   categoriaSelecionada = categoria;
+  currentPage = 1; // Resetar para a primeira página ao mudar a categoria
   const itensCategoria = document.querySelectorAll('.categoria-item');
   itensCategoria.forEach(item => item.classList.remove('ativa'));
   document.querySelector(`.categoria-item[data-categoria="${categoria}"]`).classList.add('ativa');
-  filtrarProdutos();
+  console.log('Categoria selecionada:', categoria);
+  carregarProdutos(); // Recarregar produtos com o filtro de categoria
 }
 
 function filtrarPorLoja(loja) {
   lojaSelecionada = loja;
+  currentPage = 1; // Resetar para a primeira página ao mudar a loja
   const itensLoja = document.querySelectorAll('.loja, .loja-todas');
   itensLoja.forEach(item => item.classList.remove('ativa'));
   document.querySelector(`[data-loja="${loja}"]`).classList.add('ativa');
-  filtrarProdutos();
+  console.log('Loja selecionada:', loja);
+  carregarProdutos(); // Recarregar produtos com o filtro de loja
 }
 
 // Configurar paginação
