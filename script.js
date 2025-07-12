@@ -48,7 +48,7 @@ function configurarCliqueLogo() {
       }, 500);
     } else if (clickCount === 3) {
       clearTimeout(clickTimer);
-      window.location.href = '/admin-xyz-123.html';
+      window.location.href = 'admin-xyz-123.html';
       clickCount = 0;
     }
   }, { once: false });
@@ -187,7 +187,139 @@ function filtrarProdutos() {
   });
 }
 
-// (segue suas outras funções do carrossel, modal, busca e paginação exatamente iguais)
+// Funções do carrossel
+function moveCarrossel(carrosselId, direction) {
+  const carrossel = document.getElementById(carrosselId);
+  const imagens = carrossel.querySelector('.carrossel-imagens');
+  const dots = carrossel.querySelectorAll('.carrossel-dot');
+  let currentIndex = parseInt(imagens.dataset.index || 0);
+  const totalImagens = imagens.children.length;
+
+  currentIndex = (currentIndex + direction + totalImagens) % totalImagens;
+  imagens.style.transform = `translateX(-${currentIndex * 100}%)`;
+  imagens.dataset.index = currentIndex;
+
+  dots.forEach((dot, i) => dot.classList.toggle('ativo', i === currentIndex));
+}
+
+function setCarrosselImage(carrosselId, index) {
+  const carrossel = document.getElementById(carrosselId);
+  const imagens = carrossel.querySelector('.carrossel-imagens');
+  const dots = carrossel.querySelectorAll('.carrossel-dot');
+
+  imagens.style.transform = `translateX(-${index * 100}%)`;
+  imagens.dataset.index = index;
+
+  dots.forEach((dot, i) => dot.classList.toggle('ativo', i === index));
+}
+
+// Funções do modal
+async function openModal(produtoIndex, imageIndex) {
+  const modal = document.getElementById('imageModal');
+  const carrosselImagens = document.getElementById('modalCarrosselImagens');
+  const carrosselDots = document.getElementById('modalCarrosselDots');
+
+  try {
+    currentImages = Array.isArray(produtos[produtoIndex]?.imagens) && produtos[produtoIndex].imagens.length > 0
+      ? produtos[produtoIndex].imagens.filter(img => typeof img === 'string' && img)
+      : ['imagens/placeholder.jpg'];
+    currentImageIndex = imageIndex;
+
+    carrosselImagens.innerHTML = currentImages.map(img => `<img src="${img}" alt="Imagem ampliada" onerror="this.src='imagens/placeholder.jpg'">`).join('');
+    carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+
+    carrosselDots.innerHTML = currentImages.map((_, i) => `<span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})"></span>`).join('');
+
+    modal.style.display = 'flex';
+  } catch (error) {
+    console.error('Erro ao abrir modal:', error);
+  }
+}
+
+function moveModalCarrossel(direction) {
+  const carrosselImagens = document.getElementById('modalCarrosselImagens');
+  const carrosselDots = document.getElementById('modalCarrosselDots').children;
+  const totalImagens = currentImages.length;
+
+  currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
+  carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+
+  Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
+}
+
+function setModalCarrosselImage(index) {
+  const carrosselImagens = document.getElementById('modalCarrosselImagens');
+  const carrosselDots = document.getElementById('modalCarrosselDots').children;
+  currentImageIndex = index;
+  carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+  Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
+}
+
+function closeModal() {
+  const modal = document.getElementById('imageModal');
+  modal.style.display = 'none';
+  currentImages = [];
+  currentImageIndex = 0;
+}
+
+// Configurar busca
+function configurarBusca() {
+  const buscaInput = document.getElementById('busca');
+  if (buscaInput) {
+    buscaInput.addEventListener('input', (e) => {
+      termoBusca = e.target.value;
+      filtrarProdutos();
+    });
+  }
+}
+
+// Configurar filtros
+function filtrarPorCategoria(categoria) {
+  categoriaSelecionada = categoria;
+  const itensCategoria = document.querySelectorAll('.categoria-item');
+  itensCategoria.forEach(item => item.classList.remove('ativa'));
+  document.querySelector(`.categoria-item[data-categoria="${categoria}"]`).classList.add('ativa');
+  filtrarProdutos();
+}
+
+function filtrarPorLoja(loja) {
+  lojaSelecionada = loja;
+  const itensLoja = document.querySelectorAll('.loja, .loja-todas');
+  itensLoja.forEach(item => item.classList.remove('ativa'));
+  document.querySelector(`[data-loja="${loja}"]`).classList.add('ativa');
+  filtrarProdutos();
+}
+
+// Configurar paginação
+function configurarPaginacao() {
+  const prevButton = document.getElementById('prev-page');
+  const nextButton = document.getElementById('next-page');
+  if (prevButton) {
+    prevButton.addEventListener('click', () => {
+      if (currentPage > 1) {
+        currentPage--;
+        carregarProdutos();
+      }
+    });
+  }
+  if (nextButton) {
+    nextButton.addEventListener('click', () => {
+      currentPage++;
+      carregarProdutos();
+    });
+  }
+}
+
+function atualizarPaginacao() {
+  const prevButton = document.getElementById('prev-page');
+  const nextButton = document.getElementById('next-page');
+  const pageInfo = document.getElementById('page-info');
+  if (prevButton && nextButton && pageInfo) {
+    prevButton.disabled = currentPage === 1;
+    nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
+    pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina) || 1}`;
+  }
+}
 
 // Inicialização
 document.addEventListener('DOMContentLoaded', () => {
