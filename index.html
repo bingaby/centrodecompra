@@ -95,6 +95,27 @@
       text-align: center;
       margin-top: 10px;
     }
+    #paginacao {
+      text-align: center;
+      margin: 20px 0;
+    }
+    #paginacao button {
+      margin: 0 10px;
+      padding: 8px 16px;
+      background-color: #ff6200;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    #paginacao button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    #paginacao span {
+      font-size: 16px;
+      margin: 0 10px;
+    }
   </style>
 </head>
 <body>
@@ -182,6 +203,11 @@
         <div class="grid-lojas" id="grid-produtos"></div>
         <p class="mensagem-vazia" id="mensagem-vazia">Nenhum produto encontrado.</p>
         <p class="error-message" id="error-message" style="display: none;"></p>
+        <div id="paginacao">
+          <button id="prev-page" disabled aria-label="Página anterior">Anterior</button>
+          <span id="page-info">Página 1</span>
+          <button id="next-page" aria-label="Próxima página">Próximo</button>
+        </div>
       </section>
 
       <a class="whatsapp" href="https://wa.me/5521975179737" target="_blank">📲 Atendimento via WhatsApp</a>
