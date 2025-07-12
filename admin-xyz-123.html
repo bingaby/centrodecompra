@@ -212,7 +212,7 @@
     // Função para escapar HTML e evitar XSS
     function escapeHTML(str) {
       return str.replace(/[&<>"']/g, (match) => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        '&': '&', '<': '<', '>': '>', '"': '"', "'": '''
       }[match]));
     }
 
@@ -239,12 +239,7 @@
         try {
           console.log(`Tentativa ${attempt}: Carregando produtos de ${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`);
           const token = localStorage.getItem('adminToken');
-          if (!token) {
-            erro.textContent = 'Nenhum token encontrado. Clique três vezes no logotipo na página inicial.';
-            erro.style.display = 'block';
-            window.location.href = '/index.html';
-            return;
-          }
+          console.log('Token usado:', token);
 
           const controller = new AbortController();
           const timeoutId = setTimeout(() => controller.abort(), 5000);
@@ -260,7 +255,7 @@
 
           console.log('Status da resposta:', res.status, res.statusText);
           const data = await res.json();
-          console.log('Dados recebidos:', data);
+          console.log('Dados recebidos:', JSON.stringify(data, null, 2));
 
           if (!res.ok) {
             const errorData = data || {};
@@ -307,6 +302,7 @@
       const tbody = document.getElementById('lista-produtos');
       tbody.innerHTML = '';
       const produtosArray = Array.isArray(produtos) ? produtos : [];
+      console.log('Preenchendo tabela com produtos:', produtosArray);
       if (produtosArray.length === 0) {
         tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Nenhum produto cadastrado.</td></tr>';
         return;
@@ -515,6 +511,7 @@
     });
 
     document.addEventListener('DOMContentLoaded', () => {
+      console.log('admin-xyz-123.html carregado');
       carregarProdutos();
     });
   </script>
