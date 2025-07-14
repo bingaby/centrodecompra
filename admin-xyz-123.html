@@ -206,13 +206,13 @@
 
     const API_URL = 'https://centrodecompra-backend.onrender.com';
     let currentPage = 1;
-    const produtosPorPagina = 25; // Alterado para 25 itens por página
+    const produtosPorPagina = 25;
     let totalProdutos = 0;
 
     // Função para escapar HTML e evitar XSS
     function escapeHTML(str) {
       return str.replace(/[&<>"']/g, (match) => ({
-        '&': '&', '<': '<', '>': '>', '"': '"', "'": '''
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;'
       }[match]));
     }
 
@@ -242,13 +242,13 @@
           console.log('Token usado:', token);
 
           const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 5000);
+          const timeoutId = setTimeout(() => controller.abort(), 10000); // Aumentado para 10 segundos
           const res = await fetch(`${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`, {
             cache: 'no-store',
             signal: controller.signal,
             headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
+              'Content-Type': 'application/json'
+              // Removido 'Authorization' pois o servidor não exige autenticação
             }
           });
           clearTimeout(timeoutId);
@@ -259,13 +259,6 @@
 
           if (!res.ok) {
             const errorData = data || {};
-            if (res.status === 401 || res.status === 403) {
-              localStorage.removeItem('adminToken');
-              erro.textContent = 'Sessão inválida ou expirada. Clique três vezes no logotipo na página inicial.';
-              erro.style.display = 'block';
-              window.location.href = '/index.html';
-              return;
-            }
             throw new Error(errorData.error || `Falha ao buscar produtos: ${res.status}`);
           }
 
@@ -334,27 +327,13 @@
 
     async function editarProduto(id) {
       try {
-        const token = localStorage.getItem('adminToken');
-        if (!token) {
-          document.getElementById('erro').textContent = 'Sessão expirada. Clique três vezes no logotipo na página inicial.';
-          window.location.href = '/index.html';
-          return;
-        }
-
         const res = await fetch(`${API_URL}/api/produtos/${id}`, {
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            'Content-Type': 'application/json'
           }
         });
         if (!res.ok) {
           const errorData = await res.json().catch(() => ({}));
-          if (res.status === 401 || res.status === 403) {
-            localStorage.removeItem('adminToken');
-            document.getElementById('erro').textContent = 'Sessão inválida. Clique três vezes no logotipo na página inicial.';
-            window.location.href = '/index.html';
-            return;
-          }
           throw new Error(errorData.error || 'Erro ao buscar produto para edição');
         }
         const produto = await res.json();
@@ -367,6 +346,7 @@
         document.getElementById('form-produto').loja.value = produto.loja || '';
         document.getElementById('form-produto').link.value = produto.link || '';
         document.getElementById('form-produto').preco.value = produto.preco || '';
+        document.getElementById('form-produto').imagens.value = produto.imagens ? produto.imagens.join(', ') : '';
         document.getElementById('submit-button').textContent = 'Salvar Alterações';
         document.getElementById('cancel-button').style.display = 'inline-block';
         document.getElementById('mensagem').textContent = 'Editando produto. Envie para salvar as alterações.';
@@ -387,28 +367,14 @@
     async function excluirProduto(id) {
       if (!confirm('Confirma a exclusão deste produto?')) return;
       try {
-        const token = localStorage.getItem('adminToken');
-        if (!token) {
-          document.getElementById('erro').textContent = 'Sessão expirada. Clique três vezes no logotipo na página inicial.';
-          window.location.href = '/index.html';
-          return;
-        }
-
         const res = await fetch(`${API_URL}/api/produtos/${id}`, {
           method: 'DELETE',
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            'Content-Type': 'application/json'
           }
         });
         if (!res.ok) {
           const errorData = await res.json().catch(() => ({}));
-          if (res.status === 401 || res.status === 403) {
-            localStorage.removeItem('adminToken');
-            document.getElementById('erro').textContent = 'Sessão inválida. Clique três vezes no logotipo na página inicial.';
-            window.location.href = '/index.html';
-            return;
-          }
           throw new Error(errorData.error || 'Erro ao excluir produto');
         }
         document.getElementById('mensagem').textContent = 'Produto excluído com sucesso';
@@ -425,6 +391,7 @@
       const produtoId = formData.get('id');
       const link = formData.get('link');
       const preco = parseFloat(formData.get('preco'));
+      const imagens = formData.get('imagens') ? formData.get('imagens').split(',').map(url => url.trim()) : [];
 
       if (!link.match(/^https?:\/\/.+/)) {
         document.getElementById('erro').textContent = 'Link inválido! Deve começar com http:// ou https://';
@@ -439,29 +406,32 @@
       document.getElementById('erro').textContent = '';
 
       try {
-        const token = localStorage.getItem('adminToken');
-        if (!token) {
-          document.getElementById('erro').textContent = 'Sessão expirada. Clique três vezes no logotipo na página inicial.';
-          window.location.href = '/index.html';
-          return;
-        }
+        const produtoData = {
+          nome: formData.get('nome'),
+          descricao: formData.get('descricao'),
+          categoria: formData.get('categoria'),
+          loja: formData.get('loja'),
+          link: formData.get('link'),
+          preco: preco,
+          imagens: imagens
+        };
 
         let res;
         if (produtoId) {
           res = await fetch(`${API_URL}/api/produtos/${produtoId}`, {
             method: 'PUT',
             headers: {
-              'Authorization': `Bearer ${token}`
+              'Content-Type': 'application/json'
             },
-            body: formData
+            body: JSON.stringify(produtoData)
           });
         } else {
           res = await fetch(`${API_URL}/api/produtos`, {
             method: 'POST',
             headers: {
-              'Authorization': `Bearer ${token}`
+              'Content-Type': 'application/json'
             },
-            body: formData
+            body: JSON.stringify(produtoData)
           });
         }
 
@@ -469,12 +439,6 @@
         console.log(`Resposta do ${produtoId ? 'PUT' : 'POST'}:`, responseData);
 
         if (!res.ok) {
-          if (res.status === 401 || res.status === 403) {
-            localStorage.removeItem('adminToken');
-            document.getElementById('erro').textContent = 'Sessão inválida. Clique três vezes no logotipo na página inicial.';
-            window.location.href = '/index.html';
-            return;
-          }
           throw new Error(responseData?.error || `Erro ao ${produtoId ? 'atualizar' : 'adicionar'} produto`);
         }
 
@@ -527,7 +491,7 @@
     </div>
     <button class="logout-button" onclick="logout()">Sair</button>
   </header>
-  <form id="form-produto" enctype="multipart/form-data">
+  <form id="form-produto">
     <input type="hidden" name="id" id="produto-id">
     <input type="text" name="nome" placeholder="Nome do produto" required aria-label="Nome do produto" />
     <textarea name="descricao" placeholder="Descrição do produto" required aria-label="Descrição do produto"></textarea>
@@ -560,7 +524,7 @@
     </select>
     <input type="url" name="link" placeholder="Link do produto (https://...)" required pattern="https?://.+" aria-label="Link do produto" />
     <input type="number" name="preco" placeholder="Preço do produto (ex.: 99.99)" step="0.01" min="0" required aria-label="Preço do produto" />
-    <input type="file" name="imagens" accept="image/*" multiple aria-label="Imagens do produto" />
+    <input type="text" name="imagens" placeholder="URLs das imagens (separadas por vírgula)" aria-label="URLs das imagens do produto" />
     <button type="submit" id="submit-button">Adicionar</button>
     <button type="button" id="cancel-button" style="display:none;background-color:var(--secondary-color);" onclick="cancelarEdicao()">Cancelar</button>
   </form>
