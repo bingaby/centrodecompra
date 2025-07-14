@@ -192,15 +192,16 @@
 </head>
 <body>
   <script>
-    // Verificar autenticação
-    if (!localStorage.getItem('adminToken')) {
-      const tempToken = new URLSearchParams(window.location.search).get('tempToken');
-      if (tempToken === 'triple-click-access') {
-        localStorage.setItem('adminToken', 'temp-token-' + Date.now());
-      } else {
-        alert('Acesso não autorizado. Clique três vezes no logotipo na página inicial para autenticar.');
-        window.location.href = '/index.html';
-        return;
+    // Função para verificar autenticação
+    function verificarAutenticacao() {
+      if (!localStorage.getItem('adminToken')) {
+        const tempToken = new URLSearchParams(window.location.search).get('tempToken');
+        if (tempToken === 'triple-click-access') {
+          localStorage.setItem('adminToken', 'temp-token-' + Date.now());
+        } else {
+          alert('Acesso não autorizado. Clique três vezes no logotipo na página inicial para autenticar.');
+          window.location.href = '/index.html';
+        }
       }
     }
 
@@ -212,11 +213,11 @@
     // Função para escapar HTML e evitar XSS
     function escapeHTML(str) {
       return str ? String(str).replace(/[&<>"']/g, (match) => ({
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#39;'
+        '&': '&',
+        '<': '<',
+        '>': '>',
+        '"': '"',
+        "'": '''
       }[match])) : '';
     }
 
@@ -484,8 +485,10 @@
       carregarProdutos();
     });
 
+    // Executar verificação de autenticação e carregar produtos ao carregar a página
     document.addEventListener('DOMContentLoaded', () => {
       console.log('admin-xyz-123.html carregado');
+      verificarAutenticacao();
       carregarProdutos();
     });
   </script>
