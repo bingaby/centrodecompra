@@ -198,7 +198,7 @@
       if (tempToken === 'triple-click-access') {
         localStorage.setItem('adminToken', 'temp-token-' + Date.now());
       } else {
-        alert('Acesso não autorizado. Por favor, clique três vezes no logotipo na página inicial para autenticar.');
+        alert('Acesso não autorizado. Clique três vezes no logotipo na página inicial para autenticar.');
         window.location.href = '/index.html';
         return;
       }
@@ -212,7 +212,11 @@
     // Função para escapar HTML e evitar XSS
     function escapeHTML(str) {
       return str.replace(/[&<>"']/g, (match) => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;'
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
       }[match]));
     }
 
@@ -238,17 +242,14 @@
       while (attempt <= maxRetries) {
         try {
           console.log(`Tentativa ${attempt}: Carregando produtos de ${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`);
-          const token = localStorage.getItem('adminToken');
-          console.log('Token usado:', token);
-
+          
           const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 10000); // Aumentado para 10 segundos
+          const timeoutId = setTimeout(() => controller.abort(), 10000); // Timeout de 10 segundos
           const res = await fetch(`${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`, {
             cache: 'no-store',
             signal: controller.signal,
             headers: {
               'Content-Type': 'application/json'
-              // Removido 'Authorization' pois o servidor não exige autenticação
             }
           });
           clearTimeout(timeoutId);
@@ -262,7 +263,7 @@
             throw new Error(errorData.error || `Falha ao buscar produtos: ${res.status}`);
           }
 
-          const produtos = Array.isArray(data.produtos) ? data.produtos : Array.isArray(data) ? data : [];
+          const produtos = Array.isArray(data.produtos) ? data.produtos : [];
           totalProdutos = data.total || produtos.length;
           console.log('Produtos processados:', produtos, 'Total:', totalProdutos);
 
