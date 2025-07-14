@@ -1,4 +1,4 @@
-<script>
+
   const API_URL = 'https://centrodecompra-backend.onrender.com';
   let produtos = [];
   let currentPage = 1;
