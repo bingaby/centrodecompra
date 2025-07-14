@@ -211,13 +211,13 @@
 
     // Função para escapar HTML e evitar XSS
     function escapeHTML(str) {
-      return str.replace(/[&<>"']/g, (match) => ({
+      return str ? String(str).replace(/[&<>"']/g, (match) => ({
         '&': '&amp;',
         '<': '&lt;',
         '>': '&gt;',
         '"': '&quot;',
         "'": '&#39;'
-      }[match]));
+      }[match])) : '';
     }
 
     // Função de logout
@@ -227,68 +227,69 @@
     }
 
     // Atualizar ano no footer
-    document.getElementById('year').textContent = new Date().getFullYear();
+    const yearElement = document.getElementById('year');
+    if (yearElement) {
+      yearElement.textContent = new Date().getFullYear();
+    }
 
     async function carregarProdutos() {
       const tbody = document.getElementById('lista-produtos');
       const loadingSpinner = document.getElementById('loading-spinner');
       const erro = document.getElementById('erro');
+      
+      if (!tbody || !loadingSpinner || !erro) {
+        console.error('Elementos DOM não encontrados: lista-produtos, loading-spinner ou erro');
+        return;
+      }
+
       loadingSpinner.style.display = 'block';
       tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Carregando...</td></tr>';
       erro.textContent = '';
 
-      const maxRetries = 3;
-      let attempt = 1;
-      while (attempt <= maxRetries) {
-        try {
-          console.log(`Tentativa ${attempt}: Carregando produtos de ${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`);
-          
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 10000); // Timeout de 10 segundos
-          const res = await fetch(`${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`, {
-            cache: 'no-store',
-            signal: controller.signal,
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          });
-          clearTimeout(timeoutId);
-
-          console.log('Status da resposta:', res.status, res.statusText);
-          const data = await res.json();
-          console.log('Dados recebidos:', JSON.stringify(data, null, 2));
-
-          if (!res.ok) {
-            const errorData = data || {};
-            throw new Error(errorData.error || `Falha ao buscar produtos: ${res.status}`);
+      try {
+        console.log(`Carregando produtos de ${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`);
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000); // Timeout de 15 segundos
+        const res = await fetch(`${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`, {
+          method: 'GET',
+          cache: 'no-store',
+          signal: controller.signal,
+          headers: {
+            'Content-Type': 'application/json'
           }
+        });
+        clearTimeout(timeoutId);
 
-          const produtos = Array.isArray(data.produtos) ? data.produtos : [];
-          totalProdutos = data.total || produtos.length;
-          console.log('Produtos processados:', produtos, 'Total:', totalProdutos);
+        console.log('Status da resposta:', res.status, res.statusText);
+        const data = await res.json();
+        console.log('Dados recebidos:', JSON.stringify(data, null, 2));
 
-          if (produtos.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Nenhum produto cadastrado.</td></tr>';
-          } else {
-            preencherTabela(produtos);
-          }
-          atualizarPaginacao();
-          return;
-        } catch (err) {
-          console.error(`Tentativa ${attempt} falhou: ${err.message}`);
-          if (attempt === maxRetries) {
-            let errorMessage = `Erro após ${maxRetries} tentativas: ${err.message}`;
-            if (err.message.includes('Failed to fetch') || err.name === 'AbortError') {
-              errorMessage = 'Erro de conexão com o servidor. Verifique sua rede ou a configuração do servidor.';
-            }
-            tbody.innerHTML = `<tr><td colspan="8" style="color:red;text-align:center;">${errorMessage}</td></tr>`;
-            erro.textContent = errorMessage;
-          }
-          attempt++;
-          await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
-        } finally {
-          loadingSpinner.style.display = 'none';
+        if (!res.ok) {
+          throw new Error(data.error || `Falha ao buscar produtos: ${res.status} ${res.statusText}`);
         }
+
+        const produtos = Array.isArray(data.produtos) ? data.produtos : [];
+        totalProdutos = Number.isInteger(data.total) ? data.total : produtos.length;
+        console.log('Produtos processados:', produtos, 'Total:', totalProdutos);
+
+        if (produtos.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Nenhum produto cadastrado.</td></tr>';
+        } else {
+          preencherTabela(produtos);
+        }
+        atualizarPaginacao();
+      } catch (err) {
+        console.error('Erro ao carregar produtos:', err.message);
+        let errorMessage = `Erro ao carregar produtos: ${err.message}`;
+        if (err.name === 'AbortError') {
+          errorMessage = 'Tempo de requisição excedido. Tente novamente ou verifique o servidor.';
+        } else if (err.message.includes('Failed to fetch')) {
+          errorMessage = 'Falha na conexão com o servidor. Verifique sua rede ou a configuração do servidor.';
+        }
+        tbody.innerHTML = `<tr><td colspan="8" style="color:red;text-align:center;">${errorMessage}</td></tr>`;
+        erro.textContent = errorMessage;
+      } finally {
+        loadingSpinner.style.display = 'none';
       }
     }
 
@@ -318,8 +319,8 @@
             <td>${precoFormatado}</td>
             <td>${miniaturas}</td>
             <td>
-              <button class="editar" onclick="editarProduto('${produto._id}')" aria-label="Editar produto ${produto.nome}">Editar</button>
-              <button class="excluir" onclick="excluirProduto('${produto._id}')" aria-label="Excluir produto ${produto.nome}">Excluir</button>
+              <button class="editar" onclick="editarProduto('${produto._id}')" aria-label="Editar produto ${produto.nome || 'N/A'}">Editar</button>
+              <button class="excluir" onclick="excluirProduto('${produto._id}')" aria-label="Excluir produto ${produto.nome || 'N/A'}">Excluir</button>
             </td>
           </tr>
         `;
@@ -328,6 +329,7 @@
 
     async function editarProduto(id) {
       try {
+        console.log(`Buscando produto com ID ${id}`);
         const res = await fetch(`${API_URL}/api/produtos/${id}`, {
           headers: {
             'Content-Type': 'application/json'
@@ -335,7 +337,7 @@
         });
         if (!res.ok) {
           const errorData = await res.json().catch(() => ({}));
-          throw new Error(errorData.error || 'Erro ao buscar produto para edição');
+          throw new Error(errorData.error || `Erro ao buscar produto para edição: ${res.status}`);
         }
         const produto = await res.json();
         console.log('Produto para edição:', produto);
@@ -352,6 +354,7 @@
         document.getElementById('cancel-button').style.display = 'inline-block';
         document.getElementById('mensagem').textContent = 'Editando produto. Envie para salvar as alterações.';
       } catch (err) {
+        console.error('Erro ao editar produto:', err.message);
         document.getElementById('erro').textContent = err.message;
       }
     }
@@ -368,6 +371,7 @@
     async function excluirProduto(id) {
       if (!confirm('Confirma a exclusão deste produto?')) return;
       try {
+        console.log(`Excluindo produto com ID ${id}`);
         const res = await fetch(`${API_URL}/api/produtos/${id}`, {
           method: 'DELETE',
           headers: {
@@ -376,11 +380,12 @@
         });
         if (!res.ok) {
           const errorData = await res.json().catch(() => ({}));
-          throw new Error(errorData.error || 'Erro ao excluir produto');
+          throw new Error(errorData.error || `Erro ao excluir produto: ${res.status}`);
         }
         document.getElementById('mensagem').textContent = 'Produto excluído com sucesso';
         carregarProdutos();
       } catch (err) {
+        console.error('Erro ao excluir produto:', err.message);
         document.getElementById('erro').textContent = err.message;
       }
     }
@@ -392,7 +397,7 @@
       const produtoId = formData.get('id');
       const link = formData.get('link');
       const preco = parseFloat(formData.get('preco'));
-      const imagens = formData.get('imagens') ? formData.get('imagens').split(',').map(url => url.trim()) : [];
+      const imagens = formData.get('imagens') ? formData.get('imagens').split(',').map(url => url.trim()).filter(url => url) : [];
 
       if (!link.match(/^https?:\/\/.+/)) {
         document.getElementById('erro').textContent = 'Link inválido! Deve começar com http:// ou https://';
@@ -417,6 +422,7 @@
           imagens: imagens
         };
 
+        console.log(`Enviando ${produtoId ? 'PUT' : 'POST'} para produto:`, produtoData);
         let res;
         if (produtoId) {
           res = await fetch(`${API_URL}/api/produtos/${produtoId}`, {
@@ -440,7 +446,7 @@
         console.log(`Resposta do ${produtoId ? 'PUT' : 'POST'}:`, responseData);
 
         if (!res.ok) {
-          throw new Error(responseData?.error || `Erro ao ${produtoId ? 'atualizar' : 'adicionar'} produto`);
+          throw new Error(responseData?.error || `Erro ao ${produtoId ? 'atualizar' : 'adicionar'} produto: ${res.status}`);
         }
 
         document.getElementById('mensagem').textContent = produtoId ? 'Produto atualizado com sucesso!' : 'Produto adicionado com sucesso!';
@@ -450,6 +456,7 @@
         document.getElementById('cancel-button').style.display = 'none';
         carregarProdutos();
       } catch (error) {
+        console.error('Erro ao salvar produto:', error.message);
         document.getElementById('erro').textContent = error.message;
       }
     });
@@ -458,9 +465,11 @@
       const prevButton = document.getElementById('prev-page');
       const nextButton = document.getElementById('next-page');
       const pageInfo = document.getElementById('page-info');
-      prevButton.disabled = currentPage === 1;
-      nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
-      pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina) || 1}`;
+      if (prevButton && nextButton && pageInfo) {
+        prevButton.disabled = currentPage === 1;
+        nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
+        pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina) || 1}`;
+      }
     }
 
     document.getElementById('prev-page')?.addEventListener('click', () => {
