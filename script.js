@@ -1,364 +1,455 @@
-const API_URL = 'https://centrodecompra-backend.onrender.com'; // Use 'http://localhost:10000' para testes locais
+<script>
+  const API_URL = 'https://centrodecompra-backend.onrender.com';
+  let produtos = [];
+  let currentPage = 1;
+  const produtosPorPagina = 10; // Reduzido para evitar 429
+  let totalProdutos = 0;
+  let currentImages = [];
+  let currentImageIndex = 0;
 
-// Variáveis globais
-let produtos = [];
-let categoriaSelecionada = 'todas';
-let lojaSelecionada = 'todas';
-let termoBusca = '';
-let currentImages = [];
-let currentImageIndex = 0;
-let currentPage = 1;
-const produtosPorPagina = 25; // Alterado para 25 itens por página
-let totalProdutos = 0; // Alterado para 0, será atualizado dinamicamente
-
-// Função para normalizar strings (remover acentos e converter para minúsculas)
-function normalizarString(str) {
-  return str
-    ?.toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') || '';
-}
-
-// Função para embaralhar um array (Fisher-Yates shuffle)
-function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
-}
-
-// Atualizar ano no footer
-function atualizarAnoFooter() {
-  const yearElement = document.getElementById('year');
-  if (yearElement) {
-    yearElement.textContent = new Date().getFullYear();
-  } else {
-    console.warn('Elemento #year não encontrado no DOM');
-  }
-}
-
-// Detectar triplo clique no logotipo
-function configurarCliqueLogo() {
-  const logo = document.getElementById('site-logo-img');
-  if (!logo) {
-    console.error('ID site-logo-img não encontrado no DOM');
-    return;
-  }
-  let clickCount = 0;
-  let clickTimer;
-  logo.addEventListener('click', (e) => {
-    e.preventDefault();
-    clickCount++;
-    if (clickCount === 1) {
-      clickTimer = setTimeout(() => {
-        clickCount = 0;
-      }, 500);
-    } else if (clickCount === 3) {
-      clearTimeout(clickTimer);
-      const tempToken = 'triple-click-access';
-      window.location.href = `admin-xyz-123.html?tempToken=${tempToken}`;
-      clickCount = 0;
+  // Verificar autenticação
+  function checkAuth() {
+    if (!localStorage.getItem('adminToken')) {
+      const tempToken = new URLSearchParams(window.location.search).get('tempToken');
+      if (tempToken === 'triple-click-access') {
+        localStorage.setItem('adminToken', 'temp-token-' + Date.now());
+      } else {
+        alert('Acesso não autorizado. Por favor, clique três vezes no logotipo na página inicial para autenticar.');
+        window.location.href = '/index.html';
+      }
     }
-  }, { once: false });
-}
-
-// Carregar produtos com retry
-async function carregarProdutos() {
-  const loadingSpinner = document.getElementById('loading-spinner');
-  const mensagemVazia = document.getElementById('mensagem-vazia');
-  const errorMessage = document.getElementById('error-message');
-  const gridProdutos = document.getElementById('grid-produtos');
-
-  if (!gridProdutos || !mensagemVazia || !errorMessage || !loadingSpinner) {
-    console.error('Elementos essenciais não encontrados');
-    errorMessage.textContent = 'Erro: Elementos da página não encontrados. Contate o suporte.';
-    errorMessage.style.display = 'block';
-    return;
   }
 
-  const maxRetries = 3;
-  let attempt = 1;
+  // Função para escapar HTML e evitar XSS
+  function escapeHTML(str) {
+    return str.replace(/[&<>"']/g, (match) => ({
+      '&': '&', '<': '<', '>': '>', '"': '"', "'": '''
+    }[match]));
+  }
 
-  while (attempt <= maxRetries) {
+  // Função de logout
+  function logout() {
+    localStorage.removeItem('adminToken');
+    window.location.href = '/index.html';
+  }
+
+  // Atualizar ano no footer
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  async function carregarProdutos() {
+    const tbody = document.getElementById('lista-produtos');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const erro = document.getElementById('erro');
+    if (!tbody || !loadingSpinner || !erro) {
+      console.error('Elementos essenciais não encontrados');
+      erro.textContent = 'Erro: Elementos da página não encontrados.';
+      erro.style.display = 'block';
+      return;
+    }
+
+    loadingSpinner.style.display = 'block';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Carregando...</td></tr>';
+    erro.textContent = '';
+
+    const maxRetries = 3;
+    let attempt = 1;
+    while (attempt <= maxRetries) {
+      try {
+        console.log(`Tentativa ${attempt}: Carregando produtos de ${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`);
+        const token = localStorage.getItem('adminToken');
+        console.log('Token usado:', token);
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        const res = await fetch(`${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`, {
+          cache: 'no-store',
+          signal: controller.signal,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        clearTimeout(timeoutId);
+
+        console.log('Status da resposta:', res.status, res.statusText);
+        const data = await res.json();
+        console.log('Dados recebidos:', JSON.stringify(data, null, 2));
+
+        if (!res.ok) {
+          const errorData = data || {};
+          if (res.status === 429) {
+            throw new Error('Limite de requisições excedido. Tente novamente em alguns minutos.');
+          }
+          if (res.status === 401 || res.status === 403) {
+            localStorage.removeItem('adminToken');
+            erro.textContent = 'Sessão inválida ou expirada. Clique três vezes no logotipo na página inicial.';
+            window.location.href = '/index.html';
+            return;
+          }
+          throw new Error(errorData.error || `Falha ao buscar produtos: ${res.status}`);
+        }
+
+        produtos = Array.isArray(data.produtos) ? data.produtos : Array.isArray(data) ? data : [];
+        totalProdutos = data.total || produtos.length;
+        console.log('Produtos processados:', produtos, 'Total:', totalProdutos);
+
+        if (produtos.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Nenhum produto cadastrado.</td></tr>';
+        } else {
+          preencherTabela(produtos);
+        }
+        atualizarPaginacao();
+        return;
+      } catch (err) {
+        console.error(`Tentativa ${attempt} falhou: ${err.message}`);
+        if (attempt === maxRetries) {
+          let errorMessage = `Erro após ${maxRetries} tentativas: ${err.message}`;
+          if (err.message.includes('Failed to fetch') || err.name === 'AbortError') {
+            errorMessage = 'Erro de conexão com o servidor. Verifique sua rede ou a configuração do servidor.';
+          }
+          tbody.innerHTML = `<tr><td colspan="8" style="color:red;text-align:center;">${errorMessage}</td></tr>`;
+          erro.textContent = errorMessage;
+        }
+        attempt++;
+        await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+      } finally {
+        loadingSpinner.style.display = 'none';
+      }
+    }
+  }
+
+  function preencherTabela(produtos) {
+    const tbody = document.getElementById('lista-produtos');
+    if (!tbody) {
+      console.error('Elemento lista-produtos não encontrado');
+      document.getElementById('erro').textContent = 'Erro: Elemento da tabela não encontrado.';
+      return;
+    }
+    tbody.innerHTML = '';
+    const produtosArray = Array.isArray(produtos) ? produtos : [];
+    console.log('Preenchendo tabela com produtos:', produtosArray);
+    if (produtosArray.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Nenhum produto cadastrado.</td></tr>';
+      return;
+    }
+    produtosArray.forEach((produto, index) => {
+      const precoFormatado = `R$ ${parseFloat(produto.preco || 0).toFixed(2).replace('.', ',')}`;
+      const imagens = Array.isArray(produto.imagens) ? produto.imagens.filter(img => typeof img === 'string' && img) : [];
+      const miniaturas = imagens.length > 0
+        ? imagens.map((img, i) => `<img src="${escapeHTML(img)}" class="thumbnail" alt="Imagem ${i + 1}" loading="lazy" data-index="${index}-${i}" onerror="handleImageError(this, 'imagens/placeholder.jpg')" />`).join('')
+        : 'Sem imagens';
+
+      tbody.innerHTML += `
+        <tr>
+          <td>${escapeHTML(produto.nome || 'N/A')}</td>
+          <td>${escapeHTML(produto.descricao || 'N/A')}</td>
+          <td>${escapeHTML(produto.categoria || 'N/A')}</td>
+          <td>${escapeHTML(produto.loja || 'N/A')}</td>
+          <td><a href="${escapeHTML(produto.link || '#')}" target="_blank" rel="noopener noreferrer">Link</a></td>
+          <td>${precoFormatado}</td>
+          <td>${miniaturas}</td>
+          <td>
+            <button class="editar" onclick="editarProduto('${produto._id}')" aria-label="Editar produto ${produto.nome || 'N/A'}">Editar</button>
+            <button class="excluir" onclick="excluirProduto('${produto._id}')" aria-label="Excluir produto ${produto.nome || 'N/A'}">Excluir</button>
+          </td>
+        </tr>
+      `;
+    });
+  }
+
+  // Função para lidar com erro de imagem com retry
+  function handleImageError(imgElement, fallbackSrc) {
+    if (imgElement.src !== fallbackSrc) {
+      setTimeout(() => {
+        imgElement.src = fallbackSrc;
+        imgElement.onerror = null; // Evita loop infinito
+      }, 1000); // Atraso de 1 segundo
+    } else {
+      imgElement.style.display = 'none'; // Oculta imagem quebrada
+      console.error(`Falha ao carregar ${fallbackSrc} para imagem ${imgElement.dataset.index}`);
+    }
+  }
+
+  async function editarProduto(id) {
     try {
-      loadingSpinner.style.display = 'block';
-      mensagemVazia.style.display = 'none';
-      errorMessage.style.display = 'none';
-      gridProdutos.innerHTML = '';
-
-      let url = `${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`;
-      if (categoriaSelecionada !== 'todas') {
-        url += `&categoria=${encodeURIComponent(categoriaSelecionada)}`;
-      }
-      if (lojaSelecionada !== 'todas') {
-        url += `&loja=${encodeURIComponent(lojaSelecionada)}`;
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        document.getElementById('erro').textContent = 'Sessão expirada. Clique três vezes no logotipo na página inicial.';
+        window.location.href = '/index.html';
+        return;
       }
 
-      console.log(`Tentativa ${attempt}: Carregando produtos de ${url}`);
-      const response = await fetch(url, {
-        cache: 'no-store',
-        headers: { 'Accept': 'application/json' },
-        signal: AbortSignal.timeout(10000) // Timeout de 10 segundos
+      const res = await fetch(`${API_URL}/api/produtos/${id}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        if (res.status === 429) {
+          document.getElementById('erro').textContent = 'Limite de requisições excedido. Tente novamente em alguns minutos.';
+          return;
+        }
+        if (res.status === 401 || res.status === 403) {
+          localStorage.removeItem('adminToken');
+          document.getElementById('erro').textContent = 'Sessão inválida. Clique três vezes no logotipo na página inicial.';
+          window.location.href = '/index.html';
+          return;
+        }
+        throw new Error(errorData.error || 'Erro ao buscar produto para edição');
+      }
+      const produto = await res.json();
+      console.log('Produto para edição:', produto);
+
+      const form = document.getElementById('form-produto');
+      form.querySelector('[name="id"]').value = produto._id || '';
+      form.querySelector('[name="nome"]').value = produto.nome || '';
+      form.querySelector('[name="descricao"]').value = produto.descricao || '';
+      form.querySelector('[name="categoria"]').value = produto.categoria || '';
+      form.querySelector('[name="loja"]').value = produto.loja || '';
+      form.querySelector('[name="link"]').value = produto.link || '';
+      form.querySelector('[name="preco"]').value = produto.preco || '';
+      document.getElementById('submit-button').textContent = 'Salvar Alterações';
+      document.getElementById('cancel-button').style.display = 'inline-block';
+      document.getElementById('mensagem').textContent = 'Editando produto. Envie para salvar as alterações.';
+    } catch (err) {
+      console.error('Erro ao editar produto:', err.message);
+      document.getElementById('erro').textContent = err.message;
+    }
+  }
+
+  function cancelarEdicao() {
+    const form = document.getElementById('form-produto');
+    form.reset();
+    form.querySelector('[name="id"]').value = '';
+    document.getElementById('submit-button').textContent = 'Adicionar';
+    document.getElementById('cancel-button').style.display = 'none';
+    document.getElementById('mensagem').textContent = '';
+    document.getElementById('erro').textContent = '';
+  }
+
+  async function excluirProduto(id) {
+    if (!confirm('Confirma a exclusão deste produto?')) return;
+    try {
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        document.getElementById('erro').textContent = 'Sessão expirada. Clique três vezes no logotipo na página inicial.';
+        window.location.href = '/index.html';
+        return;
+      }
+
+      const res = await fetch(`${API_URL}/api/produtos/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        if (res.status === 429) {
+          document.getElementById('erro').textContent = 'Limite de requisições excedido. Tente novamente em alguns minutos.';
+          return;
+        }
+        if (res.status === 401 || res.status === 403) {
+          localStorage.removeItem('adminToken');
+          document.getElementById('erro').textContent = 'Sessão inválida. Clique três vezes no logotipo na página inicial.';
+          window.location.href = '/index.html';
+          return;
+        }
+        throw new Error(errorData.error || 'Erro ao excluir produto');
+      }
+      document.getElementById('mensagem').textContent = 'Produto excluído com sucesso';
+      carregarProdutos();
+    } catch (err) {
+      console.error('Erro ao excluir produto:', err.message);
+      document.getElementById('erro').textContent = err.message;
+    }
+  }
+
+  document.getElementById('form-produto').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
+    const produtoId = formData.get('id');
+    const link = formData.get('link');
+    const preco = parseFloat(formData.get('preco'));
+    const imagens = form.querySelector('input[name="imagens"]').files;
+
+    if (!link.match(/^https?:\/\/.+/)) {
+      document.getElementById('erro').textContent = 'Link inválido! Deve começar com http:// ou https://';
+      return;
+    }
+    if (isNaN(preco) || preco <= 0) {
+      document.getElementById('erro').textContent = 'O preço deve ser maior que zero!';
+      return;
+    }
+    if (imagens.length > 3) {
+      document.getElementById('erro').textContent = 'Máximo de 3 imagens por produto!';
+      return;
+    }
+
+    document.getElementById('mensagem').textContent = '';
+    document.getElementById('erro').textContent = '';
+
+    try {
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        document.getElementById('erro').textContent = 'Sessão expirada. Clique três vezes no logotipo na página inicial.';
+        window.location.href = '/index.html';
+        return;
+      }
+
+      let imageUrls = [];
+      if (imagens.length > 0) {
+        const uploadFormData = new FormData();
+        for (let i = 0; i < imagens.length; i++) {
+          uploadFormData.append('imagens', imagens[i]);
+        }
+        const uploadRes = await fetch(`${API_URL}/api/upload`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          body: uploadFormData
+        });
+        if (!uploadRes.ok) {
+          const errorData = await uploadRes.json().catch(() => ({}));
+          if (uploadRes.status === 429) {
+            document.getElementById('erro').textContent = 'Limite de requisições excedido. Tente novamente em alguns minutos.';
+            return;
+          }
+          throw new Error(errorData.error || 'Erro ao fazer upload das imagens');
+        }
+        const uploadData = await uploadRes.json();
+        imageUrls = uploadData.urls || [];
+      }
+
+      const produto = {
+        nome: formData.get('nome'),
+        descricao: formData.get('descricao'),
+        categoria: formData.get('categoria'),
+        loja: formData.get('loja'),
+        link: formData.get('link'),
+        preco: preco,
+        imagens: imageUrls
+      };
+
+      const res = await fetch(`${API_URL}/api/produtos${produtoId ? `/${produtoId}` : ''}`, {
+        method: produtoId ? 'PUT' : 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(produto)
       });
 
-      console.log('Status da resposta (index):', response.status, response.statusText);
-      const data = await response.json();
-      console.log('Dados recebidos (index):', JSON.stringify(data, null, 2));
+      const responseData = await res.json();
+      console.log(`Resposta do ${produtoId ? 'PUT' : 'POST'}:`, responseData);
 
-      if (!response.ok) {
-        const errorData = data || {};
-        throw new Error(errorData.details || `Erro ${response.status}: Falha ao carregar produtos`);
+      if (!res.ok) {
+        if (res.status === 429) {
+          document.getElementById('erro').textContent = 'Limite de requisições excedido. Tente novamente em alguns minutos.';
+          return;
+        }
+        if (res.status === 401 || res.status === 403) {
+          localStorage.removeItem('adminToken');
+          document.getElementById('erro').textContent = 'Sessão inválida. Clique três vezes no logotipo na página inicial.';
+          window.location.href = '/index.html';
+          return;
+        }
+        throw new Error(responseData?.error || `Erro ao ${produtoId ? 'atualizar' : 'adicionar'} produto`);
       }
 
-      if (!Array.isArray(data.produtos)) {
-        throw new Error('Resposta inválida da API: produtos não é um array');
-      }
-
-      produtos = shuffleArray(data.produtos.slice(0, produtosPorPagina));
-      totalProdutos = data.total || produtos.length;
-      console.log('Produtos processados (index):', produtos, 'Total:', totalProdutos);
-
-      filtrarProdutos();
-      atualizarPaginacao();
-      return;
+      document.getElementById('mensagem').textContent = produtoId ? 'Produto atualizado com sucesso!' : 'Produto adicionado com sucesso!';
+      form.reset();
+      form.querySelector('[name="id"]').value = '';
+      document.getElementById('submit-button').textContent = 'Adicionar';
+      document.getElementById('cancel-button').style.display = 'none';
+      carregarProdutos();
     } catch (error) {
-      console.error(`Tentativa ${attempt} falhou: ${error.message}`);
-      if (attempt === maxRetries) {
-        errorMessage.textContent = `Não foi possível carregar os produtos após ${maxRetries} tentativas: ${error.message}. Tente novamente mais tarde.`;
-        errorMessage.style.display = 'block';
-        mensagemVazia.style.display = 'none';
-        gridProdutos.style.display = 'none';
-      }
-      attempt++;
-      await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
-    } finally {
-      loadingSpinner.style.display = 'none';
+      console.error('Erro ao salvar produto:', error.message);
+      document.getElementById('erro').textContent = error.message;
+    }
+  });
+
+  function atualizarPaginacao() {
+    const prevButton = document.getElementById('prev-page');
+    const nextButton = document.getElementById('next-page');
+    const pageInfo = document.getElementById('page-info');
+    if (prevButton && nextButton && pageInfo) {
+      prevButton.disabled = currentPage === 1;
+      nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
+      pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina) || 1}`;
     }
   }
-}
 
-// Filtrar e exibir produtos
-function filtrarProdutos() {
-  const gridProdutos = document.getElementById('grid-produtos');
-  const mensagemVazia = document.getElementById('mensagem-vazia');
-
-  if (!gridProdutos || !mensagemVazia) {
-    console.error('grid-produtos ou mensagem-vazia não encontrados');
-    return;
-  }
-
-  const produtosFiltrados = produtos
-    .filter((produto) => {
-      const matchCategoria =
-        categoriaSelecionada === 'todas' ||
-        normalizarString(produto.categoria) === normalizarString(categoriaSelecionada);
-      const matchLoja =
-        lojaSelecionada === 'todas' ||
-        normalizarString(produto.loja) === normalizarString(lojaSelecionada);
-      const matchBusca =
-        !termoBusca || normalizarString(produto.nome).includes(normalizarString(termoBusca));
-      return matchCategoria && matchLoja && matchBusca;
-    });
-
-  console.log('Produtos filtrados:', produtosFiltrados);
-
-  gridProdutos.innerHTML = '';
-  if (produtosFiltrados.length === 0) {
-    mensagemVazia.style.display = 'block';
-    gridProdutos.style.display = 'none';
-    return;
-  }
-
-  mensagemVazia.style.display = 'none';
-  gridProdutos.style.display = 'grid';
-
-  produtosFiltrados.forEach((produto, produtoIndex) => {
-    const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0
-      ? produto.imagens.filter(img => typeof img === 'string' && img)
-      : ['imagens/placeholder.jpg'];
-    const carrosselId = `carrossel-${produtoIndex}-${produto._id || Date.now()}`;
-
-    const produtoDiv = document.createElement('div');
-    produtoDiv.classList.add('produto-card', 'visible');
-    produtoDiv.setAttribute('data-categoria', normalizarString(produto.categoria) || 'todas');
-    produtoDiv.setAttribute('data-loja', normalizarString(produto.loja) || 'todas');
-
-    produtoDiv.innerHTML = `
-      <div class="carrossel" id="${carrosselId}">
-        <div class="carrossel-imagens">
-          ${imagens.map((img, i) => `
-            <img src="${img}" alt="${produto.nome || 'Produto'} ${i + 1}" loading="lazy" width="200" height="200" onerror="this.src='imagens/placeholder.jpg'" onclick="openModal(${produtoIndex}, ${i})">
-          `).join('')}
-        </div>
-        ${imagens.length > 1 ? `
-          <button class="carrossel-prev" onclick="moveCarrossel('${carrosselId}', -1)">◄</button>
-          <button class="carrossel-next" onclick="moveCarrossel('${carrosselId}', 1)">▶</button>
-          <div class="carrossel-dots">
-            ${imagens.map((_, i) => `<span class="carrossel-dot ${i === 0 ? 'ativo' : ''}" onclick="setCarrosselImage('${carrosselId}', ${i})"></span>`).join('')}
-          </div>
-        ` : ''}
-      </div>
-      <span>${produto.nome || 'Produto sem nome'}</span>
-      <span class="descricao">Loja: ${produto.loja || 'Desconhecida'}</span>
-      <p class="preco"><a href="${produto.link || '#'}" target="_blank" class="ver-preco">Clique aqui para ver o preço</a></p>
-      <a href="${produto.link || '#'}" target="_blank" class="ver-na-loja ${produto.loja?.toLowerCase() || 'default'}">Comprar</a>
-    `;
-    gridProdutos.appendChild(produtoDiv);
+  document.getElementById('prev-page')?.addEventListener('click', () => {
+    if (currentPage > 1) {
+      currentPage--;
+      carregarProdutos();
+    }
   });
-}
 
-// Funções do carrossel
-function moveCarrossel(carrosselId, direction) {
-  const carrossel = document.getElementById(carrosselId);
-  const imagens = carrossel.querySelector('.carrossel-imagens');
-  const dots = carrossel.querySelectorAll('.carrossel-dot');
-  let currentIndex = parseInt(imagens.dataset.index || 0);
-  const totalImagens = imagens.children.length;
+  document.getElementById('next-page')?.addEventListener('click', () => {
+    currentPage++;
+    carregarProdutos();
+  });
 
-  currentIndex = (currentIndex + direction + totalImagens) % totalImagens;
-  imagens.style.transform = `translateX(-${currentIndex * 100}%)`;
-  imagens.dataset.index = currentIndex;
-
-  dots.forEach((dot, i) => dot.classList.toggle('ativo', i === currentIndex));
-}
-
-function setCarrosselImage(carrosselId, index) {
-  const carrossel = document.getElementById(carrosselId);
-  const imagens = carrossel.querySelector('.carrossel-imagens');
-  const dots = carrossel.querySelectorAll('.carrossel-dot');
-
-  imagens.style.transform = `translateX(-${index * 100}%)`;
-  imagens.dataset.index = index;
-
-  dots.forEach((dot, i) => dot.classList.toggle('ativo', i === index));
-}
-
-// Funções do modal
-async function openModal(produtoIndex, imageIndex) {
-  const modal = document.getElementById('imageModal');
-  const carrosselImagens = document.getElementById('modalCarrosselImagens');
-  const carrosselDots = document.getElementById('modalCarrosselDots');
-
-  try {
-    currentImages = Array.isArray(produtos[produtoIndex]?.imagens) && produtos[produtoIndex].imagens.length > 0
-      ? produtos[produtoIndex].imagens.filter(img => typeof img === 'string' && img)
-      : ['imagens/placeholder.jpg'];
+  function openModal(produtoIndex, imageIndex) {
+    const modal = document.getElementById('imageModal');
+    const carrosselImagens = document.getElementById('modalCarrosselImagens');
+    const carrosselDots = document.getElementById('modalCarrosselDots');
+    currentImages = Array.isArray(produtos[produtoIndex]?.imagens) ? produtos[produtoIndex].imagens : [];
     currentImageIndex = imageIndex;
 
-    carrosselImagens.innerHTML = currentImages.map(img => `<img src="${img}" alt="Imagem ampliada" onerror="this.src='imagens/placeholder.jpg'">`).join('');
+    if (currentImages.length === 0) {
+      document.getElementById('erro').textContent = 'Nenhuma imagem disponível para este produto.';
+      return;
+    }
+
+    carrosselImagens.innerHTML = currentImages.map(img => `<img src="${escapeHTML(img)}" alt="Imagem ampliada" loading="lazy" onerror="this.src='imagens/placeholder.jpg'; this.onerror=null;">`).join('');
     carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
 
     carrosselDots.innerHTML = currentImages.map((_, i) => `<span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})"></span>`).join('');
 
     modal.style.display = 'flex';
-  } catch (error) {
-    console.error('Erro ao abrir modal:', error);
   }
-}
 
-function moveModalCarrossel(direction) {
-  const carrosselImagens = document.getElementById('modalCarrosselImagens');
-  const carrosselDots = document.getElementById('modalCarrosselDots').children;
-  const totalImagens = currentImages.length;
+  function moveModalCarrossel(direction) {
+    const carrosselImagens = document.getElementById('modalCarrosselImagens');
+    const carrosselDots = document.getElementById('modalCarrosselDots').children;
+    const totalImagens = currentImages.length;
 
-  currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
-  carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+    currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
+    carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
 
-  Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
-}
-
-function setModalCarrosselImage(index) {
-  const carrosselImagens = document.getElementById('modalCarrosselImagens');
-  const carrosselDots = document.getElementById('modalCarrosselDots').children;
-  currentImageIndex = index;
-  carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
-  Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
-}
-
-function closeModal() {
-  const modal = document.getElementById('imageModal');
-  modal.style.display = 'none';
-  currentImages = [];
-  currentImageIndex = 0;
-}
-
-// Configurar busca
-function configurarBusca() {
-  const buscaInput = document.getElementById('busca');
-  if (buscaInput) {
-    buscaInput.addEventListener('input', (e) => {
-      termoBusca = e.target.value;
-      filtrarProdutos();
-    });
+    Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
   }
-}
 
-// Configurar filtros
-function filtrarPorCategoria(categoria) {
-  categoriaSelecionada = categoria;
-  currentPage = 1; // Resetar para a primeira página ao mudar a categoria
-  const itensCategoria = document.querySelectorAll('.categoria-item');
-  itensCategoria.forEach(item => item.classList.remove('ativa'));
-  document.querySelector(`.categoria-item[data-categoria="${categoria}"]`).classList.add('ativa');
-  console.log('Categoria selecionada:', categoria);
-  carregarProdutos(); // Recarregar produtos com o filtro de categoria
-}
-
-function filtrarPorLoja(loja) {
-  lojaSelecionada = loja;
-  currentPage = 1; // Resetar para a primeira página ao mudar a loja
-  const itensLoja = document.querySelectorAll('.loja, .loja-todas');
-  itensLoja.forEach(item => item.classList.remove('ativa'));
-  document.querySelector(`[data-loja="${loja}"]`).classList.add('ativa');
-  console.log('Loja selecionada:', loja);
-  carregarProdutos(); // Recarregar produtos com o filtro de loja
-}
-
-// Configurar paginação
-function configurarPaginacao() {
-  const prevButton = document.getElementById('prev-page');
-  const nextButton = document.getElementById('next-page');
-  if (prevButton) {
-    prevButton.addEventListener('click', () => {
-      if (currentPage > 1) {
-        currentPage--;
-        carregarProdutos();
-      }
-    });
+  function setModalCarrosselImage(index) {
+    const carrosselImagens = document.getElementById('modalCarrosselImagens');
+    const carrosselDots = document.getElementById('modalCarrosselDots').children;
+    currentImageIndex = index;
+    carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+    Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
   }
-  if (nextButton) {
-    nextButton.addEventListener('click', () => {
-      currentPage++;
-      carregarProdutos();
-    });
-  }
-}
 
-function atualizarPaginacao() {
-  const prevButton = document.getElementById('prev-page');
-  const nextButton = document.getElementById('next-page');
-  const pageInfo = document.getElementById('page-info');
-  if (prevButton && nextButton && pageInfo) {
-    prevButton.disabled = currentPage === 1;
-    nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
-    pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina) || 1}`;
+  function closeModal() {
+    const modal = document.getElementById('imageModal');
+    modal.style.display = 'none';
+    currentImages = [];
+    currentImageIndex = 0;
   }
-}
 
-// Inicialização
-document.addEventListener('DOMContentLoaded', () => {
-  console.log('script.js carregado');
-  carregarProdutos();
-  configurarBusca();
-  configurarPaginacao();
-  atualizarAnoFooter();
-  configurarCliqueLogo();
+  document.getElementById('imageModal').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeModal();
+  });
 
-  const modal = document.getElementById('imageModal');
-  if (modal) {
-    modal.addEventListener('click', (e) => {
-      if (e.target === e.currentTarget) closeModal();
-    });
-  }
-});
+  document.addEventListener('DOMContentLoaded', () => {
+    console.log('admin-xyz-123.html carregado');
+    checkAuth();
+    carregarProdutos();
+  });
+</script>
