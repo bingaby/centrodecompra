@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Gerenciar Produtos - Centro de Compras</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
-  <link rel="icon" type="image/x-icon" href="/imagens/favicon.ico">
-  <link rel="icon" type="image/png" sizes="32x32" href="/imagens/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/imagens/favicon-16x16.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="/imagens/apple-touch-icon.png">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="logos/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="logos/apple-touch-icon.png">
   <link rel="stylesheet" href="style.css">
   <style>
     :root {
@@ -268,7 +268,7 @@
   <header class="site-header">
     <div class="logo-container">
       <a href="/index.html">
-        <img src="/imagens/logoscentrodecompras.jpeg" alt="Centro de Compras" id="site-logo-img" width="150" height="50">
+        <img src="logos/logoscentrodecompras.jpeg" alt="Centro de Compras" id="site-logo-img" width="150" height="50">
       </a>
     </div>
     <div class="header-text">
@@ -356,49 +356,44 @@
   </footer>
   <script>
     const API_URL = 'https://centrodecompra-backend.onrender.com';
-    let produtos = [];
     let currentPage = 1;
-    const produtosPorPagina = 10;
+    const produtosPorPagina = 25;
     let totalProdutos = 0;
     let currentImages = [];
     let currentImageIndex = 0;
 
-    function checkAuth() {
-      if (!localStorage.getItem('adminToken')) {
-        const tempToken = new URLSearchParams(window.location.search).get('tempToken');
-        if (tempToken === 'triple-click-access') {
-          localStorage.setItem('adminToken', 'temp-token-' + Date.now());
-        } else {
-          alert('Acesso não autorizado. Por favor, clique três vezes no logotipo na página inicial para autenticar.');
-          window.location.href = '/index.html';
-        }
+    // Verificar autenticação
+    if (!localStorage.getItem('adminToken')) {
+      const tempToken = new URLSearchParams(window.location.search).get('tempToken');
+      if (tempToken === 'triple-click-access') {
+        localStorage.setItem('adminToken', 'temp-token-' + Date.now());
+      } else {
+        alert('Acesso não autorizado. Por favor, clique três vezes no logotipo na página inicial para autenticar.');
+        window.location.href = '/index.html';
+        return;
       }
     }
 
+    // Função para escapar HTML e evitar XSS
     function escapeHTML(str) {
       return str.replace(/[&<>"']/g, (match) => ({
-        '&': '&', '<': '<', '>': '>', '"': '"', "'": '''
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
       }[match]));
     }
 
+    // Função de logout
     function logout() {
       localStorage.removeItem('adminToken');
       window.location.href = '/index.html';
     }
 
+    // Atualizar ano no footer
     document.getElementById('year').textContent = new Date().getFullYear();
 
     async function carregarProdutos() {
       const tbody = document.getElementById('lista-produtos');
       const loadingSpinner = document.getElementById('loading-spinner');
       const erro = document.getElementById('erro');
-      if (!tbody || !loadingSpinner || !erro) {
-        console.error('Elementos essenciais não encontrados');
-        erro.textContent = 'Erro: Elementos da página não encontrados.';
-        erro.style.display = 'block';
-        return;
-      }
-
       loadingSpinner.style.display = 'block';
       tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Carregando...</td></tr>';
       erro.textContent = '';
@@ -429,9 +424,6 @@
 
           if (!res.ok) {
             const errorData = data || {};
-            if (res.status === 429) {
-              throw new Error('Limite de requisições excedido. Tente novamente em alguns minutos.');
-            }
             if (res.status === 401 || res.status === 403) {
               localStorage.removeItem('adminToken');
               erro.textContent = 'Sessão inválida ou expirada. Clique três vezes no logotipo na página inicial.';
@@ -441,7 +433,7 @@
             throw new Error(errorData.error || `Falha ao buscar produtos: ${res.status}`);
           }
 
-          produtos = Array.isArray(data.produtos) ? data.produtos : Array.isArray(data) ? data : [];
+          const produtos = Array.isArray(data.produtos) ? data.produtos : Array.isArray(data) ? data : [];
           totalProdutos = data.total || produtos.length;
           console.log('Produtos processados:', produtos, 'Total:', totalProdutos);
 
@@ -472,11 +464,6 @@
 
     function preencherTabela(produtos) {
       const tbody = document.getElementById('lista-produtos');
-      if (!tbody) {
-        console.error('Elemento lista-produtos não encontrado');
-        document.getElementById('erro').textContent = 'Erro: Elemento da tabela não encontrado.';
-        return;
-      }
       tbody.innerHTML = '';
       const produtosArray = Array.isArray(produtos) ? produtos : [];
       console.log('Preenchendo tabela com produtos:', produtosArray);
@@ -488,7 +475,7 @@
         const precoFormatado = `R$ ${parseFloat(produto.preco || 0).toFixed(2).replace('.', ',')}`;
         const imagens = Array.isArray(produto.imagens) ? produto.imagens.filter(img => typeof img === 'string' && img) : [];
         const miniaturas = imagens.length > 0
-          ? imagens.map((img, i) => `<img src="${escapeHTML(img)}" class="thumbnail" alt="Imagem ${i + 1}" loading="lazy" data-index="${index}-${i}" onclick="openModal(${index}, ${i})" onerror="handleImageError(this, '/imagens/placeholder.jpg')" />`).join('')
+          ? imagens.map((img, i) => `<img src="${escapeHTML(img)}" class="thumbnail" alt="Imagem ${i + 1}" loading="lazy" onclick="openModal(${index}, ${i})" onerror="this.src='imagens/placeholder.jpg'" />`).join('')
           : 'Sem imagens';
 
         tbody.innerHTML += `
@@ -501,24 +488,12 @@
             <td>${precoFormatado}</td>
             <td>${miniaturas}</td>
             <td>
-              <button class="editar" onclick="editarProduto('${produto._id}')" aria-label="Editar produto ${produto.nome || 'N/A'}">Editar</button>
-              <button class="excluir" onclick="excluirProduto('${produto._id}')" aria-label="Excluir produto ${produto.nome || 'N/A'}">Excluir</button>
+              <button class="editar" onclick="editarProduto('${produto._id}')" aria-label="Editar produto ${produto.nome}">Editar</button>
+              <button class="excluir" onclick="excluirProduto('${produto._id}')" aria-label="Excluir produto ${produto.nome}">Excluir</button>
             </td>
           </tr>
         `;
       });
-    }
-
-    function handleImageError(imgElement, fallbackSrc) {
-      if (imgElement.src !== fallbackSrc) {
-        setTimeout(() => {
-          imgElement.src = fallbackSrc;
-          imgElement.onerror = null;
-        }, 1000);
-      } else {
-        imgElement.style.display = 'none';
-        console.error(`Falha ao carregar ${fallbackSrc} para imagem ${imgElement.dataset.index}`);
-      }
     }
 
     async function editarProduto(id) {
@@ -538,10 +513,6 @@
         });
         if (!res.ok) {
           const errorData = await res.json().catch(() => ({}));
-          if (res.status === 429) {
-            document.getElementById('erro').textContent = 'Limite de requisições excedido. Tente novamente em alguns minutos.';
-            return;
-          }
           if (res.status === 401 || res.status === 403) {
             localStorage.removeItem('adminToken');
             document.getElementById('erro').textContent = 'Sessão inválida. Clique três vezes no logotipo na página inicial.';
@@ -553,27 +524,24 @@
         const produto = await res.json();
         console.log('Produto para edição:', produto);
 
-        const form = document.getElementById('form-produto');
-        form.querySelector('[name="id"]').value = produto._id || '';
-        form.querySelector('[name="nome"]').value = produto.nome || '';
-        form.querySelector('[name="descricao"]').value = produto.descricao || '';
-        form.querySelector('[name="categoria"]').value = produto.categoria || '';
-        form.querySelector('[name="loja"]').value = produto.loja || '';
-        form.querySelector('[name="link"]').value = produto.link || '';
-        form.querySelector('[name="preco"]').value = produto.preco || '';
+        document.getElementById('produto-id').value = produto._id || '';
+        document.getElementById('form-produto').nome.value = produto.nome || '';
+        document.getElementById('form-produto').descricao.value = produto.descricao || '';
+        document.getElementById('form-produto').categoria.value = produto.categoria || '';
+        document.getElementById('form-produto').loja.value = produto.loja || '';
+        document.getElementById('form-produto').link.value = produto.link || '';
+        document.getElementById('form-produto').preco.value = produto.preco || '';
         document.getElementById('submit-button').textContent = 'Salvar Alterações';
         document.getElementById('cancel-button').style.display = 'inline-block';
         document.getElementById('mensagem').textContent = 'Editando produto. Envie para salvar as alterações.';
       } catch (err) {
-        console.error('Erro ao editar produto:', err.message);
         document.getElementById('erro').textContent = err.message;
       }
     }
 
     function cancelarEdicao() {
-      const form = document.getElementById('form-produto');
-      form.reset();
-      form.querySelector('[name="id"]').value = '';
+      document.getElementById('form-produto').reset();
+      document.getElementById('produto-id').value = '';
       document.getElementById('submit-button').textContent = 'Adicionar';
       document.getElementById('cancel-button').style.display = 'none';
       document.getElementById('mensagem').textContent = '';
@@ -599,10 +567,6 @@
         });
         if (!res.ok) {
           const errorData = await res.json().catch(() => ({}));
-          if (res.status === 429) {
-            document.getElementById('erro').textContent = 'Limite de requisições excedido. Tente novamente em alguns minutos.';
-            return;
-          }
           if (res.status === 401 || res.status === 403) {
             localStorage.removeItem('adminToken');
             document.getElementById('erro').textContent = 'Sessão inválida. Clique três vezes no logotipo na página inicial.';
@@ -614,7 +578,6 @@
         document.getElementById('mensagem').textContent = 'Produto excluído com sucesso';
         carregarProdutos();
       } catch (err) {
-        console.error('Erro ao excluir produto:', err.message);
         document.getElementById('erro').textContent = err.message;
       }
     }
@@ -652,85 +615,29 @@
           return;
         }
 
-        let imageUrls = [];
+        let res;
         if (produtoId) {
-          const res = await fetch(`${API_URL}/api/produtos/${produtoId}`, {
+          res = await fetch(`${API_URL}/api/produtos/${produtoId}`, {
+            method: 'PUT',
             headers: {
-              'Content-Type': 'application/json',
               'Authorization': `Bearer ${token}`
-            }
+            },
+            body: formData
           });
-          if (!res.ok) {
-            const errorData = await res.json().catch(() => ({}));
-            if (res.status === 429) {
-              document.getElementById('erro').textContent = 'Limite de requisições excedido. Tente novamente em alguns minutos.';
-              return;
-            }
-            if (res.status === 401 || res.status === 403) {
-              localStorage.removeItem('adminToken');
-              document.getElementById('erro').textContent = 'Sessão inválida. Clique três vezes no logotipo na página inicial.';
-              window.location.href = '/index.html';
-              return;
-            }
-            throw new Error(errorData.error || 'Erro ao buscar dados do produto');
-          }
-          const produto = await res.json();
-          imageUrls = Array.isArray(produto.imagens) ? produto.imagens : [];
-          console.log('Imagens existentes do produto:', imageUrls);
-        }
-
-        if (imagens.length > 0) {
-          const uploadFormData = new FormData();
-          for (let i = 0; i < imagens.length; i++) {
-            uploadFormData.append('imagens', imagens[i]);
-          }
-          const uploadRes = await fetch(`${API_URL}/api/upload`, {
+        } else {
+          res = await fetch(`${API_URL}/api/produtos`, {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${token}`
             },
-            body: uploadFormData
+            body: formData
           });
-          if (!uploadRes.ok) {
-            const errorData = await uploadRes.json().catch(() => ({}));
-            if (uploadRes.status === 429) {
-              document.getElementById('erro').textContent = 'Limite de requisições excedido. Tente novamente em alguns minutos.';
-              return;
-            }
-            throw new Error(errorData.error || 'Erro ao fazer upload das imagens');
-          }
-          const uploadData = await uploadRes.json();
-          imageUrls = uploadData.urls || [];
-          console.log('Novas imagens enviadas:', imageUrls);
         }
-
-        const produto = {
-          nome: formData.get('nome'),
-          descricao: formData.get('descricao'),
-          categoria: formData.get('categoria'),
-          loja: formData.get('loja'),
-          link: formData.get('link'),
-          preco: preco,
-          imagens: imageUrls
-        };
-
-        const res = await fetch(`${API_URL}/api/produtos${produtoId ? `/${produtoId}` : ''}`, {
-          method: produtoId ? 'PUT' : 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify(produto)
-        });
 
         const responseData = await res.json();
         console.log(`Resposta do ${produtoId ? 'PUT' : 'POST'}:`, responseData);
 
         if (!res.ok) {
-          if (res.status === 429) {
-            document.getElementById('erro').textContent = 'Limite de requisições excedido. Tente novamente em alguns minutos.';
-            return;
-          }
           if (res.status === 401 || res.status === 403) {
             localStorage.removeItem('adminToken');
             document.getElementById('erro').textContent = 'Sessão inválida. Clique três vezes no logotipo na página inicial.';
@@ -742,7 +649,7 @@
 
         document.getElementById('mensagem').textContent = produtoId ? 'Produto atualizado com sucesso!' : 'Produto adicionado com sucesso!';
         form.reset();
-        form.querySelector('[name="id"]').value = '';
+        document.getElementById('produto-id').value = '';
         document.getElementById('submit-button').textContent = 'Adicionar';
         document.getElementById('cancel-button').style.display = 'none';
         carregarProdutos();
@@ -750,17 +657,15 @@
         console.error('Erro ao salvar produto:', error.message);
         document.getElementById('erro').textContent = error.message;
       }
-    }
+    });
 
     function atualizarPaginacao() {
       const prevButton = document.getElementById('prev-page');
       const nextButton = document.getElementById('next-page');
       const pageInfo = document.getElementById('page-info');
-      if (prevButton && nextButton && pageInfo) {
-        prevButton.disabled = currentPage === 1;
-        nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
-        pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina) || 1}`;
-      }
+      prevButton.disabled = currentPage === 1;
+      nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
+      pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina) || 1}`;
     }
 
     document.getElementById('prev-page')?.addEventListener('click', () => {
@@ -779,15 +684,12 @@
       const modal = document.getElementById('imageModal');
       const carrosselImagens = document.getElementById('modalCarrosselImagens');
       const carrosselDots = document.getElementById('modalCarrosselDots');
-      currentImages = Array.isArray(produtos[produtoIndex]?.imagens) ? produtos[produtoIndex].imagens : [];
+      currentImages = produtos[produtoIndex].imagens || [];
       currentImageIndex = imageIndex;
 
-      if (currentImages.length === 0) {
-        document.getElementById('erro').textContent = 'Nenhuma imagem disponível para este produto.';
-        return;
-      }
+      if (currentImages.length === 0) return;
 
-      carrosselImagens.innerHTML = currentImages.map(img => `<img src="${escapeHTML(img)}" alt="Imagem ampliada" loading="lazy" onerror="this.src='/imagens/placeholder.jpg'; this.onerror=null;">`).join('');
+      carrosselImagens.innerHTML = currentImages.map(img => `<img src="${escapeHTML(img)}" alt="Imagem ampliada">`).join('');
       carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
 
       carrosselDots.innerHTML = currentImages.map((_, i) => `<span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})"></span>`).join('');
@@ -827,7 +729,6 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       console.log('admin-xyz-123.html carregado');
-      checkAuth();
       carregarProdutos();
     });
   </script>
