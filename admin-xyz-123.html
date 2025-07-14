@@ -3,272 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Gerenciar Produtos - Centro de Compras</title>
+  <title>Gerenciar Produtos - CentrodeCompra</title>
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
+  <!-- Font Awesome -->
+  <script src="https://kit.fontawesome.com/sua-chave-aqui.js" crossorigin="anonymous"></script>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="logos/favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="logos/apple-touch-icon.png">
   <link rel="stylesheet" href="style.css">
-  <style>
-    :root {
-      --primary-color: #ff6200;
-      --secondary-color: #6c757d;
-      --text-color-dark: #333;
-      --background-light: #f5f5f5;
-      --border-color: #ddd;
-      --shadow-light: 0 2px 4px rgba(0,0,0,0.1);
-      --border-radius-small: 4px;
-      --border-radius-medium: 8px;
-    }
-    body { 
-      font-family: 'Roboto', Arial, sans-serif; 
-      padding: 20px; 
-      background-color: var(--background-light);
-      margin: 0;
-    }
-    h1, h3 { 
-      text-align: center; 
-      color: var(--text-color-dark); 
-    }
-    form { 
-      max-width: 500px; 
-      margin: auto; 
-      display: flex; 
-      flex-direction: column; 
-      gap: 10px; 
-      background: white; 
-      padding: 20px; 
-      border-radius: var(--border-radius-medium); 
-      box-shadow: var(--shadow-light); 
-    }
-    input, select, textarea, button { 
-      padding: 10px; 
-      border: 1px solid var(--border-color); 
-      border-radius: var(--border-radius-small); 
-      font-size: 16px; 
-    }
-    textarea { 
-      resize: vertical; 
-      min-height: 100px; 
-    }
-    button { 
-      background-color: var(--primary-color); 
-      color: white; 
-      border: none; 
-      cursor: pointer; 
-      font-weight: bold; 
-    }
-    button:hover { 
-      background-color: #e55a00; 
-    }
-    #mensagem { 
-      margin-top: 10px; 
-      color: green; 
-      text-align: center; 
-    }
-    #erro { 
-      margin-top: 10px; 
-      color: red; 
-      text-align: center; 
-    }
-    #loading-spinner {
-      text-align: center;
-      display: none;
-      margin: 20px;
-    }
-    #produtos-cadastrados { 
-      margin: 20px auto; 
-      max-width: 900px; 
-      background: white; 
-      padding: 20px; 
-      border-radius: var(--border-radius-medium); 
-      box-shadow: var(--shadow-light); 
-    }
-    #produtos-cadastrados table { 
-      width: 100%; 
-      border-collapse: collapse; 
-    }
-    #produtos-cadastrados th, #produtos-cadastrados td { 
-      padding: 12px; 
-      border: 1px solid var(--border-color); 
-      text-align: left; 
-      vertical-align: middle;
-      overflow-wrap: break-word;
-      max-width: 200px;
-    }
-    #produtos-cadastrados th { 
-      background-color: #f9f9f9; 
-      font-weight: bold; 
-    }
-    #produtos-cadastrados td { 
-      font-size: 14px;
-    }
-    #produtos-cadastrados button.excluir { 
-      background-color: #dc3545; 
-      padding: 5px 10px; 
-      font-size: 14px; 
-      border: none; 
-      color: white; 
-      border-radius: var(--border-radius-small); 
-      cursor: pointer; 
-      margin-right: 5px; 
-    }
-    #produtos-cadastrados button.excluir:hover { 
-      background-color: #c82333; 
-    }
-    #produtos-cadastrados button.editar { 
-      background-color: #007bff; 
-      padding: 5px 10px; 
-      font-size: 14px; 
-      border: none; 
-      color: white; 
-      border-radius: var(--border-radius-small); 
-      cursor: pointer; 
-    }
-    #produtos-cadastrados button.editar:hover { 
-      background-color: #0056b3; 
-    }
-    .thumbnail { 
-      width: 50px; 
-      height: 50px; 
-      object-fit: contain; 
-      margin: 2px; 
-      cursor: pointer; 
-      border-radius: var(--border-radius-small); 
-      vertical-align: middle; 
-    }
-    #paginacao {
-      text-align: center;
-      margin: 20px 0;
-    }
-    #paginacao button {
-      margin: 0 10px;
-      padding: 8px 16px;
-      background-color: var(--primary-color);
-      color: white;
-      border: none;
-      border-radius: var(--border-radius-small);
-      cursor: pointer;
-    }
-    #paginacao button:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-    }
-    #paginacao span {
-      font-size: 16px;
-      margin: 0 10px;
-    }
-    .site-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 20px;
-      background-color: white;
-      box-shadow: var(--shadow-light);
-      margin-bottom: 20px;
-    }
-    .logo-container img {
-      width: 150px;
-      height: 50px;
-    }
-    .header-text h1 {
-      font-size: 1.5em;
-      margin: 0;
-    }
-    .header-text p {
-      margin: 5px 0 0;
-      color: var(--text-color-dark);
-    }
-    .logout-button {
-      background-color: var(--secondary-color);
-      padding: 8px 16px;
-      margin-left: auto;
-    }
-    .logout-button:hover {
-      background-color: #5a6268;
-    }
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.8);
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
-    }
-    .modal-content {
-      position: relative;
-      max-width: 90%;
-      max-height: 90%;
-      width: auto;
-      height: auto;
-    }
-    .modal-content .carrossel-imagens {
-      display: flex;
-      overflow: hidden;
-      width: 100%;
-      height: 100%;
-    }
-    .modal-content .carrossel-imagens img {
-      width: 100%;
-      height: auto;
-      object-fit: contain;
-      flex: 0 0 100%;
-      transition: transform 0.3s ease;
-    }
-    .modal-close {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: var(--primary-color);
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    .carrossel-prev, .carrossel-next {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background: rgba(0, 0, 0, 0.5);
-      color: white;
-      border: none;
-      padding: 10px;
-      cursor: pointer;
-      font-size: 18px;
-      border-radius: var(--border-radius-small);
-    }
-    .carrossel-prev { left: 10px; }
-    .carrossel-next { right: 10px; }
-    .carrossel-dots {
-      position: absolute;
-      bottom: 10px;
-      width: 100%;
-      text-align: center;
-    }
-    .carrossel-dot {
-      display: inline-block;
-      width: 10px;
-      height: 10px;
-      background: #ccc;
-      border-radius: 50%;
-      margin: 0 5px;
-      cursor: pointer;
-    }
-    .carrossel-dot.ativo { background: var(--primary-color); }
-  </style>
 </head>
 <body>
   <header class="site-header">
     <div class="logo-container">
       <a href="/index.html">
-        <img src="logos/logoscentrodecompras.jpeg" alt="Centro de Compras" id="site-logo-img" width="150" height="50">
+        <img src="logos/logoscentrodecompras.jpeg" alt="CentrodeCompra" id="site-logo-img" width="150" height="50">
       </a>
     </div>
     <div class="header-text">
@@ -352,7 +109,7 @@
     </div>
   </div>
   <footer>
-    <p>Todos os direitos reservados <strong>Grupo Centro de Compra "CdC"</strong> © <span id="year"></span></p>
+    <p>Todos os direitos reservados <strong>Grupo CentrodeCompra "CdC"</strong> © <span id="year"></span></p>
   </footer>
   <script>
     const API_URL = 'https://centrodecompra-backend.onrender.com';
@@ -361,6 +118,7 @@
     let totalProdutos = 0;
     let currentImages = [];
     let currentImageIndex = 0;
+    let produtos = []; // Adicionado para evitar erro no openModal
 
     // Verificar autenticação
     if (!localStorage.getItem('adminToken')) {
@@ -377,7 +135,7 @@
     // Função para escapar HTML e evitar XSS
     function escapeHTML(str) {
       return str.replace(/[&<>"']/g, (match) => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;'
       }[match]));
     }
 
@@ -433,7 +191,7 @@
             throw new Error(errorData.error || `Falha ao buscar produtos: ${res.status}`);
           }
 
-          const produtos = Array.isArray(data.produtos) ? data.produtos : Array.isArray(data) ? data : [];
+          produtos = Array.isArray(data.produtos) ? data.produtos : Array.isArray(data) ? data : [];
           totalProdutos = data.total || produtos.length;
           console.log('Produtos processados:', produtos, 'Total:', totalProdutos);
 
@@ -668,23 +426,11 @@
       pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina) || 1}`;
     }
 
-    document.getElementById('prev-page')?.addEventListener('click', () => {
-      if (currentPage > 1) {
-        currentPage--;
-        carregarProdutos();
-      }
-    });
-
-    document.getElementById('next-page')?.addEventListener('click', () => {
-      currentPage++;
-      carregarProdutos();
-    });
-
     function openModal(produtoIndex, imageIndex) {
       const modal = document.getElementById('imageModal');
       const carrosselImagens = document.getElementById('modalCarrosselImagens');
       const carrosselDots = document.getElementById('modalCarrosselDots');
-      currentImages = produtos[produtoIndex].imagens || [];
+      currentImages = produtos[produtoIndex]?.imagens || [];
       currentImageIndex = imageIndex;
 
       if (currentImages.length === 0) return;
