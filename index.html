@@ -197,6 +197,17 @@
         <h2 id="ofertas-titulo">🛍️ Ofertas do Dia</h2>
         <div class="lojas-parceiras">
           <h3>🌟 Lojas Parceiras</h3>
+           <!-- AdSense Ad -->
+        <div class="ad-container">
+          <ins class="adsbygoogle"
+               style="display:block"
+               data-ad-client="ca-pub-XXXXXXXXXX"
+               data-ad-slot="YOUR_AD_SLOT"
+               data-ad-format="auto"
+               data-full-width-responsive="true"></ins>
+          <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+          </script>
           <div class="grid-lojas">
             <div class="loja-todas ativa" onclick="filtrarPorLoja('todas')" role="button" aria-label="Filtrar por Todas as Lojas">
               <span>Todas as Lojas</span>
@@ -230,17 +241,7 @@
         <input type="text" id="busca" placeholder="Busque por produtos..." class="barra-busca" aria-label="Buscar produtos" />
         <div id="busca-feedback" class="busca-feedback">Buscando...</div>
         <div class="loading-spinner" id="loading-spinner"></div>
-        <!-- AdSense Ad -->
-        <div class="ad-container">
-          <ins class="adsbygoogle"
-               style="display:block"
-               data-ad-client="ca-pub-XXXXXXXXXX"
-               data-ad-slot="YOUR_AD_SLOT"
-               data-ad-format="auto"
-               data-full-width-responsive="true"></ins>
-          <script>
-            (adsbygoogle = window.adsbygoogle || []).push({});
-          </script>
+       
         </div>
         <div class="grid-lojas" id="grid-produtos"></div>
         <p class="mensagem-vazia" id="mensagem-vazia">Nenhum produto encontrado.</p>
