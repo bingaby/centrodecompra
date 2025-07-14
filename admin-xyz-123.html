@@ -377,7 +377,7 @@
 
     function escapeHTML(str) {
       return str.replace(/[&<>"']/g, (match) => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        '&': '&', '<': '<', '>': '>', '"': '"', "'": '''
       }[match]));
     }
 
@@ -395,6 +395,7 @@
       if (!tbody || !loadingSpinner || !erro) {
         console.error('Elementos essenciais não encontrados');
         erro.textContent = 'Erro: Elementos da página não encontrados.';
+        erro.style.display = 'block';
         return;
       }
 
@@ -408,6 +409,8 @@
         try {
           console.log(`Tentativa ${attempt}: Carregando produtos de ${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`);
           const token = localStorage.getItem('adminToken');
+          console.log('Token usado:', token);
+
           const controller = new AbortController();
           const timeoutId = setTimeout(() => controller.abort(), 5000);
           const res = await fetch(`${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`, {
@@ -485,7 +488,7 @@
         const precoFormatado = `R$ ${parseFloat(produto.preco || 0).toFixed(2).replace('.', ',')}`;
         const imagens = Array.isArray(produto.imagens) ? produto.imagens.filter(img => typeof img === 'string' && img) : [];
         const miniaturas = imagens.length > 0
-          ? imagens.map((img, i) => `<img src="${escapeHTML(img)}" class="thumbnail" alt="Imagem ${i + 1}" loading="lazy" data-index="${index}-${i}" onerror="handleImageError(this, '/imagens/placeholder.jpg')" />`).join('')
+          ? imagens.map((img, i) => `<img src="${escapeHTML(img)}" class="thumbnail" alt="Imagem ${i + 1}" loading="lazy" data-index="${index}-${i}" onclick="openModal(${index}, ${i})" onerror="handleImageError(this, '/imagens/placeholder.jpg')" />`).join('')
           : 'Sem imagens';
 
         tbody.innerHTML += `
@@ -747,7 +750,7 @@
         console.error('Erro ao salvar produto:', error.message);
         document.getElementById('erro').textContent = error.message;
       }
-    });
+    }
 
     function atualizarPaginacao() {
       const prevButton = document.getElementById('prev-page');
