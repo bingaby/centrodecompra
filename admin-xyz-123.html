@@ -358,12 +358,11 @@
     const API_URL = 'https://centrodecompra-backend.onrender.com';
     let produtos = [];
     let currentPage = 1;
-    const produtosPorPagina = 10; // Reduzido para evitar erro 429
+    const produtosPorPagina = 10;
     let totalProdutos = 0;
     let currentImages = [];
     let currentImageIndex = 0;
 
-    // Verificar autenticação
     function checkAuth() {
       if (!localStorage.getItem('adminToken')) {
         const tempToken = new URLSearchParams(window.location.search).get('tempToken');
@@ -376,20 +375,17 @@
       }
     }
 
-    // Função para escapar HTML e evitar XSS
     function escapeHTML(str) {
       return str.replace(/[&<>"']/g, (match) => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
       }[match]));
     }
 
-    // Função de logout
     function logout() {
       localStorage.removeItem('adminToken');
       window.location.href = '/index.html';
     }
 
-    // Atualizar ano no footer
     document.getElementById('year').textContent = new Date().getFullYear();
 
     async function carregarProdutos() {
@@ -399,7 +395,6 @@
       if (!tbody || !loadingSpinner || !erro) {
         console.error('Elementos essenciais não encontrados');
         erro.textContent = 'Erro: Elementos da página não encontrados.';
-        erro.style.display = 'block';
         return;
       }
 
@@ -413,8 +408,6 @@
         try {
           console.log(`Tentativa ${attempt}: Carregando produtos de ${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`);
           const token = localStorage.getItem('adminToken');
-          console.log('Token usado:', token);
-
           const controller = new AbortController();
           const timeoutId = setTimeout(() => controller.abort(), 5000);
           const res = await fetch(`${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`, {
@@ -513,15 +506,14 @@
       });
     }
 
-    // Função para lidar com erro de imagem com retry
     function handleImageError(imgElement, fallbackSrc) {
       if (imgElement.src !== fallbackSrc) {
         setTimeout(() => {
           imgElement.src = fallbackSrc;
-          imgElement.onerror = null; // Evita loop infinito
-        }, 1000); // Atraso de 1 segundo
+          imgElement.onerror = null;
+        }, 1000);
       } else {
-        imgElement.style.display = 'none'; // Oculta imagem quebrada
+        imgElement.style.display = 'none';
         console.error(`Falha ao carregar ${fallbackSrc} para imagem ${imgElement.dataset.index}`);
       }
     }
@@ -658,7 +650,6 @@
         }
 
         let imageUrls = [];
-        // Preservar imagens existentes se for edição
         if (produtoId) {
           const res = await fetch(`${API_URL}/api/produtos/${produtoId}`, {
             headers: {
@@ -685,7 +676,6 @@
           console.log('Imagens existentes do produto:', imageUrls);
         }
 
-        // Fazer upload de novas imagens, se houver
         if (imagens.length > 0) {
           const uploadFormData = new FormData();
           for (let i = 0; i < imagens.length; i++) {
