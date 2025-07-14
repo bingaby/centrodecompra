@@ -365,15 +365,15 @@
   </footer>
   <script>
    <script>
+  script>
   const API_URL = 'https://centrodecompra-backend.onrender.com';
   const GITHUB_URL = 'https://raw.githubusercontent.com/bingaby/centrodecompra/main';
   let currentPage = 1;
-  const produtosPorPagina = 8; // Alinhado com index.html
+  const produtosPorPagina = 10;
   let totalProdutos = 0;
   let currentImages = [];
   let currentImageIndex = 0;
-  let produtos = []; // Variável global para armazenar produtos
-
+  let produtos = [];
   // Verificar autenticação
   if (!localStorage.getItem('adminToken')) {
     const tempToken = new URLSearchParams(window.location.search).get('tempToken');
