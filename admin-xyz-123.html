@@ -367,10 +367,11 @@
     // NOTA: O mecanismo de autenticação via triplo clique é frágil e não recomendado para produção. Considere usar JWT ou OAuth para maior segurança.
     const API_URL = 'https://centrodecompra-backend.onrender.com';
     let currentPage = 1;
-    const produtosPorPagina = 25;
+    const produtosPorPagina = 8; // Alterado para 8, alinhado com index.html
     let totalProdutos = 0;
     let currentImages = [];
     let currentImageIndex = 0;
+    let produtos = []; // Variável global para armazenar produtos
 
     // Verificar autenticação
     if (!localStorage.getItem('adminToken')) {
@@ -380,14 +381,13 @@
       } else {
         alert('Acesso não autorizado. Por favor, clique três vezes no logotipo na página inicial para autenticar.');
         window.location.href = '/index.html';
-        return;
       }
     }
 
     // Função para escapar HTML e evitar XSS
     function escapeHTML(str) {
       return str.replace(/[&<>"']/g, (match) => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;'
       }[match]));
     }
 
@@ -413,17 +413,14 @@
       while (attempt <= maxRetries) {
         try {
           console.log(`Tentativa ${attempt}: Carregando produtos de ${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`);
-          const token = localStorage.getItem('adminToken');
-          console.log('Token usado:', token);
-
           const controller = new AbortController();
           const timeoutId = setTimeout(() => controller.abort(), 5000);
           const res = await fetch(`${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`, {
             cache: 'no-store',
             signal: controller.signal,
             headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
+              'Content-Type': 'application/json'
+              // Removido 'Authorization' pois GET /api/produtos não exige autenticação
             }
           });
           clearTimeout(timeoutId);
@@ -434,16 +431,10 @@
 
           if (!res.ok) {
             const errorData = data || {};
-            if (res.status === 401 || res.status === 403) {
-              localStorage.removeItem('adminToken');
-              erro.textContent = 'Sessão inválida ou expirada. Clique três vezes no logotipo na página inicial.';
-              window.location.href = '/index.html';
-              return;
-            }
             throw new Error(errorData.error || `Falha ao buscar produtos: ${res.status}`);
           }
 
-          const produtos = Array.isArray(data.produtos) ? data.produtos : Array.isArray(data) ? data : [];
+          produtos = Array.isArray(data.produtos) ? data.produtos : Array.isArray(data) ? data : [];
           totalProdutos = data.total || produtos.length;
           console.log('Produtos processados:', produtos, 'Total:', totalProdutos);
 
