@@ -240,6 +240,7 @@
       
       if (!tbody || !loadingSpinner || !erro) {
         console.error('Elementos DOM não encontrados: lista-produtos, loading-spinner ou erro');
+        erro.textContent = 'Erro: Elementos da página não encontrados.';
         return;
       }
 
@@ -248,9 +249,9 @@
       erro.textContent = '';
 
       try {
-        console.log(`Carregando produtos de ${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`);
+        console.log(`Iniciando requisição para ${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`);
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000); // Timeout de 15 segundos
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
         const res = await fetch(`${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`, {
           method: 'GET',
           cache: 'no-store',
@@ -295,6 +296,7 @@
     }
 
     function preencherTabela(produtos) {
+      console.log('Iniciando preenchimento da tabela');
       const tbody = document.getElementById('lista-produtos');
       tbody.innerHTML = '';
       const produtosArray = Array.isArray(produtos) ? produtos : [];
@@ -326,6 +328,7 @@
           </tr>
         `;
       });
+      console.log('Tabela preenchida com sucesso');
     }
 
     async function editarProduto(id) {
@@ -398,7 +401,8 @@
       const produtoId = formData.get('id');
       const link = formData.get('link');
       const preco = parseFloat(formData.get('preco'));
-      const imagens = formData.get('imagens') ? formData.get('imagens').split(',').map(url => url.trim()).filter(url => url) : [];
+      const imagensFiles = formData.get('imagens-files');
+      const imagensUrls = formData.get('imagens') ? formData.get('imagens').split(',').map(url => url.trim()).filter(url => url) : [];
 
       if (!link.match(/^https?:\/\/.+/)) {
         document.getElementById('erro').textContent = 'Link inválido! Deve começar com http:// ou https://';
@@ -413,6 +417,28 @@
       document.getElementById('erro').textContent = '';
 
       try {
+        let imagens = imagensUrls;
+        // Se houver arquivos de imagem, fazer upload
+        if (imagensFiles && imagensFiles.size > 0) {
+          const uploadData = new FormData();
+          for (const file of document.getElementById('imagens-files').files) {
+            uploadData.append('imagens', file);
+          }
+
+          console.log('Fazendo upload de imagens');
+          const uploadRes = await fetch(`${API_URL}/api/upload`, {
+            method: 'POST',
+            body: uploadData
+          });
+          if (!uploadRes.ok) {
+            const errorData = await uploadRes.json().catch(() => ({}));
+            throw new Error(errorData.error || 'Erro ao fazer upload das imagens');
+          }
+          const uploadResult = await uploadRes.json();
+          console.log('Resposta do upload:', uploadResult);
+          imagens = uploadResult.urls || [];
+        }
+
         const produtoData = {
           nome: formData.get('nome'),
           descricao: formData.get('descricao'),
@@ -537,7 +563,8 @@
     </select>
     <input type="url" name="link" placeholder="Link do produto (https://...)" required pattern="https?://.+" aria-label="Link do produto" />
     <input type="number" name="preco" placeholder="Preço do produto (ex.: 99.99)" step="0.01" min="0" required aria-label="Preço do produto" />
-    <input type="text" name="imagens" placeholder="URLs das imagens (separadas por vírgula)" aria-label="URLs das imagens do produto" />
+    <input type="text" name="imagens" placeholder="URLs das imagens (separadas por vírgula, opcional)" aria-label="URLs das imagens do produto" />
+    <input type="file" name="imagens-files" id="imagens-files" multiple accept="image/*" aria-label="Upload de imagens do produto" />
     <button type="submit" id="submit-button">Adicionar</button>
     <button type="button" id="cancel-button" style="display:none;background-color:var(--secondary-color);" onclick="cancelarEdicao()">Cancelar</button>
   </form>
