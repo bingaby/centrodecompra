@@ -1,4 +1,6 @@
 const API_URL = 'https://centrodecompra-backend.onrender.com'; // Use 'http://localhost:10000' para testes locais
+
+// Variáveis globais
 let produtos = [];
 let categoriaSelecionada = 'todas';
 let lojaSelecionada = 'todas';
@@ -143,7 +145,6 @@ function filtrarProdutos() {
   }
   const produtosFiltrados = produtos
     .filter((produto) => {
-      if (!produto) return false;
       const matchCategoria =
         categoriaSelecionada === 'todas' ||
         normalizarString(produto.categoria) === normalizarString(categoriaSelecionada);
@@ -164,6 +165,7 @@ function filtrarProdutos() {
   }
   mensagemVazia.style.display = 'none';
   gridProdutos.style.display = 'grid';
+
   produtosFiltrados.forEach((produto, produtoIndex) => {
     const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0
       ? produto.imagens.filter(img => typeof img === 'string' && img)
@@ -191,17 +193,25 @@ function filtrarProdutos() {
       </div>
       <span>${produto.nome || 'Produto sem nome'}</span>
       <span class="descricao">Loja: ${produto.loja || 'Desconhecida'}</span>
-      <p class="preco"><a href="${produto.link || '#'}" target="_blank" class="ver-preco">Clique aqui para ver o preço</a></p>
-      <a href="${produto.link || '#'}" target="_blank" class="ver-na-loja ${produto.loja?.toLowerCase() || 'default'}">Comprar</a>
+      <p class="preco"><a href="${produto.link || '#'}" target="_blank" class="ver-preco" onclick="trackAffiliateClick('${produto.loja}', '${produto.nome}')">Clique aqui para ver o preço</a></p>
+      <a href="${produto.link || '#'}" target="_blank" class="ver-na-loja ${produto.loja?.toLowerCase() || 'default'}" onclick="trackAffiliateClick('${produto.loja}', '${produto.nome}')">Comprar</a>
     `;
     gridProdutos.appendChild(produtoDiv);
+  });
+}
+
+// Função para rastrear cliques em links de afiliados (Google Analytics)
+function trackAffiliateClick(loja, produtoNome) {
+  gtag('event', 'affiliate_click', {
+    'event_category': 'Affiliate',
+    'event_label': `${loja} - ${produtoNome}`,
+    'value': 1
   });
 }
 
 // Funções do carrossel
 function moveCarrossel(carrosselId, direction) {
   const carrossel = document.getElementById(carrosselId);
-  if (!carrossel) return;
   const imagens = carrossel.querySelector('.carrossel-imagens');
   const dots = carrossel.querySelectorAll('.carrossel-dot');
   let currentIndex = parseInt(imagens.dataset.index || 0);
@@ -214,7 +224,6 @@ function moveCarrossel(carrosselId, direction) {
 
 function setCarrosselImage(carrosselId, index) {
   const carrossel = document.getElementById(carrosselId);
-  if (!carrossel) return;
   const imagens = carrossel.querySelector('.carrossel-imagens');
   const dots = carrossel.querySelectorAll('.carrossel-dot');
   imagens.style.transform = `translateX(-${index * 100}%)`;
@@ -227,10 +236,8 @@ async function openModal(produtoIndex, imageIndex) {
   const modal = document.getElementById('imageModal');
   const carrosselImagens = document.getElementById('modalCarrosselImagens');
   const carrosselDots = document.getElementById('modalCarrosselDots');
-  if (!modal || !carrosselImagens || !carrosselDots || !produtos[produtoIndex]) return;
-
   try {
-    currentImages = Array.isArray(produtos[produtoIndex].imagens) && produtos[produtoIndex].imagens.length > 0
+    currentImages = Array.isArray(produtos[produtoIndex]?.imagens) && produtos[produtoIndex].imagens.length > 0
       ? produtos[produtoIndex].imagens.filter(img => typeof img === 'string' && img)
       : ['imagens/placeholder.jpg'];
     currentImageIndex = imageIndex;
@@ -276,6 +283,11 @@ function configurarBusca() {
     buscaInput.addEventListener('input', (e) => {
       termoBusca = e.target.value;
       filtrarProdutos();
+      gtag('event', 'search', {
+        'event_category': 'Engagement',
+        'event_label': termoBusca,
+        'value': 1
+      });
     });
   }
 }
@@ -289,6 +301,11 @@ function filtrarPorCategoria(categoria) {
   document.querySelector(`.categoria-item[data-categoria="${categoria}"]`).classList.add('ativa');
   console.log('Categoria selecionada:', categoria);
   carregarProdutos();
+  gtag('event', 'filter_category', {
+    'event_category': 'Engagement',
+    'event_label': categoria,
+    'value': 1
+  });
 }
 
 function filtrarPorLoja(loja) {
@@ -299,6 +316,11 @@ function filtrarPorLoja(loja) {
   document.querySelector(`[data-loja="${loja}"]`).classList.add('ativa');
   console.log('Loja selecionada:', loja);
   carregarProdutos();
+  gtag('event', 'filter_store', {
+    'event_category': 'Engagement',
+    'event_label': loja,
+    'value': 1
+  });
 }
 
 // Configurar paginação
@@ -310,6 +332,11 @@ function configurarPaginacao() {
       if (currentPage > 1) {
         currentPage--;
         carregarProdutos();
+        gtag('event', 'pagination', {
+          'event_category': 'Navigation',
+          'event_label': 'Previous Page',
+          'value': currentPage
+        });
       }
     });
   }
@@ -317,6 +344,11 @@ function configurarPaginacao() {
     nextButton.addEventListener('click', () => {
       currentPage++;
       carregarProdutos();
+      gtag('event', 'pagination', {
+        'event_category': 'Navigation',
+        'event_label': 'Next Page',
+        'value': currentPage
+      });
     });
   }
 }
