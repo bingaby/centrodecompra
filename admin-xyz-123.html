@@ -206,13 +206,13 @@
 
     const API_URL = 'https://centrodecompra-backend.onrender.com';
     let currentPage = 1;
-    const produtosPorPagina = 24;
+    const produtosPorPagina = 25; // Alterado para 25 itens por página
     let totalProdutos = 0;
 
     // Função para escapar HTML e evitar XSS
     function escapeHTML(str) {
       return str.replace(/[&<>"']/g, (match) => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;'
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
       }[match]));
     }
 
@@ -259,8 +259,11 @@
           clearTimeout(timeoutId);
 
           console.log('Status da resposta:', res.status, res.statusText);
+          const data = await res.json();
+          console.log('Dados recebidos:', data);
+
           if (!res.ok) {
-            const errorData = await res.json().catch(() => ({}));
+            const errorData = data || {};
             if (res.status === 401 || res.status === 403) {
               localStorage.removeItem('adminToken');
               erro.textContent = 'Sessão inválida ou expirada. Clique três vezes no logotipo na página inicial.';
@@ -271,12 +274,15 @@
             throw new Error(errorData.error || `Falha ao buscar produtos: ${res.status}`);
           }
 
-          const data = await res.json();
-          console.log('Dados brutos:', data);
           const produtos = Array.isArray(data.produtos) ? data.produtos : Array.isArray(data) ? data : [];
           totalProdutos = data.total || produtos.length;
           console.log('Produtos processados:', produtos, 'Total:', totalProdutos);
-          preencherTabela(produtos);
+
+          if (produtos.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Nenhum produto cadastrado.</td></tr>';
+          } else {
+            preencherTabela(produtos);
+          }
           atualizarPaginacao();
           return;
         } catch (err) {
