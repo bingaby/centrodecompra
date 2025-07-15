@@ -270,7 +270,7 @@
       <a href="/index.html">
         <img src="/imagens/logoscentrodecompras.jpeg" alt="Centro de Compras" id="site-logo-img" width="150" height="50">
       </a>
-   ALLEL
+    </div>
     <div class="header-text">
       <h1>Gerenciar Produtos</h1>
       <p>Adicione, edite ou remova produtos do portal</p>
@@ -364,20 +364,19 @@
     let currentImageIndex = 0;
 
     function checkAuth() {
-      if (!localStorage.getItem('adminToken')) {
-        const tempToken = new URLSearchParams(window.location.search).get('tempToken');
-        if (tempToken === 'triple-click-access') {
-          localStorage.setItem('adminToken', 'temp-token-' + Date.now());
-        } else {
-          alert('Acesso não autorizado. Por favor, clique três vezes no logotipo na página inicial para autenticar.');
-          window.location.href = '/index.html';
-        }
+      const tempToken = new URLSearchParams(window.location.search).get('tempToken');
+      if (tempToken === 'triple-click-access') {
+        localStorage.setItem('adminToken', 'temp-token-' + Date.now());
+        console.log('Token gerado e salvo:', localStorage.getItem('adminToken'));
+      } else if (!localStorage.getItem('adminToken')) {
+        alert('Acesso não autorizado. Clique três vezes no logotipo na página inicial para autenticar.');
+        window.location.href = '/index.html';
       }
     }
 
     function escapeHTML(str) {
       return str.replace(/[&<>"']/g, (match) => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;'
       }[match]));
     }
 
@@ -385,8 +384,6 @@
       localStorage.removeItem('adminToken');
       window.location.href = '/index.html';
     }
-
-    document.getElementById('year').textContent = new Date().getFullYear();
 
     async function carregarProdutos() {
       const tbody = document.getElementById('lista-produtos');
@@ -412,13 +409,13 @@
           console.log('Token usado:', token);
 
           const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 10000);
+          const timeoutId = setTimeout(() => controller.abort(), 15000);
           const res = await fetch(`${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`, {
             cache: 'no-store',
             signal: controller.signal,
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
+              'Authorization': `Bearer ${token || 'temp-token-dummy'}`
             }
           });
           clearTimeout(timeoutId);
@@ -468,10 +465,11 @@
           if (attempt === maxRetries) {
             let errorMessage = `Erro após ${maxRetries} tentativas: ${err.message}`;
             if (err.message.includes('Failed to fetch') || err.name === 'AbortError') {
-              errorMessage = 'Erro de conexão com o servidor. Verifique sua rede ou a configuração do servidor.';
+              errorMessage = 'Erro de conexão com o servidor. Verifique sua rede ou o servidor no Render.com.';
             }
             tbody.innerHTML = `<tr><td colspan="8" style="color:red;text-align:center;">${errorMessage}</td></tr>`;
             erro.textContent = errorMessage;
+            erro.style.display = 'block';
           }
           attempt++;
           await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
@@ -497,7 +495,7 @@
         const precoFormatado = `R$ ${parseFloat(produto.preco || 0).toFixed(2).replace('.', ',')}`;
         const imagens = Array.isArray(produto.imagens) ? produto.imagens.filter(img => typeof img === 'string' && img) : [];
         const miniaturas = imagens.length > 0
-          ? imagens.map((img, i) => `<img src="${escapeHTML(img)}" class="thumbnail" alt="Imagem ${i + 1}" loading="lazy" data-index="${index}-${i}" onclick="openModal(${index}, ${i})" onerror="handleImageError(this, '/imagens/placeholder.jpg')" />`).join('')
+          ? imagens.map((img, i) => `<img src="${escapeHTML(img)}" class="thumbnail" alt="Imagem ${i + 1}" loading="lazy" data-index="${index}-${i}" onclick="openModal(${index}, ${i})" onerror="this.src='/imagens/placeholder.jpg'; this.onerror=null;" />`).join('')
           : 'Sem imagens';
 
         tbody.innerHTML += `
@@ -516,16 +514,6 @@
           </tr>
         `;
       });
-    }
-
-    function handleImageError(imgElement, fallbackSrc) {
-      if (imgElement.src !== fallbackSrc) {
-        imgElement.src = fallbackSrc;
-        imgElement.onerror = null;
-      } else {
-        imgElement.style.display = 'none';
-        console.error(`Falha ao carregar ${fallbackSrc} para imagem ${imgElement.dataset.index}`);
-      }
     }
 
     async function editarProduto(id) {
@@ -806,10 +794,8 @@
       const carrosselImagens = document.getElementById('modalCarrosselImagens');
       const carrosselDots = document.getElementById('modalCarrosselDots').children;
       const totalImagens = currentImages.length;
-
       currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
       carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
-
       Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
     }
 
