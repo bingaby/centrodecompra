@@ -9,185 +9,431 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/imagens/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/imagens/favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/imagens/apple-touch-icon.png">
-  <link rel="stylesheet" href="style.css">
   <style>
     :root {
       --primary-color: #ff6200;
       --secondary-color: #6c757d;
+      --success-color: #28a745;
+      --danger-color: #dc3545;
+      --warning-color: #ffc107;
+      --info-color: #17a2b8;
       --text-color-dark: #333;
-      --background-light: #f5f5f5;
+      --background-light: #f8f9fa;
       --border-color: #ddd;
       --shadow-light: 0 2px 4px rgba(0,0,0,0.1);
+      --shadow-hover: 0 4px 8px rgba(0,0,0,0.15);
       --border-radius-small: 4px;
       --border-radius-medium: 8px;
+      --border-radius-large: 12px;
     }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body { 
       font-family: 'Roboto', Arial, sans-serif; 
-      padding: 20px; 
       background-color: var(--background-light);
       margin: 0;
+      padding: 0;
+      line-height: 1.6;
     }
-    h1, h3 { 
-      text-align: center; 
-      color: var(--text-color-dark); 
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
     }
-    form { 
-      max-width: 500px; 
-      margin: auto; 
-      display: flex; 
-      flex-direction: column; 
-      gap: 10px; 
-      background: white; 
-      padding: 20px; 
-      border-radius: var(--border-radius-medium); 
-      box-shadow: var(--shadow-light); 
-    }
-    input, select, textarea, button { 
-      padding: 10px; 
-      border: 1px solid var(--border-color); 
-      border-radius: var(--border-radius-small); 
-      font-size: 16px; 
-    }
-    textarea { 
-      resize: vertical; 
-      min-height: 100px; 
-    }
-    button { 
-      background-color: var(--primary-color); 
-      color: white; 
-      border: none; 
-      cursor: pointer; 
-      font-weight: bold; 
-    }
-    button:hover { 
-      background-color: #e55a00; 
-    }
-    #mensagem { 
-      margin-top: 10px; 
-      color: green; 
-      text-align: center; 
-    }
-    #erro { 
-      margin-top: 10px; 
-      color: red; 
-      text-align: center; 
-    }
-    #loading-spinner {
-      text-align: center;
-      display: none;
-      margin: 20px;
-    }
-    #produtos-cadastrados { 
-      margin: 20px auto; 
-      max-width: 900px; 
-      background: white; 
-      padding: 20px; 
-      border-radius: var(--border-radius-medium); 
-      box-shadow: var(--shadow-light); 
-    }
-    #produtos-cadastrados table { 
-      width: 100%; 
-      border-collapse: collapse; 
-    }
-    #produtos-cadastrados th, #produtos-cadastrados td { 
-      padding: 12px; 
-      border: 1px solid var(--border-color); 
-      text-align: left; 
-      vertical-align: middle;
-      overflow-wrap: break-word;
-      max-width: 200px;
-    }
-    #produtos-cadastrados th { 
-      background-color: #f9f9f9; 
-      font-weight: bold; 
-    }
-    #produtos-cadastrados td { 
-      font-size: 14px;
-    }
-    #produtos-cadastrados button.excluir { 
-      background-color: #dc3545; 
-      padding: 5px 10px; 
-      font-size: 14px; 
-      border: none; 
-      color: white; 
-      border-radius: var(--border-radius-small); 
-      cursor: pointer; 
-      margin-right: 5px; 
-    }
-    #produtos-cadastrados button.excluir:hover { 
-      background-color: #c82333; 
-    }
-    #produtos-cadastrados button.editar { 
-      background-color: #007bff; 
-      padding: 5px 10px; 
-      font-size: 14px; 
-      border: none; 
-      color: white; 
-      border-radius: var(--border-radius-small); 
-      cursor: pointer; 
-    }
-    #produtos-cadastrados button.editar:hover { 
-      background-color: #0056b3; 
-    }
-    .thumbnail { 
-      width: 50px; 
-      height: 50px; 
-      object-fit: contain; 
-      margin: 2px; 
-      cursor: pointer; 
-      border-radius: var(--border-radius-small); 
-      vertical-align: middle; 
-    }
-    #paginacao {
-      text-align: center;
-      margin: 20px 0;
-    }
-    #paginacao button {
-      margin: 0 10px;
-      padding: 8px 16px;
-      background-color: var(--primary-color);
-      color: white;
-      border: none;
-      border-radius: var(--border-radius-small);
-      cursor: pointer;
-    }
-    #paginacao button:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-    }
-    #paginacao span {
-      font-size: 16px;
-      margin: 0 10px;
-    }
+
     .site-header {
+      background: linear-gradient(135deg, var(--primary-color), #e55a00);
+      color: white;
+      padding: 20px;
+      border-radius: var(--border-radius-large);
+      margin-bottom: 30px;
+      box-shadow: var(--shadow-light);
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .logo-section {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 10px 20px;
-      background-color: white;
-      box-shadow: var(--shadow-light);
-      margin-bottom: 20px;
+      gap: 15px;
     }
-    .logo-container img {
-      width: 150px;
-      height: 50px;
+
+    .logo-section img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
     }
+
     .header-text h1 {
-      font-size: 1.5em;
       margin: 0;
+      font-size: 1.8em;
+      font-weight: 700;
     }
+
     .header-text p {
       margin: 5px 0 0;
+      opacity: 0.9;
+      font-size: 0.95em;
+    }
+
+    .logout-button {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: white;
+      padding: 10px 20px;
+      border-radius: var(--border-radius-medium);
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .logout-button:hover {
+      background: rgba(255,255,255,0.3);
+      transform: translateY(-2px);
+    }
+
+    .form-section {
+      background: white;
+      padding: 30px;
+      border-radius: var(--border-radius-large);
+      box-shadow: var(--shadow-light);
+      margin-bottom: 30px;
+    }
+
+    .form-section h2 {
+      margin: 0 0 20px 0;
+      color: var(--text-color-dark);
+      font-size: 1.5em;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-group label {
+      font-weight: 600;
+      color: var(--text-color-dark);
+      font-size: 0.9em;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      padding: 12px;
+      border: 2px solid var(--border-color);
+      border-radius: var(--border-radius-medium);
+      font-size: 16px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(255, 98, 0, 0.1);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 100px;
+      font-family: inherit;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: var(--border-radius-medium);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #e55a00;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .btn-secondary {
+      background: var(--secondary-color);
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #5a6268;
+      transform: translateY(-2px);
+    }
+
+    .btn-danger {
+      background: var(--danger-color);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #c82333;
+      transform: translateY(-2px);
+    }
+
+    .btn-info {
+      background: var(--info-color);
+      color: white;
+    }
+
+    .btn-info:hover {
+      background: #138496;
+      transform: translateY(-2px);
+    }
+
+    .alert {
+      padding: 15px;
+      border-radius: var(--border-radius-medium);
+      margin: 15px 0;
+      font-weight: 500;
+      display: none;
+    }
+
+    .alert.show {
+      display: block;
+    }
+
+    .alert-success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .alert-danger {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .loading.show {
+      display: block;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid var(--border-color);
+      border-top: 4px solid var(--primary-color);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .products-section {
+      background: white;
+      border-radius: var(--border-radius-large);
+      box-shadow: var(--shadow-light);
+      overflow: hidden;
+    }
+
+    .products-header {
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+      padding: 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .products-header h2 {
+      margin: 0;
+      color: var(--text-color-dark);
+      font-size: 1.5em;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .product-card {
+      border: 2px solid var(--border-color);
+      border-radius: var(--border-radius-medium);
+      padding: 20px;
+      transition: all 0.3s ease;
+      background: white;
+    }
+
+    .product-card:hover {
+      border-color: var(--primary-color);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .product-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 15px;
+    }
+
+    .product-name {
+      font-size: 1.2em;
+      font-weight: 600;
+      color: var(--text-color-dark);
+      margin: 0;
+      flex: 1;
+    }
+
+    .product-price {
+      background: var(--primary-color);
+      color: white;
+      padding: 5px 12px;
+      border-radius: var(--border-radius-medium);
+      font-weight: 600;
+      font-size: 0.9em;
+    }
+
+    .product-meta {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .product-badge {
+      background: var(--info-color);
+      color: white;
+      padding: 4px 8px;
+      border-radius: var(--border-radius-small);
+      font-size: 0.8em;
+      font-weight: 600;
+    }
+
+    .product-badge.categoria {
+      background: var(--success-color);
+    }
+
+    .product-description {
+      color: #666;
+      margin-bottom: 15px;
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .product-images {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+
+    .product-thumbnail {
+      width: 60px;
+      height: 60px;
+      border-radius: var(--border-radius-small);
+      object-fit: cover;
+      cursor: pointer;
+      border: 2px solid var(--border-color);
+      transition: all 0.3s ease;
+    }
+
+    .product-thumbnail:hover {
+      border-color: var(--primary-color);
+      transform: scale(1.05);
+    }
+
+    .product-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .product-actions .btn {
+      padding: 8px 16px;
+      font-size: 0.9em;
+      flex: 1;
+      min-width: 80px;
+      justify-content: center;
+    }
+
+    .product-link {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9em;
+    }
+
+    .product-link:hover {
+      text-decoration: underline;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      padding: 20px;
+      background: #f8f9fa;
+    }
+
+    .pagination .btn {
+      padding: 8px 16px;
+      font-size: 0.9em;
+    }
+
+    .pagination .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .page-info {
+      font-weight: 600;
       color: var(--text-color-dark);
     }
-    .logout-button {
-      background-color: var(--secondary-color);
-      padding: 8px 16px;
-      margin-left: auto;
-    }
-    .logout-button:hover {
-      background-color: #5a6268;
-    }
+
     .modal {
       display: none;
       position: fixed;
@@ -195,634 +441,476 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(0, 0, 0, 0.8);
+      background: rgba(0, 0, 0, 0.9);
       z-index: 1000;
       justify-content: center;
       align-items: center;
     }
+
+    .modal.show {
+      display: flex;
+    }
+
     .modal-content {
       position: relative;
       max-width: 90%;
       max-height: 90%;
-      width: auto;
-      height: auto;
-    }
-    .modal-content .carrossel-imagens {
-      display: flex;
+      border-radius: var(--border-radius-medium);
       overflow: hidden;
-      width: 100%;
-      height: 100%;
     }
-    .modal-content .carrossel-imagens img {
+
+    .modal-image {
       width: 100%;
       height: auto;
+      max-height: 80vh;
       object-fit: contain;
-      flex: 0 0 100%;
-      transition: transform 0.3s ease;
     }
+
     .modal-close {
       position: absolute;
-      top: 10px;
-      right: 10px;
+      top: 15px;
+      right: 15px;
       background: var(--primary-color);
       color: white;
       border: none;
-      padding: 8px 12px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    .carrossel-prev, .carrossel-next {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background: rgba(0, 0, 0, 0.5);
-      color: white;
-      border: none;
-      padding: 10px;
       cursor: pointer;
       font-size: 18px;
-      border-radius: var(--border-radius-small);
+      font-weight: bold;
+      transition: all 0.3s ease;
     }
-    .carrossel-prev { left: 10px; }
-    .carrossel-next { right: 10px; }
-    .carrossel-dots {
-      position: absolute;
-      bottom: 10px;
-      width: 100%;
+
+    .modal-close:hover {
+      background: #e55a00;
+      transform: scale(1.1);
+    }
+
+    .empty-state {
       text-align: center;
+      padding: 60px 20px;
+      color: #666;
     }
-    .carrossel-dot {
-      display: inline-block;
-      width: 10px;
-      height: 10px;
-      background: #ccc;
-      border-radius: 50%;
-      margin: 0 5px;
-      cursor: pointer;
+
+    .empty-state h3 {
+      margin: 0 0 10px 0;
+      font-size: 1.5em;
+      color: var(--text-color-dark);
     }
-    .carrossel-dot.ativo { background: var(--primary-color); }
+
+    .empty-state p {
+      margin: 0;
+      font-size: 1.1em;
+    }
+
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .products-grid {
+        grid-template-columns: 1fr;
+        padding: 15px;
+      }
+      
+      .product-actions {
+        flex-direction: column;
+      }
+      
+      .form-actions {
+        flex-direction: column;
+      }
+    }
   </style>
 </head>
 <body>
-  <header class="site-header">
-    <div class="logo-container">
-      <a href="/index.html">
-        <img src="/imagens/logoscentrodecompras.jpeg" alt="Centro de Compras" id="site-logo-img" width="150" height="50">
-      </a>
+  <div class="container">
+    <header class="site-header">
+      <div class="header-content">
+        <div class="logo-section">
+          <img src="/imagens/logoscentrodecompras.jpeg" alt="Centro de Compras" onerror="this.style.display='none'">
+          <div class="header-text">
+            <h1>Gerenciar Produtos</h1>
+            <p>Adicione, edite ou remova produtos do portal</p>
+          </div>
+        </div>
+        <button class="logout-button" onclick="AppManager.logout()">
+          <span>🚪</span> Sair
+        </button>
+      </div>
+    </header>
+
+    <div class="form-section">
+      <h2 id="form-title">➕ Adicionar Produto</h2>
+      <form id="product-form">
+        <input type="hidden" id="product-id">
+        
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="product-name">Nome do Produto *</label>
+            <input type="text" id="product-name" required maxlength="100">
+          </div>
+          
+          <div class="form-group">
+            <label for="product-price">Preço (R$) *</label>
+            <input type="number" id="product-price" step="0.01" min="0" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="product-category">Categoria *</label>
+            <select id="product-category" required>
+              <option value="">Selecione uma categoria</option>
+              <option value="eletronicos">Eletrônicos</option>
+              <option value="moda">Moda</option>
+              <option value="fitness">Fitness</option>
+              <option value="casa">Casa e Decoração</option>
+              <option value="beleza">Beleza</option>
+              <option value="esportes">Esportes</option>
+              <option value="livros">Livros</option>
+              <option value="infantil">Infantil</option>
+              <option value="celulares">Celulares</option>
+              <option value="eletrodomesticos">Eletrodomésticos</option>
+              <option value="pet">Pet</option>
+              <option value="jardinagem">Jardinagem</option>
+              <option value="automotivo">Automotivo</option>
+              <option value="gastronomia">Gastronomia</option>
+              <option value="games">Games</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="product-store">Loja *</label>
+            <select id="product-store" required>
+              <option value="">Selecione uma loja</option>
+              <option value="amazon">Amazon</option>
+              <option value="magalu">Magalu</option>
+              <option value="shein">Shein</option>
+              <option value="shopee">Shopee</option>
+              <option value="mercadolivre">Mercado Livre</option>
+              <option value="alibaba">Alibaba</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="product-link">Link do Produto *</label>
+            <input type="url" id="product-link" required placeholder="https://...">
+          </div>
+          
+          <div class="form-group">
+            <label for="product-images">Imagens (máx. 3)</label>
+            <input type="file" id="product-images" accept="image/*" multiple>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="product-description">Descrição *</label>
+          <textarea id="product-description" required maxlength="500" placeholder="Descreva o produto..."></textarea>
+        </div>
+        
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" id="submit-btn">
+            <span>➕</span> Adicionar Produto
+          </button>
+          <button type="button" class="btn btn-secondary" id="cancel-btn" onclick="AppManager.cancelEdit()" style="display: none;">
+            <span>❌</span> Cancelar
+          </button>
+        </div>
+      </form>
     </div>
-    <div class="header-text">
-      <h1>Gerenciar Produtos</h1>
-      <p>Adicione, edite ou remova produtos do portal</p>
+
+    <div class="alert alert-success" id="success-alert"></div>
+    <div class="alert alert-danger" id="error-alert"></div>
+    
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p>Carregando produtos...</p>
     </div>
-    <button class="logout-button" onclick="logout()">Sair</button>
-  </header>
-  <form id="form-produto" enctype="multipart/form-data">
-    <input type="hidden" name="id" id="produto-id">
-    <input type="text" name="nome" placeholder="Nome do produto" required aria-label="Nome do produto" />
-    <textarea name="descricao" placeholder="Descrição do produto" required aria-label="Descrição do produto"></textarea>
-    <select name="categoria" required aria-label="Categoria do produto">
-      <option value="" disabled selected>Selecione uma categoria</option>
-      <option value="eletronicos">Eletrônicos</option>
-      <option value="moda">Moda</option>
-      <option value="fitness">Fitness</option>
-      <option value="casa">Casa e Decoração</option>
-      <option value="beleza">Beleza</option>
-      <option value="esportes">Esportes</option>
-      <option value="livros">Livros</option>
-      <option value="infantil">Infantil</option>
-      <option value="celulares">Celulares</option>
-      <option value="eletrodomesticos">Eletrodomésticos</option>
-      <option value="pet">Pet</option>
-      <option value="jardinagem">Jardinagem</option>
-      <option value="automotivo">Automotivo</option>
-      <option value="gastronomia">Gastronomia</option>
-      <option value="games">Games</option>
-    </select>
-    <select name="loja" required aria-label="Loja do produto">
-      <option value="" disabled selected>Selecione uma loja</option>
-      <option value="amazon">Amazon</option>
-      <option value="magalu">Magalu</option>
-      <option value="shein">Shein</option>
-      <option value="shopee">Shopee</option>
-      <option value="mercadolivre">Mercado Livre</option>
-      <option value="alibaba">Alibaba</option>
-    </select>
-    <input type="url" name="link" placeholder="Link do produto (https://...)" required pattern="https?://.+" aria-label="Link do produto" />
-    <input type="number" name="preco" placeholder="Preço do produto (ex.: 99.99)" step="0.01" min="0" required aria-label="Preço do produto" />
-    <input type="file" name="imagens" accept="image/*" multiple aria-label="Imagens do produto" />
-    <button type="submit" id="submit-button">Adicionar</button>
-    <button type="button" id="cancel-button" style="display:none;background-color:var(--secondary-color);" onclick="cancelarEdicao()">Cancelar</button>
-  </form>
-  <div id="mensagem"></div>
-  <div id="erro"></div>
-  <div id="loading-spinner">Carregando...</div>
-  <div id="produtos-cadastrados">
-    <h3>Produtos Cadastrados</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Nome</th>
-          <th>Descrição</th>
-          <th>Categoria</th>
-          <th>Loja</th>
-          <th>Link</th>
-          <th>Preço</th>
-          <th>Imagens</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody id="lista-produtos">
-        <tr><td colspan="8" style="text-align:center;">Carregando produtos...</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div id="paginacao">
-    <button id="prev-page" disabled aria-label="Página anterior">Anterior</button>
-    <span id="page-info">Página 1</span>
-    <button id="next-page" aria-label="Próxima página">Próximo</button>
-  </div>
-  <div class="modal" id="imageModal">
-    <button class="modal-close" onclick="closeModal()">✕</button>
-    <div class="modal-content" id="modalCarrossel">
-      <div class="carrossel-imagens" id="modalCarrosselImagens"></div>
-      <button class="carrossel-prev" onclick="moveModalCarrossel(-1)">◄</button>
-      <button class="carrossel-next" onclick="moveModalCarrossel(1)">►</button>
-      <div class="carrossel-dots" id="modalCarrosselDots"></div>
+
+    <div class="products-section">
+      <div class="products-header">
+        <h2>📦 Produtos Cadastrados</h2>
+      </div>
+      
+      <div class="products-grid" id="products-grid">
+        <!-- Produtos serão inseridos aqui -->
+      </div>
+      
+      <div class="pagination">
+        <button class="btn btn-secondary" id="prev-btn" onclick="AppManager.previousPage()">
+          <span>⬅️</span> Anterior
+        </button>
+        <span class="page-info" id="page-info">Página 1 de 1</span>
+        <button class="btn btn-secondary" id="next-btn" onclick="AppManager.nextPage()">
+          Próximo <span>➡️</span>
+        </button>
+      </div>
     </div>
   </div>
-  <footer>
-    <p>Todos os direitos reservados <strong>Grupo Centro de Compra "CdC"</strong> © <span id="year"></span></p>
-  </footer>
+
+  <div class="modal" id="image-modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="AppManager.closeModal()">✕</button>
+      <img class="modal-image" id="modal-image" src="" alt="Imagem ampliada">
+    </div>
+  </div>
+
   <script>
-    const API_URL = 'https://centrodecompra-backend.onrender.com';
-    let produtos = [];
-    let currentPage = 1;
-    const produtosPorPagina = 10;
-    let totalProdutos = 0;
-    let currentImages = [];
-    let currentImageIndex = 0;
+    // Configuração da aplicação
+    const CONFIG = {
+      API_URL: 'https://centrodecompra-backend.onrender.com',
+      ITEMS_PER_PAGE: 12,
+      MAX_IMAGES: 3,
+      MAX_RETRIES: 3,
+      TIMEOUT: 15000
+    };
 
-    function checkAuth() {
-      const tempToken = new URLSearchParams(window.location.search).get('tempToken');
-      if (tempToken === 'triple-click-access') {
-        localStorage.setItem('adminToken', 'temp-token-' + Date.now());
-        console.log('Token gerado e salvo:', localStorage.getItem('adminToken'));
-      } else if (!localStorage.getItem('adminToken')) {
-        alert('Acesso não autorizado. Clique três vezes no logotipo na página inicial para autenticar.');
-        window.location.href = '/index.html';
-      }
-    }
-
-    function escapeHTML(str) {
-      return str.replace(/[&<>"']/g, (match) => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;'
-      }[match]));
-    }
-
-    function logout() {
-      localStorage.removeItem('adminToken');
-      window.location.href = '/index.html';
-    }
-
-    async function carregarProdutos() {
-      const tbody = document.getElementById('lista-produtos');
-      const loadingSpinner = document.getElementById('loading-spinner');
-      const erro = document.getElementById('erro');
-      if (!tbody || !loadingSpinner || !erro) {
-        console.error('Elementos essenciais não encontrados');
-        erro.textContent = 'Erro: Elementos da página não encontrados.';
-        erro.style.display = 'block';
-        return;
+    // Gerenciador de aplicação
+    class AppManager {
+      constructor() {
+        this.state = {
+          products: [],
+          currentPage: 1,
+          totalProducts: 0,
+          isLoading: false,
+          isEditing: false,
+          editingId: null
+        };
+        this.init();
       }
 
-      loadingSpinner.style.display = 'block';
-      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Carregando...</td></tr>';
-      erro.textContent = '';
+      init() {
+        this.checkAuth();
+        this.setupEventListeners();
+        this.loadProducts();
+      }
 
-      const maxRetries = 3;
-      let attempt = 1;
-      while (attempt <= maxRetries) {
+      checkAuth() {
+        const tempToken = new URLSearchParams(window.location.search).get('tempToken');
+        if (tempToken === 'triple-click-access') {
+          sessionStorage.setItem('adminToken', 'temp-token-' + Date.now());
+        } else if (!sessionStorage.getItem('adminToken')) {
+          this.showError('Acesso não autorizado. Clique três vezes no logotipo na página inicial.');
+          setTimeout(() => window.location.href = '/index.html', 2000);
+        }
+      }
+
+      setupEventListeners() {
+        document.getElementById('product-form').addEventListener('submit', (e) => {
+          e.preventDefault();
+          this.handleFormSubmit();
+        });
+
+        // Fechar modal clicando fora
+        document.getElementById('image-modal').addEventListener('click', (e) => {
+          if (e.target === e.currentTarget) {
+            this.closeModal();
+          }
+        });
+
+        // Escape key para fechar modal
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            this.closeModal();
+          }
+        });
+      }
+
+      async loadProducts() {
+        this.setLoading(true);
+        this.hideAlerts();
+
         try {
-          console.log(`Tentativa ${attempt}: Carregando produtos de ${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`);
-          const token = localStorage.getItem('adminToken');
-          console.log('Token usado:', token);
+          const response = await this.makeRequest(
+            `/api/produtos?page=${this.state.currentPage}&limit=${CONFIG.ITEMS_PER_PAGE}`
+          );
 
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 15000);
-          const res = await fetch(`${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`, {
-            cache: 'no-store',
+          if (response.produtos) {
+            this.state.products = response.produtos;
+            this.state.totalProducts = response.total || response.produtos.length;
+            this.renderProducts();
+            this.updatePagination();
+          } else {
+            throw new Error('Formato de resposta inválido');
+          }
+        } catch (error) {
+          console.error('Erro ao carregar produtos:', error);
+          this.showError(`Erro ao carregar produtos: ${error.message}`);
+          this.renderEmptyState();
+        } finally {
+          this.setLoading(false);
+        }
+      }
+
+      async makeRequest(endpoint, options = {}) {
+        const token = sessionStorage.getItem('adminToken');
+        const url = `${CONFIG.API_URL}${endpoint}`;
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), CONFIG.TIMEOUT);
+
+        try {
+          const response = await fetch(url, {
+            ...options,
             signal: controller.signal,
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token || 'temp-token-dummy'}`
+              'Authorization': `Bearer ${token}`,
+              ...options.headers
             }
           });
+
           clearTimeout(timeoutId);
 
-          console.log('Status da resposta:', res.status, res.statusText);
-          const text = await res.text();
-          console.log('Resposta crua:', text);
-          let data;
-          try {
-            data = JSON.parse(text);
-          } catch (e) {
-            throw new Error('Resposta da API não é JSON válido');
-          }
-          console.log('Dados parseados:', data);
-
-          if (!res.ok) {
-            const errorData = data || {};
-            if (res.status === 429) {
-              throw new Error('Limite de requisições excedido. Tente novamente em alguns minutos.');
-            }
-            if (res.status === 401 || res.status === 403) {
-              localStorage.removeItem('adminToken');
-              erro.textContent = 'Sessão inválida ou expirada. Clique três vezes no logotipo na página inicial.';
-              window.location.href = '/index.html';
+          if (!response.ok) {
+            if (response.status === 401 || response.status === 403) {
+              this.handleAuthError();
               return;
             }
-            throw new Error(errorData.error || `Falha ao buscar produtos: ${res.status}`);
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || `Erro ${response.status}: ${response.statusText}`);
           }
 
-          if (!Array.isArray(data.produtos)) {
-            throw new Error('Resposta inválida: produtos não é um array');
+          return await response.json();
+        } catch (error) {
+          clearTimeout(timeoutId);
+          if (error.name === 'AbortError') {
+            throw new Error('Requisição expirou. Tente novamente.');
           }
-
-          produtos = data.produtos;
-          totalProdutos = data.total ?? produtos.length;
-          console.log('Produtos processados:', produtos, 'Total:', totalProdutos);
-
-          if (produtos.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Nenhum produto cadastrado.</td></tr>';
-          } else {
-            preencherTabela(produtos);
-          }
-          atualizarPaginacao();
-          return;
-        } catch (err) {
-          console.error(`Tentativa ${attempt} falhou: ${err.message}`);
-          if (attempt === maxRetries) {
-            let errorMessage = `Erro após ${maxRetries} tentativas: ${err.message}`;
-            if (err.message.includes('Failed to fetch') || err.name === 'AbortError') {
-              errorMessage = 'Erro de conexão com o servidor. Verifique sua rede ou o servidor no Render.com.';
-            }
-            tbody.innerHTML = `<tr><td colspan="8" style="color:red;text-align:center;">${errorMessage}</td></tr>`;
-            erro.textContent = errorMessage;
-            erro.style.display = 'block';
-          }
-          attempt++;
-          await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
-        } finally {
-          loadingSpinner.style.display = 'none';
+          throw error;
         }
       }
-    }
 
-    function preencherTabela(produtos) {
-      const tbody = document.getElementById('lista-produtos');
-      if (!tbody) {
-        console.error('Elemento lista-produtos não encontrado');
-        document.getElementById('erro').textContent = 'Erro: Elemento da tabela não encontrado.';
-        return;
+      handleAuthError() {
+        sessionStorage.removeItem('adminToken');
+        this.showError('Sessão expirada. Redirecionando...');
+        setTimeout(() => window.location.href = '/index.html', 2000);
       }
-      tbody.innerHTML = '';
-      if (!Array.isArray(produtos) || produtos.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Nenhum produto cadastrado.</td></tr>';
-        return;
-      }
-      produtos.forEach((produto, index) => {
-        const precoFormatado = `R$ ${parseFloat(produto.preco || 0).toFixed(2).replace('.', ',')}`;
-        const imagens = Array.isArray(produto.imagens) ? produto.imagens.filter(img => typeof img === 'string' && img) : [];
-        const miniaturas = imagens.length > 0
-          ? imagens.map((img, i) => `<img src="${escapeHTML(img)}" class="thumbnail" alt="Imagem ${i + 1}" loading="lazy" data-index="${index}-${i}" onclick="openModal(${index}, ${i})" onerror="this.src='/imagens/placeholder.jpg'; this.onerror=null;" />`).join('')
-          : 'Sem imagens';
 
-        tbody.innerHTML += `
-          <tr>
-            <td>${escapeHTML(produto.nome || 'N/A')}</td>
-            <td>${escapeHTML(produto.descricao || 'N/A')}</td>
-            <td>${escapeHTML(produto.categoria || 'N/A')}</td>
-            <td>${escapeHTML(produto.loja || 'N/A')}</td>
-            <td><a href="${escapeHTML(produto.link || '#')}" target="_blank" rel="noopener noreferrer">Link</a></td>
-            <td>${precoFormatado}</td>
-            <td>${miniaturas}</td>
-            <td>
-              <button class="editar" onclick="editarProduto('${produto._id}')" aria-label="Editar produto ${produto.nome || 'N/A'}">Editar</button>
-              <button class="excluir" onclick="excluirProduto('${produto._id}')" aria-label="Excluir produto ${produto.nome || 'N/A'}">Excluir</button>
-            </td>
-          </tr>
+      renderProducts() {
+        const grid = document.getElementById('products-grid');
+        
+        if (!this.state.products || this.state.products.length === 0) {
+          this.renderEmptyState();
+          return;
+        }
+
+        grid.innerHTML = this.state.products.map(product => this.createProductCard(product)).join('');
+      }
+
+      createProductCard(product) {
+        const price = parseFloat(product.preco || 0).toFixed(2).replace('.', ',');
+        const images = Array.isArray(product.imagens) ? product.imagens : [];
+        const thumbnails = images.length > 0 
+          ? images.map(img => `<img src="${this.escapeHtml(img)}" class="product-thumbnail" onclick="AppManager.openModal('${this.escapeHtml(img)}')" onerror="this.style.display='none'">`).join('')
+          : '<div style="color: #999; font-size: 0.9em;">Sem imagens</div>';
+
+        return `
+          <div class="product-card">
+            <div class="product-header">
+              <h3 class="product-name">${this.escapeHtml(product.nome || 'Produto sem nome')}</h3>
+              <div class="product-price">R$ ${price}</div>
+            </div>
+            
+            <div class="product-meta">
+              <span class="product-badge categoria">${this.escapeHtml(product.categoria || 'Sem categoria')}</span>
+              <span class="product-badge">${this.escapeHtml(product.loja || 'Sem loja')}</span>
+            </div>
+            
+            <div class="product-description">
+              ${this.escapeHtml(product.descricao || 'Sem descrição')}
+            </div>
+            
+            <div class="product-images">
+              ${thumbnails}
+            </div>
+            
+            <div class="product-actions">
+              <a href="${this.escapeHtml(product.link || '#')}" target="_blank" class="product-link">🔗 Ver produto</a>
+              <button class="btn btn-info" onclick="AppManager.editProduct('${product._id}')">
+                <span>✏️</span> Editar
+              </button>
+              <button class="btn btn-danger" onclick="AppManager.deleteProduct('${product._id}', '${this.escapeHtml(product.nome)}')">
+                <span>🗑️</span> Excluir
+              </button>
+            </div>
+          </div>
         `;
-      });
-    }
-
-    async function editarProduto(id) {
-      try {
-        const token = localStorage.getItem('adminToken');
-        if (!token) {
-          document.getElementById('erro').textContent = 'Sessão expirada. Clique três vezes no logotipo na página inicial.';
-          window.location.href = '/index.html';
-          return;
-        }
-
-        const res = await fetch(`${API_URL}/api/produtos/${id}`, {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        if (!res.ok) {
-          const errorData = await res.json().catch(() => ({}));
-          if (res.status === 429) {
-            document.getElementById('erro').textContent = 'Limite de requisições excedido. Tente novamente em alguns minutos.';
-            return;
-          }
-          if (res.status === 401 || res.status === 403) {
-            localStorage.removeItem('adminToken');
-            document.getElementById('erro').textContent = 'Sessão inválida. Clique três vezes no logotipo na página inicial.';
-            window.location.href = '/index.html';
-            return;
-          }
-          throw new Error(errorData.error || 'Erro ao buscar produto para edição');
-        }
-        const produto = await res.json();
-        console.log('Produto para edição:', produto);
-
-        const form = document.getElementById('form-produto');
-        form.querySelector('[name="id"]').value = produto._id || '';
-        form.querySelector('[name="nome"]').value = produto.nome || '';
-        form.querySelector('[name="descricao"]').value = produto.descricao || '';
-        form.querySelector('[name="categoria"]').value = produto.categoria || '';
-        form.querySelector('[name="loja"]').value = produto.loja || '';
-        form.querySelector('[name="link"]').value = produto.link || '';
-        form.querySelector('[name="preco"]').value = produto.preco || '';
-        document.getElementById('submit-button').textContent = 'Salvar Alterações';
-        document.getElementById('cancel-button').style.display = 'inline-block';
-        document.getElementById('mensagem').textContent = 'Editando produto. Envie para salvar as alterações.';
-      } catch (err) {
-        console.error('Erro ao editar produto:', err.message);
-        document.getElementById('erro').textContent = err.message;
-      }
-    }
-
-    function cancelarEdicao() {
-      const form = document.getElementById('form-produto');
-      form.reset();
-      form.querySelector('[name="id"]').value = '';
-      document.getElementById('submit-button').textContent = 'Adicionar';
-      document.getElementById('cancel-button').style.display = 'none';
-      document.getElementById('mensagem').textContent = '';
-      document.getElementById('erro').textContent = '';
-    }
-
-    async function excluirProduto(id) {
-      if (!confirm('Confirma a exclusão deste produto?')) return;
-      try {
-        const token = localStorage.getItem('adminToken');
-        if (!token) {
-          document.getElementById('erro').textContent = 'Sessão expirada. Clique três vezes no logotipo na página inicial.';
-          window.location.href = '/index.html';
-          return;
-        }
-
-        const res = await fetch(`${API_URL}/api/produtos/${id}`, {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        if (!res.ok) {
-          const errorData = await res.json().catch(() => ({}));
-          if (res.status === 429) {
-            document.getElementById('erro').textContent = 'Limite de requisições excedido. Tente novamente em alguns minutos.';
-            return;
-          }
-          if (res.status === 401 || res.status === 403) {
-            localStorage.removeItem('adminToken');
-            document.getElementById('erro').textContent = 'Sessão inválida. Clique três vezes no logotipo na página inicial.';
-            window.location.href = '/index.html';
-            return;
-          }
-          throw new Error(errorData.error || 'Erro ao excluir produto');
-        }
-        document.getElementById('mensagem').textContent = 'Produto excluído com sucesso';
-        carregarProdutos();
-      } catch (err) {
-        console.error('Erro ao excluir produto:', err.message);
-        document.getElementById('erro').textContent = err.message;
-      }
-    }
-
-    document.getElementById('form-produto').addEventListener('submit', async (event) => {
-      event.preventDefault();
-      const form = event.target;
-      const formData = new FormData(form);
-      const produtoId = formData.get('id');
-      const link = formData.get('link');
-      const preco = parseFloat(formData.get('preco'));
-      const imagens = form.querySelector('input[name="imagens"]').files;
-
-      if (!link.match(/^https?:\/\/.+/)) {
-        document.getElementById('erro').textContent = 'Link inválido! Deve começar com http:// ou https://';
-        return;
-      }
-      if (isNaN(preco) || preco <= 0) {
-        document.getElementById('erro').textContent = 'O preço deve ser maior que zero!';
-        return;
-      }
-      if (imagens.length > 3) {
-        document.getElementById('erro').textContent = 'Máximo de 3 imagens por produto!';
-        return;
       }
 
-      document.getElementById('mensagem').textContent = '';
-      document.getElementById('erro').textContent = '';
+      renderEmptyState() {
+        const grid = document.getElementById('products-grid');
+        grid.innerHTML = `
+          <div class="empty-state">
+            <h3>📦 Nenhum produto encontrado</h3>
+            <p>Comece adicionando seu primeiro produto usando o formulário acima.</p>
+          </div>
+        `;
+      }
 
-      try {
-        const token = localStorage.getItem('adminToken');
-        if (!token) {
-          document.getElementById('erro').textContent = 'Sessão expirada. Clique três vezes no logotipo na página inicial.';
-          window.location.href = '/index.html';
-          return;
+      async editProduct(id) {
+        try {
+          const product = await this.makeRequest(`/api/produtos/${id}`);
+          
+          this.state.isEditing = true;
+          this.state.editingId = id;
+          
+          document.getElementById('form-title').textContent = '✏️ Editar Produto';
+          document.getElementById('product-id').value = id;
+          document.getElementById('product-name').value = product.nome || '';
+          document.getElementById('product-description').value = product.descricao || '';
+          document.getElementById('product-category').value = product.categoria || '';
+          document.getElementById('product-store').value = product.loja || '';
+          document.getElementById('product-link').value = product.link || '';
+          document.getElementById('product-price').value = product.preco || '';
+          
+          document.getElementById('submit-btn').innerHTML = '<span>💾</span> Salvar Alterações';
+          document.getElementById('cancel-btn').style.display = 'inline-block';
+          
+          // Scroll para o formulário
+          document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth' });
+          
+        } catch (error) {
+          this.showError(`Erro ao carregar produto: ${error.message}`);
         }
+      }
 
-        let imageUrls = [];
-        if (produtoId) {
-          const res = await fetch(`${API_URL}/api/produtos/${produtoId}`, {
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            }
-          });
-          if (!res.ok) {
-            const errorData = await res.json().catch(() => ({}));
-            if (res.status === 429) {
-              document.getElementById('erro').textContent = 'Limite de requisições excedido. Tente novamente em alguns minutos.';
+      async deleteProduct(id, name) {
+        if (!confirm(`Confirma a exclusão do produto "${name}"?`)) return;
+
+        try {
+          await this.makeRequest(`/api/produtos/${id}`, { method: 'DELETE' });
+          this.showSuccess('Produto excluído com sucesso!');
+          this.loadProducts();
+        } catch (error) {
+          this.showError(`Erro ao excluir produto: ${error.message}`);
+        }
+      }
+
+      async handleFormSubmit() {
+        const formData = this.getFormData();
+        
+        if (!this.validateForm(formData)) return;
+
+        try {
+          this.setLoading(true);
+          
+          let imageUrls = [];
+          const imageFiles = document.getElementById('product-images').files;
+          
+          if (imageFiles.length > 0) {
+            if (imageFiles.length > CONFIG.MAX_IMAGES) {
+              this.showError(`Máximo de ${CONFIG.MAX_IMAGES} imagens permitidas`);
               return;
             }
-            if (res.status === 401 || res.status === 403) {
-              localStorage.removeItem('adminToken');
-              document.getElementById('erro').textContent = 'Sessão inválida. Clique três vezes no logotipo na página inicial.';
-              window.location.href = '/index.html';
-              return;
-            }
-            throw new Error(errorData.error || 'Erro ao buscar dados do produto');
+            imageUrls = await this.uploadImages(imageFiles);
+          } else if (this.state.isEditing) {
+            // Manter imagens existentes se estiver editando
+            const existingProduct = await this.makeRequest(`/api/produtos/${this.state.editingId}`);
+            imageUrls = existingProduct.imagens || [];
           }
-          const produto = await res.json();
-          imageUrls = Array.isArray(produto.imagens) ? produto.imagens : [];
-          console.log('Imagens existentes do produto:', imageUrls);
-        }
-
-        if (imagens.length > 0) {
-          const uploadFormData = new FormData();
-          for (let i = 0; i < imagens.length; i++) {
-            uploadFormData.append('imagens', imagens[i]);
-          }
-          const uploadRes = await fetch(`${API_URL}/api/upload`, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${token}`
-            },
-            body: uploadFormData
-          });
-          if (!uploadRes.ok) {
-            const errorData = await uploadRes.json().catch(() => ({}));
-            if (uploadRes.status === 429) {
-              document.getElementById('erro').textContent = 'Limite de requisições excedido. Tente novamente em alguns minutos.';
-              return;
-            }
-            throw new Error(errorData.error || 'Erro ao fazer upload das imagens');
-          }
-          const uploadData = await uploadRes.json();
-          imageUrls = uploadData.urls || [];
-          console.log('Novas imagens enviadas:', imageUrls);
-        }
-
-        const produto = {
-          nome: formData.get('nome'),
-          descricao: formData.get('descricao'),
-          categoria: formData.get('categoria'),
-          loja: formData.get('loja'),
-          link: formData.get('link'),
-          preco: preco,
-          imagens: imageUrls
-        };
-
-        const res = await fetch(`${API_URL}/api/produtos${produtoId ? `/${produtoId}` : ''}`, {
-          method: produtoId ? 'PUT' : 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify(produto)
-        });
-
-        const responseData = await res.json();
-        console.log(`Resposta do ${produtoId ? 'PUT' : 'POST'}:`, responseData);
-
-        if (!res.ok) {
-          if (res.status === 429) {
-            document.getElementById('erro').textContent = 'Limite de requisições excedido. Tente novamente em alguns minutos.';
-            return;
-          }
-          if (res.status === 401 || res.status === 403) {
-            localStorage.removeItem('adminToken');
-            document.getElementById('erro').textContent = 'Sessão inválida. Clique três vezes no logotipo na página inicial.';
-            window.location.href = '/index.html';
-            return;
-          }
-          throw new Error(responseData?.error || `Erro ao ${produtoId ? 'atualizar' : 'adicionar'} produto`);
-        }
-
-        document.getElementById('mensagem').textContent = produtoId ? 'Produto atualizado com sucesso!' : 'Produto adicionado com sucesso!';
-        form.reset();
-        form.querySelector('[name="id"]').value = '';
-        document.getElementById('submit-button').textContent = 'Adicionar';
-        document.getElementById('cancel-button').style.display = 'none';
-        carregarProdutos();
-      } catch (error) {
-        console.error('Erro ao salvar produto:', error.message);
-        document.getElementById('erro').textContent = error.message;
-      }
-    }
-
-    function atualizarPaginacao() {
-      const prevButton = document.getElementById('prev-page');
-      const nextButton = document.getElementById('next-page');
-      const pageInfo = document.getElementById('page-info');
-      if (prevButton && nextButton && pageInfo) {
-        prevButton.disabled = currentPage === 1;
-        nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
-        pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina) || 1}`;
-      }
-    }
-
-    document.getElementById('prev-page')?.addEventListener('click', () => {
-      if (currentPage > 1) {
-        currentPage--;
-        carregarProdutos();
-      }
-    });
-
-    document.getElementById('next-page')?.addEventListener('click', () => {
-      currentPage++;
-      carregarProdutos();
-    });
-
-    function openModal(produtoIndex, imageIndex) {
-      const modal = document.getElementById('imageModal');
-      const carrosselImagens = document.getElementById('modalCarrosselImagens');
-      const carrosselDots = document.getElementById('modalCarrosselDots');
-      currentImages = Array.isArray(produtos[produtoIndex]?.imagens) ? produtos[produtoIndex].imagens : [];
-      currentImageIndex = imageIndex;
-
-      if (currentImages.length === 0) {
-        document.getElementById('erro').textContent = 'Nenhuma imagem disponível para este produto.';
-        return;
-      }
-
-      carrosselImagens.innerHTML = currentImages.map(img => `<img src="${escapeHTML(img)}" alt="Imagem ampliada" loading="lazy" onerror="this.src='/imagens/placeholder.jpg'; this.onerror=null;">`).join('');
-      carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
-
-      carrosselDots.innerHTML = currentImages.map((_, i) => `<span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})"></span>`).join('');
-
-      modal.style.display = 'flex';
-    }
-
-    function moveModalCarrossel(direction) {
-      const carrosselImagens = document.getElementById('modalCarrosselImagens');
-      const carrosselDots = document.getElementById('modalCarrosselDots').children;
-      const totalImagens = currentImages.length;
-      currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
-      carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
-      Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
-    }
-
-    function setModalCarrosselImage(index) {
-      const carrosselImagens = document.getElementById('modalCarrosselImagens');
-      const carrosselDots = document.getElementById('modalCarrosselDots').children;
-      currentImageIndex = index;
-      carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
-      Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
-    }
-
-    function closeModal() {
-      const modal = document.getElementById('imageModal');
-      modal.style.display = 'none';
-      currentImages = [];
-      currentImageIndex = 0;
-    }
-
-    document.getElementById('imageModal').addEventListener('click', e => {
-      if (e.target === e.currentTarget) closeModal();
-    });
-
-    document.addEventListener('DOMContentLoaded', () => {
-      console.log('admin-xyz-123.html carregado');
-      checkAuth();
-      carregarProdutos();
-    });
-  </script>
-</body>
-</html>
