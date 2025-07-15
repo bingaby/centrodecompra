@@ -191,299 +191,6 @@
   </style>
 </head>
 <body>
-  <script>
-    // Função para escapar HTML e evitar XSS
-    function escapeHTML(str) {
-      if (!str) return 'N/A';
-      return str.replace(/[&<>"']/g, (match) => ({
-        '&': '&', '<': '<', '>': '>', '"': '"', "'": '''
-      }[match]));
-    }
-
-    // Função de logout
-    function logout() {
-      localStorage.removeItem('adminToken');
-      window.location.href = '/index.html';
-    }
-
-    async function carregarProdutos() {
-      const tbody = document.getElementById('lista-produtos');
-      const loadingSpinner = document.getElementById('loading-spinner');
-      const erro = document.getElementById('erro');
-      if (!tbody || !loadingSpinner || !erro) {
-        console.error('Elementos DOM não encontrados:', { tbody, loadingSpinner, erro });
-        return;
-      }
-
-      loadingSpinner.style.display = 'block';
-      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Carregando...</td></tr>';
-      erro.textContent = '';
-
-      const maxRetries = 3;
-      let attempt = 1;
-      while (attempt <= maxRetries) {
-        try {
-          console.log(`Tentativa ${attempt}: Carregando produtos de https://centrodecompra-backend.onrender.com/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`);
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 5000);
-          const res = await fetch(`https://centrodecompra-backend.onrender.com/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`, {
-            cache: 'no-store',
-            signal: controller.signal,
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          });
-          clearTimeout(timeoutId);
-
-          console.log('Status da resposta:', res.status, res.statusText);
-          const data = await res.json();
-          console.log('Dados recebidos:', JSON.stringify(data, null, 2));
-
-          if (!res.ok) {
-            throw new Error(data.error || `Erro ${res.status}: Falha ao buscar produtos`);
-          }
-
-          const produtos = Array.isArray(data.produtos) ? data.produtos : Array.isArray(data) ? data : [];
-          totalProdutos = Number.isInteger(data.total) ? data.total : produtos.length;
-          console.log('Produtos processados:', produtos, 'Total:', totalProdutos);
-
-          preencherTabela(produtos);
-          atualizarPaginacao();
-          loadingSpinner.style.display = 'none';
-          return;
-        } catch (err) {
-          console.error(`Tentativa ${attempt} falhou: ${err.message}`);
-          if (attempt === maxRetries) {
-            let errorMessage = `Erro após ${maxRetries} tentativas: ${err.message}`;
-            if (err.name === 'AbortError') {
-              errorMessage = 'Tempo limite excedido ao conectar ao servidor.';
-            } else if (err.message.includes('Failed to fetch')) {
-              errorMessage = 'Erro de conexão com o servidor. Verifique sua rede ou a API.';
-            }
-            tbody.innerHTML = `<tr><td colspan="8" style="color:red;text-align:center;">${errorMessage}</td></tr>`;
-            if (erro) erro.textContent = errorMessage;
-          }
-          attempt++;
-          await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
-        } finally {
-          if (loadingSpinner) loadingSpinner.style.display = 'none';
-        }
-      }
-    }
-
-    function preencherTabela(produtos) {
-      const tbody = document.getElementById('lista-produtos');
-      if (!tbody) {
-        console.error('Elemento lista-produtos não encontrado');
-        return;
-      }
-      tbody.innerHTML = '';
-      console.log('Preenchendo tabela com produtos:', produtos);
-
-      if (!Array.isArray(produtos) || produtos.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Nenhum produto cadastrado.</td></tr>';
-        return;
-      }
-
-      produtos.forEach((produto) => {
-        const precoFormatado = produto.preco
-          ? `R$ ${parseFloat(produto.preco).toFixed(2).replace('.', ',')}`
-          : 'N/A';
-        const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0
-          ? produto.imagens.filter(img => typeof img === 'string' && img)
-          : [];
-        const miniaturas = imagens.length > 0
-          ? imagens.map((img, i) => `<img src="${escapeHTML(img)}" class="thumbnail" alt="Imagem ${i + 1}" loading="lazy" onerror="this.src='imagens/placeholder.jpg'" />`).join('')
-          : 'Sem imagens';
-
-        tbody.innerHTML += `
-          <tr>
-            <td>${escapeHTML(produto.nome)}</td>
-            <td>${escapeHTML(produto.descricao)}</td>
-            <td>${escapeHTML(produto.categoria)}</td>
-            <td>${escapeHTML(produto.loja)}</td>
-            <td><a href="${escapeHTML(produto.link || '#')}" target="_blank" rel="noopener noreferrer">Link</a></td>
-            <td>${precoFormatado}</td>
-            <td>${miniaturas}</td>
-            <td>
-              <button class="editar" onclick="editarProduto('${produto._id}')" aria-label="Editar produto ${produto.nome || 'N/A'}">Editar</button>
-              <button class="excluir" onclick="excluirProduto('${produto._id}')" aria-label="Excluir produto ${produto.nome || 'N/A'}">Excluir</button>
-            </td>
-          </tr>
-        `;
-      });
-    }
-
-    async function editarProduto(id) {
-      const erro = document.getElementById('erro');
-      const mensagem = document.getElementById('mensagem');
-      try {
-        console.log('Buscando produto para edição:', id);
-        const res = await fetch(`https://centrodecompra-backend.onrender.com/api/produtos/${id}`, {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-        console.log('Status da resposta (editar):', res.status, res.statusText);
-        const data = await res.json();
-        console.log('Dados do produto para edição:', data);
-
-        if (!res.ok) {
-          throw new Error(data.error || 'Erro ao buscar produto para edição');
-        }
-
-        document.getElementById('produto-id').value = data._id || '';
-        document.getElementById('form-produto').nome.value = data.nome || '';
-        document.getElementById('form-produto').descricao.value = data.descricao || '';
-        document.getElementById('form-produto').categoria.value = data.categoria || '';
-        document.getElementById('form-produto').loja.value = data.loja || '';
-        document.getElementById('form-produto').link.value = data.link || '';
-        document.getElementById('form-produto').preco.value = data.preco || '';
-        document.getElementById('submit-button').textContent = 'Salvar Alterações';
-        document.getElementById('cancel-button').style.display = 'inline-block';
-        if (mensagem) mensagem.textContent = 'Editando produto. Envie para salvar as alterações.';
-      } catch (err) {
-        console.error('Erro ao editar produto:', err);
-        if (erro) erro.textContent = err.message;
-      }
-    }
-
-    function cancelarEdicao() {
-      const mensagem = document.getElementById('mensagem');
-      const erro = document.getElementById('erro');
-      document.getElementById('form-produto').reset();
-      document.getElementById('produto-id').value = '';
-      document.getElementById('submit-button').textContent = 'Adicionar';
-      document.getElementById('cancel-button').style.display = 'none';
-      if (mensagem) mensagem.textContent = '';
-      if (erro) erro.textContent = '';
-    }
-
-    async function excluirProduto(id) {
-      if (!confirm('Confirma a exclusão deste produto?')) return;
-      const mensagem = document.getElementById('mensagem');
-      const erro = document.getElementById('erro');
-      try {
-        console.log('Excluindo produto:', id);
-        const res = await fetch(`https://centrodecompra-backend.onrender.com/api/produtos/${id}`, {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-        console.log('Status da resposta (excluir):', res.status, res.statusText);
-        const data = await res.json();
-        console.log('Resposta da exclusão:', data);
-
-        if (!res.ok) {
-          throw new Error(data.error || 'Erro ao excluir produto');
-        }
-
-        if (mensagem) mensagem.textContent = 'Produto excluído com sucesso';
-        carregarProdutos();
-      } catch (err) {
-        console.error('Erro ao excluir produto:', err);
-        if (erro) erro.textContent = err.message;
-      }
-    }
-
-    document.getElementById('form-produto').addEventListener('submit', async (event) => {
-      event.preventDefault();
-      const form = event.target;
-      const formData = new FormData(form);
-      const produtoId = formData.get('id');
-      const link = formData.get('link');
-      const preco = parseFloat(formData.get('preco'));
-      const mensagem = document.getElementById('mensagem');
-      const erro = document.getElementById('erro');
-
-      if (!link.match(/^https?:\/\/.+/)) {
-        if (erro) erro.textContent = 'Link inválido! Deve começar com http:// ou https://';
-        return;
-      }
-      if (isNaN(preco) || preco <= 0) {
-        if (erro) erro.textContent = 'O preço deve ser maior que zero!';
-        return;
-      }
-
-      if (mensagem) mensagem.textContent = '';
-      if (erro) erro.textContent = '';
-
-      try {
-        console.log(`${produtoId ? 'Atualizando' : 'Adicionando'} produto`);
-        let res;
-        if (produtoId) {
-          res = await fetch(`https://centrodecompra-backend.onrender.com/api/produtos/${produtoId}`, {
-            method: 'PUT',
-            body: formData
-          });
-        } else {
-          res = await fetch(`https://centrodecompra-backend.onrender.com/api/produtos`, {
-            method: 'POST',
-            body: formData
-          });
-        }
-
-        const responseData = await res.json();
-        console.log(`Resposta do ${produtoId ? 'PUT' : 'POST'}:`, responseData);
-
-        if (!res.ok) {
-          throw new Error(responseData.error || `Erro ao ${produtoId ? 'atualizar' : 'adicionar'} produto`);
-        }
-
-        if (mensagem) mensagem.textContent = produtoId ? 'Produto atualizado com sucesso!' : 'Produto adicionado com sucesso!';
-        form.reset();
-        document.getElementById('produto-id').value = '';
-        document.getElementById('submit-button').textContent = 'Adicionar';
-        document.getElementById('cancel-button').style.display = 'none';
-        carregarProdutos();
-      } catch (error) {
-        console.error('Erro ao processar produto:', error);
-        if (erro) erro.textContent = error.message;
-      }
-    });
-
-    let currentPage = 1;
-    const produtosPorPagina = 25;
-    let totalProdutos = 0;
-
-    function atualizarPaginacao() {
-      const prevButton = document.getElementById('prev-page');
-      const nextButton = document.getElementById('next-page');
-      const pageInfo = document.getElementById('page-info');
-      if (prevButton && nextButton && pageInfo) {
-        prevButton.disabled = currentPage === 1;
-        nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
-        pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina) || 1}`;
-      } else {
-        console.error('Elementos de paginação não encontrados:', { prevButton, nextButton, pageInfo });
-      }
-    }
-
-    document.getElementById('prev-page')?.addEventListener('click', () => {
-      if (currentPage > 1) {
-        currentPage--;
-        carregarProdutos();
-      }
-    });
-
-    document.getElementById('next-page')?.addEventListener('click', () => {
-      currentPage++;
-      carregarProdutos();
-    });
-
-    document.addEventListener('DOMContentLoaded', () => {
-      console.log('admin-xyz-123.html carregado');
-      const yearElement = document.getElementById('year');
-      if (yearElement) {
-        yearElement.textContent = new Date().getFullYear();
-      } else {
-        console.error('Elemento year não encontrado');
-      }
-      carregarProdutos();
-７
-    });
-  </script>
   <header class="site-header">
     <div class="logo-container">
       <a href="/index.html">
@@ -564,5 +271,301 @@
   <footer>
     <p>Todos os direitos reservados <strong>Grupo Centro de Compra "CdC"</strong> © <span id="year"></span></p>
   </footer>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('admin-xyz-123.html carregado');
+
+      // Atualizar ano no footer
+      const yearElement = document.getElementById('year');
+      if (yearElement) {
+        yearElement.textContent = new Date().getFullYear();
+      } else {
+        console.error('Elemento year não encontrado');
+      }
+
+      // Função para escapar HTML
+      function escapeHTML(str) {
+        if (!str) return 'N/A';
+        return str.replace(/[&<>"']/g, (match) => ({
+          '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[match]));
+      }
+
+      // Função de logout
+      function logout() {
+        localStorage.removeItem('adminToken');
+        window.location.href = '/index.html';
+      }
+
+      let currentPage = 1;
+      const produtosPorPagina = 25;
+      let totalProdutos = 0;
+
+      async function carregarProdutos() {
+        const tbody = document.getElementById('lista-produtos');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const erro = document.getElementById('erro');
+        if (!tbody || !loadingSpinner || !erro) {
+          console.error('Elementos DOM não encontrados:', { tbody, loadingSpinner, erro });
+          return;
+        }
+
+        loadingSpinner.style.display = 'block';
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Carregando...</td></tr>';
+        if (erro) erro.textContent = '';
+
+        const maxRetries = 3;
+        let attempt = 1;
+        while (attempt <= maxRetries) {
+          try {
+            console.log(`Tentativa ${attempt}: Carregando produtos de https://centrodecompra-backend.onrender.com/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`);
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000);
+            const res = await fetch(`https://centrodecompra-backend.onrender.com/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`, {
+              cache: 'no-store',
+              signal: controller.signal,
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            });
+            clearTimeout(timeoutId);
+
+            console.log('Status da resposta:', res.status, res.statusText);
+            const data = await res.json();
+            console.log('Dados recebidos:', JSON.stringify(data, null, 2));
+
+            if (!res.ok) {
+              throw new Error(data.error || `Erro ${res.status}: Falha ao buscar produtos`);
+            }
+
+            const produtos = Array.isArray(data.produtos) ? data.produtos : Array.isArray(data) ? data : [];
+            totalProdutos = Number.isInteger(data.total) ? data.total : produtos.length;
+            console.log('Produtos processados:', produtos, 'Total:', totalProdutos);
+
+            preencherTabela(produtos);
+            atualizarPaginacao();
+            loadingSpinner.style.display = 'none';
+            return;
+          } catch (err) {
+            console.error(`Tentativa ${attempt} falhou: ${err.message}`);
+            if (attempt === maxRetries) {
+              let errorMessage = `Erro após ${maxRetries} tentativas: ${err.message}`;
+              if (err.name === 'AbortError') {
+                errorMessage = 'Tempo limite excedido ao conectar ao servidor.';
+              } else if (err.message.includes('Failed to fetch')) {
+                errorMessage = 'Erro de conexão com o servidor. Verifique sua rede ou a API.';
+              }
+              tbody.innerHTML = `<tr><td colspan="8" style="color:red;text-align:center;">${errorMessage}</td></tr>`;
+              if (erro) erro.textContent = errorMessage;
+            }
+            attempt++;
+            await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+          } finally {
+            if (loadingSpinner) loadingSpinner.style.display = 'none';
+          }
+        }
+      }
+
+      function preencherTabela(produtos) {
+        const tbody = document.getElementById('lista-produtos');
+        if (!tbody) {
+          console.error('Elemento lista-produtos não encontrado');
+          return;
+        }
+        tbody.innerHTML = '';
+        console.log('Preenchendo tabela com produtos:', produtos);
+
+        if (!Array.isArray(produtos) || produtos.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Nenhum produto cadastrado.</td></tr>';
+          return;
+        }
+
+        produtos.forEach((produto) => {
+          const precoFormatado = produto.preco
+            ? `R$ ${parseFloat(produto.preco).toFixed(2).replace('.', ',')}`
+            : 'N/A';
+          const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0
+            ? produto.imagens.filter(img => typeof img === 'string' && img)
+            : [];
+          const miniaturas = imagens.length > 0
+            ? imagens.map((img, i) => `<img src="${escapeHTML(img)}" class="thumbnail" alt="Imagem ${i + 1}" loading="lazy" onerror="this.src='imagens/placeholder.jpg'" />`).join('')
+            : 'Sem imagens';
+
+          tbody.innerHTML += `
+            <tr>
+              <td>${escapeHTML(produto.nome)}</td>
+              <td>${escapeHTML(produto.descricao)}</td>
+              <td>${escapeHTML(produto.categoria)}</td>
+              <td>${escapeHTML(produto.loja)}</td>
+              <td><a href="${escapeHTML(produto.link || '#')}" target="_blank" rel="noopener noreferrer">Link</a></td>
+              <td>${precoFormatado}</td>
+              <td>${miniaturas}</td>
+              <td>
+                <button class="editar" onclick="editarProduto('${produto._id}')" aria-label="Editar produto ${produto.nome || 'N/A'}">Editar</button>
+                <button class="excluir" onclick="excluirProduto('${produto._id}')" aria-label="Excluir produto ${produto.nome || 'N/A'}">Excluir</button>
+              </td>
+            </tr>
+          `;
+        });
+      }
+
+      async function editarProduto(id) {
+        const erro = document.getElementById('erro');
+        const mensagem = document.getElementById('mensagem');
+        try {
+          console.log('Buscando produto para edição:', id);
+          const res = await fetch(`https://centrodecompra-backend.onrender.com/api/produtos/${id}`, {
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+          console.log('Status da resposta (editar):', res.status, res.statusText);
+          const data = await res.json();
+          console.log('Dados do produto para edição:', data);
+
+          if (!res.ok) {
+            throw new Error(data.error || 'Erro ao buscar produto para edição');
+          }
+
+          document.getElementById('produto-id').value = data._id || '';
+          document.getElementById('form-produto').nome.value = data.nome || '';
+          document.getElementById('form-produto').descricao.value = data.descricao || '';
+          document.getElementById('form-produto').categoria.value = data.categoria || '';
+          document.getElementById('form-produto').loja.value = data.loja || '';
+          document.getElementById('form-produto').link.value = data.link || '';
+          document.getElementById('form-produto').preco.value = data.preco || '';
+          document.getElementById('submit-button').textContent = 'Salvar Alterações';
+          document.getElementById('cancel-button').style.display = 'inline-block';
+          if (mensagem) mensagem.textContent = 'Editando produto. Envie para salvar as alterações.';
+        } catch (err) {
+          console.error('Erro ao editar produto:', err);
+          if (erro) erro.textContent = err.message;
+        }
+      }
+
+      function cancelarEdicao() {
+        const mensagem = document.getElementById('mensagem');
+        const erro = document.getElementById('erro');
+        document.getElementById('form-produto').reset();
+        document.getElementById('produto-id').value = '';
+        document.getElementById('submit-button').textContent = 'Adicionar';
+        document.getElementById('cancel-button').style.display = 'none';
+        if (mensagem) mensagem.textContent = '';
+        if (erro) erro.textContent = '';
+      }
+
+      async function excluirProduto(id) {
+        if (!confirm('Confirma a exclusão deste produto?')) return;
+        const mensagem = document.getElementById('mensagem');
+        const erro = document.getElementById('erro');
+        try {
+          console.log('Excluindo produto:', id);
+          const res = await fetch(`https://centrodecompra-backend.onrender.com/api/produtos/${id}`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+          console.log('Status da resposta (excluir):', res.status, res.statusText);
+          const data = await res.json();
+          console.log('Resposta da exclusão:', data);
+
+          if (!res.ok) {
+            throw new Error(data.error || 'Erro ao excluir produto');
+          }
+
+          if (mensagem) mensagem.textContent = 'Produto excluído com sucesso';
+          carregarProdutos();
+        } catch (err) {
+          console.error('Erro ao excluir produto:', err);
+          if (erro) erro.textContent = err.message;
+        }
+      }
+
+      document.getElementById('form-produto').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
+        const produtoId = formData.get('id');
+        const link = formData.get('link');
+        const preco = parseFloat(formData.get('preco'));
+        const mensagem = document.getElementById('mensagem');
+        const erro = document.getElementById('erro');
+
+        if (!link.match(/^https?:\/\/.+/)) {
+          if (erro) erro.textContent = 'Link inválido! Deve começar com http:// ou https://';
+          return;
+        }
+        if (isNaN(preco) || preco <= 0) {
+          if (erro) erro.textContent = 'O preço deve ser maior que zero!';
+          return;
+        }
+
+        if (mensagem) mensagem.textContent = '';
+        if (erro) erro.textContent = '';
+
+        try {
+          console.log(`${produtoId ? 'Atualizando' : 'Adicionando'} produto`);
+          let res;
+          if (produtoId) {
+            res = await fetch(`https://centrodecompra-backend.onrender.com/api/produtos/${produtoId}`, {
+              method: 'PUT',
+              body: formData
+            });
+          } else {
+            res = await fetch(`https://centrodecompra-backend.onrender.com/api/produtos`, {
+              method: 'POST',
+              body: formData
+            });
+          }
+
+          const responseData = await res.json();
+          console.log(`Resposta do ${produtoId ? 'PUT' : 'POST'}:`, responseData);
+
+          if (!res.ok) {
+            throw new Error(responseData.error || `Erro ao ${produtoId ? 'atualizar' : 'adicionar'} produto`);
+          }
+
+          if (mensagem) mensagem.textContent = produtoId ? 'Produto atualizado com sucesso!' : 'Produto adicionado com sucesso!';
+          form.reset();
+          document.getElementById('produto-id').value = '';
+          document.getElementById('submit-button').textContent = 'Adicionar';
+          document.getElementById('cancel-button').style.display = 'none';
+          carregarProdutos();
+        } catch (error) {
+          console.error('Erro ao processar produto:', error);
+          if (erro) erro.textContent = error.message;
+        }
+      });
+
+      function atualizarPaginacao() {
+        const prevButton = document.getElementById('prev-page');
+        const nextButton = document.getElementById('next-page');
+        const pageInfo = document.getElementById('page-info');
+        if (prevButton && nextButton && pageInfo) {
+          prevButton.disabled = currentPage === 1;
+          nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
+          pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina) || 1}`;
+        } else {
+          console.error('Elementos de paginação não encontrados:', { prevButton, nextButton, pageInfo });
+        }
+      }
+
+      document.getElementById('prev-page')?.addEventListener('click', () => {
+        if (currentPage > 1) {
+          currentPage--;
+          carregarProdutos();
+        }
+      });
+
+      document.getElementById('next-page')?.addEventListener('click', () => {
+        currentPage++;
+        carregarProdutos();
+      });
+
+      // Iniciar carregamento dos produtos
+      carregarProdutos();
+    });
+  </script>
 </body>
 </html>
