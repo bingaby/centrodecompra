@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/imagens/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/imagens/favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/imagens/apple-touch-icon.png">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/style.css">
   <style>
     :root {
       --primary-color: #ff6200;
@@ -378,24 +378,31 @@
     let currentImageIndex = 0;
 
     function checkAuth() {
+      console.log('Verificando autenticação...');
       if (!localStorage.getItem('adminToken')) {
         const tempToken = new URLSearchParams(window.location.search).get('tempToken');
         if (tempToken === 'triple-click-access') {
+          console.log('Token temporário válido, salvando adminToken');
           localStorage.setItem('adminToken', 'temp-token-' + Date.now());
         } else {
+          console.error('Acesso não autorizado. Redirecionando para index.html');
           alert('Acesso não autorizado. Por favor, clique três vezes no logotipo na página inicial para autenticar.');
           window.location.href = '/index.html';
+          return false;
         }
       }
+      return true;
     }
 
     function escapeHTML(str) {
-      return str?.replace(/[&<>"']/g, (match) => ({
+      if (typeof str !== 'string') return '';
+      return str.replace(/[&<>"']/g, (match) => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-      }[match])) || '';
+      }[match]));
     }
 
     function logout() {
+      console.log('Fazendo logout...');
       localStorage.removeItem('adminToken');
       window.location.href = '/index.html';
     }
@@ -403,11 +410,12 @@
     document.getElementById('year').textContent = new Date().getFullYear();
 
     async function carregarProdutos() {
+      console.log('Iniciando carregarProdutos...');
       const gridProdutos = document.getElementById('lista-produtos');
       const loadingSpinner = document.getElementById('loading-spinner');
       const erro = document.getElementById('erro');
       if (!gridProdutos || !loadingSpinner || !erro) {
-        console.error('Elementos essenciais não encontrados');
+        console.error('Elementos essenciais não encontrados:', { gridProdutos, loadingSpinner, erro });
         erro.textContent = 'Erro: Elementos da página não encontrados.';
         erro.style.display = 'block';
         return;
@@ -447,6 +455,7 @@
               throw new Error('Limite de requisições excedido. Tente novamente em alguns minutos.');
             }
             if (res.status === 401 || res.status === 403) {
+              console.error('Erro de autenticação:', res.status);
               localStorage.removeItem('adminToken');
               erro.textContent = 'Sessão inválida ou expirada. Clique três vezes no logotipo na página inicial.';
               window.location.href = '/index.html';
@@ -455,7 +464,7 @@
             throw new Error(errorData.error || `Falha ao buscar produtos: ${res.status}`);
           }
 
-          produtos = Array.isArray(data.produtos) ? data.produtos : Array.isArray(data) ? data : [];
+          produtos = Array.isArray(data.produtos) ? data.produtos : [];
           totalProdutos = data.total || produtos.length;
           console.log('Produtos processados:', produtos, 'Total:', totalProdutos);
 
@@ -475,6 +484,7 @@
             }
             gridProdutos.innerHTML = `<div style="color:red;text-align:center;grid-column:1/-1;">${errorMessage}</div>`;
             erro.textContent = errorMessage;
+            erro.style.display = 'block';
           }
           attempt++;
           await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
@@ -485,10 +495,12 @@
     }
 
     function preencherProdutos(produtos) {
+      console.log('Iniciando preencherProdutos...');
       const gridProdutos = document.getElementById('lista-produtos');
       if (!gridProdutos) {
         console.error('Elemento lista-produtos não encontrado');
         document.getElementById('erro').textContent = 'Erro: Elemento da grade não encontrado.';
+        document.getElementById('erro').style.display = 'block';
         return;
       }
       gridProdutos.innerHTML = '';
@@ -499,16 +511,19 @@
         return;
       }
       produtosArray.forEach((produto, index) => {
-        const precoFormatado = `R$ ${parseFloat(produto.preco || 0).toFixed(2).replace('.', ',')}`;
-        const imagens = Array.isArray(produto.imagens) ? produto.imagens.filter(img => typeof img === 'string' && img) : ['/imagens/placeholder.jpg'];
+        console.log('Processando produto:', produto);
+        const precoFormatado = produto.preco ? `R$ ${parseFloat(produto.preco).toFixed(2).replace('.', ',')}` : 'N/A';
+        const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0 ? 
+          produto.imagens.filter(img => typeof img === 'string' && img) : 
+          ['/imagens/placeholder.jpg'];
         const carrosselId = `carrossel-${index}-${produto._id || Date.now()}`;
         const produtoDiv = document.createElement('div');
         produtoDiv.classList.add('produto-card');
         produtoDiv.innerHTML = `
           <div class="carrossel" id="${carrosselId}">
-            <div class="carrossel-imagens">
+            <div class="carrossel-imagens" data-index="0">
               ${imagens.map((img, i) => `
-                <img src="${escapeHTML(img)}" alt="${escapeHTML(produto.nome || 'Produto')} ${i + 1}" loading="lazy" width="200" height="200" onerror="this.src='/imagens/placeholder.jpg'" onclick="openModal(${index}, ${i})">
+                <img src="${escapeHTML(img)}" alt="${escapeHTML(produto.nome || 'Produto')} ${i + 1}" loading="lazy" width="200" height="200" onerror="this.src='/imagens/placeholder.jpg'; this.onerror=null;" onclick="openModal(${index}, ${i})">
               `).join('')}
             </div>
             ${imagens.length > 1 ? `
@@ -524,16 +539,22 @@
           <p class="preco">${precoFormatado}</p>
           <p class="categoria">Categoria: ${escapeHTML(produto.categoria || 'N/A')}</p>
           <div class="acoes">
-            <button class="editar" onclick="editarProduto('${produto._id}')" aria-label="Editar produto ${escapeHTML(produto.nome || 'N/A')}">Editar</button>
-            <button class="excluir" onclick="excluirProduto('${produto._id}')" aria-label="Excluir produto ${escapeHTML(produto.nome || 'N/A')}">Excluir</button>
+            <button class="editar" onclick="editarProduto('${escapeHTML(produto._id || '')}')" aria-label="Editar produto ${escapeHTML(produto.nome || 'N/A')}">Editar</button>
+            <button class="excluir" onclick="excluirProduto('${escapeHTML(produto._id || '')}')" aria-label="Excluir produto ${escapeHTML(produto.nome || 'N/A')}">Excluir</button>
           </div>
         `;
         gridProdutos.appendChild(produtoDiv);
       });
+      console.log('Grade de produtos preenchida com sucesso');
     }
 
     function moveCarrossel(carrosselId, direction) {
+      console.log(`Movendo carrossel ${carrosselId}, direção: ${direction}`);
       const carrossel = document.getElementById(carrosselId);
+      if (!carrossel) {
+        console.error(`Carrossel ${carrosselId} não encontrado`);
+        return;
+      }
       const imagens = carrossel.querySelector('.carrossel-imagens');
       const dots = carrossel.querySelectorAll('.carrossel-dot');
       let currentIndex = parseInt(imagens.dataset.index || 0);
@@ -545,7 +566,12 @@
     }
 
     function setCarrosselImage(carrosselId, index) {
+      console.log(`Definindo imagem do carrossel ${carrosselId} para índice: ${index}`);
       const carrossel = document.getElementById(carrosselId);
+      if (!carrossel) {
+        console.error(`Carrossel ${carrosselId} não encontrado`);
+        return;
+      }
       const imagens = carrossel.querySelector('.carrossel-imagens');
       const dots = carrossel.querySelectorAll('.carrossel-dot');
       imagens.style.transform = `translateX(-${index * 100}%)`;
@@ -554,9 +580,11 @@
     }
 
     async function editarProduto(id) {
+      console.log(`Editando produto com ID: ${id}`);
       try {
         const token = localStorage.getItem('adminToken');
         if (!token) {
+          console.error('Token de autenticação não encontrado');
           document.getElementById('erro').textContent = 'Sessão expirada. Clique três vezes no logotipo na página inicial.';
           window.location.href = '/index.html';
           return;
@@ -575,6 +603,7 @@
             return;
           }
           if (res.status === 401 || res.status === 403) {
+            console.error('Erro de autenticação:', res.status);
             localStorage.removeItem('adminToken');
             document.getElementById('erro').textContent = 'Sessão inválida. Clique três vezes no logotipo na página inicial.';
             window.location.href = '/index.html';
@@ -599,10 +628,12 @@
       } catch (err) {
         console.error('Erro ao editar produto:', err.message);
         document.getElementById('erro').textContent = err.message;
+        document.getElementById('erro').style.display = 'block';
       }
     }
 
     function cancelarEdicao() {
+      console.log('Cancelando edição...');
       const form = document.getElementById('form-produto');
       form.reset();
       form.querySelector('[name="id"]').value = '';
@@ -613,10 +644,12 @@
     }
 
     async function excluirProduto(id) {
+      console.log(`Excluindo produto com ID: ${id}`);
       if (!confirm('Confirma a exclusão deste produto?')) return;
       try {
         const token = localStorage.getItem('adminToken');
         if (!token) {
+          console.error('Token de autenticação não encontrado');
           document.getElementById('erro').textContent = 'Sessão expirada. Clique três vezes no logotipo na página inicial.';
           window.location.href = '/index.html';
           return;
@@ -636,6 +669,7 @@
             return;
           }
           if (res.status === 401 || res.status === 403) {
+            console.error('Erro de autenticação:', res.status);
             localStorage.removeItem('adminToken');
             document.getElementById('erro').textContent = 'Sessão inválida. Clique três vezes no logotipo na página inicial.';
             window.location.href = '/index.html';
@@ -644,14 +678,17 @@
           throw new Error(errorData.error || 'Erro ao excluir produto');
         }
         document.getElementById('mensagem').textContent = 'Produto excluído com sucesso';
+        document.getElementById('mensagem').style.display = 'block';
         carregarProdutos();
       } catch (err) {
         console.error('Erro ao excluir produto:', err.message);
         document.getElementById('erro').textContent = err.message;
+        document.getElementById('erro').style.display = 'block';
       }
     }
 
     document.getElementById('form-produto').addEventListener('submit', async (event) => {
+      console.log('Formulário submetido');
       event.preventDefault();
       const form = event.target;
       const formData = new FormData(form);
@@ -661,31 +698,42 @@
       const imagens = form.querySelector('input[name="imagens"]').files;
 
       if (!link.match(/^https?:\/\/.+/)) {
+        console.error('Link inválido:', link);
         document.getElementById('erro').textContent = 'Link inválido! Deve começar com http:// ou https://';
+        document.getElementById('erro').style.display = 'block';
         return;
       }
       if (isNaN(preco) || preco <= 0) {
+        console.error('Preço inválido:', preco);
         document.getElementById('erro').textContent = 'O preço deve ser maior que zero!';
+        document.getElementById('erro').style.display = 'block';
         return;
       }
       if (imagens.length > 3) {
+        console.error('Máximo de 3 imagens excedido:', imagens.length);
         document.getElementById('erro').textContent = 'Máximo de 3 imagens por produto!';
+        document.getElementById('erro').style.display = 'block';
         return;
       }
 
       document.getElementById('mensagem').textContent = '';
       document.getElementById('erro').textContent = '';
+      document.getElementById('mensagem').style.display = 'none';
+      document.getElementById('erro').style.display = 'none';
 
       try {
         const token = localStorage.getItem('adminToken');
         if (!token) {
+          console.error('Token de autenticação não encontrado');
           document.getElementById('erro').textContent = 'Sessão expirada. Clique três vezes no logotipo na página inicial.';
+          document.getElementById('erro').style.display = 'block';
           window.location.href = '/index.html';
           return;
         }
 
         let imageUrls = [];
         if (produtoId) {
+          console.log(`Buscando produto existente com ID: ${produtoId}`);
           const res = await fetch(`${API_URL}/api/produtos/${produtoId}`, {
             headers: {
               'Content-Type': 'application/json',
@@ -696,11 +744,14 @@
             const errorData = await res.json().catch(() => ({}));
             if (res.status === 429) {
               document.getElementById('erro').textContent = 'Limite de requisições excedido. Tente novamente em alguns minutos.';
+              document.getElementById('erro').style.display = 'block';
               return;
             }
             if (res.status === 401 || res.status === 403) {
+              console.error('Erro de autenticação:', res.status);
               localStorage.removeItem('adminToken');
               document.getElementById('erro').textContent = 'Sessão inválida. Clique três vezes no logotipo na página inicial.';
+              document.getElementById('erro').style.display = 'block';
               window.location.href = '/index.html';
               return;
             }
@@ -712,6 +763,7 @@
         }
 
         if (imagens.length > 0) {
+          console.log('Fazendo upload de novas imagens:', imagens.length);
           const uploadFormData = new FormData();
           for (let i = 0; i < imagens.length; i++) {
             uploadFormData.append('imagens', imagens[i]);
@@ -727,6 +779,7 @@
             const errorData = await uploadRes.json().catch(() => ({}));
             if (uploadRes.status === 429) {
               document.getElementById('erro').textContent = 'Limite de requisições excedido. Tente novamente em alguns minutos.';
+              document.getElementById('erro').style.display = 'block';
               return;
             }
             throw new Error(errorData.error || 'Erro ao fazer upload das imagens');
@@ -745,6 +798,7 @@
           preco: preco,
           imagens: imageUrls
         };
+        console.log('Enviando produto:', produto);
 
         const res = await fetch(`${API_URL}/api/produtos${produtoId ? `/${produtoId}` : ''}`, {
           method: produtoId ? 'PUT' : 'POST',
@@ -761,11 +815,14 @@
         if (!res.ok) {
           if (res.status === 429) {
             document.getElementById('erro').textContent = 'Limite de requisições excedido. Tente novamente em alguns minutos.';
+            document.getElementById('erro').style.display = 'block';
             return;
           }
           if (res.status === 401 || res.status === 403) {
+            console.error('Erro de autenticação:', res.status);
             localStorage.removeItem('adminToken');
             document.getElementById('erro').textContent = 'Sessão inválida. Clique três vezes no logotipo na página inicial.';
+            document.getElementById('erro').style.display = 'block';
             window.location.href = '/index.html';
             return;
           }
@@ -773,6 +830,7 @@
         }
 
         document.getElementById('mensagem').textContent = produtoId ? 'Produto atualizado com sucesso!' : 'Produto adicionado com sucesso!';
+        document.getElementById('mensagem').style.display = 'block';
         form.reset();
         form.querySelector('[name="id"]').value = '';
         document.getElementById('submit-button').textContent = 'Adicionar';
@@ -781,10 +839,12 @@
       } catch (error) {
         console.error('Erro ao salvar produto:', error.message);
         document.getElementById('erro').textContent = error.message;
+        document.getElementById('erro').style.display = 'block';
       }
     }
 
     function atualizarPaginacao() {
+      console.log('Atualizando paginação...');
       const prevButton = document.getElementById('prev-page');
       const nextButton = document.getElementById('next-page');
       const pageInfo = document.getElementById('page-info');
@@ -792,10 +852,13 @@
         prevButton.disabled = currentPage === 1;
         nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
         pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina) || 1}`;
+      } else {
+        console.error('Elementos de paginação não encontrados:', { prevButton, nextButton, pageInfo });
       }
     }
 
     document.getElementById('prev-page')?.addEventListener('click', () => {
+      console.log('Clicado em página anterior');
       if (currentPage > 1) {
         currentPage--;
         carregarProdutos();
@@ -803,19 +866,25 @@
     });
 
     document.getElementById('next-page')?.addEventListener('click', () => {
+      console.log('Clicado em próxima página');
       currentPage++;
       carregarProdutos();
     });
 
     function openModal(produtoIndex, imageIndex) {
+      console.log(`Abrindo modal para produto ${produtoIndex}, imagem ${imageIndex}`);
       const modal = document.getElementById('imageModal');
       const carrosselImagens = document.getElementById('modalCarrosselImagens');
       const carrosselDots = document.getElementById('modalCarrosselDots');
-      currentImages = Array.isArray(produtos[produtoIndex]?.imagens) ? produtos[produtoIndex].imagens.filter(img => typeof img === 'string' && img) : ['/imagens/placeholder.jpg'];
+      currentImages = Array.isArray(produtos[produtoIndex]?.imagens) ? 
+        produtos[produtoIndex].imagens.filter(img => typeof img === 'string' && img) : 
+        ['/imagens/placeholder.jpg'];
       currentImageIndex = imageIndex;
 
       if (currentImages.length === 0) {
+        console.error('Nenhuma imagem disponível para o produto:', produtoIndex);
         document.getElementById('erro').textContent = 'Nenhuma imagem disponível para este produto.';
+        document.getElementById('erro').style.display = 'block';
         return;
       }
 
@@ -828,6 +897,7 @@
     }
 
     function moveModalCarrossel(direction) {
+      console.log(`Movendo modal carrossel, direção: ${direction}`);
       const carrosselImagens = document.getElementById('modalCarrosselImagens');
       const carrosselDots = document.getElementById('modalCarrosselDots').children;
       const totalImagens = currentImages.length;
@@ -837,6 +907,7 @@
     }
 
     function setModalCarrosselImage(index) {
+      console.log(`Definindo imagem do modal para índice: ${index}`);
       const carrosselImagens = document.getElementById('modalCarrosselImagens');
       const carrosselDots = document.getElementById('modalCarrosselDots').children;
       currentImageIndex = index;
@@ -845,6 +916,7 @@
     }
 
     function closeModal() {
+      console.log('Fechando modal');
       const modal = document.getElementById('imageModal');
       modal.style.display = 'none';
       currentImages = [];
@@ -857,8 +929,9 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       console.log('admin-xyz-123.html carregado');
-      checkAuth();
-      carregarProdutos();
+      if (checkAuth()) {
+        carregarProdutos();
+      }
     });
   </script>
 </body>
