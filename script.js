@@ -1,345 +1,599 @@
-const API_URL = 'https://centrodecompra-backend.onrender.com'; // Use 'http://localhost:10000' para testes locais
-
-// Variáveis globais
-let produtos = [];
-let categoriaSelecionada = 'todas';
-let lojaSelecionada = 'todas';
-let termoBusca = '';
-let currentImages = [];
-let currentImageIndex = 0;
-let currentPage = 1;
-const produtosPorPagina = 25; // Alterado para 25 itens por página
-let totalProdutos = 1000; // será atualizado dinamicamente
-
-// Função para embaralhar um array (Fisher-Yates shuffle)
-function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
-}
-
-// Atualizar ano no footer
-function atualizarAnoFooter() {
-  const yearElement = document.getElementById('year');
-  if (yearElement) {
-    yearElement.textContent = new Date().getFullYear();
-  } else {
-    console.warn('Elemento #year não encontrado no DOM');
-  }
-}
-
-// Detectar triplo clique no logotipo
-function configurarCliqueLogo() {
-  const logo = document.getElementById('site-logo-img');
-  if (!logo) {
-    console.error('ID site-logo-img não encontrado no DOM');
-    return;
-  }
-  let clickCount = 0;
-  let clickTimer;
-  logo.addEventListener('click', (e) => {
-    e.preventDefault();
-    clickCount++;
-    if (clickCount === 1) {
-      clickTimer = setTimeout(() => {
-        clickCount = 0;
-      }, 500);
-    } else if (clickCount === 3) {
-      clearTimeout(clickTimer);
-      // Adicionar um token temporário para acesso
-      const tempToken = 'triple-click-access';
-      window.location.href = `admin-xyz-123.html?tempToken=${tempToken}`;
-      clickCount = 0;
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gerenciar Produtos - Centro de Compras</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="logos/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="logos/apple-touch-icon.png">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    :root {
+      --primary-color: #ff6200;
+      --secondary-color: #6c757d;
+      --text-color-dark: #333;
+      --background-light: #f5f5f5;
+      --border-color: #ddd;
+      --shadow-light: 0 2px 4px rgba(0,0,0,0.1);
+      --border-radius-small: 4px;
+      --border-radius-medium: 8px;
     }
-  }, { once: false });
-}
+    body { 
+      font-family: 'Roboto', Arial, sans-serif; 
+      padding: 20px; 
+      background-color: var(--background-light);
+      margin: 0;
+    }
+    h1, h3 { 
+      text-align: center; 
+      color: var(--text-color-dark); 
+    }
+    form { 
+      max-width: 500px; 
+      margin: auto; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 10px; 
+      background: white; 
+      padding: 20px; 
+      border-radius: var(--border-radius-medium); 
+      box-shadow: var(--shadow-light); 
+    }
+    input, select, textarea, button { 
+      padding: 10px; 
+      border: 1px solid var(--border-color); 
+      border-radius: var(--border-radius-small); 
+      font-size: 16px; 
+    }
+    textarea { 
+      resize: vertical; 
+      min-height: 100px; 
+    }
+    button { 
+      background-color: var(--primary-color); 
+      color: white; 
+      border: none; 
+      cursor: pointer; 
+      font-weight: bold; 
+    }
+    button:hover { 
+      background-color: #e55a00; 
+    }
+    #mensagem { 
+      margin-top: 10px; 
+      color: green; 
+      text-align: center; 
+    }
+    #erro { 
+      margin-top: 10px; 
+      color: red; 
+      text-align: center; 
+    }
+    #loading-spinner {
+      text-align: center;
+      display: none;
+      margin: 20px;
+    }
+    #produtos-cadastrados { 
+      margin: 20px auto; 
+      max-width: 900px; 
+      background: white; 
+      padding: 20px; 
+      border-radius: var(--border-radius-medium); 
+      box-shadow: var(--shadow-light); 
+    }
+    #produtos-cadastrados table { 
+      width: 100%; 
+      border-collapse: collapse; 
+    }
+    #produtos-cadastrados th, #produtos-cadastrados td { 
+      padding: 12px; 
+      border: 1px solid var(--border-color); 
+      text-align: left; 
+      vertical-align: middle;
+      overflow-wrap: break-word;
+      max-width: 200px;
+    }
+    #produtos-cadastrados th { 
+      background-color: #f9f9f9; 
+      font-weight: bold; 
+    }
+    #produtos-cadastrados td { 
+      font-size: 14px;
+    }
+    #produtos-cadastrados button.excluir { 
+      background-color: #dc3545; 
+      padding: 5px 10px; 
+      font-size: 14px; 
+      border: none; 
+      color: white; 
+      border-radius: var(--border-radius-small); 
+      cursor: pointer; 
+      margin-right: 5px; 
+    }
+    #produtos-cadastrados button.excluir:hover { 
+      background-color: #c82333; 
+    }
+    #produtos-cadastrados button.editar { 
+      background-color: #007bff; 
+      padding: 5px 10px; 
+      font-size: 14px; 
+      border: none; 
+      color: white; 
+      border-radius: var(--border-radius-small); 
+      cursor: pointer; 
+    }
+    #produtos-cadastrados button.editar:hover { 
+      background-color: #0056b3; 
+    }
+    .thumbnail { 
+      width: 50px; 
+      height: 50px; 
+      object-fit: contain; 
+      margin: 2px; 
+      cursor: pointer; 
+      border-radius: var(--border-radius-small); 
+      vertical-align: middle; 
+    }
+    #paginacao {
+      text-align: center;
+      margin: 20px 0;
+    }
+    #paginacao button {
+      margin: 0 10px;
+      padding: 8px 16px;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: var(--border-radius-small);
+      cursor: pointer;
+    }
+    #paginacao button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    #paginacao span {
+      font-size: 16px;
+      margin: 0 10px;
+    }
+    .site-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      background-color: white;
+      box-shadow: var(--shadow-light);
+      margin-bottom: 20px;
+    }
+    .logo-container img {
+      width: 150px;
+      height: 50px;
+    }
+    .header-text h1 {
+      font-size: 1.5em;
+      margin: 0;
+    }
+    .header-text p {
+      margin: 5px 0 0;
+      color: var(--text-color-dark);
+    }
+    .logout-button {
+      background-color: var(--secondary-color);
+      padding: 8px 16px;
+      margin-left: auto;
+    }
+    .logout-button:hover {
+      background-color: #5a6268;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    // Verificar autenticação
+    if (!localStorage.getItem('adminToken')) {
+      const tempToken = new URLSearchParams(window.location.search).get('tempToken');
+      if (tempToken === 'triple-click-access') {
+        localStorage.setItem('adminToken', 'temp-token-' + Date.now());
+      } else {
+        alert('Acesso não autorizado. Por favor, clique três vezes no logotipo na página inicial para autenticar.');
+        window.location.href = '/index.html';
+        return;
+      }
+    }
 
-// Carregar produtos com retry
-async function carregarProdutos() {
-  const loadingSpinner = document.getElementById('loading-spinner');
-  const mensagemVazia = document.getElementById('mensagem-vazia');
-  const errorMessage = document.getElementById('error-message');
-  const gridProdutos = document.getElementById('grid-produtos');
+    const API_URL = 'https://centrodecompra-backend.onrender.com';
+    let currentPage = 1;
+    const produtosPorPagina = 25; // Alterado para 25 itens por página
+    let totalProdutos = 0;
 
-  if (!gridProdutos || !mensagemVazia || !errorMessage || !loadingSpinner) {
-    console.error('Elementos essenciais não encontrados');
-    errorMessage.textContent = 'Erro: Elementos da página não encontrados. Contate o suporte.';
-    errorMessage.style.display = 'block';
-    return;
-  }
+    // Função para escapar HTML e evitar XSS
+    function escapeHTML(str) {
+      return str.replace(/[&<>"']/g, (match) => ({
+        '&': '&', '<': '<', '>': '>', '"': '"', "'": '''
+      }[match]));
+    }
 
-  const maxRetries = 3;
-  let attempt = 1;
+    // Função de logout
+    function logout() {
+      localStorage.removeItem('adminToken');
+      window.location.href = '/index.html';
+    }
 
-  while (attempt <= maxRetries) {
-    try {
+    // Atualizar ano no footer
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    async function carregarProdutos() {
+      const tbody = document.getElementById('lista-produtos');
+      const loadingSpinner = document.getElementById('loading-spinner');
+      const erro = document.getElementById('erro');
       loadingSpinner.style.display = 'block';
-      mensagemVazia.style.display = 'none';
-      errorMessage.style.display = 'none';
-      gridProdutos.innerHTML = '';
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Carregando...</td></tr>';
+      erro.textContent = '';
 
-      const url = `${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`;
-      
-      const response = await fetch(url, {
-        cache: 'no-store',
-        headers: { 'Accept': 'application/json' },
-        signal: AbortSignal.timeout(10000) // Timeout de 10 segundos
-      });
+      const maxRetries = 3;
+      let attempt = 1;
+      while (attempt <= maxRetries) {
+        try {
+          console.log(`Tentativa ${attempt}: Carregando produtos de ${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`);
+          const token = localStorage.getItem('adminToken');
+          console.log('Token usado:', token);
 
-      console.log('Status da resposta (index):', response.status, response.statusText);
-      const data = await response.json();
-      console.log('Dados recebidos (index):', data);
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 5000);
+          const res = await fetch(`${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`, {
+            cache: 'no-store',
+            signal: controller.signal,
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          clearTimeout(timeoutId);
 
-      if (!response.ok) {
-        const errorData = data || {};
-        throw new Error(errorData.details || `Erro ${response.status}: Falha ao carregar produtos`);
+          console.log('Status da resposta:', res.status, res.statusText);
+          const data = await res.json();
+          console.log('Dados recebidos:', JSON.stringify(data, null, 2));
+
+          if (!res.ok) {
+            const errorData = data || {};
+            if (res.status === 401 || res.status === 403) {
+              localStorage.removeItem('adminToken');
+              erro.textContent = 'Sessão inválida ou expirada. Clique três vezes no logotipo na página inicial.';
+              erro.style.display = 'block';
+              window.location.href = '/index.html';
+              return;
+            }
+            throw new Error(errorData.error || `Falha ao buscar produtos: ${res.status}`);
+          }
+
+          const produtos = Array.isArray(data.produtos) ? data.produtos : Array.isArray(data) ? data : [];
+          totalProdutos = data.total || produtos.length;
+          console.log('Produtos processados:', produtos, 'Total:', totalProdutos);
+
+          if (produtos.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Nenhum produto cadastrado.</td></tr>';
+          } else {
+            preencherTabela(produtos);
+          }
+          atualizarPaginacao();
+          return;
+        } catch (err) {
+          console.error(`Tentativa ${attempt} falhou: ${err.message}`);
+          if (attempt === maxRetries) {
+            let errorMessage = `Erro após ${maxRetries} tentativas: ${err.message}`;
+            if (err.message.includes('Failed to fetch') || err.name === 'AbortError') {
+              errorMessage = 'Erro de conexão com o servidor. Verifique sua rede ou a configuração do servidor.';
+            }
+            tbody.innerHTML = `<tr><td colspan="8" style="color:red;text-align:center;">${errorMessage}</td></tr>`;
+            erro.textContent = errorMessage;
+          }
+          attempt++;
+          await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+        } finally {
+          loadingSpinner.style.display = 'none';
+        }
       }
-
-      if (!Array.isArray(data.produtos)) {
-        throw new Error('Resposta inválida da API: produtos não é um array');
-      }
-
-      // Aqui embaralhamos os produtos para ordem aleatória sempre que carregar
-      produtos = shuffleArray(data.produtos.slice(0, produtosPorPagina));
-      totalProdutos = data.total || produtos.length;
-      console.log('Produtos processados (index):', produtos, 'Total:', totalProdutos);
-
-      filtrarProdutos();
-      atualizarPaginacao();
-      return;
-    } catch (error) {
-      console.error(`Tentativa ${attempt} falhou: ${error.message}`);
-      if (attempt === maxRetries) {
-        errorMessage.textContent = `Não foi possível carregar os produtos após ${maxRetries} tentativas: ${error.message}. Tente novamente mais tarde.`;
-        errorMessage.style.display = 'block';
-        mensagemVazia.style.display = 'none';
-        gridProdutos.style.display = 'none';
-      }
-      attempt++;
-      await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
-    } finally {
-      loadingSpinner.style.display = 'none';
     }
-  }
-}
 
-// Filtrar e exibir produtos
-function filtrarProdutos() {
-  const gridProdutos = document.getElementById('grid-produtos');
-  const mensagemVazia = document.getElementById('mensagem-vazia');
+    function preencherTabela(produtos) {
+      const tbody = document.getElementById('lista-produtos');
+      tbody.innerHTML = '';
+      const produtosArray = Array.isArray(produtos) ? produtos : [];
+      console.log('Preenchendo tabela com produtos:', produtosArray);
+      if (produtosArray.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Nenhum produto cadastrado.</td></tr>';
+        return;
+      }
+      produtosArray.forEach((produto) => {
+        const precoFormatado = `R$ ${parseFloat(produto.preco || 0).toFixed(2).replace('.', ',')}`;
+        const imagens = Array.isArray(produto.imagens) ? produto.imagens.filter(img => typeof img === 'string' && img) : [];
+        const miniaturas = imagens.length > 0
+          ? imagens.map((img, i) => `<img src="${escapeHTML(img)}" class="thumbnail" alt="Imagem ${i + 1}" loading="lazy" onerror="this.src='imagens/placeholder.jpg'" />`).join('')
+          : 'Sem imagens';
 
-  if (!gridProdutos || !mensagemVazia) {
-    console.error('grid-produtos ou mensagem-vazia não encontrados');
-    return;
-  }
+        tbody.innerHTML += `
+          <tr>
+            <td>${escapeHTML(produto.nome || 'N/A')}</td>
+            <td>${escapeHTML(produto.descricao || 'N/A')}</td>
+            <td>${escapeHTML(produto.categoria || 'N/A')}</td>
+            <td>${escapeHTML(produto.loja || 'N/A')}</td>
+            <td><a href="${escapeHTML(produto.link || '#')}" target="_blank" rel="noopener noreferrer">Link</a></td>
+            <td>${precoFormatado}</td>
+            <td>${miniaturas}</td>
+            <td>
+              <button class="editar" onclick="editarProduto('${produto._id}')" aria-label="Editar produto ${produto.nome}">Editar</button>
+              <button class="excluir" onclick="excluirProduto('${produto._id}')" aria-label="Excluir produto ${produto.nome}">Excluir</button>
+            </td>
+          </tr>
+        `;
+      });
+    }
 
-  const produtosFiltrados = produtos
-    .filter((produto) => {
-      const matchCategoria =
-        categoriaSelecionada === 'todas' ||
-        produto.categoria?.toLowerCase() === categoriaSelecionada.toLowerCase();
-      const matchLoja =
-        lojaSelecionada === 'todas' ||
-        produto.loja?.toLowerCase() === lojaSelecionada.toLowerCase();
-      const matchBusca =
-        !termoBusca || produto.nome?.toLowerCase().includes(termoBusca.toLowerCase());
-      return matchCategoria && matchLoja && matchBusca;
+    async function editarProduto(id) {
+      try {
+        const token = localStorage.getItem('adminToken');
+        if (!token) {
+          document.getElementById('erro').textContent = 'Sessão expirada. Clique três vezes no logotipo na página inicial.';
+          window.location.href = '/index.html';
+          return;
+        }
+
+        const res = await fetch(`${API_URL}/api/produtos/${id}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({}));
+          if (res.status === 401 || res.status === 403) {
+            localStorage.removeItem('adminToken');
+            document.getElementById('erro').textContent = 'Sessão inválida. Clique três vezes no logotipo na página inicial.';
+            window.location.href = '/index.html';
+            return;
+          }
+          throw new Error(errorData.error || 'Erro ao buscar produto para edição');
+        }
+        const produto = await res.json();
+        console.log('Produto para edição:', produto);
+
+        document.getElementById('produto-id').value = produto._id || '';
+        document.getElementById('form-produto').nome.value = produto.nome || '';
+        document.getElementById('form-produto').descricao.value = produto.descricao || '';
+        document.getElementById('form-produto').categoria.value = produto.categoria || '';
+        document.getElementById('form-produto').loja.value = produto.loja || '';
+        document.getElementById('form-produto').link.value = produto.link || '';
+        document.getElementById('form-produto').preco.value = produto.preco || '';
+        document.getElementById('submit-button').textContent = 'Salvar Alterações';
+        document.getElementById('cancel-button').style.display = 'inline-block';
+        document.getElementById('mensagem').textContent = 'Editando produto. Envie para salvar as alterações.';
+      } catch (err) {
+        document.getElementById('erro').textContent = err.message;
+      }
+    }
+
+    function cancelarEdicao() {
+      document.getElementById('form-produto').reset();
+      document.getElementById('produto-id').value = '';
+      document.getElementById('submit-button').textContent = 'Adicionar';
+      document.getElementById('cancel-button').style.display = 'none';
+      document.getElementById('mensagem').textContent = '';
+      document.getElementById('erro').textContent = '';
+    }
+
+    async function excluirProduto(id) {
+      if (!confirm('Confirma a exclusão deste produto?')) return;
+      try {
+        const token = localStorage.getItem('adminToken');
+        if (!token) {
+          document.getElementById('erro').textContent = 'Sessão expirada. Clique três vezes no logotipo na página inicial.';
+          window.location.href = '/index.html';
+          return;
+        }
+
+        const res = await fetch(`${API_URL}/api/produtos/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({}));
+          if (res.status === 401 || res.status === 403) {
+            localStorage.removeItem('adminToken');
+            document.getElementById('erro').textContent = 'Sessão inválida. Clique três vezes no logotipo na página inicial.';
+            window.location.href = '/index.html';
+            return;
+          }
+          throw new Error(errorData.error || 'Erro ao excluir produto');
+        }
+        document.getElementById('mensagem').textContent = 'Produto excluído com sucesso';
+        carregarProdutos();
+      } catch (err) {
+        document.getElementById('erro').textContent = err.message;
+      }
+    }
+
+    document.getElementById('form-produto').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const form = event.target;
+      const formData = new FormData(form);
+      const produtoId = formData.get('id');
+      const link = formData.get('link');
+      const preco = parseFloat(formData.get('preco'));
+
+      if (!link.match(/^https?:\/\/.+/)) {
+        document.getElementById('erro').textContent = 'Link inválido! Deve começar com http:// ou https://';
+        return;
+      }
+      if (isNaN(preco) || preco <= 0) {
+        document.getElementById('erro').textContent = 'O preço deve ser maior que zero!';
+        return;
+      }
+
+      document.getElementById('mensagem').textContent = '';
+      document.getElementById('erro').textContent = '';
+
+      try {
+        const token = localStorage.getItem('adminToken');
+        if (!token) {
+          document.getElementById('erro').textContent = 'Sessão expirada. Clique três vezes no logotipo na página inicial.';
+          window.location.href = '/index.html';
+          return;
+        }
+
+        let res;
+        if (produtoId) {
+          res = await fetch(`${API_URL}/api/produtos/${produtoId}`, {
+            method: 'PUT',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            },
+            body: formData
+          });
+        } else {
+          res = await fetch(`${API_URL}/api/produtos`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            },
+            body: formData
+          });
+        }
+
+        const responseData = await res.json();
+        console.log(`Resposta do ${produtoId ? 'PUT' : 'POST'}:`, responseData);
+
+        if (!res.ok) {
+          if (res.status === 401 || res.status === 403) {
+            localStorage.removeItem('adminToken');
+            document.getElementById('erro').textContent = 'Sessão inválida. Clique três vezes no logotipo na página inicial.';
+            window.location.href = '/index.html';
+            return;
+          }
+          throw new Error(responseData?.error || `Erro ao ${produtoId ? 'atualizar' : 'adicionar'} produto`);
+        }
+
+        document.getElementById('mensagem').textContent = produtoId ? 'Produto atualizado com sucesso!' : 'Produto adicionado com sucesso!';
+        form.reset();
+        document.getElementById('produto-id').value = '';
+        document.getElementById('submit-button').textContent = 'Adicionar';
+        document.getElementById('cancel-button').style.display = 'none';
+        carregarProdutos();
+      } catch (error) {
+        document.getElementById('erro').textContent = error.message;
+      }
     });
 
-  gridProdutos.innerHTML = '';
-  if (produtosFiltrados.length === 0) {
-    mensagemVazia.style.display = 'block';
-    gridProdutos.style.display = 'none';
-    return;
-  }
+    function atualizarPaginacao() {
+      const prevButton = document.getElementById('prev-page');
+      const nextButton = document.getElementById('next-page');
+      const pageInfo = document.getElementById('page-info');
+      prevButton.disabled = currentPage === 1;
+      nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
+      pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina) || 1}`;
+    }
 
-  mensagemVazia.style.display = 'none';
-  gridProdutos.style.display = 'grid';
-
-  produtosFiltrados.forEach((produto, produtoIndex) => {
-    const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0
-      ? produto.imagens.filter(img => typeof img === 'string' && img)
-      : ['imagens/placeholder.jpg'];
-    const carrosselId = `carrossel-${produtoIndex}-${produto._id || Date.now()}`;
-
-    const produtoDiv = document.createElement('div');
-    produtoDiv.classList.add('produto-card', 'visible');
-    produtoDiv.setAttribute('data-categoria', produto.categoria?.toLowerCase() || 'todas');
-    produtoDiv.setAttribute('data-loja', produto.loja?.toLowerCase() || 'todas');
-
-    produtoDiv.innerHTML = `
-      <div class="carrossel" id="${carrosselId}">
-        <div class="carrossel-imagens">
-          ${imagens.map((img, i) => `
-            <img src="${img}" alt="${produto.nome || 'Produto'} ${i + 1}" loading="lazy" width="200" height="200" onerror="this.src='imagens/placeholder.jpg'" onclick="openModal(${produtoIndex}, ${i})">
-          `).join('')}
-        </div>
-        ${imagens.length > 1 ? `
-          <button class="carrossel-prev" onclick="moveCarrossel('${carrosselId}', -1)">◄</button>
-          <button class="carrossel-next" onclick="moveCarrossel('${carrosselId}', 1)">▶</button>
-          <div class="carrossel-dots">
-            ${imagens.map((_, i) => `<span class="carrossel-dot ${i === 0 ? 'ativo' : ''}" onclick="setCarrosselImage('${carrosselId}', ${i})"></span>`).join('')}
-          </div>
-        ` : ''}
-      </div>
-      <span>${produto.nome || 'Produto sem nome'}</span>
-      <span class="descricao">Loja: ${produto.loja || 'Desconhecida'}</span>
-      <p class="preco"><a href="${produto.link || '#'}" target="_blank" class="ver-preco">Clique aqui para ver o preço</a></p>
-      <a href="${produto.link || '#'}" target="_blank" class="ver-na-loja ${produto.loja?.toLowerCase() || 'default'}">Comprar</a>
-    `;
-    gridProdutos.appendChild(produtoDiv);
-  });
-}
-
-// Funções do carrossel
-function moveCarrossel(carrosselId, direction) {
-  const carrossel = document.getElementById(carrosselId);
-  const imagens = carrossel.querySelector('.carrossel-imagens');
-  const dots = carrossel.querySelectorAll('.carrossel-dot');
-  let currentIndex = parseInt(imagens.dataset.index || 0);
-  const totalImagens = imagens.children.length;
-
-  currentIndex = (currentIndex + direction + totalImagens) % totalImagens;
-  imagens.style.transform = `translateX(-${currentIndex * 100}%)`;
-  imagens.dataset.index = currentIndex;
-
-  dots.forEach((dot, i) => dot.classList.toggle('ativo', i === currentIndex));
-}
-
-function setCarrosselImage(carrosselId, index) {
-  const carrossel = document.getElementById(carrosselId);
-  const imagens = carrossel.querySelector('.carrossel-imagens');
-  const dots = carrossel.querySelectorAll('.carrossel-dot');
-
-  imagens.style.transform = `translateX(-${index * 100}%)`;
-  imagens.dataset.index = index;
-
-  dots.forEach((dot, i) => dot.classList.toggle('ativo', i === index));
-}
-
-// Funções do modal
-async function openModal(produtoIndex, imageIndex) {
-  const modal = document.getElementById('imageModal');
-  const carrosselImagens = document.getElementById('modalCarrosselImagens');
-  const carrosselDots = document.getElementById('modalCarrosselDots');
-
-  try {
-    currentImages = Array.isArray(produtos[produtoIndex]?.imagens) && produtos[produtoIndex].imagens.length > 0
-      ? produtos[produtoIndex].imagens.filter(img => typeof img === 'string' && img)
-      : ['imagens/placeholder.jpg'];
-    currentImageIndex = imageIndex;
-
-    carrosselImagens.innerHTML = currentImages.map(img => `<img src="${img}" alt="Imagem ampliada" onerror="this.src='imagens/placeholder.jpg'">`).join('');
-    carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
-
-    carrosselDots.innerHTML = currentImages.map((_, i) => `<span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})"></span>`).join('');
-
-    modal.style.display = 'flex';
-  } catch (error) {
-    console.error('Erro ao abrir modal:', error);
-  }
-}
-
-function moveModalCarrossel(direction) {
-  const carrosselImagens = document.getElementById('modalCarrosselImagens');
-  const carrosselDots = document.getElementById('modalCarrosselDots').children;
-  const totalImagens = currentImages.length;
-
-  currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
-  carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
-
-  Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
-}
-
-function setModalCarrosselImage(index) {
-  const carrosselImagens = document.getElementById('modalCarrosselImagens');
-  const carrosselDots = document.getElementById('modalCarrosselDots').children;
-  currentImageIndex = index;
-  carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
-  Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
-}
-
-function closeModal() {
-  const modal = document.getElementById('imageModal');
-  modal.style.display = 'none';
-  currentImages = [];
-  currentImageIndex = 0;
-}
-
-// Configurar busca
-function configurarBusca() {
-  const buscaInput = document.getElementById('busca');
-  if (buscaInput) {
-    buscaInput.addEventListener('input', (e) => {
-      termoBusca = e.target.value;
-      filtrarProdutos();
-    });
-  }
-}
-
-// Configurar filtros
-function filtrarPorCategoria(categoria) {
-  categoriaSelecionada = categoria;
-  const itensCategoria = document.querySelectorAll('.categoria-item');
-  itensCategoria.forEach(item => item.classList.remove('ativa'));
-  document.querySelector(`.categoria-item[data-categoria="${categoria}"]`).classList.add('ativa');
-  filtrarProdutos();
-}
-
-function filtrarPorLoja(loja) {
-  lojaSelecionada = loja;
-  const itensLoja = document.querySelectorAll('.loja, .loja-todas');
-  itensLoja.forEach(item => item.classList.remove('ativa'));
-  document.querySelector(`[data-loja="${loja}"]`).classList.add('ativa');
-  filtrarProdutos();
-}
-
-// Configurar paginação
-function configurarPaginacao() {
-  const prevButton = document.getElementById('prev-page');
-  const nextButton = document.getElementById('next-page');
-  if (prevButton) {
-    prevButton.addEventListener('click', () => {
+    document.getElementById('prev-page')?.addEventListener('click', () => {
       if (currentPage > 1) {
         currentPage--;
         carregarProdutos();
       }
     });
-  }
-  if (nextButton) {
-    nextButton.addEventListener('click', () => {
+
+    document.getElementById('next-page')?.addEventListener('click', () => {
       currentPage++;
       carregarProdutos();
     });
-  }
-}
 
-function atualizarPaginacao() {
-  const prevButton = document.getElementById('prev-page');
-  const nextButton = document.getElementById('next-page');
-  const pageInfo = document.getElementById('page-info');
-  if (prevButton && nextButton && pageInfo) {
-    prevButton.disabled = currentPage === 1;
-    nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
-    pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina) || 1}`;
-  }
-}
-
-// Inicialização
-document.addEventListener('DOMContentLoaded', () => {
-  console.log('script.js carregado');
-  carregarProdutos();
-  configurarBusca();
-  configurarPaginacao();
-  atualizarAnoFooter();
-  configurarCliqueLogo();
-
-  const modal = document.getElementById('imageModal');
-  if (modal) {
-    modal.addEventListener('click', (e) => {
-      if (e.target === e.currentTarget) closeModal();
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('admin-xyz-123.html carregado');
+      carregarProdutos();
     });
-  }
-});
+  </script>
+  <header class="site-header">
+    <div class="logo-container">
+      <a href="/index.html">
+        <img src="logos/logoscentrodecompras.jpeg" alt="Centro de Compras" id="site-logo-img" width="150" height="50">
+      </a>
+    </div>
+    <div class="header-text">
+      <h1>Gerenciar Produtos</h1>
+      <p>Adicione, edite ou remova produtos do portal</p>
+    </div>
+    <button class="logout-button" onclick="logout()">Sair</button>
+  </header>
+  <form id="form-produto" enctype="multipart/form-data">
+    <input type="hidden" name="id" id="produto-id">
+    <input type="text" name="nome" placeholder="Nome do produto" required aria-label="Nome do produto" />
+    <textarea name="descricao" placeholder="Descrição do produto" required aria-label="Descrição do produto"></textarea>
+    <select name="categoria" required aria-label="Categoria do produto">
+      <option value="" disabled selected>Selecione uma categoria</option>
+      <option value="eletronicos">Eletrônicos</option>
+      <option value="moda">Moda</option>
+      <option value="fitness">Fitness</option>
+      <option value="casa">Casa e Decoração</option>
+      <option value="beleza">Beleza</option>
+      <option value="esportes">Esportes</option>
+      <option value="livros">Livros</option>
+      <option value="infantil">Infantil</option>
+      <option value="celulares">Celulares</option>
+      <option value="eletrodomesticos">Eletrodomésticos</option>
+      <option value="pet">Pet</option>
+      <option value="jardinagem">Jardinagem</option>
+      <option value="automotivo">Automotivo</option>
+      <option value="gastronomia">Gastronomia</option>
+      <option value="games">Games</option>
+    </select>
+    <select name="loja" required aria-label="Loja do produto">
+      <option value="" disabled selected>Selecione uma loja</option>
+      <option value="amazon">Amazon</option>
+      <option value="magalu">Magalu</option>
+      <option value="shein">Shein</option>
+      <option value="shopee">Shopee</option>
+      <option value="mercadolivre">Mercado Livre</option>
+      <option value="alibaba">Alibaba</option>
+    </select>
+    <input type="url" name="link" placeholder="Link do produto (https://...)" required pattern="https?://.+" aria-label="Link do produto" />
+    <input type="number" name="preco" placeholder="Preço do produto (ex.: 99.99)" step="0.01" min="0" required aria-label="Preço do produto" />
+    <input type="file" name="imagens" accept="image/*" multiple aria-label="Imagens do produto" />
+    <button type="submit" id="submit-button">Adicionar</button>
+    <button type="button" id="cancel-button" style="display:none;background-color:var(--secondary-color);" onclick="cancelarEdicao()">Cancelar</button>
+  </form>
+  <div id="mensagem"></div>
+  <div id="erro"></div>
+  <div id="loading-spinner">Carregando...</div>
+  <div id="produtos-cadastrados">
+    <h3>Produtos Cadastrados</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Descrição</th>
+          <th>Categoria</th>
+          <th>Loja</th>
+          <th>Link</th>
+          <th>Preço</th>
+          <th>Imagens</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="lista-produtos">
+        <tr><td colspan="8" style="text-align:center;">Carregando produtos...</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div id="paginacao">
+    <button id="prev-page" disabled aria-label="Página anterior">Anterior</button>
+    <span id="page-info">Página 1</span>
+    <button id="next-page" aria-label="Próxima página">Próximo</button>
+  </div>
+  <footer>
+    <p>Todos os direitos reservados <strong>Grupo Centro de Compra "CdC"</strong> © <span id="year"></span></p>
+  </footer>
+</body>
+</html>
