@@ -77,116 +77,117 @@
       display: none;
       margin: 20px;
     }
-    #produtos-cadastrados { 
-      margin: 20px auto; 
-      max-width: 900px; 
-      background: white; 
-      padding: 20px; 
-      border-radius: var(--border-radius-medium); 
-      box-shadow: var(--shadow-light); 
+    .produtos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      max-width: 1200px;
+      margin: 20px auto;
     }
-    #produtos-cadastrados table { 
-      width: 100%; 
-      border-collapse: collapse; 
+    .produto-card {
+      background: white;
+      border-radius: var(--border-radius-medium);
+      box-shadow: var(--shadow-light);
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: transform 0.2s;
     }
-    #produtos-cadastrados th, #produtos-cadastrados td { 
-      padding: 12px; 
-      border: 1px solid var(--border-color); 
-      text-align: left; 
-      vertical-align: middle;
-      overflow-wrap: break-word;
-      max-width: 200px;
+    .produto-card:hover {
+      transform: translateY(-5px);
     }
-    #produtos-cadastrados th { 
-      background-color: #f9f9f9; 
-      font-weight: bold; 
+    .produto-card .carrossel {
+      position: relative;
+      width: 100%;
+      height: 200px;
+      overflow: hidden;
     }
-    #produtos-cadastrados td { 
-      font-size: 14px;
+    .produto-card .carrossel-imagens {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.3s ease;
     }
-    #produtos-cadastrados button.excluir { 
-      background-color: #dc3545; 
-      padding: 5px 10px; 
-      font-size: 14px; 
-      border: none; 
-      color: white; 
-      border-radius: var(--border-radius-small); 
-      cursor: pointer; 
-      margin-right: 5px; 
+    .produto-card .carrossel-imagens img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      flex: 0 0 100%;
     }
-    #produtos-cadastrados button.excluir:hover { 
-      background-color: #c82333; 
-    }
-    #produtos-cadastrados button.editar { 
-      background-color: #007bff; 
-      padding: 5px 10px; 
-      font-size: 14px; 
-      border: none; 
-      color: white; 
-      border-radius: var(--border-radius-small); 
-      cursor: pointer; 
-    }
-    #produtos-cadastrados button.editar:hover { 
-      background-color: #0056b3; 
-    }
-    .thumbnail { 
-      width: 50px; 
-      height: 50px; 
-      object-fit: contain; 
-      margin: 2px; 
-      cursor: pointer; 
-      border-radius: var(--border-radius-small); 
-      vertical-align: middle; 
-    }
-    #paginacao {
-      text-align: center;
-      margin: 20px 0;
-    }
-    #paginacao button {
-      margin: 0 10px;
-      padding: 8px 16px;
-      background-color: var(--primary-color);
+    .produto-card .carrossel-prev, .produto-card .carrossel-next {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.5);
       color: white;
       border: none;
+      padding: 10px;
+      cursor: pointer;
+      font-size: 18px;
+      border-radius: var(--border-radius-small);
+    }
+    .produto-card .carrossel-prev { left: 10px; }
+    .produto-card .carrossel-next { right: 10px; }
+    .produto-card .carrossel-dots {
+      position: absolute;
+      bottom: 10px;
+      width: 100%;
+      text-align: center;
+    }
+    .produto-card .carrossel-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      background: #ccc;
+      border-radius: 50%;
+      margin: 0 5px;
+      cursor: pointer;
+    }
+    .produto-card .carrossel-dot.ativo {
+      background: var(--primary-color);
+    }
+    .produto-card h4 {
+      margin: 0;
+      font-size: 1.2em;
+      color: var(--text-color-dark);
+    }
+    .produto-card p {
+      margin: 5px 0;
+      font-size: 0.9em;
+      color: var(--secondary-color);
+    }
+    .produto-card .preco {
+      font-weight: bold;
+      color: var(--primary-color);
+    }
+    .produto-card .acoes {
+      display: flex;
+      gap: 10px;
+    }
+    .produto-card button.editar {
+      background-color: #007bff;
+      padding: 5px 10px;
+      font-size: 14px;
+      border: none;
+      color: white;
       border-radius: var(--border-radius-small);
       cursor: pointer;
     }
-    #paginacao button:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
+    .produto-card button.editar:hover {
+      background-color: #0056b3;
     }
-    #paginacao span {
-      font-size: 16px;
-      margin: 0 10px;
+    .produto-card button.excluir {
+      background-color: #dc3545;
+      padding: 5px 10px;
+      font-size: 14px;
+      border: none;
+      color: white;
+      border-radius: var(--border-radius-small);
+      cursor: pointer;
     }
-    .site-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 20px;
-      background-color: white;
-      box-shadow: var(--shadow-light);
-      margin-bottom: 20px;
-    }
-    .logo-container img {
-      width: 150px;
-      height: 50px;
-    }
-    .header-text h1 {
-      font-size: 1.5em;
-      margin: 0;
-    }
-    .header-text p {
-      margin: 5px 0 0;
-      color: var(--text-color-dark);
-    }
-    .logout-button {
-      background-color: var(--secondary-color);
-      padding: 8px 16px;
-      margin-left: auto;
-    }
-    .logout-button:hover {
-      background-color: #5a6268;
+    .produto-card button.excluir:hover {
+      background-color: #c82333;
     }
     .modal {
       display: none;
@@ -262,13 +263,42 @@
       cursor: pointer;
     }
     .carrossel-dot.ativo { background: var(--primary-color); }
+    .site-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      background-color: white;
+      box-shadow: var(--shadow-light);
+      margin-bottom: 20px;
+    }
+    .logo-container img {
+      width: 150px;
+      height: 50px;
+    }
+    .header-text h1 {
+      font-size: 1.5em;
+      margin: 0;
+    }
+    .header-text p {
+      margin: 5px 0 0;
+      color: var(--text-color-dark);
+    }
+    .logout-button {
+      background-color: var(--secondary-color);
+      padding: 8px 16px;
+      margin-left: auto;
+    }
+    .logout-button:hover {
+      background-color: #5a6268;
+    }
   </style>
 </head>
 <body>
   <header class="site-header">
     <div class="logo-container">
       <a href="/index.html">
-        <img src="/imagens/logoscentrodecompras.jpeg" alt="Centro de Compras" id="site-logo-img" width="150" height="50">
+        <img src="/imagens/logo-centro-de-compras.jpeg" alt="Centro de Compras" id="site-logo-img" width="150" height="50" onerror="this.src='/imagens/placeholder.jpg'">
       </a>
     </div>
     <div class="header-text">
@@ -308,7 +338,7 @@
       <option value="mercadolivre">Mercado Livre</option>
       <option value="alibaba">Alibaba</option>
     </select>
-    <input type="url" name="link" placeholder="Link do produto (https://...)" required pattern="https?://.+" aria-label="Link do produto" />
+    <input type="url" name="link" placeholder="Link do produto[](https://...)" required pattern="https?://.+" aria-label="Link do produto" />
     <input type="number" name="preco" placeholder="Preço do produto (ex.: 99.99)" step="0.01" min="0" required aria-label="Preço do produto" />
     <input type="file" name="imagens" accept="image/*" multiple aria-label="Imagens do produto" />
     <button type="submit" id="submit-button">Adicionar</button>
@@ -319,23 +349,7 @@
   <div id="loading-spinner">Carregando...</div>
   <div id="produtos-cadastrados">
     <h3>Produtos Cadastrados</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Nome</th>
-          <th>Descrição</th>
-          <th>Categoria</th>
-          <th>Loja</th>
-          <th>Link</th>
-          <th>Preço</th>
-          <th>Imagens</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody id="lista-produtos">
-        <tr><td colspan="8" style="text-align:center;">Carregando produtos...</td></tr>
-      </tbody>
-    </table>
+    <div id="lista-produtos" class="produtos-grid"></div>
   </div>
   <div id="paginacao">
     <button id="prev-page" disabled aria-label="Página anterior">Anterior</button>
@@ -376,9 +390,9 @@
     }
 
     function escapeHTML(str) {
-      return str.replace(/[&<>"']/g, (match) => ({
-        '&': '&', '<': '<', '>': '>', '"': '"', "'": '''
-      }[match]));
+      return str?.replace(/[&<>"']/g, (match) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[match])) || '';
     }
 
     function logout() {
@@ -389,10 +403,10 @@
     document.getElementById('year').textContent = new Date().getFullYear();
 
     async function carregarProdutos() {
-      const tbody = document.getElementById('lista-produtos');
+      const gridProdutos = document.getElementById('lista-produtos');
       const loadingSpinner = document.getElementById('loading-spinner');
       const erro = document.getElementById('erro');
-      if (!tbody || !loadingSpinner || !erro) {
+      if (!gridProdutos || !loadingSpinner || !erro) {
         console.error('Elementos essenciais não encontrados');
         erro.textContent = 'Erro: Elementos da página não encontrados.';
         erro.style.display = 'block';
@@ -400,7 +414,7 @@
       }
 
       loadingSpinner.style.display = 'block';
-      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Carregando...</td></tr>';
+      gridProdutos.innerHTML = '<div style="text-align:center;grid-column:1/-1;">Carregando...</div>';
       erro.textContent = '';
 
       const maxRetries = 3;
@@ -446,9 +460,9 @@
           console.log('Produtos processados:', produtos, 'Total:', totalProdutos);
 
           if (produtos.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Nenhum produto cadastrado.</td></tr>';
+            gridProdutos.innerHTML = '<div style="text-align:center;grid-column:1/-1;">Nenhum produto cadastrado.</div>';
           } else {
-            preencherTabela(produtos);
+            preencherProdutos(produtos);
           }
           atualizarPaginacao();
           return;
@@ -459,7 +473,7 @@
             if (err.message.includes('Failed to fetch') || err.name === 'AbortError') {
               errorMessage = 'Erro de conexão com o servidor. Verifique sua rede ou a configuração do servidor.';
             }
-            tbody.innerHTML = `<tr><td colspan="8" style="color:red;text-align:center;">${errorMessage}</td></tr>`;
+            gridProdutos.innerHTML = `<div style="color:red;text-align:center;grid-column:1/-1;">${errorMessage}</div>`;
             erro.textContent = errorMessage;
           }
           attempt++;
@@ -470,55 +484,73 @@
       }
     }
 
-    function preencherTabela(produtos) {
-      const tbody = document.getElementById('lista-produtos');
-      if (!tbody) {
+    function preencherProdutos(produtos) {
+      const gridProdutos = document.getElementById('lista-produtos');
+      if (!gridProdutos) {
         console.error('Elemento lista-produtos não encontrado');
-        document.getElementById('erro').textContent = 'Erro: Elemento da tabela não encontrado.';
+        document.getElementById('erro').textContent = 'Erro: Elemento da grade não encontrado.';
         return;
       }
-      tbody.innerHTML = '';
+      gridProdutos.innerHTML = '';
       const produtosArray = Array.isArray(produtos) ? produtos : [];
-      console.log('Preenchendo tabela com produtos:', produtosArray);
+      console.log('Preenchendo grade com produtos:', produtosArray);
       if (produtosArray.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Nenhum produto cadastrado.</td></tr>';
+        gridProdutos.innerHTML = '<div style="text-align:center;grid-column:1/-1;">Nenhum produto cadastrado.</div>';
         return;
       }
       produtosArray.forEach((produto, index) => {
         const precoFormatado = `R$ ${parseFloat(produto.preco || 0).toFixed(2).replace('.', ',')}`;
-        const imagens = Array.isArray(produto.imagens) ? produto.imagens.filter(img => typeof img === 'string' && img) : [];
-        const miniaturas = imagens.length > 0
-          ? imagens.map((img, i) => `<img src="${escapeHTML(img)}" class="thumbnail" alt="Imagem ${i + 1}" loading="lazy" data-index="${index}-${i}" onclick="openModal(${index}, ${i})" onerror="handleImageError(this, '/imagens/placeholder.jpg')" />`).join('')
-          : 'Sem imagens';
-
-        tbody.innerHTML += `
-          <tr>
-            <td>${escapeHTML(produto.nome || 'N/A')}</td>
-            <td>${escapeHTML(produto.descricao || 'N/A')}</td>
-            <td>${escapeHTML(produto.categoria || 'N/A')}</td>
-            <td>${escapeHTML(produto.loja || 'N/A')}</td>
-            <td><a href="${escapeHTML(produto.link || '#')}" target="_blank" rel="noopener noreferrer">Link</a></td>
-            <td>${precoFormatado}</td>
-            <td>${miniaturas}</td>
-            <td>
-              <button class="editar" onclick="editarProduto('${produto._id}')" aria-label="Editar produto ${produto.nome || 'N/A'}">Editar</button>
-              <button class="excluir" onclick="excluirProduto('${produto._id}')" aria-label="Excluir produto ${produto.nome || 'N/A'}">Excluir</button>
-            </td>
-          </tr>
+        const imagens = Array.isArray(produto.imagens) ? produto.imagens.filter(img => typeof img === 'string' && img) : ['/imagens/placeholder.jpg'];
+        const carrosselId = `carrossel-${index}-${produto._id || Date.now()}`;
+        const produtoDiv = document.createElement('div');
+        produtoDiv.classList.add('produto-card');
+        produtoDiv.innerHTML = `
+          <div class="carrossel" id="${carrosselId}">
+            <div class="carrossel-imagens">
+              ${imagens.map((img, i) => `
+                <img src="${escapeHTML(img)}" alt="${escapeHTML(produto.nome || 'Produto')} ${i + 1}" loading="lazy" width="200" height="200" onerror="this.src='/imagens/placeholder.jpg'" onclick="openModal(${index}, ${i})">
+              `).join('')}
+            </div>
+            ${imagens.length > 1 ? `
+              <button class="carrossel-prev" onclick="moveCarrossel('${carrosselId}', -1)">◄</button>
+              <button class="carrossel-next" onclick="moveCarrossel('${carrosselId}', 1)">►</button>
+              <div class="carrossel-dots">
+                ${imagens.map((_, i) => `<span class="carrossel-dot ${i === 0 ? 'ativo' : ''}" onclick="setCarrosselImage('${carrosselId}', ${i})"></span>`).join('')}
+              </div>
+            ` : ''}
+          </div>
+          <h4>${escapeHTML(produto.nome || 'N/A')}</h4>
+          <p class="descricao">Loja: ${escapeHTML(produto.loja || 'N/A')}</p>
+          <p class="preco">${precoFormatado}</p>
+          <p class="categoria">Categoria: ${escapeHTML(produto.categoria || 'N/A')}</p>
+          <div class="acoes">
+            <button class="editar" onclick="editarProduto('${produto._id}')" aria-label="Editar produto ${escapeHTML(produto.nome || 'N/A')}">Editar</button>
+            <button class="excluir" onclick="excluirProduto('${produto._id}')" aria-label="Excluir produto ${escapeHTML(produto.nome || 'N/A')}">Excluir</button>
+          </div>
         `;
+        gridProdutos.appendChild(produtoDiv);
       });
     }
 
-    function handleImageError(imgElement, fallbackSrc) {
-      if (imgElement.src !== fallbackSrc) {
-        setTimeout(() => {
-          imgElement.src = fallbackSrc;
-          imgElement.onerror = null;
-        }, 1000);
-      } else {
-        imgElement.style.display = 'none';
-        console.error(`Falha ao carregar ${fallbackSrc} para imagem ${imgElement.dataset.index}`);
-      }
+    function moveCarrossel(carrosselId, direction) {
+      const carrossel = document.getElementById(carrosselId);
+      const imagens = carrossel.querySelector('.carrossel-imagens');
+      const dots = carrossel.querySelectorAll('.carrossel-dot');
+      let currentIndex = parseInt(imagens.dataset.index || 0);
+      const totalImagens = imagens.children.length;
+      currentIndex = (currentIndex + direction + totalImagens) % totalImagens;
+      imagens.style.transform = `translateX(-${currentIndex * 100}%)`;
+      imagens.dataset.index = currentIndex;
+      dots.forEach((dot, i) => dot.classList.toggle('ativo', i === currentIndex));
+    }
+
+    function setCarrosselImage(carrosselId, index) {
+      const carrossel = document.getElementById(carrosselId);
+      const imagens = carrossel.querySelector('.carrossel-imagens');
+      const dots = carrossel.querySelectorAll('.carrossel-dot');
+      imagens.style.transform = `translateX(-${index * 100}%)`;
+      imagens.dataset.index = index;
+      dots.forEach((dot, i) => dot.classList.toggle('ativo', i === index));
     }
 
     async function editarProduto(id) {
@@ -779,7 +811,7 @@
       const modal = document.getElementById('imageModal');
       const carrosselImagens = document.getElementById('modalCarrosselImagens');
       const carrosselDots = document.getElementById('modalCarrosselDots');
-      currentImages = Array.isArray(produtos[produtoIndex]?.imagens) ? produtos[produtoIndex].imagens : [];
+      currentImages = Array.isArray(produtos[produtoIndex]?.imagens) ? produtos[produtoIndex].imagens.filter(img => typeof img === 'string' && img) : ['/imagens/placeholder.jpg'];
       currentImageIndex = imageIndex;
 
       if (currentImages.length === 0) {
@@ -799,10 +831,8 @@
       const carrosselImagens = document.getElementById('modalCarrosselImagens');
       const carrosselDots = document.getElementById('modalCarrosselDots').children;
       const totalImagens = currentImages.length;
-
       currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
       carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
-
       Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
     }
 
