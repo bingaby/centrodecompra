@@ -7,6 +7,7 @@ let currentImages = [];
 let currentImageIndex = 0;
 let currentPage = 1;
 const produtosPorPagina = 25;
+const maxItensTotal = 1000; // Novo limite de 1000 itens totais
 let totalProdutos = 0;
 
 function normalizarString(str) {
@@ -114,7 +115,7 @@ async function carregarProdutos() {
       }
 
       produtos = shuffleArray(data.produtos.slice(0, produtosPorPagina));
-      totalProdutos = data.total ?? produtos.length;
+      totalProdutos = Math.min(data.total ?? produtos.length, maxItensTotal); // Limita a 1000 itens
       console.log('Produtos processados (index):', produtos, 'Total:', totalProdutos);
 
       filtrarProdutos();
@@ -346,14 +347,16 @@ function configurarPaginacao() {
   }
   if (nextButton) {
     nextButton.addEventListener('click', () => {
-      currentPage++;
-      carregarProdutos();
-      if (typeof gtag !== 'undefined') {
-        gtag('event', 'pagination', {
-          'event_category': 'Navigation',
-          'event_label': 'Next Page',
-          'value': currentPage
-        });
+      if (currentPage < Math.ceil(totalProdutos / produtosPorPagina)) {
+        currentPage++;
+        carregarProdutos();
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'pagination', {
+            'event_category': 'Navigation',
+            'event_label': 'Next Page',
+            'value': currentPage
+          });
+        }
       }
     });
   }
