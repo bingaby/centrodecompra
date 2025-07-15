@@ -84,7 +84,7 @@ function logError(error, req) {
   });
 }
 
-app.post('/api/upload', checkAuth, upload.array('imagens', 3), (req, res) => {
+app.post('/api/upload', /*checkAuth,*/ upload.array('imagens', 3), (req, res) => {
   try {
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ error: 'Nenhuma imagem enviada' });
@@ -119,10 +119,10 @@ app.get('/api/produtos', (req, res) => {
 
     let filteredProdutos = produtos;
     if (categoria) {
-      filteredProdutos = filteredProdutos.filter(p => p.categoria === categoria);
+      filteredProdutos = filteredProdutos.filter(p => p.categoria && p.categoria.toLowerCase() === categoria.toLowerCase());
     }
     if (loja) {
-      filteredProdutos = filteredProdutos.filter(p => p.loja === loja);
+      filteredProdutos = filteredProdutos.filter(p => p.loja && p.loja.toLowerCase() === loja.toLowerCase());
     }
 
     const start = (pageNum - 1) * limitNum;
@@ -139,7 +139,7 @@ app.get('/api/produtos', (req, res) => {
   }
 });
 
-app.get('/api/produtos/:id', checkAuth, (req, res) => {
+app.get('/api/produtos/:id', /*checkAuth,*/ (req, res) => {
   try {
     const produtosPath = path.join(__dirname, 'produtos.json');
     if (!fs.existsSync(produtosPath)) {
@@ -158,7 +158,7 @@ app.get('/api/produtos/:id', checkAuth, (req, res) => {
   }
 });
 
-app.post('/api/produtos', checkAuth, upload.array('imagens', 3), (req, res) => {
+app.post('/api/produtos', /*checkAuth,*/ upload.array('imagens', 3), (req, res) => {
   try {
     const produtosPath = path.join(__dirname, 'produtos.json');
     if (!fs.existsSync(produtosPath)) {
@@ -208,7 +208,7 @@ app.post('/api/produtos', checkAuth, upload.array('imagens', 3), (req, res) => {
   }
 });
 
-app.put('/api/produtos/:id', checkAuth, upload.array('imagens', 3), (req, res) => {
+app.put('/api/produtos/:id', /*checkAuth,*/ upload.array('imagens', 3), (req, res) => {
   try {
     const produtosPath = path.join(__dirname, 'produtos.json');
     if (!fs.existsSync(produtosPath)) {
@@ -279,7 +279,7 @@ app.put('/api/produtos/:id', checkAuth, upload.array('imagens', 3), (req, res) =
   }
 });
 
-app.delete('/api/produtos/:id', checkAuth, (req, res) => {
+app.delete('/api/produtos/:id', /*checkAuth,*/ (req, res) => {
   try {
     const produtosPath = path.join(__dirname, 'produtos.json');
     if (!fs.existsSync(produtosPath)) {
