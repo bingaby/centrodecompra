@@ -327,7 +327,7 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 10000;
-const API_URL = process.env.API_URL || `http://localhost:${PORT}`;
+const API_URL = process.env.API_URL || `https://centrodecompra-backend.onrender.com`;
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
   console.log(`Diretório de uploads: ${path.join(__dirname, 'Uploads')}`);
