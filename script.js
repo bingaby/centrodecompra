@@ -1,6 +1,4 @@
-const API_URL = 'https://centrodecompra-backend.onrender.com'; // Use 'http://localhost:10000' para testes locais
-
-// Variáveis globais
+const API_URL = 'https://centrodecompra-backend.onrender.com';
 let produtos = [];
 let categoriaSelecionada = 'todas';
 let lojaSelecionada = 'todas';
@@ -11,7 +9,6 @@ let currentPage = 1;
 const produtosPorPagina = 25;
 let totalProdutos = 0;
 
-// Função para normalizar strings (remover acentos e converter para minúsculas)
 function normalizarString(str) {
   return str
     ?.toLowerCase()
@@ -19,7 +16,6 @@ function normalizarString(str) {
     .replace(/[\u0300-\u036f]/g, '') || '';
 }
 
-// Função para embaralhar um array (Fisher-Yates shuffle)
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -28,7 +24,6 @@ function shuffleArray(array) {
   return array;
 }
 
-// Atualizar ano no footer
 function atualizarAnoFooter() {
   const yearElement = document.getElementById('year');
   if (yearElement) {
@@ -38,7 +33,6 @@ function atualizarAnoFooter() {
   }
 }
 
-// Detectar triplo clique no logotipo
 function configurarCliqueLogo() {
   const logo = document.getElementById('site-logo-img');
   if (!logo) {
@@ -57,13 +51,13 @@ function configurarCliqueLogo() {
     } else if (clickCount === 3) {
       clearTimeout(clickTimer);
       const tempToken = 'triple-click-access';
+      console.log('Token gerado, redirecionando para admin-xyz-123.html');
       window.location.href = `/admin-xyz-123.html?tempToken=${tempToken}`;
       clickCount = 0;
     }
   }, { once: false });
 }
 
-// Carregar produtos com retry
 async function carregarProdutos() {
   const loadingSpinner = document.getElementById('loading-spinner');
   const mensagemVazia = document.getElementById('mensagem-vazia');
@@ -100,8 +94,15 @@ async function carregarProdutos() {
       });
 
       console.log('Status da resposta (index):', response.status, response.statusText);
-      const data = await response.json();
-      console.log('Dados recebidos (index):', JSON.stringify(data, null, 2));
+      const text = await response.text();
+      console.log('Resposta crua (index):', text);
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        throw new Error('Resposta da API não é JSON válido');
+      }
+      console.log('Dados recebidos (index):', data);
 
       if (!response.ok) {
         const errorData = data || {};
@@ -113,7 +114,7 @@ async function carregarProdutos() {
       }
 
       produtos = shuffleArray(data.produtos.slice(0, produtosPorPagina));
-      totalProdutos = data.total || produtos.length;
+      totalProdutos = data.total ?? produtos.length;
       console.log('Produtos processados (index):', produtos, 'Total:', totalProdutos);
 
       filtrarProdutos();
@@ -135,7 +136,6 @@ async function carregarProdutos() {
   }
 }
 
-// Filtrar e exibir produtos
 function filtrarProdutos() {
   const gridProdutos = document.getElementById('grid-produtos');
   const mensagemVazia = document.getElementById('mensagem-vazia');
@@ -169,7 +169,7 @@ function filtrarProdutos() {
   produtosFiltrados.forEach((produto, produtoIndex) => {
     const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0
       ? produto.imagens.filter(img => typeof img === 'string' && img)
-      : ['imagens/placeholder.jpg'];
+      : ['/imagens/placeholder.jpg'];
     const carrosselId = `carrossel-${produtoIndex}-${produto._id || Date.now()}`;
     const produtoDiv = document.createElement('div');
     produtoDiv.classList.add('produto-card', 'visible');
@@ -180,7 +180,7 @@ function filtrarProdutos() {
       <div class="carrossel" id="${carrosselId}">
         <div class="carrossel-imagens">
           ${imagens.map((img, i) => `
-            <img src="${img}" alt="${produto.nome || 'Produto'} ${i + 1}" loading="lazy" width="200" height="200" onerror="this.src='imagens/placeholder.jpg'" onclick="openModal(${produtoIndex}, ${i})">
+            <img src="${img}" alt="${produto.nome || 'Produto'} ${i + 1}" loading="lazy" width="200" height="200" onerror="this.src='/imagens/placeholder.jpg'">
           `).join('')}
         </div>
         ${imagens.length > 1 ? `
@@ -200,16 +200,16 @@ function filtrarProdutos() {
   });
 }
 
-// Função para rastrear cliques em links de afiliados (Google Analytics)
 function trackAffiliateClick(loja, produtoNome) {
-  gtag('event', 'affiliate_click', {
-    'event_category': 'Affiliate',
-    'event_label': `${loja} - ${produtoNome}`,
-    'value': 1
-  });
+  if (typeof gtag !== 'undefined') {
+    gtag('event', 'affiliate_click', {
+      'event_category': 'Affiliate',
+      'event_label': `${loja} - ${produtoNome}`,
+      'value': 1
+    });
+  }
 }
 
-// Funções do carrossel
 function moveCarrossel(carrosselId, direction) {
   const carrossel = document.getElementById(carrosselId);
   const imagens = carrossel.querySelector('.carrossel-imagens');
@@ -231,7 +231,6 @@ function setCarrosselImage(carrosselId, index) {
   dots.forEach((dot, i) => dot.classList.toggle('ativo', i === index));
 }
 
-// Funções do modal
 async function openModal(produtoIndex, imageIndex) {
   const modal = document.getElementById('imageModal');
   const carrosselImagens = document.getElementById('modalCarrosselImagens');
@@ -239,9 +238,9 @@ async function openModal(produtoIndex, imageIndex) {
   try {
     currentImages = Array.isArray(produtos[produtoIndex]?.imagens) && produtos[produtoIndex].imagens.length > 0
       ? produtos[produtoIndex].imagens.filter(img => typeof img === 'string' && img)
-      : ['imagens/placeholder.jpg'];
+      : ['/imagens/placeholder.jpg'];
     currentImageIndex = imageIndex;
-    carrosselImagens.innerHTML = currentImages.map(img => `<img src="${img}" alt="Imagem ampliada" onerror="this.src='imagens/placeholder.jpg'">`).join('');
+    carrosselImagens.innerHTML = currentImages.map(img => `<img src="${img}" alt="Imagem ampliada" onerror="this.src='/imagens/placeholder.jpg'">`).join('');
     carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
 
     carrosselDots.innerHTML = currentImages.map((_, i) => `<span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})"></span>`).join('');
@@ -276,23 +275,23 @@ function closeModal() {
   currentImageIndex = 0;
 }
 
-// Configurar busca
 function configurarBusca() {
   const buscaInput = document.getElementById('busca');
   if (buscaInput) {
     buscaInput.addEventListener('input', (e) => {
       termoBusca = e.target.value;
       filtrarProdutos();
-      gtag('event', 'search', {
-        'event_category': 'Engagement',
-        'event_label': termoBusca,
-        'value': 1
-      });
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'search', {
+          'event_category': 'Engagement',
+          'event_label': termoBusca,
+          'value': 1
+        });
+      }
     });
   }
 }
 
-// Configurar filtros
 function filtrarPorCategoria(categoria) {
   categoriaSelecionada = categoria;
   currentPage = 1;
@@ -301,11 +300,13 @@ function filtrarPorCategoria(categoria) {
   document.querySelector(`.categoria-item[data-categoria="${categoria}"]`).classList.add('ativa');
   console.log('Categoria selecionada:', categoria);
   carregarProdutos();
-  gtag('event', 'filter_category', {
-    'event_category': 'Engagement',
-    'event_label': categoria,
-    'value': 1
-  });
+  if (typeof gtag !== 'undefined') {
+    gtag('event', 'filter_category', {
+      'event_category': 'Engagement',
+      'event_label': categoria,
+      'value': 1
+    });
+  }
 }
 
 function filtrarPorLoja(loja) {
@@ -316,14 +317,15 @@ function filtrarPorLoja(loja) {
   document.querySelector(`[data-loja="${loja}"]`).classList.add('ativa');
   console.log('Loja selecionada:', loja);
   carregarProdutos();
-  gtag('event', 'filter_store', {
-    'event_category': 'Engagement',
-    'event_label': loja,
-    'value': 1
-  });
+  if (typeof gtag !== 'undefined') {
+    gtag('event', 'filter_store', {
+      'event_category': 'Engagement',
+      'event_label': loja,
+      'value': 1
+    });
+  }
 }
 
-// Configurar paginação
 function configurarPaginacao() {
   const prevButton = document.getElementById('prev-page');
   const nextButton = document.getElementById('next-page');
@@ -332,11 +334,13 @@ function configurarPaginacao() {
       if (currentPage > 1) {
         currentPage--;
         carregarProdutos();
-        gtag('event', 'pagination', {
-          'event_category': 'Navigation',
-          'event_label': 'Previous Page',
-          'value': currentPage
-        });
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'pagination', {
+            'event_category': 'Navigation',
+            'event_label': 'Previous Page',
+            'value': currentPage
+          });
+        }
       }
     });
   }
@@ -344,11 +348,13 @@ function configurarPaginacao() {
     nextButton.addEventListener('click', () => {
       currentPage++;
       carregarProdutos();
-      gtag('event', 'pagination', {
-        'event_category': 'Navigation',
-        'event_label': 'Next Page',
-        'value': currentPage
-      });
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'pagination', {
+          'event_category': 'Navigation',
+          'event_label': 'Next Page',
+          'value': currentPage
+        });
+      }
     });
   }
 }
@@ -364,7 +370,6 @@ function atualizarPaginacao() {
   }
 }
 
-// Inicialização
 document.addEventListener('DOMContentLoaded', () => {
   console.log('script.js carregado');
   carregarProdutos();
