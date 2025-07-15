@@ -48,7 +48,9 @@ function configurarCliqueLogo() {
       }, 500);
     } else if (clickCount === 3) {
       clearTimeout(clickTimer);
-      window.location.href = 'admin-xyz-123.html';
+      // Adicionar um token temporário para acesso
+      const tempToken = 'triple-click-access';
+      window.location.href = `admin-xyz-123.html?tempToken=${tempToken}`;
       clickCount = 0;
     }
   }, { once: false });
