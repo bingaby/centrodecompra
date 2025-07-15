@@ -270,7 +270,7 @@
       <a href="/index.html">
         <img src="/imagens/logoscentrodecompras.jpeg" alt="Centro de Compras" id="site-logo-img" width="150" height="50">
       </a>
-    </div>
+   ALLEL
     <div class="header-text">
       <h1>Gerenciar Produtos</h1>
       <p>Adicione, edite ou remova produtos do portal</p>
@@ -377,7 +377,7 @@
 
     function escapeHTML(str) {
       return str.replace(/[&<>"']/g, (match) => ({
-        '&': '&', '<': '<', '>': '>', '"': '"', "'": '''
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
       }[match]));
     }
 
@@ -412,7 +412,7 @@
           console.log('Token usado:', token);
 
           const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 5000);
+          const timeoutId = setTimeout(() => controller.abort(), 10000);
           const res = await fetch(`${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`, {
             cache: 'no-store',
             signal: controller.signal,
@@ -424,8 +424,15 @@
           clearTimeout(timeoutId);
 
           console.log('Status da resposta:', res.status, res.statusText);
-          const data = await res.json();
-          console.log('Dados recebidos:', JSON.stringify(data, null, 2));
+          const text = await res.text();
+          console.log('Resposta crua:', text);
+          let data;
+          try {
+            data = JSON.parse(text);
+          } catch (e) {
+            throw new Error('Resposta da API não é JSON válido');
+          }
+          console.log('Dados parseados:', data);
 
           if (!res.ok) {
             const errorData = data || {};
@@ -441,8 +448,12 @@
             throw new Error(errorData.error || `Falha ao buscar produtos: ${res.status}`);
           }
 
-          produtos = Array.isArray(data.produtos) ? data.produtos : Array.isArray(data) ? data : [];
-          totalProdutos = data.total || produtos.length;
+          if (!Array.isArray(data.produtos)) {
+            throw new Error('Resposta inválida: produtos não é um array');
+          }
+
+          produtos = data.produtos;
+          totalProdutos = data.total ?? produtos.length;
           console.log('Produtos processados:', produtos, 'Total:', totalProdutos);
 
           if (produtos.length === 0) {
@@ -478,13 +489,11 @@
         return;
       }
       tbody.innerHTML = '';
-      const produtosArray = Array.isArray(produtos) ? produtos : [];
-      console.log('Preenchendo tabela com produtos:', produtosArray);
-      if (produtosArray.length === 0) {
+      if (!Array.isArray(produtos) || produtos.length === 0) {
         tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Nenhum produto cadastrado.</td></tr>';
         return;
       }
-      produtosArray.forEach((produto, index) => {
+      produtos.forEach((produto, index) => {
         const precoFormatado = `R$ ${parseFloat(produto.preco || 0).toFixed(2).replace('.', ',')}`;
         const imagens = Array.isArray(produto.imagens) ? produto.imagens.filter(img => typeof img === 'string' && img) : [];
         const miniaturas = imagens.length > 0
@@ -511,10 +520,8 @@
 
     function handleImageError(imgElement, fallbackSrc) {
       if (imgElement.src !== fallbackSrc) {
-        setTimeout(() => {
-          imgElement.src = fallbackSrc;
-          imgElement.onerror = null;
-        }, 1000);
+        imgElement.src = fallbackSrc;
+        imgElement.onerror = null;
       } else {
         imgElement.style.display = 'none';
         console.error(`Falha ao carregar ${fallbackSrc} para imagem ${imgElement.dataset.index}`);
