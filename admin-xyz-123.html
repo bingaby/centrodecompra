@@ -192,30 +192,11 @@
 </head>
 <body>
   <script>
-    // Remover verificação de autenticação, já que GET /api/produtos não requer token
-    /*
-    if (!localStorage.getItem('adminToken')) {
-      const tempToken = new URLSearchParams(window.location.search).get('tempToken');
-      if (tempToken === 'triple-click-access') {
-        localStorage.setItem('adminToken', 'temp-token-' + Date.now());
-      } else {
-        alert('Acesso não autorizado. Por favor, clique três vezes no logotipo na página inicial para autenticar.');
-        window.location.href = '/index.html';
-        return;
-      }
-    }
-    */
-
-    const API_URL = 'https://centrodecompra-backend.onrender.com';
-    let currentPage = 1;
-    const produtosPorPagina = 25;
-    let totalProdutos = 0;
-
     // Função para escapar HTML e evitar XSS
     function escapeHTML(str) {
       if (!str) return 'N/A';
       return str.replace(/[&<>"']/g, (match) => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;'
+        '&': '&', '<': '<', '>': '>', '"': '"', "'": '''
       }[match]));
     }
 
@@ -224,9 +205,6 @@
       localStorage.removeItem('adminToken');
       window.location.href = '/index.html';
     }
-
-    // Atualizar ano no footer
-    document.getElementById('year').textContent = new Date().getFullYear();
 
     async function carregarProdutos() {
       const tbody = document.getElementById('lista-produtos');
@@ -245,15 +223,14 @@
       let attempt = 1;
       while (attempt <= maxRetries) {
         try {
-          console.log(`Tentativa ${attempt}: Carregando produtos de ${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`);
+          console.log(`Tentativa ${attempt}: Carregando produtos de https://centrodecompra-backend.onrender.com/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`);
           const controller = new AbortController();
           const timeoutId = setTimeout(() => controller.abort(), 5000);
-          const res = await fetch(`${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`, {
+          const res = await fetch(`https://centrodecompra-backend.onrender.com/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`, {
             cache: 'no-store',
             signal: controller.signal,
             headers: {
               'Content-Type': 'application/json'
-              // Removido 'Authorization' pois GET /api/produtos não requer autenticação
             }
           });
           clearTimeout(timeoutId);
@@ -266,9 +243,8 @@
             throw new Error(data.error || `Erro ${res.status}: Falha ao buscar produtos`);
           }
 
-          // Garantir que produtos seja um array
           const produtos = Array.isArray(data.produtos) ? data.produtos : Array.isArray(data) ? data : [];
-          totalProdutos = data.total || produtos.length;
+          totalProdutos = Number.isInteger(data.total) ? data.total : produtos.length;
           console.log('Produtos processados:', produtos, 'Total:', totalProdutos);
 
           preencherTabela(produtos);
@@ -285,12 +261,12 @@
               errorMessage = 'Erro de conexão com o servidor. Verifique sua rede ou a API.';
             }
             tbody.innerHTML = `<tr><td colspan="8" style="color:red;text-align:center;">${errorMessage}</td></tr>`;
-            erro.textContent = errorMessage;
+            if (erro) erro.textContent = errorMessage;
           }
           attempt++;
           await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
         } finally {
-          loadingSpinner.style.display = 'none';
+          if (loadingSpinner) loadingSpinner.style.display = 'none';
         }
       }
     }
@@ -339,13 +315,13 @@
     }
 
     async function editarProduto(id) {
+      const erro = document.getElementById('erro');
+      const mensagem = document.getElementById('mensagem');
       try {
-        const token = localStorage.getItem('adminToken') || 'temp-token-test';
-        console.log('Editando produto com token:', token);
-        const res = await fetch(`${API_URL}/api/produtos/${id}`, {
+        console.log('Buscando produto para edição:', id);
+        const res = await fetch(`https://centrodecompra-backend.onrender.com/api/produtos/${id}`, {
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            'Content-Type': 'application/json'
           }
         });
         console.log('Status da resposta (editar):', res.status, res.statusText);
@@ -353,10 +329,6 @@
         console.log('Dados do produto para edição:', data);
 
         if (!res.ok) {
-          if (res.status === 401 || res.status === 403) {
-            document.getElementById('erro').textContent = 'Sessão inválida. Por favor, faça login novamente.';
-            return;
-          }
           throw new Error(data.error || 'Erro ao buscar produto para edição');
         }
 
@@ -369,32 +341,34 @@
         document.getElementById('form-produto').preco.value = data.preco || '';
         document.getElementById('submit-button').textContent = 'Salvar Alterações';
         document.getElementById('cancel-button').style.display = 'inline-block';
-        document.getElementById('mensagem').textContent = 'Editando produto. Envie para salvar as alterações.';
+        if (mensagem) mensagem.textContent = 'Editando produto. Envie para salvar as alterações.';
       } catch (err) {
         console.error('Erro ao editar produto:', err);
-        document.getElementById('erro').textContent = err.message;
+        if (erro) erro.textContent = err.message;
       }
     }
 
     function cancelarEdicao() {
+      const mensagem = document.getElementById('mensagem');
+      const erro = document.getElementById('erro');
       document.getElementById('form-produto').reset();
       document.getElementById('produto-id').value = '';
       document.getElementById('submit-button').textContent = 'Adicionar';
       document.getElementById('cancel-button').style.display = 'none';
-      document.getElementById('mensagem').textContent = '';
-      document.getElementById('erro').textContent = '';
+      if (mensagem) mensagem.textContent = '';
+      if (erro) erro.textContent = '';
     }
 
     async function excluirProduto(id) {
       if (!confirm('Confirma a exclusão deste produto?')) return;
+      const mensagem = document.getElementById('mensagem');
+      const erro = document.getElementById('erro');
       try {
-        const token = localStorage.getItem('adminToken') || 'temp-token-test';
-        console.log('Excluindo produto com token:', token);
-        const res = await fetch(`${API_URL}/api/produtos/${id}`, {
+        console.log('Excluindo produto:', id);
+        const res = await fetch(`https://centrodecompra-backend.onrender.com/api/produtos/${id}`, {
           method: 'DELETE',
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            'Content-Type': 'application/json'
           }
         });
         console.log('Status da resposta (excluir):', res.status, res.statusText);
@@ -402,18 +376,14 @@
         console.log('Resposta da exclusão:', data);
 
         if (!res.ok) {
-          if (res.status === 401 || res.status === 403) {
-            document.getElementById('erro').textContent = 'Sessão inválida. Por favor, faça login novamente.';
-            return;
-          }
           throw new Error(data.error || 'Erro ao excluir produto');
         }
 
-        document.getElementById('mensagem').textContent = 'Produto excluído com sucesso';
+        if (mensagem) mensagem.textContent = 'Produto excluído com sucesso';
         carregarProdutos();
       } catch (err) {
         console.error('Erro ao excluir produto:', err);
-        document.getElementById('erro').textContent = err.message;
+        if (erro) erro.textContent = err.message;
       }
     }
 
@@ -424,37 +394,32 @@
       const produtoId = formData.get('id');
       const link = formData.get('link');
       const preco = parseFloat(formData.get('preco'));
+      const mensagem = document.getElementById('mensagem');
+      const erro = document.getElementById('erro');
 
       if (!link.match(/^https?:\/\/.+/)) {
-        document.getElementById('erro').textContent = 'Link inválido! Deve começar com http:// ou https://';
+        if (erro) erro.textContent = 'Link inválido! Deve começar com http:// ou https://';
         return;
       }
       if (isNaN(preco) || preco <= 0) {
-        document.getElementById('erro').textContent = 'O preço deve ser maior que zero!';
+        if (erro) erro.textContent = 'O preço deve ser maior que zero!';
         return;
       }
 
-      document.getElementById('mensagem').textContent = '';
-      document.getElementById('erro').textContent = '';
+      if (mensagem) mensagem.textContent = '';
+      if (erro) erro.textContent = '';
 
       try {
-        const token = localStorage.getItem('adminToken') || 'temp-token-test';
-        console.log(`${produtoId ? 'Atualizando' : 'Adicionando'} produto com token:`, token);
+        console.log(`${produtoId ? 'Atualizando' : 'Adicionando'} produto`);
         let res;
         if (produtoId) {
-          res = await fetch(`${API_URL}/api/produtos/${produtoId}`, {
+          res = await fetch(`https://centrodecompra-backend.onrender.com/api/produtos/${produtoId}`, {
             method: 'PUT',
-            headers: {
-              'Authorization': `Bearer ${token}`
-            },
             body: formData
           });
         } else {
-          res = await fetch(`${API_URL}/api/produtos`, {
+          res = await fetch(`https://centrodecompra-backend.onrender.com/api/produtos`, {
             method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${token}`
-            },
             body: formData
           });
         }
@@ -463,14 +428,10 @@
         console.log(`Resposta do ${produtoId ? 'PUT' : 'POST'}:`, responseData);
 
         if (!res.ok) {
-          if (res.status === 401 || res.status === 403) {
-            document.getElementById('erro').textContent = 'Sessão inválida. Por favor, faça login novamente.';
-            return;
-          }
           throw new Error(responseData.error || `Erro ao ${produtoId ? 'atualizar' : 'adicionar'} produto`);
         }
 
-        document.getElementById('mensagem').textContent = produtoId ? 'Produto atualizado com sucesso!' : 'Produto adicionado com sucesso!';
+        if (mensagem) mensagem.textContent = produtoId ? 'Produto atualizado com sucesso!' : 'Produto adicionado com sucesso!';
         form.reset();
         document.getElementById('produto-id').value = '';
         document.getElementById('submit-button').textContent = 'Adicionar';
@@ -478,9 +439,13 @@
         carregarProdutos();
       } catch (error) {
         console.error('Erro ao processar produto:', error);
-        document.getElementById('erro').textContent = error.message;
+        if (erro) erro.textContent = error.message;
       }
     });
+
+    let currentPage = 1;
+    const produtosPorPagina = 25;
+    let totalProdutos = 0;
 
     function atualizarPaginacao() {
       const prevButton = document.getElementById('prev-page');
@@ -509,7 +474,14 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       console.log('admin-xyz-123.html carregado');
+      const yearElement = document.getElementById('year');
+      if (yearElement) {
+        yearElement.textContent = new Date().getFullYear();
+      } else {
+        console.error('Elemento year não encontrado');
+      }
       carregarProdutos();
+７
     });
   </script>
   <header class="site-header">
