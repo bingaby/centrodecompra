@@ -8,7 +8,7 @@ let termoBusca = '';
 let currentImages = [];
 let currentImageIndex = 0;
 let currentPage = 1;
-const produtosPorPagina = 25; // Alterado para 25 itens por página
+const produtosPorPagina = 28; // Alterado para 28 itens por página
 let totalProdutos = 0; // Alterado para 0, será atualizado dinamicamente
 
 // Função para normalizar strings (remover acentos e converter para minúsculas)
