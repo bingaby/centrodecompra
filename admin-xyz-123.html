@@ -126,7 +126,7 @@
       document.getElementById('loja').value = p.loja;
       document.getElementById('link').value = p.link;
       document.getElementById('preco').value = p.preco;
-      document.getElementById('idx').value = i + 2; // Ajuste para índice da planilha (cabeçalho na linha 1)
+      document.getElementById('idx').value = i + 2; // Ajuste para índice da planilha
       previewContainer.innerHTML = p.imagens ? p.imagens.split(',').map(url => `<img src="${url}">`).join('') : '';
     }
 
