@@ -7,7 +7,7 @@
   <meta property="og:title" content="CentrodeCompra - Ofertas e Descontos" />
   <meta property="og:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliados seguros e atualizados!" />
   <meta property="og:image" content="logos/logoscentrodecompras.jpeg" />
-  <meta property="og:url" content="https://centrodecompra.com.br/" />
+  <meta property="og:url" content="https://www.centrodecompra.com.br/" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="CentrodeCompra - Ofertas e Descontos" />
   <meta name="twitter:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliados seguros e atualizados!" />
@@ -244,24 +244,27 @@
           clearTimeout(clickTimer);
           console.log('Três cliques detectados, tentando redirecionar para admin-xyz-123.html...');
           
-          // Tenta redirecionamento com caminho relativo
-          const adminUrl = './admin-xyz-123.html?tempToken=triple-click-access';
-          console.log('Tentando redirecionamento para:', adminUrl);
+          // Tenta diferentes caminhos para o GitHub Pages
+          const adminUrlRelative = './admin-xyz-123.html?tempToken=triple-click-access';
+          const adminUrlAbsolute = '/admin-xyz-123.html?tempToken=triple-click-access';
+          const adminUrlFull = 'https://www.centrodecompra.com.br/admin-xyz-123.html?tempToken=triple-click-access';
+          
+          console.log('Tentando redirecionamento relativo:', adminUrlRelative);
           try {
-            // Método 1: window.location.href
-            window.location.href = adminUrl;
+            // Método 1: Caminho relativo
+            window.location.href = adminUrlRelative;
             
-            // Método 2: window.location.assign (fallback)
+            // Método 2: Caminho absoluto (fallback após 500ms)
             setTimeout(() => {
-              if (window.location.href !== new URL(adminUrl, window.location.origin).href) {
-                console.log('Redirecionamento com href falhou, tentando assign...');
-                window.location.assign(adminUrl);
+              if (window.location.href !== new URL(adminUrlRelative, window.location.origin).href) {
+                console.log('Redirecionamento relativo falhou, tentando absoluto:', adminUrlAbsolute);
+                window.location.assign(adminUrlAbsolute);
                 
-                // Método 3: Caminho absoluto como último recurso
+                // Método 3: URL completa (fallback após mais 500ms)
                 setTimeout(() => {
-                  if (window.location.href !== new URL(adminUrl, window.location.origin).href) {
-                    console.log('Redirecionamento com assign falhou, tentando URL absoluta...');
-                    window.location.href = 'http://www.centrodecompra.com.br/admin-xyz-123.html?tempToken=triple-click-access';
+                  if (window.location.href !== new URL(adminUrlAbsolute, window.location.origin).href) {
+                    console.log('Redirecionamento absoluto falhou, tentando URL completa:', adminUrlFull);
+                    window.location.href = adminUrlFull;
                   }
                 }, 500);
               }
