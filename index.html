@@ -12,6 +12,7 @@
   <meta name="twitter:title" content="CentrodeCompra - Ofertas e Descontos" />
   <meta name="twitter:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliados seguros e atualizados!" />
   <meta name="twitter:image" content="logos/logoscentrodecompras.jpeg" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; navigate-to 'self' https://www.centrodecompra.com.br">
   <title>CentrodeCompra - Ofertas do Dia em Amazon, Shein, Shopee e Mais</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
@@ -44,9 +45,7 @@
 <body>
   <header class="site-header">
     <div class="logo-container">
-      <a href="javascript:void(0)">
-        <img src="logos/logoscentrodecompras.jpeg" alt="CentrodeCompra" id="site-logo-img" />
-      </a>
+      <img src="logos/logoscentrodecompras.jpeg" alt="CentrodeCompra" id="site-logo-img" />
     </div>
     <div class="header-text">
       <h1>CentrodeCompra</h1>
@@ -233,7 +232,7 @@
         clickCount++;
         logo.style.border = '2px solid #ff6200'; // Feedback visual
         setTimeout(() => logo.style.border = '', 200);
-        console.log(`Clique ${clickCount} registrado na logo.`);
+        console.log(`Clique ${clickCount} registrado na logo. URL atual: ${window.location.href}`);
         
         if (clickCount === 1) {
           clickTimer = setTimeout(() => {
@@ -244,27 +243,35 @@
           clearTimeout(clickTimer);
           console.log('Três cliques detectados, tentando redirecionar para admin-xyz-123.html...');
           
-          // Tenta diferentes caminhos para o GitHub Pages
+          // Define URLs para tentar
           const adminUrlRelative = './admin-xyz-123.html?tempToken=triple-click-access';
           const adminUrlAbsolute = '/admin-xyz-123.html?tempToken=triple-click-access';
           const adminUrlFull = 'https://www.centrodecompra.com.br/admin-xyz-123.html?tempToken=triple-click-access';
           
           console.log('Tentando redirecionamento relativo:', adminUrlRelative);
           try {
-            // Método 1: Caminho relativo
+            // Método 1: window.location.href (relativo)
             window.location.href = adminUrlRelative;
             
-            // Método 2: Caminho absoluto (fallback após 500ms)
+            // Método 2: window.location.assign (absoluto) após 500ms
             setTimeout(() => {
               if (window.location.href !== new URL(adminUrlRelative, window.location.origin).href) {
                 console.log('Redirecionamento relativo falhou, tentando absoluto:', adminUrlAbsolute);
                 window.location.assign(adminUrlAbsolute);
                 
-                // Método 3: URL completa (fallback após mais 500ms)
+                // Método 3: window.location.replace (URL completa) após mais 500ms
                 setTimeout(() => {
                   if (window.location.href !== new URL(adminUrlAbsolute, window.location.origin).href) {
                     console.log('Redirecionamento absoluto falhou, tentando URL completa:', adminUrlFull);
-                    window.location.href = adminUrlFull;
+                    window.location.replace(adminUrlFull);
+                    
+                    // Método 4: Alerta final para depuração
+                    setTimeout(() => {
+                      if (window.location.href !== adminUrlFull) {
+                        console.error('Todos os métodos de redirecionamento falharam. URL atual:', window.location.href);
+                        alert('Erro: Não foi possível redirecionar para a página de administração. Verifique o console e a existência do arquivo admin-xyz-123.html.');
+                      }
+                    }, 500);
                   }
                 }, 500);
               }
@@ -278,7 +285,7 @@
       });
 
       logo.addEventListener('load', () => {
-        console.log('Imagem da logo carregada com sucesso.');
+        console.log('Imagem da logo carregada com sucesso:', logo.src);
       });
       logo.addEventListener('error', () => {
         console.error('Erro ao carregar a imagem da logo:', logo.src);
