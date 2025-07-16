@@ -277,17 +277,13 @@
 
       // Atualizar ano no footer
       const yearElement = document.getElementById('year');
-      if (yearElement) {
-        yearElement.textContent = new Date().getFullYear();
-      } else {
-        console.error('Elemento year não encontrado');
-      }
+      if (yearElement) yearElement.textContent = new Date().getFullYear();
 
       // Função para escapar HTML
       function escapeHTML(str) {
         if (!str) return 'N/A';
         return str.replace(/[&<>"']/g, (match) => ({
-          '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+          '&': '&', '<': '<', '>': '>', '"': '"', "'": '''
         }[match]));
       }
 
@@ -317,24 +313,15 @@
 
         try {
           console.log(`Carregando produtos: https://centrodecompra-backend.onrender.com/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`);
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 5000);
           const res = await fetch(`https://centrodecompra-backend.onrender.com/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`, {
             cache: 'no-store',
-            signal: controller.signal,
-            headers: {
-              'Content-Type': 'application/json'
-            }
+            headers: { 'Content-Type': 'application/json' }
           });
-          clearTimeout(timeoutId);
-
           console.log('Status da resposta:', res.status, res.statusText);
           const data = await res.json();
           console.log('Dados recebidos:', JSON.stringify(data, null, 2));
 
-          if (!res.ok) {
-            throw new Error(data.error || `Erro ${res.status}: Falha ao buscar produtos`);
-          }
+          if (!res.ok) throw new Error(data.error || `Erro ${res.status}: Falha ao buscar produtos`);
 
           const produtos = Array.isArray(data.produtos) ? data.produtos : Array.isArray(data) ? data : [];
           totalProdutos = Number.isInteger(data.total) ? data.total : produtos.length;
@@ -344,14 +331,8 @@
           atualizarPaginacao();
         } catch (err) {
           console.error('Erro ao carregar produtos:', err.message);
-          let errorMessage = err.message;
-          if (err.name === 'AbortError') {
-            errorMessage = 'Tempo limite excedido ao conectar ao servidor.';
-          } else if (err.message.includes('Failed to fetch')) {
-            errorMessage = 'Erro de conexão com o servidor. Verifique sua rede ou a API.';
-          }
-          tbody.innerHTML = `<tr><td colspan="8" style="color:red;text-align:center;">${errorMessage}</td></tr>`;
-          erro.textContent = errorMessage;
+          tbody.innerHTML = `<tr><td colspan="8" style="color:red;text-align:center;">Erro: ${err.message}</td></tr>`;
+          erro.textContent = err.message;
         } finally {
           loadingSpinner.style.display = 'none';
         }
@@ -414,19 +395,14 @@
           console.log('Buscando produto para edição, ID:', id);
           const res = await fetch(`https://centrodecompra-backend.onrender.com/api/produtos/${id}`, {
             method: 'GET',
-            headers: {
-              'Content-Type': 'application/json'
-            }
+            headers: { 'Content-Type': 'application/json' }
           });
           console.log('Status da resposta (editar):', res.status, res.statusText);
           const data = await res.json();
           console.log('Dados do produto para edição:', JSON.stringify(data, null, 2));
 
-          if (!res.ok) {
-            throw new Error(data.error || `Erro ${res.status}: Produto não encontrado`);
-          }
+          if (!res.ok) throw new Error(data.error || `Erro ${res.status}: Produto não encontrado`);
 
-          // Preencher o formulário
           form.querySelector('[name="id"]').value = data._id || '';
           form.querySelector('[name="nome"]').value = data.nome || '';
           form.querySelector('[name="descricao"]').value = data.descricao || '';
@@ -463,17 +439,13 @@
           console.log('Excluindo produto, ID:', id);
           const res = await fetch(`https://centrodecompra-backend.onrender.com/api/produtos/${id}`, {
             method: 'DELETE',
-            headers: {
-              'Content-Type': 'application/json'
-            }
+            headers: { 'Content-Type': 'application/json' }
           });
           console.log('Status da resposta (excluir):', res.status, res.statusText);
           const data = await res.json();
           console.log('Resposta da exclusão:', JSON.stringify(data, null, 2));
 
-          if (!res.ok) {
-            throw new Error(data.error || `Erro ${res.status}: Erro ao excluir produto`);
-          }
+          if (!res.ok) throw new Error(data.error || `Erro ${res.status}: Erro ao excluir produto`);
 
           mensagem.textContent = 'Produto excluído com sucesso';
           carregarProdutos();
@@ -525,9 +497,7 @@
           const responseData = await res.json();
           console.log(`Resposta do ${produtoId ? 'PUT' : 'POST'}:`, JSON.stringify(responseData, null, 2));
 
-          if (!res.ok) {
-            throw new Error(responseData.error || `Erro ${res.status}: Erro ao ${produtoId ? 'atualizar' : 'adicionar'} produto`);
-          }
+          if (!res.ok) throw new Error(responseData.error || `Erro ${res.status}: Erro ao ${produtoId ? 'atualizar' : 'adicionar'} produto`);
 
           mensagem.textContent = produtoId ? 'Produto atualizado com sucesso!' : 'Produto adicionado com sucesso!';
           form.reset();
@@ -568,6 +538,9 @@
 
       // Iniciar carregamento dos produtos
       carregarProdutos();
+
+      // Recarregar produtos a cada 60 segundos para verificar persistência
+      setInterval(carregarProdutos, 60000);
     });
   </script>
 </body>
