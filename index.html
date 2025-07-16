@@ -216,17 +216,32 @@
 
     function configurarCliqueLogo() {
       const logo = document.getElementById('site-logo-img');
-      if (!logo) return console.error('ID site-logo-img não encontrado');
+      if (!logo) {
+        console.error('Erro: Elemento com id="site-logo-img" não encontrado.');
+        return;
+      }
       let clickCount = 0;
-      let clickTimer;
+      let clickTimer = null;
+      console.log('Configurando clique na logo...');
       logo.addEventListener('click', (e) => {
         e.preventDefault();
+        e.stopPropagation(); // Impede propagação para o elemento <a>
         clickCount++;
+        console.log(`Clique ${clickCount} registrado na logo.`);
         if (clickCount === 1) {
-          clickTimer = setTimeout(() => clickCount = 0, 500);
+          clickTimer = setTimeout(() => {
+            console.log('Contador de cliques resetado após 1000ms.');
+            clickCount = 0;
+          }, 1000); // Aumentado para 1000ms
         } else if (clickCount === 3) {
           clearTimeout(clickTimer);
-          window.location.href = `admin-xyz-123.html?tempToken=triple-click-access`;
+          console.log('Três cliques detectados, redirecionando para admin-xyz-123.html...');
+          try {
+            window.location.href = './admin-xyz-123.html?tempToken=triple-click-access';
+          } catch (error) {
+            console.error('Erro ao redirecionar:', error);
+            alert('Erro ao acessar a página admin. Verifique o console para detalhes.');
+          }
           clickCount = 0;
         }
       });
