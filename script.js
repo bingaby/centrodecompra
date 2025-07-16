@@ -8,10 +8,10 @@ let termoBusca = '';
 let currentImages = [];
 let currentImageIndex = 0;
 let currentPage = 1;
-const produtosPorPagina = 25; // Sincronizado com o backend
-let totalProdutos = 0;
+const produtosPorPagina = 28; // Alterado para 28 itens por página
+let totalProdutos = 0; // Alterado para 0, será atualizado dinamicamente
 
-// Função para normalizar strings
+// Função para normalizar strings (remover acentos e converter para minúsculas)
 function normalizarString(str) {
   return str
     ?.toLowerCase()
@@ -19,7 +19,7 @@ function normalizarString(str) {
     .replace(/[\u0300-\u036f]/g, '') || '';
 }
 
-// Função para embaralhar um array
+// Função para embaralhar um array (Fisher-Yates shuffle)
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -88,10 +88,10 @@ async function carregarProdutos() {
       gridProdutos.innerHTML = '';
 
       let url = `${API_URL}/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`;
-      if (categoriaSelecionada !== 'todas' && categoriaSelecionada) {
+      if (categoriaSelecionada !== 'todas') {
         url += `&categoria=${encodeURIComponent(categoriaSelecionada)}`;
       }
-      if (lojaSelecionada !== 'todas' && lojaSelecionada) {
+      if (lojaSelecionada !== 'todas') {
         url += `&loja=${encodeURIComponent(lojaSelecionada)}`;
       }
 
@@ -99,7 +99,7 @@ async function carregarProdutos() {
       const response = await fetch(url, {
         cache: 'no-store',
         headers: { 'Accept': 'application/json' },
-        signal: AbortSignal.timeout(10000)
+        signal: AbortSignal.timeout(10000) // Timeout de 10 segundos
       });
 
       console.log('Status da resposta (index):', response.status, response.statusText);
@@ -107,7 +107,8 @@ async function carregarProdutos() {
       console.log('Dados recebidos (index):', JSON.stringify(data, null, 2));
 
       if (!response.ok) {
-        throw new Error(data.error || `Erro ${response.status}: Falha ao carregar produtos`);
+        const errorData = data || {};
+        throw new Error(errorData.details || `Erro ${response.status}: Falha ao carregar produtos`);
       }
 
       if (!Array.isArray(data.produtos)) {
@@ -296,22 +297,22 @@ function configurarBusca() {
 // Configurar filtros
 function filtrarPorCategoria(categoria) {
   categoriaSelecionada = categoria;
-  currentPage = 1;
+  currentPage = 1; // Resetar para a primeira página ao mudar a categoria
   const itensCategoria = document.querySelectorAll('.categoria-item');
   itensCategoria.forEach(item => item.classList.remove('ativa'));
-  document.querySelector(`.categoria-item[data-categoria="${categoria}"]`)?.classList.add('ativa');
+  document.querySelector(`.categoria-item[data-categoria="${categoria}"]`).classList.add('ativa');
   console.log('Categoria selecionada:', categoria);
-  carregarProdutos();
+  carregarProdutos(); // Recarregar produtos com o filtro de categoria
 }
 
 function filtrarPorLoja(loja) {
   lojaSelecionada = loja;
-  currentPage = 1;
+  currentPage = 1; // Resetar para a primeira página ao mudar a loja
   const itensLoja = document.querySelectorAll('.loja, .loja-todas');
   itensLoja.forEach(item => item.classList.remove('ativa'));
-  document.querySelector(`[data-loja="${loja}"]`)?.classList.add('ativa');
+  document.querySelector(`[data-loja="${loja}"]`).classList.add('ativa');
   console.log('Loja selecionada:', loja);
-  carregarProdutos();
+  carregarProdutos(); // Recarregar produtos com o filtro de loja
 }
 
 // Configurar paginação
