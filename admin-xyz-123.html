@@ -11,6 +11,8 @@
     th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
     img { max-width: 80px; }
     button { margin: 2px; padding: 4px 8px; }
+    #preview-container { display: flex; flex-wrap: wrap; gap: 10px; }
+    #preview-container img { max-width: 100px; }
   </style>
 </head>
 <body>
@@ -23,8 +25,8 @@
     <input type="text" id="loja" placeholder="Loja">
     <input type="url" id="link" placeholder="Link">
     <input type="text" id="preco" placeholder="Preço">
-    <input type="file" id="imagem-input" accept="image/*">
-    <img id="preview" style="display:none" alt="Preview">
+    <input type="file" id="imagem-input" accept="image/*" multiple>
+    <div id="preview-container"></div>
     <button type="submit">Salvar Produto</button>
   </form>
 
@@ -38,25 +40,28 @@
   </table>
 
   <script>
-    const URL_API = 'https://script.google.com/macros/s/AKfycbzQotmkLSlQZZe92J_wKDoVbh1d9ehdmBgxXOV81Go/exec';
+    const URL_API = 'INSIRA_A_URL_DO_WEB_APP_AQUI'; // Substitua pela URL do Google Apps Script
     const SHEET_API = 'https://opensheet.vercel.app/1SMpUcrobcuWVGq4F_3N59rhs2_GpDo2531_2blpwEhs/Produtos';
 
     let produtos = [];
 
     const form = document.getElementById('form-produto');
-    const preview = document.getElementById('preview');
     const imgInput = document.getElementById('imagem-input');
+    const previewContainer = document.getElementById('preview-container');
     const tbody = document.getElementById('produtos-tbody');
 
     imgInput.addEventListener('change', e => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        preview.src = reader.result;
-        preview.style.display = 'block';
+      previewContainer.innerHTML = '';
+      const files = e.target.files;
+      for (const file of files) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const img = document.createElement('img');
+          img.src = reader.result;
+          previewContainer.appendChild(img);
+        };
+        reader.readAsDataURL(file);
       }
-      reader.readAsDataURL(file);
     });
 
     form.addEventListener('submit', async e => {
@@ -68,43 +73,39 @@
         loja: document.getElementById('loja').value,
         link: document.getElementById('link').value,
         preco: document.getElementById('preco').value,
+        rowIndex: document.getElementById('idx').value || null
       };
 
-      const idx = document.getElementById('idx').value;
-      let imagemBase64 = '';
-
-      if (imgInput.files[0]) {
-        const reader = new FileReader();
-        reader.onload = async () => {
-          imagemBase64 = reader.result.split(',')[1];
-          await enviar(imgInput.files[0].name, valores, imagemBase64, idx);
-        };
-        reader.readAsDataURL(imgInput.files[0]);
-      } else {
-        await enviar(null, valores, null, idx);
+      const files = imgInput.files;
+      if (files.length > 0) {
+        valores.imagensBase64 = await Promise.all(
+          Array.from(files).map(file => new Promise(resolve => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result.split(',')[1]);
+            reader.readAsDataURL(file);
+          }))
+        );
       }
-    });
 
-    async function enviar(nomeArquivo, dados, base64, idx) {
-      const payload = base64 
-        ? { ...dados, imagemBase64: base64 } 
-        : { ...dados };
       const res = await fetch(URL_API, {
-        method: 'POST', body: JSON.stringify(payload),
+        method: 'POST',
+        body: JSON.stringify(valores),
         headers: { 'Content-Type': 'application/json' }
       });
       const json = await res.json();
       if (json.success) {
         location.reload();
-      } else alert('Erro: ' + json.error);
-    }
+      } else {
+        alert('Erro: ' + json.error);
+      }
+    });
 
     async function carregar() {
       const res = await fetch(SHEET_API);
       produtos = await res.json();
       tbody.innerHTML = '';
       produtos.forEach((p, i) => {
-        const urlImg = p.imagem || 'https://via.placeholder.com/80';
+        const urlImg = p.imagens?.split(',')[0] || 'https://via.placeholder.com/80';
         tbody.innerHTML += `
           <tr>
             <td><img src="${urlImg}"></td>
@@ -125,12 +126,24 @@
       document.getElementById('loja').value = p.loja;
       document.getElementById('link').value = p.link;
       document.getElementById('preco').value = p.preco;
-      document.getElementById('idx').value = i;
+      document.getElementById('idx').value = i + 2; // Ajuste para índice da planilha (cabeçalho na linha 1)
+      previewContainer.innerHTML = p.imagens ? p.imagens.split(',').map(url => `<img src="${url}">`).join('') : '';
     }
 
-    function excluir(i) {
+    async function excluir(i) {
       if (!confirm('Excluir este produto?')) return;
-      alert('Função para exclusão ainda não implementada, precisa backend PUT/DELETE.');
+      const payload = { action: 'delete', rowIndex: i + 2 };
+      const res = await fetch(URL_API, {
+        method: 'POST',
+        body: JSON.stringify(payload),
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const json = await res.json();
+      if (json.success) {
+        location.reload();
+      } else {
+        alert('Erro ao excluir: ' + json.error);
+      }
     }
 
     carregar();
