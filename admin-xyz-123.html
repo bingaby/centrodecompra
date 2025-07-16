@@ -3,7 +3,350 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://script.google.com https://opensheet.vercel.app; img-src 'self' data: https://via.placeholder.com; font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; script-src 'self' 'sha256-farHDjMD5Rg57+7fgrpAgRO10mqULxH9d1uXcbAddOU=';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://script.google.com https://opensheet.vercel.app; img-src 'self' data: https://via.placeholder.com; font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com https://fonts.gstatic.com/*; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; script-src 'self' 'sha256-farHDjMD5Rg57+7fgrpAgRO10mqULxH9d1uXcbAddOU=';">
+  <title>Admin Centro de Compra</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    :root {
+      --primary-color: #ff6200;
+      --primary-dark: #e55a00;
+      --secondary-color: #f9f9f9;
+      --text-color: #333;
+      --border-color: #ddd;
+      --success-color: #28a745;
+      --error-color: #dc3545;
+      --loading-color: #007bff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      color: var(--text-color);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--primary-color);
+      font-size: 2rem;
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+    }
+
+    form {
+      display: grid;
+      gap: 15px;
+    }
+
+    .form-group {
+      position: relative;
+    }
+
+    .form-group i {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--primary-color);
+      font-size: 1rem;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 12px 12px 12px 40px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    textarea {
+      padding: 12px;
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    select {
+      appearance: none;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="6" viewBox="0 0 12 6"><path fill="%23333" d="M0 0h12L6 6z"/></svg>');
+      background-repeat: no-repeat;
+      background-position: right 15px center;
+      background-size: 12px;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 5px rgba(255, 98, 0, 0.3);
+    }
+
+    input:valid, select:valid {
+      border-color: var(--success-color);
+    }
+
+    input:invalid:not(:placeholder-shown) {
+      border-color: var(--error-color);
+    }
+
+    .form-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      background-color: var(--primary-color);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button.secondary {
+      background-color: #6c757d;
+    }
+
+    button.secondary:hover {
+      background-color: #5a6268;
+    }
+
+    #preview-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    #preview-container img {
+      max-width: 100px;
+      height: auto;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      transition: transform 0.2s;
+    }
+
+    #preview-container img:hover {
+      transform: scale(1.05);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      background-color: var(--primary-color);
+      color: #fff;
+      font-weight: 500;
+    }
+
+    td img {
+      max-width: 80px;
+      height: auto;
+      border-radius: 4px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 5px;
+    }
+
+    .actions button {
+      padding: 8px 12px;
+      font-size: 0.9rem;
+    }
+
+    .feedback-message {
+      text-align: center;
+      margin: 15px 0;
+      font-size: 1rem;
+      font-weight: 400;
+      padding: 10px;
+      border-radius: 8px;
+      transition: opacity 0.3s;
+    }
+
+    .success {
+      background-color: rgba(40, 167, 69, 0.1);
+      color: var(--success-color);
+    }
+
+    .error {
+      background-color: rgba(220, 53, 69, 0.1);
+      color: var(--error-color);
+    }
+
+    .loading {
+      background-color: rgba(0, 123, 255, 0.1);
+      color: var(--loading-color);
+      position: relative;
+      padding-left: 40px;
+    }
+
+    .loading::before {
+      content: '';
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--loading-color);
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: translateY(-50%) rotate(360deg); }
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 15px;
+      }
+      table {
+        font-size: 0.9rem;
+      }
+      td img {
+        max-width: 60px;
+      }
+      .actions button {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1><i class="fas fa-cog"></i> Admin Centro de Compra</h1>
+    <form id="form-produto">
+      <div class="form-group">
+        <i class="fas fa-tag"></i>
+        <input type="text" id="nome" placeholder="Nome do produto" required aria-label="Nome do produto">
+      </div>
+      <div class="form-group">
+        <i class="fas fa-align-left"></i>
+        <textarea id="descricao" placeholder="Descrição do produto" aria-label="Descrição do produto"></textarea>
+      </div>
+      <div class="form-group">
+        <i class="fas fa-list"></i>
+        <select id="categoria" required aria-label="Categoria do produto">
+          <option value="" disabled selected>Selecione uma categoria</option>
+          <option value="Eletrônicos">Eletrônicos</option>
+          <option value="Moda">Moda</option>
+          <option value="Fitness">Fitness</option>
+          <option value="Casa">Casa</option>
+          <option value="Beleza">Beleza</option>
+          <option value="Esportes">Esportes</option>
+          <option value="Livros">Livros</option>
+          <option value="Infantil">Infantil</option>
+          <option value="Celulares">Celulares</option>
+          <option value="Eletrodomésticos">Eletrodomésticos</option>
+          <option value="Pet">Pet</option>
+          <option value="Jardinagem">Jardinagem</option>
+          <option value="Automotivo">Automotivo</option>
+          <option value="Gastronomia">Gastronomia</option>
+          <option value="Games">Games</option>
+          <option value="Outros">Outros</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <i class="fas fa-store"></i>
+        <select id="loja" required aria-label="Loja do produto">
+          <option value="" disabled selected>Selecione uma loja</option>
+          <option value="Amazon">Amazon</option>
+          <option value="Magalu">Magalu</option>
+          <option value="Shein">Shein</option>
+          <option value="Shopee">Shopee</option>
+          <option泳
+
+System: Agradeço pelo feedback e por compartilhar os erros do console. Os erros indicam dois problemas principais no `admin-xyz-123.html`, além da questão da duplicação de conteúdo mencionada anteriormente. Vou explicar cada erro, fornecer um código corrigido e abordar a duplicação, mantendo o design profissional com menus suspensos para **categoria** e **loja**, e a compatibilidade com a estrutura do repositório (`/Componentes/`, `/imagens/`, `/logos/`, `CNAME`, `service-worker.js`, `sw.js`, etc.).
+
+### Análise dos Erros
+
+1. **SyntaxError: Illegal return statement**:
+   - **Causa**: O erro ocorre porque há uma instrução `return` no escopo global do script, especificamente no bloco de verificação do `tempToken`:
+     ```javascript
+     if (token !== 'triple-click-access') {
+       alert('Acesso não autorizado. Você será redirecionado.');
+       window.location.href = './index.html';
+       return;
+     }
+     ```
+     - Em JavaScript, um `return` fora de uma função no escopo global é inválido, causando o erro. Isso pode ocorrer em navegadores com modo estrito ou em certos contextos de execução.
+     - **Correção**: Removi o `return`, já que o `window.location.href` redireciona a página, interrompendo a execução.
+
+2. **Refused to load the font '<URL>' because it violates the following Content Security Policy directive**:
+   - **Causa**: O CSP está bloqueando o carregamento de fontes do Google Fonts (provavelmente de `https://fonts.gstatic.com`). Embora a diretiva `font-src` inclua `https://fonts.googleapis.com` e `https://fonts.gstatic.com`, o erro sugere que a URL específica da fonte (ou sub-URL) não está coberta, ou há uma configuração de servidor sobrescrita.
+     - O erro não especifica a URL exata, mas fontes do Google Fonts geralmente vêm de `https://fonts.gstatic.com`.
+     - Possível motivo adicional: Algum servidor ou CDN (como GitHub Pages) pode estar aplicando um CSP mais restritivo.
+   - **Correção**:
+     - Adicionei `https://fonts.gstatic.com/*` ao `font-src` para cobrir sub-URLs.
+     - Mantive `https://fonts.googleapis.com` em `style-src` para o CSS do Roboto.
+     - Mantive `https://cdnjs.cloudflare.com` em `style-src` para o FontAwesome.
+     - Para evitar conflitos, mantive `'unsafe-inline'` em `style-src` apenas para estilos inline, mas usei o hash específico para o script inline.
+
+3. **Duplicação do conteúdo**:
+   - A duplicação (formulário ou tabela aparecendo duas vezes) pode ser causada por:
+     - Múltiplas execuções da função `carregar()` (já mitigado com `isLoaded`).
+     - Cache do Service Worker servindo uma versão antiga da página.
+     - Cache da CDN do GitHub Pages.
+     - Dados duplicados retornados pela API OpenSheet.
+   - O código inclui a variável `isLoaded`, filtro de duplicatas, desativação do Service Worker, e logs para depuração.
+
+---
+
+### Código Corrigido do `admin-xyz-123.html`
+
+```html
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://script.google.com https://opensheet.vercel.app; img-src 'self' data: https://via.placeholder.com; font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com https://fonts.gstatic.com/*; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; script-src 'self' 'sha256-farHDjMD5Rg57+7fgrpAgRO10mqULxH9d1uXcbAddOU=';">
   <title>Admin Centro de Compra</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -342,12 +685,6 @@
   </div>
 
   <script>
-    const URL_API = 'https://script.google.com/macros/s/AKfycbwgxT3zmouHq1p3AmJrOamfXEtf9VxWxqwy3Yw8iCZSe9OKPcWB7-vl4Gqgr_9xmAOI/exec';
-    const SHEET_API = 'https://opensheet.vercel.app/1SMpUcrobcuWVGq4F_3N59rhs2_GpDo2531_2blpwEhs/Produtos';
-
-    // Estado para evitar múltiplas execuções
-    let isLoaded = false;
-
     // Função para sanitizar HTML e prevenir XSS
     function sanitizeHTML(str) {
       const div = document.createElement('div');
@@ -370,13 +707,20 @@
       }
     }
 
+    // Estado para evitar múltiplas execuções
+    let isLoaded = false;
+
     // Verificação de acesso
-    const token = new URLSearchParams(window.location.search).get('tempToken');
-    if (token !== 'triple-click-access') {
-      alert('Acesso não autorizado. Você será redirecionado.');
-      window.location.href = './index.html';
-      return;
-    }
+    (function checkAccess() {
+      const token = new URLSearchParams(window.location.search).get('tempToken');
+      if (token !== 'triple-click-access') {
+        alert('Acesso não autorizado. Você será redirecionado.');
+        window.location.href = './index.html';
+      }
+    })();
+
+    const URL_API = 'https://script.google.com/macros/s/AKfycbwgxT3zmouHq1p3AmJrOamfXEtf9VxWxqwy3Yw8iCZSe9OKPcWB7-vl4Gqgr_9xmAOI/exec';
+    const SHEET_API = 'https://opensheet.vercel.app/1SMpUcrobcuWVGq4F_3N59rhs2_GpDo2531_2blpwEhs/Produtos';
 
     let produtos = [];
 
