@@ -217,33 +217,68 @@
     function configurarCliqueLogo() {
       const logo = document.getElementById('site-logo-img');
       if (!logo) {
-        console.error('Erro: Elemento com id="site-logo-img" não encontrado.');
+        console.error('Erro: Elemento com id="site-logo-img" não encontrado. Verifique se a imagem da logo está carregada.');
         return;
       }
       let clickCount = 0;
       let clickTimer = null;
-      console.log('Configurando clique na logo...');
+      console.log('Configurando evento de clique na logo...');
+      
+      logo.style.cursor = 'pointer';
+      logo.style.pointerEvents = 'auto';
+
       logo.addEventListener('click', (e) => {
         e.preventDefault();
-        e.stopPropagation(); // Impede propagação para o elemento <a>
+        e.stopPropagation();
         clickCount++;
+        logo.style.border = '2px solid #ff6200'; // Feedback visual
+        setTimeout(() => logo.style.border = '', 200);
         console.log(`Clique ${clickCount} registrado na logo.`);
+        
         if (clickCount === 1) {
           clickTimer = setTimeout(() => {
-            console.log('Contador de cliques resetado após 1000ms.');
+            console.log('Contador de cliques resetado após 1500ms.');
             clickCount = 0;
-          }, 1000); // Aumentado para 1000ms
+          }, 1500);
         } else if (clickCount === 3) {
           clearTimeout(clickTimer);
-          console.log('Três cliques detectados, redirecionando para admin-xyz-123.html...');
+          console.log('Três cliques detectados, tentando redirecionar para admin-xyz-123.html...');
+          
+          // Tenta redirecionamento com caminho relativo
+          const adminUrl = './admin-xyz-123.html?tempToken=triple-click-access';
+          console.log('Tentando redirecionamento para:', adminUrl);
           try {
-            window.location.href = './admin-xyz-123.html?tempToken=triple-click-access';
+            // Método 1: window.location.href
+            window.location.href = adminUrl;
+            
+            // Método 2: window.location.assign (fallback)
+            setTimeout(() => {
+              if (window.location.href !== new URL(adminUrl, window.location.origin).href) {
+                console.log('Redirecionamento com href falhou, tentando assign...');
+                window.location.assign(adminUrl);
+                
+                // Método 3: Caminho absoluto como último recurso
+                setTimeout(() => {
+                  if (window.location.href !== new URL(adminUrl, window.location.origin).href) {
+                    console.log('Redirecionamento com assign falhou, tentando URL absoluta...');
+                    window.location.href = 'http://www.centrodecompra.com.br/admin-xyz-123.html?tempToken=triple-click-access';
+                  }
+                }, 500);
+              }
+            }, 500);
           } catch (error) {
             console.error('Erro ao redirecionar:', error);
-            alert('Erro ao acessar a página admin. Verifique o console para detalhes.');
+            alert('Erro ao acessar a página de administração. Verifique o console para detalhes.');
           }
           clickCount = 0;
         }
+      });
+
+      logo.addEventListener('load', () => {
+        console.log('Imagem da logo carregada com sucesso.');
+      });
+      logo.addEventListener('error', () => {
+        console.error('Erro ao carregar a imagem da logo:', logo.src);
       });
     }
 
