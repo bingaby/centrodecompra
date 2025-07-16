@@ -2,53 +2,164 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://script.google.com https://opensheet.vercel.app; img-src 'self' data: https://via.placeholder.com;">
   <title>Admin Centro de Compra</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: sans-serif; margin: 20px; }
-    form, table { width: 100%; max-width: 800px; margin: auto; }
-    form input, form textarea, form select { width: 100%; padding: 8px; margin-bottom: 8px; box-sizing: border-box; }
-    table { border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-    im<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <title>Admin Centro de Compra</title>
-  <style>
-    body { font-family: sans-serif; margin: 20px; }
-    form, table { width: 100%; max-width: 800px; margin: auto; }
-    form input, form textarea, form select { width: 100%; padding: 8px; margin-bottom: 8px; box-sizing: border-box; }
-    table { border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-    img { max-width: 80px; }
-    button { margin: 2px; padding: 4px 8px; }
-    #preview-container { display: flex; flex-wrap: wrap; gap: 10px; }
-    #preview-container img { max-width: 100px; }
-    .feedback-message { text-align: center; margin-top: 10px; }
-    .success { color: green; }
-    .error { color: red; }
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 20px;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      color: #ff6200;
+    }
+    form, table {
+      width: 100%;
+      max-width: 800px;
+      margin: 20px auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    form input, form textarea, form select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 12px;
+      box-sizing: border-box;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    form select {
+      appearance: none;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="6" viewBox="0 0 12 6"><path fill="%23333" d="M0 0h12L6 6z"/></svg>');
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 12px;
+    }
+    form textarea {
+      height: 100px;
+      resize: vertical;
+    }
+    table {
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+      font-size: 14px;
+    }
+    th {
+      background-color: #ff6200;
+      color: #fff;
+    }
+    img {
+      max-width: 80px;
+      height: auto;
+      border-radius: 4px;
+    }
+    button {
+      margin: 4px;
+      padding: 8px 16px;
+      background-color: #ff6200;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #e55a00;
+    }
+    #preview-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    #preview-container img {
+      max-width: 100px;
+      height: auto;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .feedback-message {
+      text-align: center;
+      margin: 10px 0;
+      font-size: 16px;
+    }
+    .success {
+      color: #28a745;
+    }
+    .error {
+      color: #dc3545;
+    }
+    .loading {
+      color: #007bff;
+    }
   </style>
 </head>
 <body>
   <h1>Admin Centro de Compra</h1>
   <form id="form-produto">
     <input type="hidden" id="idx" value="">
-    <input type="text" id="nome" placeholder="Nome" required>
-    <textarea id="descricao" placeholder="Descrição"></textarea>
-    <input type="text" id="categoria" placeholder="Categoria">
-    <input type="text" id="loja" placeholder="Loja">
-    <input type="url" id="link" placeholder="Link">
-    <input type="text" id="preco" placeholder="Preço">
-    <input type="file" id="imagem-input" accept="image/*" multiple>
+    <input type="text" id="nome" placeholder="Nome do produto" required aria-label="Nome do produto">
+    <textarea id="descricao" placeholder="Descrição do produto" aria-label="Descrição do produto"></textarea>
+    <select id="categoria" required aria-label="Categoria do produto">
+      <option value="" disabled selected>Selecione uma categoria</option>
+      <option value="Eletrônicos">Eletrônicos</option>
+      <option value="Moda">Moda</option>
+      <option value="Fitness">Fitness</option>
+      <option value="Casa">Casa</option>
+      <option value="Beleza">Beleza</option>
+      <option value="Esportes">Esportes</option>
+      <option value="Livros">Livros</option>
+      <option value="Infantil">Infantil</option>
+      <option value="Celulares">Celulares</option>
+      <option value="Eletrodomésticos">Eletrodomésticos</option>
+      <option value="Pet">Pet</option>
+      <option value="Jardinagem">Jardinagem</option>
+      <option value="Automotivo">Automotivo</option>
+      <option value="Gastronomia">Gastronomia</option>
+      <option value="Games">Games</option>
+      <option value="Outros">Outros</option>
+    </select>
+    <select id="loja" required aria-label="Loja do produto">
+      <option value="" disabled selected>Selecione uma loja</option>
+      <option value="Amazon">Amazon</option>
+      <option value="Magalu">Magalu</option>
+      <option value="Shein">Shein</option>
+      <option value="Shopee">Shopee</option>
+      <option value="Mercado Livre">Mercado Livre</option>
+      <option value="Alibaba">Alibaba</option>
+      <option value="Outros">Outros</option>
+    </select>
+    <input type="url" id="link" placeholder="Link do produto" aria-label="Link do produto">
+    <input type="text" id="preco" placeholder="Preço (ex.: 99.90)" aria-label="Preço do produto">
+    <input type="file" id="imagem-input" accept="image/*" multiple aria-label="Selecionar imagens do produto">
     <div id="preview-container"></div>
-    <button type="submit">Salvar Produto</button>
+    <button type="submit" aria-label="Salvar produto">Salvar Produto</button>
   </form>
   <div id="feedback-message" class="feedback-message"></div>
 
   <table>
-    <thead><tr>
-      <th>Imagem</th><th>Nome</th><th>Loja</th><th>Preço</th><th>Ações</th>
-    </tr></thead>
+    <thead>
+      <tr>
+        <th>Imagem</th>
+        <th>Nome</th>
+        <th>Loja</th>
+        <th>Preço</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
     <tbody id="produtos-tbody">
       <tr><td colspan="5">Carregando...</td></tr>
     </tbody>
@@ -58,11 +169,19 @@
     const URL_API = 'https://script.google.com/macros/s/AKfycbwgxT3zmouHq1p3AmJrOamfXEtf9VxWxqwy3Yw8iCZSe9OKPcWB7-vl4Gqgr_9xmAOI/exec';
     const SHEET_API = 'https://opensheet.vercel.app/1SMpUcrobcuWVGq4F_3N59rhs2_GpDo2531_2blpwEhs/Produtos';
 
+    // Função para sanitizar HTML e prevenir XSS
+    function sanitizeHTML(str) {
+      const div = document.createElement('div');
+      div.textContent = str || '';
+      return div.innerHTML;
+    }
+
     // Verificação de acesso
     const token = new URLSearchParams(window.location.search).get('tempToken');
     if (token !== 'triple-click-access') {
       alert('Acesso não autorizado. Você será redirecionado.');
-      window.location.href = 'index.html';
+      window.location.href = './index.html';
+      return;
     }
 
     let produtos = [];
@@ -76,7 +195,19 @@
     imgInput.addEventListener('change', e => {
       previewContainer.innerHTML = '';
       const files = e.target.files;
+      if (files.length > 5) {
+        feedbackMessage.textContent = 'Erro: Selecione no máximo 5 imagens.';
+        feedbackMessage.className = 'feedback-message error';
+        imgInput.value = '';
+        return;
+      }
       for (const file of files) {
+        if (!file.type.startsWith('image/')) {
+          feedbackMessage.textContent = `Erro: O arquivo ${file.name} não é uma imagem válida.`;
+          feedbackMessage.className = 'feedback-message error';
+          imgInput.value = '';
+          return;
+        }
         const reader = new FileReader();
         reader.onload = () => {
           const img = document.createElement('img');
@@ -89,15 +220,16 @@
 
     form.addEventListener('submit', async e => {
       e.preventDefault();
-      feedbackMessage.textContent = 'Salvando...';
-      feedbackMessage.className = 'feedback-message';
+      feedbackMessage.textContent = 'Salvando produto...';
+      feedbackMessage.className = 'feedback-message loading';
+
       const valores = {
-        nome: document.getElementById('nome').value,
-        descricao: document.getElementById('descricao').value,
-        categoria: document.getElementById('categoria').value,
-        loja: document.getElementById('loja').value,
-        link: document.getElementById('link').value,
-        preco: document.getElementById('preco').value,
+        nome: document.getElementById('nome').value.trim(),
+        descricao: document.getElementById('descricao').value.trim(),
+        categoria: document.getElementById('categoria').value.trim(),
+        loja: document.getElementById('loja').value.trim(),
+        link: document.getElementById('link').value.trim(),
+        preco: document.getElementById('preco').value.trim(),
         rowIndex: document.getElementById('idx').value || null
       };
 
@@ -116,225 +248,119 @@
         const res = await fetch(URL_API, {
           method: 'POST',
           body: JSON.stringify(valores),
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json' },
+          mode: 'cors'
         });
+        if (!res.ok) {
+          throw new Error(`Erro HTTP ${res.status}: ${res.statusText}`);
+        }
         const json = await res.json();
         if (json.success) {
           feedbackMessage.textContent = 'Produto salvo com sucesso!';
           feedbackMessage.className = 'feedback-message success';
-          setTimeout(() => location.reload(), 1000);
+          setTimeout(() => {
+            form.reset();
+            previewContainer.innerHTML = '';
+            document.getElementById('categoria').value = '';
+            document.getElementById('loja').value = '';
+            carregar();
+          }, 1000);
         } else {
-          feedbackMessage.textContent = 'Erro: ' + json.error;
+          feedbackMessage.textContent = 'Erro ao salvar: ' + (json.error || 'Erro desconhecido');
           feedbackMessage.className = 'feedback-message error';
         }
       } catch (error) {
+        console.error('Erro ao salvar produto:', error);
         feedbackMessage.textContent = 'Erro ao salvar: ' + error.message;
         feedbackMessage.className = 'feedback-message error';
       }
     });
 
     async function carregar() {
+      feedbackMessage.textContent = 'Carregando produtos...';
+      feedbackMessage.className = 'feedback-message loading';
       try {
-        const res = await fetch(SHEET_API);
+        const res = await fetch(SHEET_API, { cache: 'no-store' });
+        if (!res.ok) {
+          throw new Error(`Erro HTTP ${res.status}: ${res.statusText}`);
+        }
         produtos = await res.json();
         tbody.innerHTML = '';
+        if (produtos.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5">Nenhum produto encontrado.</td></tr>';
+          feedbackMessage.textContent = '';
+          return;
+        }
         produtos.forEach((p, i) => {
           const urlImg = p.imagens?.split(',')[0] || 'https://via.placeholder.com/80';
           tbody.innerHTML += `
             <tr>
-              <td><img src="${urlImg}"></td>
-              <td>${p.nome}</td><td>${p.loja}</td><td>${p.preco}</td>
+              <td><img src="${sanitizeHTML(urlImg)}" alt="Imagem do produto" onerror="this.src='https://via.placeholder.com/80'"></td>
+              <td>${sanitizeHTML(p.nome)}</td>
+              <td>${sanitizeHTML(p.loja)}</td>
+              <td>${sanitizeHTML(p.preco)}</td>
               <td>
-                <button onclick="editar(${i})">Editar</button>
-                <button onclick="excluir(${i})">Excluir</button>
+                <button onclick="editar(${i})" aria-label="Editar produto ${sanitizeHTML(p.nome)}">Editar</button>
+                <button onclick="excluir(${i})" aria-label="Excluir produto ${sanitizeHTML(p.nome)}">Excluir</button>
               </td>
             </tr>`;
         });
+        feedbackMessage.textContent = '';
       } catch (error) {
+        console.error('Erro ao carregar produtos:', error);
         feedbackMessage.textContent = 'Erro ao carregar produtos: ' + error.message;
         feedbackMessage.className = 'feedback-message error';
+        tbody.innerHTML = '<tr><td colspan="5">Erro ao carregar produtos.</td></tr>';
       }
     }
 
     function editar(i) {
       const p = produtos[i];
-      document.getElementById('nome').value = p.nome;
-      document.getElementById('descricao').value = p.descricao;
-      document.getElementById('categoria').value = p.categoria;
-      document.getElementById('loja').value = p.loja;
-      document.getElementById('link').value = p.link;
-      document.getElementById('preco').value = p.preco;
+      document.getElementById('nome').value = p.nome || '';
+      document.getElementById('descricao').value = p.descricao || '';
+      document.getElementById('categoria').value = p.categoria || '';
+      document.getElementById('loja').value = p.loja || '';
+      document.getElementById('link').value = p.link || '';
+      document.getElementById('preco').value = p.preco || '';
       document.getElementById('idx').value = i + 2; // Ajuste para índice da planilha
-      previewContainer.innerHTML = p.imagens ? p.imagens.split(',').map(url => `<img src="${url}">`).join('') : '';
+      previewContainer.innerHTML = p.imagens ? p.imagens.split(',').map(url => `<img src="${sanitizeHTML(url)}" alt="Imagem do produto">`).join('') : '';
+      feedbackMessage.textContent = 'Editando produto...';
+      feedbackMessage.className = 'feedback-message';
     }
 
     async function excluir(i) {
-      if (!confirm('Excluir este produto?')) return;
-      feedbackMessage.textContent = 'Excluindo...';
-      feedbackMessage.className = 'feedback-message';
+      if (!confirm(`Excluir o produto "${sanitizeHTML(produtos[i].nome)}"?`)) return;
+      feedbackMessage.textContent = 'Excluindo produto...';
+      feedbackMessage.className = 'feedback-message loading';
       const payload = { action: 'delete', rowIndex: i + 2 };
       try {
         const res = await fetch(URL_API, {
           method: 'POST',
           body: JSON.stringify(payload),
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json' },
+          mode: 'cors'
         });
+        if (!res.ok) {
+          throw new Error(`Erro HTTP ${res.status}: ${res.statusText}`);
+        }
         const json = await res.json();
         if (json.success) {
           feedbackMessage.textContent = 'Produto excluído com sucesso!';
           feedbackMessage.className = 'feedback-message success';
-          setTimeout(() => location.reload(), 1000);
+          setTimeout(() => carregar(), 1000);
         } else {
-          feedbackMessage.textContent = 'Erro ao excluir: ' + json.error;
+          feedbackMessage.textContent = 'Erro ao excluir: ' + (json.error || 'Erro desconhecido');
           feedbackMessage.className = 'feedback-message error';
         }
       } catch (error) {
+        console.error('Erro ao excluir produto:', error);
         feedbackMessage.textContent = 'Erro ao excluir: ' + error.message;
         feedbackMessage.className = 'feedback-message error';
       }
     }
 
-    carregar();
-  </script>
-</body>
-</html>0px; }
-    button { margin: 2px; padding: 4px 8px; }
-    #preview-container { display: flex; flex-wrap: wrap; gap: 10px; }
-    #preview-container img { max-width: 100px; }
-  </style>
-</head>
-<body>
-  <h1>Admin Centro de Compra</h1>
-  <form id="form-produto">
-    <input type="hidden" id="idx" value="">
-    <input type="text" id="nome" placeholder="Nome" required>
-    <textarea id="descricao" placeholder="Descrição"></textarea>
-    <input type="text" id="categoria" placeholder="Categoria">
-    <input type="text" id="loja" placeholder="Loja">
-    <input type="url" id="link" placeholder="Link">
-    <input type="text" id="preco" placeholder="Preço">
-    <input type="file" id="imagem-input" accept="image/*" multiple>
-    <div id="preview-container"></div>
-    <button type="submit">Salvar Produto</button>
-  </form>
-
-  <table>
-    <thead><tr>
-      <th>Imagem</th><th>Nome</th><th>Loja</th><th>Preço</th><th>Ações</th>
-    </tr></thead>
-    <tbody id="produtos-tbody">
-      <tr><td colspan="5">Carregando...</td></tr>
-    </tbody>
-  </table>
-
-  <script>
-    const URL_API = 'INSIRA_A_URL_DO_WEB_APP_AQUI'; // Substitua pela URL do Google Apps Script
-    const SHEET_API = 'https://opensheet.vercel.app/1SMpUcrobcuWVGq4F_3N59rhs2_GpDo2531_2blpwEhs/Produtos';
-
-    let produtos = [];
-
-    const form = document.getElementById('form-produto');
-    const imgInput = document.getElementById('imagem-input');
-    const previewContainer = document.getElementById('preview-container');
-    const tbody = document.getElementById('produtos-tbody');
-
-    imgInput.addEventListener('change', e => {
-      previewContainer.innerHTML = '';
-      const files = e.target.files;
-      for (const file of files) {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const img = document.createElement('img');
-          img.src = reader.result;
-          previewContainer.appendChild(img);
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-
-    form.addEventListener('submit', async e => {
-      e.preventDefault();
-      const valores = {
-        nome: document.getElementById('nome').value,
-        descricao: document.getElementById('descricao').value,
-        categoria: document.getElementById('categoria').value,
-        loja: document.getElementById('loja').value,
-        link: document.getElementById('link').value,
-        preco: document.getElementById('preco').value,
-        rowIndex: document.getElementById('idx').value || null
-      };
-
-      const files = imgInput.files;
-      if (files.length > 0) {
-        valores.imagensBase64 = await Promise.all(
-          Array.from(files).map(file => new Promise(resolve => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result.split(',')[1]);
-            reader.readAsDataURL(file);
-          }))
-        );
-      }
-
-      const res = await fetch(URL_API, {
-        method: 'POST',
-        body: JSON.stringify(valores),
-        headers: { 'Content-Type': 'application/json' }
-      });
-      const json = await res.json();
-      if (json.success) {
-        location.reload();
-      } else {
-        alert('Erro: ' + json.error);
-      }
-    });
-
-    async function carregar() {
-      const res = await fetch(SHEET_API);
-      produtos = await res.json();
-      tbody.innerHTML = '';
-      produtos.forEach((p, i) => {
-        const urlImg = p.imagens?.split(',')[0] || 'https://via.placeholder.com/80';
-        tbody.innerHTML += `
-          <tr>
-            <td><img src="${urlImg}"></td>
-            <td>${p.nome}</td><td>${p.loja}</td><td>${p.preco}</td>
-            <td>
-              <button onclick="editar(${i})">Editar</button>
-              <button onclick="excluir(${i})">Excluir</button>
-            </td>
-          </tr>`;
-      });
-    }
-
-    function editar(i) {
-      const p = produtos[i];
-      document.getElementById('nome').value = p.nome;
-      document.getElementById('descricao').value = p.descricao;
-      document.getElementById('categoria').value = p.categoria;
-      document.getElementById('loja').value = p.loja;
-      document.getElementById('link').value = p.link;
-      document.getElementById('preco').value = p.preco;
-      document.getElementById('idx').value = i + 2; // Ajuste para índice da planilha
-      previewContainer.innerHTML = p.imagens ? p.imagens.split(',').map(url => `<img src="${url}">`).join('') : '';
-    }
-
-    async function excluir(i) {
-      if (!confirm('Excluir este produto?')) return;
-      const payload = { action: 'delete', rowIndex: i + 2 };
-      const res = await fetch(URL_API, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-        headers: { 'Content-Type': 'application/json' }
-      });
-      const json = await res.json();
-      if (json.success) {
-        location.reload();
-      } else {
-        alert('Erro ao excluir: ' + json.error);
-      }
-    }
-
-    carregar();
+    // Carregar produtos ao iniciar
+    document.addEventListener('DOMContentLoaded', carregar);
   </script>
 </body>
 </html>
