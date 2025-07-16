@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://script.google.com https://opensheet.vercel.app; img-src 'self' data: https://via.placeholder.com; font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com https://fonts.gstatic.com/*; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src 'self' 'sha256-farHDjMD5Rg57+7fgrpAgRO10mqULxH9d1uXcbAddOU=';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://script.google.com https://opensheet.vercel.app; img-src 'self' data: https://via.placeholder.com; font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com https://fonts.gstatic.com/*; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src 'self' 'sha256-/iX0e2kW5U+6lyM7x0nC3G2lE8p1z3K7X5U8W4k5J8A=';">
   <title>Adicionar Produtos</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <style>
@@ -219,14 +219,12 @@
     let paginaAtual = 1;
     const itensPorPagina = 20;
 
-    // Função para sanitizar HTML
     function sanitizeHTML(str) {
       const div = document.createElement('div');
       div.textContent = str || '';
       return div.innerHTML;
     }
 
-    // Desativar Service Worker
     async function desativarServiceWorker() {
       if ('serviceWorker' in navigator) {
         try {
@@ -241,7 +239,6 @@
       }
     }
 
-    // Verificação de acesso
     (function checkAccess() {
       const token = new URLSearchParams(window.location.search).get('tempToken');
       if (token !== 'triple-click-access') {
@@ -250,7 +247,6 @@
       }
     })();
 
-    // Redimensionar imagem
     async function resizeImage(file, maxWidth, maxHeight) {
       return new Promise((resolve, reject) => {
         if (file.size > 2 * 1024 * 1024) {
