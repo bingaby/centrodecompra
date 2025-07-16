@@ -18,7 +18,6 @@
   <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="logos/favicon-16x16.png">
   <script src="https://kit.fontawesome.com/YOUR_FONTAWESOME_KEY.js" crossorigin="anonymous"></script>
-  <!-- Estilos mantidos conforme fornecido -->
   <style>
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); z-index: 1000; justify-content: center; align-items: center; }
     .modal-content { position: relative; max-width: 90%; max-height: 90%; width: auto; height: auto; }
@@ -43,7 +42,6 @@
   </style>
 </head>
 <body>
-  <!-- HTML mantido conforme fornecido -->
   <header class="site-header">
     <div class="logo-container">
       <a href="javascript:void(0)">
@@ -337,7 +335,7 @@
           </div>
           <span>${produto.nome || 'Produto sem nome'}</span>
           <span class="descricao">Loja: ${produto.loja || 'Desconhecida'}</span>
-          <p class="preco"><a href="${produto.link || '#'}" target="_blank" class="ver-preco">Clique aqui para ver o preço</a></p>
+          <p class="preco">${produto.preco ? `R$ ${produto.preco}` : '<a href="${produto.link || '#'}" target="_blank" class="ver-preco">Clique aqui para ver o preço</a>'}</p>
           <a href="${produto.link || '#'}" target="_blank" class="ver-na-loja ${produto.loja?.toLowerCase() || 'default'}">Comprar</a>
         `;
         gridProdutos.appendChild(produtoDiv);
