@@ -3,177 +3,371 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://script.google.com https://opensheet.vercel.app; img-src 'self' data: https://via.placeholder.com;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://script.google.com https://opensheet.vercel.app; img-src 'self' data: https://via.placeholder.com; font-src 'self' https://fonts.googleapis.com; style-src 'self' 'unsafe-inline';">
   <title>Admin Centro de Compra</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
+    :root {
+      --primary-color: #ff6200;
+      --primary-dark: #e55a00;
+      --secondary-color: #f9f9f9;
+      --text-color: #333;
+      --border-color: #ddd;
+      --success-color: #28a745;
+      --error-color: #dc3545;
+      --loading-color: #007bff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
       font-family: 'Roboto', sans-serif;
-      margin: 20px;
-      background-color: #f9f9f9;
-      color: #333;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      color: var(--text-color);
+      min-height: 100vh;
+      padding: 20px;
     }
+
     h1 {
       text-align: center;
-      color: #ff6200;
+      color: var(--primary-color);
+      font-size: 2rem;
+      font-weight: 500;
+      margin-bottom: 20px;
     }
-    form, table {
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+    }
+
+    form {
+      display: grid;
+      gap: 15px;
+    }
+
+    .form-group {
+      position: relative;
+    }
+
+    .form-group i {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--primary-color);
+      font-size: 1rem;
+    }
+
+    input, textarea, select {
       width: 100%;
-      max-width: 800px;
-      margin: 20px auto;
-      background-color: #fff;
-      padding: 20px;
+      padding: 12px 12px 12px 40px;
+      border: 1px solid var(--border-color);
       border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      font-size: 1rem;
+      transition: border-color 0.3s, box-shadow 0.3s;
     }
-    form input, form textarea, form select {
-      width: 100%;
-      padding: 8px;
-      margin-bottom: 12px;
-      box-sizing: border-box;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 16px;
+
+    textarea {
+      padding: 12px;
+      resize: vertical;
+      min-height: 100px;
     }
-    form select {
+
+    select {
       appearance: none;
       background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="6" viewBox="0 0 12 6"><path fill="%23333" d="M0 0h12L6 6z"/></svg>');
       background-repeat: no-repeat;
-      background-position: right 10px center;
+      background-position: right 15px center;
       background-size: 12px;
     }
-    form textarea {
-      height: 100px;
-      resize: vertical;
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 5px rgba(255, 98, 0, 0.3);
     }
-    table {
-      border-collapse: collapse;
-      margin-top: 20px;
+
+    input:valid, select:valid {
+      border-color: var(--success-color);
     }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 10px;
-      text-align: center;
-      font-size: 14px;
+
+    input:invalid:not(:placeholder-shown) {
+      border-color: var(--error-color);
     }
-    th {
-      background-color: #ff6200;
-      color: #fff;
+
+    .form-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
     }
-    img {
-      max-width: 80px;
-      height: auto;
-      border-radius: 4px;
-    }
+
     button {
-      margin: 4px;
-      padding: 8px 16px;
-      background-color: #ff6200;
-      color: #fff;
+      padding: 12px 20px;
       border: none;
-      border-radius: 4px;
+      border-radius: 8px;
+      background-color: var(--primary-color);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 500;
       cursor: pointer;
-      font-size: 14px;
-      transition: background-color 0.3s;
+      transition: background-color 0.3s, transform 0.2s;
     }
+
     button:hover {
-      background-color: #e55a00;
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
     }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button.secondary {
+      background-color: #6c757d;
+    }
+
+    button.secondary:hover {
+      background-color: #5a6268;
+    }
+
     #preview-container {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      margin-bottom: 12px;
+      margin-top: 10px;
     }
+
     #preview-container img {
       max-width: 100px;
       height: auto;
-      border: 1px solid #ddd;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      transition: transform 0.2s;
+    }
+
+    #preview-container img:hover {
+      transform: scale(1.05);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      background-color: var(--primary-color);
+      color: #fff;
+      font-weight: 500;
+    }
+
+    td img {
+      max-width: 80px;
+      height: auto;
       border-radius: 4px;
     }
+
+    .actions {
+      display: flex;
+      gap: 5px;
+    }
+
+    .actions button {
+      padding: 8px 12px;
+      font-size: 0.9rem;
+    }
+
     .feedback-message {
       text-align: center;
-      margin: 10px 0;
-      font-size: 16px;
+      margin: 15px 0;
+      font-size: 1rem;
+      font-weight: 400;
+      padding: 10px;
+      border-radius: 8px;
+      transition: opacity 0.3s;
     }
+
     .success {
-      color: #28a745;
+      background-color: rgba(40, 167, 69, 0.1);
+      color: var(--success-color);
     }
+
     .error {
-      color: #dc3545;
+      background-color: rgba(220, 53, 69, 0.1);
+      color: var(--error-color);
     }
+
     .loading {
-      color: #007bff;
+      background-color: rgba(0, 123, 255, 0.1);
+      color: var(--loading-color);
+      position: relative;
+      padding-left: 40px;
+    }
+
+    .loading::before {
+      content: '';
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--loading-color);
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: translateY(-50%) rotate(360deg); }
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 15px;
+      }
+      table {
+        font-size: 0.9rem;
+      }
+      td img {
+        max-width: 60px;
+      }
+      .actions button {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>Admin Centro de Compra</h1>
-  <form id="form-produto">
-    <input type="hidden" id="idx" value="">
-    <input type="text" id="nome" placeholder="Nome do produto" required aria-label="Nome do produto">
-    <textarea id="descricao" placeholder="Descrição do produto" aria-label="Descrição do produto"></textarea>
-    <select id="categoria" required aria-label="Categoria do produto">
-      <option value="" disabled selected>Selecione uma categoria</option>
-      <option value="Eletrônicos">Eletrônicos</option>
-      <option value="Moda">Moda</option>
-      <option value="Fitness">Fitness</option>
-      <option value="Casa">Casa</option>
-      <option value="Beleza">Beleza</option>
-      <option value="Esportes">Esportes</option>
-      <option value="Livros">Livros</option>
-      <option value="Infantil">Infantil</option>
-      <option value="Celulares">Celulares</option>
-      <option value="Eletrodomésticos">Eletrodomésticos</option>
-      <option value="Pet">Pet</option>
-      <option value="Jardinagem">Jardinagem</option>
-      <option value="Automotivo">Automotivo</option>
-      <option value="Gastronomia">Gastronomia</option>
-      <option value="Games">Games</option>
-      <option value="Outros">Outros</option>
-    </select>
-    <select id="loja" required aria-label="Loja do produto">
-      <option value="" disabled selected>Selecione uma loja</option>
-      <option value="Amazon">Amazon</option>
-      <option value="Magalu">Magalu</option>
-      <option value="Shein">Shein</option>
-      <option value="Shopee">Shopee</option>
-      <option value="Mercado Livre">Mercado Livre</option>
-      <option value="Alibaba">Alibaba</option>
-      <option value="Outros">Outros</option>
-    </select>
-    <input type="url" id="link" placeholder="Link do produto" aria-label="Link do produto">
-    <input type="text" id="preco" placeholder="Preço (ex.: 99.90)" aria-label="Preço do produto">
-    <input type="file" id="imagem-input" accept="image/*" multiple aria-label="Selecionar imagens do produto">
-    <div id="preview-container"></div>
-    <button type="submit" aria-label="Salvar produto">Salvar Produto</button>
-  </form>
-  <div id="feedback-message" class="feedback-message"></div>
+  <div class="container">
+    <h1><i class="fas fa-cog"></i> Admin Centro de Compra</h1>
+    <form id="form-produto">
+      <div class="form-group">
+        <i class="fas fa-tag"></i>
+        <input type="text" id="nome" placeholder="Nome do produto" required aria-label="Nome do produto">
+      </div>
+      <div class="form-group">
+        <i class="fas fa-align-left"></i>
+        <textarea id="descricao" placeholder="Descrição do produto" aria-label="Descrição do produto"></textarea>
+      </div>
+      <div class="form-group">
+        <i class="fas fa-list"></i>
+        <select id="categoria" required aria-label="Categoria do produto">
+          <option value="" disabled selected>Selecione uma categoria</option>
+          <option value="Eletrônicos">Eletrônicos</option>
+          <option value="Moda">Moda</option>
+          <option value="Fitness">Fitness</option>
+          <option value="Casa">Casa</option>
+          <option value="Beleza">Beleza</option>
+          <option value="Esportes">Esportes</option>
+          <option value="Livros">Livros</option>
+          <option value="Infantil">Infantil</option>
+          <option value="Celulares">Celulares</option>
+          <option value="Eletrodomésticos">Eletrodomésticos</option>
+          <option value="Pet">Pet</option>
+          <option value="Jardinagem">Jardinagem</option>
+          <option value="Automotivo">Automotivo</option>
+          <option value="Gastronomia">Gastronomia</option>
+          <option value="Games">Games</option>
+          <option value="Outros">Outros</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <i class="fas fa-store"></i>
+        <select id="loja" required aria-label="Loja do produto">
+          <option value="" disabled selected>Selecione uma loja</option>
+          <option value="Amazon">Amazon</option>
+          <option value="Magalu">Magalu</option>
+          <option value="Shein">Shein</option>
+          <option value="Shopee">Shopee</option>
+          <option value="Mercado Livre">Mercado Livre</option>
+          <option value="Alibaba">Alibaba</option>
+          <option value="Outros">Outros</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <i class="fas fa-link"></i>
+        <input type="url" id="link" placeholder="Link do produto" aria-label="Link do produto">
+      </div>
+      <div class="form-group">
+        <i class="fas fa-dollar-sign"></i>
+        <input type="text" id="preco" placeholder="Preço (ex.: 99.90)" aria-label="Preço do produto">
+      </div>
+      <div class="form-group">
+        <i class="fas fa-image"></i>
+        <input type="file" id="imagem-input" accept="image/*" multiple aria-label="Selecionar imagens do produto">
+      </div>
+      <div id="preview-container"></div>
+      <div class="form-buttons">
+        <button type="submit" aria-label="Salvar produto"><i class="fas fa-save"></i> Salvar</button>
+        <button type="button" class="secondary" onclick="form.reset(); document.getElementById('categoria').value = ''; document.getElementById('loja').value = ''; document.getElementById('preview-container').innerHTML = '';" aria-label="Limpar formulário"><i class="fas fa-eraser"></i> Limpar</button>
+      </div>
+    </form>
+    <div id="feedback-message" class="feedback-message"></div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Imagem</th>
-        <th>Nome</th>
-        <th>Loja</th>
-        <th>Preço</th>
-        <th>Ações</th>
-      </tr>
-    </thead>
-    <tbody id="produtos-tbody">
-      <tr><td colspan="5">Carregando...</td></tr>
-    </tbody>
-  </table>
+    <table>
+      <thead>
+        <tr>
+          <th>Imagem</th>
+          <th>Nome</th>
+          <th>Loja</th>
+          <th>Preço</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="produtos-tbody">
+        <tr><td colspan="5">Carregando...</td></tr>
+      </tbody>
+    </table>
+  </div>
 
   <script>
     const URL_API = 'https://script.google.com/macros/s/AKfycbwgxT3zmouHq1p3AmJrOamfXEtf9VxWxqwy3Yw8iCZSe9OKPcWB7-vl4Gqgr_9xmAOI/exec';
     const SHEET_API = 'https://opensheet.vercel.app/1SMpUcrobcuWVGq4F_3N59rhs2_GpDo2531_2blpwEhs/Produtos';
+
+    // Estado para evitar múltiplas execuções
+    let isLoaded = false;
 
     // Função para sanitizar HTML e prevenir XSS
     function sanitizeHTML(str) {
       const div = document.createElement('div');
       div.textContent = str || '';
       return div.innerHTML;
+    }
+
+    // Desativar Service Worker para evitar interferência
+    async function desativarServiceWorker() {
+      if ('serviceWorker' in navigator) {
+        try {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          for (let registration of registrations) {
+            console.log('Desativando Service Worker:', registration.scope);
+            await registration.unregister();
+          }
+        } catch (error) {
+          console.error('Erro ao desativar Service Worker:', error);
+        }
+      }
     }
 
     // Verificação de acesso
@@ -260,11 +454,11 @@
           feedbackMessage.className = 'feedback-message success';
           setTimeout(() => {
             form.reset();
-            previewContainer.innerHTML = '';
             document.getElementById('categoria').value = '';
             document.getElementById('loja').value = '';
+            previewContainer.innerHTML = '';
             carregar();
-          }, 1000);
+          }, 1500);
         } else {
           feedbackMessage.textContent = 'Erro ao salvar: ' + (json.error || 'Erro desconhecido');
           feedbackMessage.className = 'feedback-message error';
@@ -277,6 +471,12 @@
     });
 
     async function carregar() {
+      if (isLoaded) {
+        console.log('Função carregar() já foi executada, ignorando chamada repetida.');
+        return;
+      }
+      isLoaded = true;
+      console.log('Carregando produtos...');
       feedbackMessage.textContent = 'Carregando produtos...';
       feedbackMessage.className = 'feedback-message loading';
       try {
@@ -285,13 +485,26 @@
           throw new Error(`Erro HTTP ${res.status}: ${res.statusText}`);
         }
         produtos = await res.json();
+        console.log('Produtos recebidos:', produtos.length);
         tbody.innerHTML = '';
         if (produtos.length === 0) {
           tbody.innerHTML = '<tr><td colspan="5">Nenhum produto encontrado.</td></tr>';
           feedbackMessage.textContent = '';
+          console.log('Nenhum produto encontrado.');
           return;
         }
-        produtos.forEach((p, i) => {
+        // Remover duplicatas com base em nome e loja
+        const uniqueProdutos = [];
+        const seen = new Set();
+        for (const p of produtos) {
+          const key = `${p.nome}|${p.loja}|${p.preco}`;
+          if (!seen.has(key)) {
+            seen.add(key);
+            uniqueProdutos.push(p);
+          }
+        }
+        console.log('Produtos únicos após filtragem:', uniqueProdutos.length);
+        uniqueProdutos.forEach((p, i) => {
           const urlImg = p.imagens?.split(',')[0] || 'https://via.placeholder.com/80';
           tbody.innerHTML += `
             <tr>
@@ -299,9 +512,9 @@
               <td>${sanitizeHTML(p.nome)}</td>
               <td>${sanitizeHTML(p.loja)}</td>
               <td>${sanitizeHTML(p.preco)}</td>
-              <td>
-                <button onclick="editar(${i})" aria-label="Editar produto ${sanitizeHTML(p.nome)}">Editar</button>
-                <button onclick="excluir(${i})" aria-label="Excluir produto ${sanitizeHTML(p.nome)}">Excluir</button>
+              <td class="actions">
+                <button onclick="editar(${i})" aria-label="Editar produto ${sanitizeHTML(p.nome)}"><i class="fas fa-edit"></i> Editar</button>
+                <button onclick="excluir(${i})" aria-label="Excluir produto ${sanitizeHTML(p.nome)}"><i class="fas fa-trash"></i> Excluir</button>
               </td>
             </tr>`;
         });
@@ -347,7 +560,7 @@
         if (json.success) {
           feedbackMessage.textContent = 'Produto excluído com sucesso!';
           feedbackMessage.className = 'feedback-message success';
-          setTimeout(() => carregar(), 1000);
+          setTimeout(() => carregar(), 1500);
         } else {
           feedbackMessage.textContent = 'Erro ao excluir: ' + (json.error || 'Erro desconhecido');
           feedbackMessage.className = 'feedback-message error';
@@ -359,8 +572,14 @@
       }
     }
 
-    // Carregar produtos ao iniciar
-    document.addEventListener('DOMContentLoaded', carregar);
+    // Carregar produtos ao iniciar, apenas uma vez
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!isLoaded) {
+        console.log('Iniciando carregamento da página admin...');
+        desativarServiceWorker();
+        carregar();
+      }
+    });
   </script>
 </body>
 </html>
