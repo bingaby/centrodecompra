@@ -54,10 +54,10 @@
   </header>
 
   <nav>
-    <a href="index.html">Promoções</a>
-    <a href="cupom">Cupons</a>
-    <a href="sobre">Sobre</a>
-    <a href="contato">Contato</a>
+    <a href="./index.html">Promoções</a>
+    <a href="./cupom.html">Cupons</a>
+    <a href="./sobre.html">Sobre</a>
+    <a href="./contato.html">Contato</a>
   </nav>
 
   <div class="container">
@@ -213,7 +213,32 @@
       if (yearElement) yearElement.textContent = new Date().getFullYear();
     }
 
-    function configurarCliqueLogo() {
+    async function verificarArquivo(url) {
+      try {
+        const response = await fetch(url, { method: 'HEAD', cache: 'no-store' });
+        console.log(`Verificação do arquivo ${url}: Status ${response.status}`);
+        return response.ok;
+      } catch (error) {
+        console.error(`Erro ao verificar arquivo ${url}:`, error);
+        return false;
+      }
+    }
+
+    async function desativarServiceWorker() {
+      if ('serviceWorker' in navigator) {
+        try {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          for (let registration of registrations) {
+            console.log('Desativando Service Worker:', registration.scope);
+            await registration.unregister();
+          }
+        } catch (error) {
+          console.error('Erro ao desativar Service Worker:', error);
+        }
+      }
+    }
+
+    async function configurarCliqueLogo() {
       const logo = document.getElementById('site-logo-img');
       if (!logo) {
         console.error('Erro: Elemento com id="site-logo-img" não encontrado. Verifique se a imagem da logo está carregada.');
@@ -226,7 +251,13 @@
       logo.style.cursor = 'pointer';
       logo.style.pointerEvents = 'auto';
 
-      logo.addEventListener('click', (e) => {
+      const adminUrls = [
+        './admin-xyz-123.html?tempToken=triple-click-access',
+        '/admin-xyz-123.html?tempToken=triple-click-access',
+        'https://www.centrodecompra.com.br/admin-xyz-123.html?tempToken=triple-click-access'
+      ];
+
+      logo.addEventListener('click', async (e) => {
         e.preventDefault();
         e.stopPropagation();
         clickCount++;
@@ -236,49 +267,53 @@
         
         if (clickCount === 1) {
           clickTimer = setTimeout(() => {
-            console.log('Contador de cliques resetado após 1500ms.');
+            console.log('Contador de cliques resetado após 2000ms.');
             clickCount = 0;
-          }, 1500);
+          }, 2000);
         } else if (clickCount === 3) {
           clearTimeout(clickTimer);
           console.log('Três cliques detectados, tentando redirecionar para admin-xyz-123.html...');
-          
-          // Define URLs para tentar
-          const adminUrlRelative = './admin-xyz-123.html?tempToken=triple-click-access';
-          const adminUrlAbsolute = '/admin-xyz-123.html?tempToken=triple-click-access';
-          const adminUrlFull = 'https://www.centrodecompra.com.br/admin-xyz-123.html?tempToken=triple-click-access';
-          
-          console.log('Tentando redirecionamento relativo:', adminUrlRelative);
-          try {
-            // Método 1: window.location.href (relativo)
-            window.location.href = adminUrlRelative;
+
+          // Desativar Service Worker temporariamente
+          await desativarServiceWorker();
+
+          for (let i = 0; i < adminUrls.length; i++) {
+            const adminUrl = adminUrls[i];
+            console.log(`Tentando redirecionamento (${i + 1}/${adminUrls.length}): ${adminUrl}`);
             
-            // Método 2: window.location.assign (absoluto) após 500ms
-            setTimeout(() => {
-              if (window.location.href !== new URL(adminUrlRelative, window.location.origin).href) {
-                console.log('Redirecionamento relativo falhou, tentando absoluto:', adminUrlAbsolute);
-                window.location.assign(adminUrlAbsolute);
-                
-                // Método 3: window.location.replace (URL completa) após mais 500ms
-                setTimeout(() => {
-                  if (window.location.href !== new URL(adminUrlAbsolute, window.location.origin).href) {
-                    console.log('Redirecionamento absoluto falhou, tentando URL completa:', adminUrlFull);
-                    window.location.replace(adminUrlFull);
-                    
-                    // Método 4: Alerta final para depuração
-                    setTimeout(() => {
-                      if (window.location.href !== adminUrlFull) {
-                        console.error('Todos os métodos de redirecionamento falharam. URL atual:', window.location.href);
-                        alert('Erro: Não foi possível redirecionar para a página de administração. Verifique o console e a existência do arquivo admin-xyz-123.html.');
-                      }
-                    }, 500);
-                  }
-                }, 500);
+            // Verificar se o arquivo existe
+            const arquivoExiste = await verificarArquivo(adminUrl);
+            if (!arquivoExiste) {
+              console.warn(`Arquivo não encontrado ou inacessível: ${adminUrl}`);
+              continue;
+            }
+
+            try {
+              if (i === 0) {
+                window.location.href = adminUrl;
+              } else if (i === 1) {
+                window.location.assign(adminUrl);
+              } else {
+                window.location.replace(adminUrl);
               }
-            }, 500);
-          } catch (error) {
-            console.error('Erro ao redirecionar:', error);
-            alert('Erro ao acessar a página de administração. Verifique o console para detalhes.');
+
+              await new Promise(resolve => setTimeout(resolve, 500));
+              if (window.location.href !== new URL(adminUrl, window.location.origin).href && window.location.href !== adminUrl) {
+                console.warn(`Redirecionamento (${i + 1}/${adminUrls.length}) falhou. URL atual: ${window.location.href}`);
+                if (i === adminUrls.length - 1) {
+                  console.error('Todos os métodos de redirecionamento falharam.');
+                  alert('Erro: Não foi possível redirecionar para a página de administração. Verifique se o arquivo admin-xyz-123.html existe e está acessível. Consulte o console para detalhes.');
+                }
+              } else {
+                console.log(`Redirecionamento bem-sucedido para: ${adminUrl}`);
+                break;
+              }
+            } catch (error) {
+              console.error(`Erro ao redirecionar para ${adminUrl}:`, error);
+              if (i === adminUrls.length - 1) {
+                alert('Erro ao acessar a página de administração. Verifique o console para detalhes.');
+              }
+            }
           }
           clickCount = 0;
         }
