@@ -5,209 +5,89 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Gerenciar Produtos - Centro de Compras</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
-  <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="logos/favicon-16x16.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="logos/apple-touch-icon.png">
-  <link rel="stylesheet" href="style.css">
   <style>
-    :root {
-      --primary-color: #ff6200;
-      --secondary-color: #6c757d;
-      --text-color-dark: #333;
-      --background-light: #f5f5f5;
-      --border-color: #ddd;
-      --shadow-light: 0 2px 4px rgba(0,0,0,0.1);
-      --border-radius-small: 4px;
-      --border-radius-medium: 8px;
-    }
-    body { 
-      font-family: 'Roboto', Arial, sans-serif; 
-      padding: 20px; 
-      background-color: var(--background-light);
+    /* Seu CSS adaptado resumido para o exemplo */
+    body {
+      font-family: 'Roboto', Arial, sans-serif;
+      padding: 20px;
+      background-color: #f5f5f5;
       margin: 0;
     }
-    h1, h3 { 
-      text-align: center; 
-      color: var(--text-color-dark); 
+    form {
+      max-width: 500px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
-    form { 
-      max-width: 500px; 
-      margin: auto; 
-      display: flex; 
-      flex-direction: column; 
-      gap: 10px; 
-      background: white; 
-      padding: 20px; 
-      border-radius: var(--border-radius-medium); 
-      box-shadow: var(--shadow-light); 
+    input, select, textarea, button {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
     }
-    input, select, textarea, button { 
-      padding: 10px; 
-      border: 1px solid var(--border-color); 
-      border-radius: var(--border-radius-small); 
-      font-size: 16px; 
-    }
-    textarea { 
-      resize: vertical; 
-      min-height: 100px; 
-    }
-    button { 
-      background-color: var(--primary-color); 
-      color: white; 
-      border: none; 
-      cursor: pointer; 
-      font-weight: bold; 
-    }
-    button:hover { 
-      background-color: #e55a00; 
-    }
-    #mensagem { 
-      margin-top: 10px; 
-      color: green; 
-      text-align: center; 
-    }
-    #erro { 
-      margin-top: 10px; 
-      color: red; 
-      text-align: center; 
-    }
-    #loading-spinner {
-      text-align: center;
-      display: none;
-      margin: 20px;
-    }
-    #produtos-cadastrados { 
-      margin: 20px auto; 
-      max-width: 900px; 
-      background: white; 
-      padding: 20px; 
-      border-radius: var(--border-radius-medium); 
-      box-shadow: var(--shadow-light); 
-    }
-    #produtos-cadastrados table { 
-      width: 100%; 
-      border-collapse: collapse; 
-    }
-    #produtos-cadastrados th, #produtos-cadastrados td { 
-      padding: 12px; 
-      border: 1px solid var(--border-color); 
-      text-align: left; 
-      vertical-align: middle;
-      overflow-wrap: break-word;
-      max-width: 200px;
-    }
-    #produtos-cadastrados th { 
-      background-color: #f9f9f9; 
-      font-weight: bold; 
-    }
-    #produtos-cadastrados td { 
-      font-size: 14px;
-    }
-    #produtos-cadastrados button.excluir { 
-      background-color: #dc3545; 
-      padding: 5px 10px; 
-      font-size: 14px; 
-      border: none; 
-      color: white; 
-      border-radius: var(--border-radius-small); 
-      cursor: pointer; 
-      margin-right: 5px; 
-    }
-    #produtos-cadastrados button.excluir:hover { 
-      background-color: #c82333; 
-    }
-    #produtos-cadastrados button.editar { 
-      background-color: #007bff; 
-      padding: 5px 10px; 
-      font-size: 14px; 
-      border: none; 
-      color: white; 
-      border-radius: var(--border-radius-small); 
-      cursor: pointer; 
-    }
-    #produtos-cadastrados button.editar:hover { 
-      background-color: #0056b3; 
-    }
-    .thumbnail { 
-      width: 50px; 
-      height: 50px; 
-      object-fit: contain; 
-      margin: 2px; 
-      cursor: pointer; 
-      border-radius: var(--border-radius-small); 
-      vertical-align: middle; 
-    }
-    #paginacao {
-      text-align: center;
-      margin: 20px 0;
-    }
-    #paginacao button {
-      margin: 0 10px;
-      padding: 8px 16px;
-      background-color: var(--primary-color);
+    button {
+      background-color: #ff6200;
       color: white;
       border: none;
-      border-radius: var(--border-radius-small);
       cursor: pointer;
+      font-weight: bold;
     }
-    #paginacao button:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
+    button:hover {
+      background-color: #e55a00;
     }
-    #paginacao span {
-      font-size: 16px;
-      margin: 0 10px;
+    #mensagem {
+      margin-top: 10px;
+      color: green;
+      text-align: center;
     }
-    .site-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 20px;
-      background-color: white;
-      box-shadow: var(--shadow-light);
-      margin-bottom: 20px;
+    #erro {
+      margin-top: 10px;
+      color: red;
+      text-align: center;
     }
-    .logo-container img {
-      width: 150px;
+    #produtos-lista {
+      max-width: 900px;
+      margin: 30px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    #produtos-lista table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    #produtos-lista th, #produtos-lista td {
+      padding: 12px;
+      border: 1px solid #ddd;
+      text-align: left;
+      vertical-align: middle;
+      word-break: break-word;
+    }
+    #produtos-lista th {
+      background-color: #f9f9f9;
+      font-weight: bold;
+    }
+    .thumbnail {
+      width: 50px;
       height: 50px;
-    }
-    .header-text h1 {
-      font-size: 1.5em;
-      margin: 0;
-    }
-    .header-text p {
-      margin: 5px 0 0;
-      color: var(--text-color-dark);
-    }
-    .logout-button {
-      background-color: var(--secondary-color);
-      padding: 8px 16px;
-      margin-left: auto;
-    }
-    .logout-button:hover {
-      background-color: #5a6268;
+      object-fit: contain;
+      border-radius: 4px;
     }
   </style>
 </head>
 <body>
-  <header class="site-header">
-    <div class="logo-container">
-      <a href="/index.html">
-        <img src="logos/logoscentrodecompras.jpeg" alt="Centro de Compras" id="site-logo-img" width="150" height="50">
-      </a>
-    </div>
-    <div class="header-text">
-      <h1>Gerenciar Produtos</h1>
-      <p>Adicione, edite ou remova produtos do portal</p>
-    </div>
-    <button class="logout-button" onclick="logout()">Sair</button>
-  </header>
-  <form id="form-produto" enctype="multipart/form-data">
-    <input type="hidden" name="id" id="produto-id">
-    <input type="text" name="nome" placeholder="Nome do produto" required aria-label="Nome do produto" />
-    <textarea name="descricao" placeholder="Descrição do produto" required aria-label="Descrição do produto"></textarea>
-    <select name="categoria" required aria-label="Categoria do produto">
+  <h1 style="text-align:center;">Gerenciar Produtos - Centro de Compras</h1>
+
+  <form id="form-produto">
+    <input type="text" name="nome" placeholder="Nome do produto" required />
+    <textarea name="descricao" placeholder="Descrição do produto" required></textarea>
+    <select name="categoria" required>
       <option value="" disabled selected>Selecione uma categoria</option>
       <option value="eletronicos">Eletrônicos</option>
       <option value="moda">Moda</option>
@@ -225,7 +105,7 @@
       <option value="gastronomia">Gastronomia</option>
       <option value="games">Games</option>
     </select>
-    <select name="loja" required aria-label="Loja do produto">
+    <select name="loja" required>
       <option value="" disabled selected>Selecione uma loja</option>
       <option value="amazon">Amazon</option>
       <option value="magalu">Magalu</option>
@@ -234,17 +114,17 @@
       <option value="mercadolivre">Mercado Livre</option>
       <option value="alibaba">Alibaba</option>
     </select>
-    <input type="url" name="link" placeholder="Link do produto (https://...)" required pattern="https?://.+" aria-label="Link do produto" />
-    <input type="number" name="preco" placeholder="Preço do produto (ex.: 99.99)" step="0.01" min="0" required aria-label="Preço do produto" />
-    <input type="file" name="imagens" accept="image/*" multiple aria-label="Imagens do produto" />
-    <button type="submit" id="submit-button">Adicionar</button>
-    <button type="button" id="cancel-button" style="display:none;background-color:var(--secondary-color);" onclick="cancelarEdicao()">Cancelar</button>
+    <input type="url" name="link" placeholder="Link do produto (https://...)" required pattern="https?://.+" />
+    <input type="number" name="preco" placeholder="Preço do produto (ex.: 99.99)" step="0.01" min="0" required />
+    <input type="file" name="imagem" accept="image/*" required />
+    <button type="submit">Adicionar Produto</button>
   </form>
+
   <div id="mensagem"></div>
   <div id="erro"></div>
-  <div id="loading-spinner">Carregando...</div>
-  <div id="produtos-cadastrados">
-    <h3>Produtos Cadastrados</h3>
+
+  <section id="produtos-lista">
+    <h2>Produtos Cadastrados</h2>
     <table>
       <thead>
         <tr>
@@ -254,294 +134,121 @@
           <th>Loja</th>
           <th>Link</th>
           <th>Preço</th>
-          <th>Imagens</th>
-          <th>Ações</th>
+          <th>Imagem</th>
         </tr>
       </thead>
-      <tbody id="lista-produtos">
-        <tr><td colspan="8" style="text-align:center;">Carregando produtos...</td></tr>
+      <tbody id="produtos-tbody">
+        <tr><td colspan="7" style="text-align:center;">Carregando produtos...</td></tr>
       </tbody>
     </table>
-  </div>
-  <div id="paginacao">
-    <button id="prev-page" disabled aria-label="Página anterior">Anterior</button>
-    <span id="page-info">Página 1</span>
-    <button id="next-page" aria-label="Próxima página">Próximo</button>
-  </div>
-  <footer>
-    <p>Todos os direitos reservados <strong>Grupo Centro de Compra "CdC"</strong> © <span id="year"></span></p>
-  </footer>
+  </section>
+
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      console.log('admin-xyz-123.html carregado');
+    // CONFIGURE AQUI A URL DO SEU ENDPOINT GOOGLE APPS SCRIPT QUE RECEBE OS DADOS
+    const PLANILHA_URL = 'COLE_AQUI_SEU_ENDPOINT_APPS_SCRIPT';
 
-      // Atualizar ano no footer
-      const yearElement = document.getElementById('year');
-      if (yearElement) yearElement.textContent = new Date().getFullYear();
+    // URL para pegar os dados via OpenSheet (leitura da planilha)
+    const PLANILHA_LEITURA_URL = 'https://opensheet.vercel.app/SEU_ID_PLANILHA/Produtos';
 
-      // Função para escapar HTML
-      function escapeHTML(str) {
-        if (!str) return 'N/A';
-        return str.replace(/[&<>"']/g, (match) => ({
-          '&': '&', '<': '<', '>': '>', '"': '"', "'": '''
-        }[match]));
+    const form = document.getElementById('form-produto');
+    const mensagem = document.getElementById('mensagem');
+    const erro = document.getElementById('erro');
+    const tbody = document.getElementById('produtos-tbody');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      mensagem.textContent = '';
+      erro.textContent = '';
+
+      const data = new FormData(form);
+      const arquivoImagem = data.get('imagem');
+
+      if (!arquivoImagem || arquivoImagem.size === 0) {
+        erro.textContent = 'Selecione uma imagem válida!';
+        return;
       }
 
-      // Função de logout
-      function logout() {
-        localStorage.removeItem('adminToken');
-        window.location.href = '/index.html';
-      }
+      // Upload da imagem para Postimages
+      mensagem.textContent = 'Enviando imagem... aguarde...';
+      try {
+        const uploadData = new FormData();
+        uploadData.append('smfile', arquivoImagem);
 
-      let currentPage = 1;
-      const produtosPorPagina = 25;
-      let totalProdutos = 0;
+        const res = await fetch('https://sm.ms/api/v2/upload', {
+          method: 'POST',
+          body: uploadData,
+        });
 
-      async function carregarProdutos() {
-        const tbody = document.getElementById('lista-produtos');
-        const loadingSpinner = document.getElementById('loading-spinner');
-        const erro = document.getElementById('erro');
-        if (!tbody || !loadingSpinner || !erro) {
-          console.error('Elementos DOM não encontrados:', { tbody, loadingSpinner, erro });
-          erro.textContent = 'Erro: Elementos da página não encontrados.';
-          return;
+        const json = await res.json();
+        if (!json.success) {
+          throw new Error(json.message || 'Erro no upload da imagem');
         }
 
-        loadingSpinner.style.display = 'block';
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Carregando...</td></tr>';
-        erro.textContent = '';
+        const urlImagem = json.data.url;
+        mensagem.textContent = 'Imagem enviada com sucesso! Enviando produto...';
 
-        try {
-          console.log(`Carregando produtos: https://centrodecompra-backend.onrender.com/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`);
-          const res = await fetch(`https://centrodecompra-backend.onrender.com/api/produtos?page=${currentPage}&limit=${produtosPorPagina}`, {
-            cache: 'no-store',
-            headers: { 'Content-Type': 'application/json' }
-          });
-          console.log('Status da resposta:', res.status, res.statusText);
-          const data = await res.json();
-          console.log('Dados recebidos:', JSON.stringify(data, null, 2));
+        // Agora montar objeto para enviar para planilha
+        const produto = {
+          nome: data.get('nome'),
+          descricao: data.get('descricao'),
+          categoria: data.get('categoria'),
+          loja: data.get('loja'),
+          link: data.get('link'),
+          preco: data.get('preco'),
+          imagem: urlImagem,
+        };
 
-          if (!res.ok) throw new Error(data.error || `Erro ${res.status}: Falha ao buscar produtos`);
+        // Enviar para a planilha Google (via Apps Script)
+        const resp = await fetch(PLANILHA_URL, {
+          method: 'POST',
+          body: JSON.stringify(produto),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
 
-          const produtos = Array.isArray(data.produtos) ? data.produtos : Array.isArray(data) ? data : [];
-          totalProdutos = Number.isInteger(data.total) ? data.total : produtos.length;
-          console.log('Produtos processados:', produtos, 'Total:', totalProdutos);
-
-          preencherTabela(produtos);
-          atualizarPaginacao();
-        } catch (err) {
-          console.error('Erro ao carregar produtos:', err.message);
-          tbody.innerHTML = `<tr><td colspan="8" style="color:red;text-align:center;">Erro: ${err.message}</td></tr>`;
-          erro.textContent = err.message;
-        } finally {
-          loadingSpinner.style.display = 'none';
+        if (!resp.ok) {
+          const errText = await resp.text();
+          throw new Error('Erro ao enviar dados: ' + errText);
         }
-      }
 
-      function preencherTabela(produtos) {
-        const tbody = document.getElementById('lista-produtos');
-        if (!tbody) {
-          console.error('Elemento lista-produtos não encontrado');
+        mensagem.textContent = 'Produto cadastrado com sucesso!';
+        form.reset();
+        carregarProdutos();
+      } catch (error) {
+        erro.textContent = error.message || 'Erro desconhecido';
+      }
+    });
+
+    async function carregarProdutos() {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Carregando produtos...</td></tr>';
+      try {
+        const res = await fetch(PLANILHA_LEITURA_URL);
+        const produtos = await res.json();
+        if (!Array.isArray(produtos) || produtos.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Nenhum produto cadastrado.</td></tr>';
           return;
         }
         tbody.innerHTML = '';
-        console.log('Preenchendo tabela com produtos:', produtos);
-
-        if (!Array.isArray(produtos) || produtos.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Nenhum produto cadastrado.</td></tr>';
-          return;
-        }
-
-        produtos.forEach((produto) => {
-          const precoFormatado = produto.preco
-            ? `R$ ${parseFloat(produto.preco).toFixed(2).replace('.', ',')}`
-            : 'N/A';
-          const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0
-            ? produto.imagens.filter(img => typeof img === 'string' && img)
-            : [];
-          const miniaturas = imagens.length > 0
-            ? imagens.map((img, i) => `<img src="${escapeHTML(img)}" class="thumbnail" alt="Imagem ${i + 1}" loading="lazy" onerror="this.src='imagens/placeholder.jpg'" />`).join('')
-            : 'Sem imagens';
-
+        produtos.forEach((p) => {
           tbody.innerHTML += `
             <tr>
-              <td>${escapeHTML(produto.nome)}</td>
-              <td>${escapeHTML(produto.descricao)}</td>
-              <td>${escapeHTML(produto.categoria)}</td>
-              <td>${escapeHTML(produto.loja)}</td>
-              <td><a href="${escapeHTML(produto.link || '#')}" target="_blank" rel="noopener noreferrer">Link</a></td>
-              <td>${precoFormatado}</td>
-              <td>${miniaturas}</td>
-              <td>
-                <button class="editar" onclick="editarProduto('${produto._id}')" aria-label="Editar produto ${produto.nome || 'N/A'}">Editar</button>
-                <button class="excluir" onclick="excluirProduto('${produto._id}')" aria-label="Excluir produto ${produto.nome || 'N/A'}">Excluir</button>
-              </td>
+              <td>${p.nome || ''}</td>
+              <td>${p.descricao || ''}</td>
+              <td>${p.categoria || ''}</td>
+              <td>${p.loja || ''}</td>
+              <td><a href="${p.link}" target="_blank" rel="noopener noreferrer">Link</a></td>
+              <td>R$ ${parseFloat(p.preco || 0).toFixed(2).replace('.', ',')}</td>
+              <td><img src="${p.imagem || ''}" alt="${p.nome || 'Imagem'}" class="thumbnail" onerror="this.src='https://via.placeholder.com/50x50?text=Sem+Imagem'"/></td>
             </tr>
           `;
         });
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="7" style="color:red;text-align:center;">Erro ao carregar produtos.</td></tr>`;
       }
+    }
 
-      async function editarProduto(id) {
-        const erro = document.getElementById('erro');
-        const mensagem = document.getElementById('mensagem');
-        const form = document.getElementById('form-produto');
-        if (!form || !erro || !mensagem) {
-          console.error('Elementos DOM não encontrados:', { form, erro, mensagem });
-          erro.textContent = 'Erro: Elementos do formulário não encontrados.';
-          return;
-        }
-
-        try {
-          console.log('Buscando produto para edição, ID:', id);
-          const res = await fetch(`https://centrodecompra-backend.onrender.com/api/produtos/${id}`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' }
-          });
-          console.log('Status da resposta (editar):', res.status, res.statusText);
-          const data = await res.json();
-          console.log('Dados do produto para edição:', JSON.stringify(data, null, 2));
-
-          if (!res.ok) throw new Error(data.error || `Erro ${res.status}: Produto não encontrado`);
-
-          form.querySelector('[name="id"]').value = data._id || '';
-          form.querySelector('[name="nome"]').value = data.nome || '';
-          form.querySelector('[name="descricao"]').value = data.descricao || '';
-          form.querySelector('[name="categoria"]').value = data.categoria || '';
-          form.querySelector('[name="loja"]').value = data.loja || '';
-          form.querySelector('[name="link"]').value = data.link || '';
-          form.querySelector('[name="preco"]').value = data.preco || '';
-          document.getElementById('submit-button').textContent = 'Salvar Alterações';
-          document.getElementById('cancel-button').style.display = 'inline-block';
-          mensagem.textContent = 'Editando produto. Envie para salvar as alterações.';
-        } catch (err) {
-          console.error('Erro ao editar produto:', err.message);
-          erro.textContent = err.message;
-        }
-      }
-
-      function cancelarEdicao() {
-        const mensagem = document.getElementById('mensagem');
-        const erro = document.getElementById('erro');
-        const form = document.getElementById('form-produto');
-        if (form) form.reset();
-        document.getElementById('produto-id').value = '';
-        document.getElementById('submit-button').textContent = 'Adicionar';
-        document.getElementById('cancel-button').style.display = 'none';
-        if (mensagem) mensagem.textContent = '';
-        if (erro) erro.textContent = '';
-      }
-
-      async function excluirProduto(id) {
-        if (!confirm('Confirma a exclusão deste produto?')) return;
-        const mensagem = document.getElementById('mensagem');
-        const erro = document.getElementById('erro');
-        try {
-          console.log('Excluindo produto, ID:', id);
-          const res = await fetch(`https://centrodecompra-backend.onrender.com/api/produtos/${id}`, {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' }
-          });
-          console.log('Status da resposta (excluir):', res.status, res.statusText);
-          const data = await res.json();
-          console.log('Resposta da exclusão:', JSON.stringify(data, null, 2));
-
-          if (!res.ok) throw new Error(data.error || `Erro ${res.status}: Erro ao excluir produto`);
-
-          mensagem.textContent = 'Produto excluído com sucesso';
-          carregarProdutos();
-        } catch (err) {
-          console.error('Erro ao excluir produto:', err.message);
-          erro.textContent = err.message;
-        }
-      }
-
-      document.getElementById('form-produto').addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const form = event.target;
-        const formData = new FormData(form);
-        const produtoId = formData.get('id');
-        const link = formData.get('link');
-        const preco = parseFloat(formData.get('preco'));
-        const mensagem = document.getElementById('mensagem');
-        const erro = document.getElementById('erro');
-
-        if (!link.match(/^https?:\/\/.+/)) {
-          erro.textContent = 'Link inválido! Deve começar com http:// ou https://';
-          return;
-        }
-        if (isNaN(preco) || preco <= 0) {
-          erro.textContent = 'O preço deve ser maior que zero!';
-          return;
-        }
-
-        mensagem.textContent = '';
-        erro.textContent = '';
-
-        try {
-          console.log(`${produtoId ? 'Atualizando' : 'Adicionando'} produto, ID:`, produtoId || 'novo');
-          let res;
-          if (produtoId) {
-            console.log('Enviando PUT para:', `https://centrodecompra-backend.onrender.com/api/produtos/${produtoId}`);
-            res = await fetch(`https://centrodecompra-backend.onrender.com/api/produtos/${produtoId}`, {
-              method: 'PUT',
-              body: formData
-            });
-          } else {
-            console.log('Enviando POST para:', `https://centrodecompra-backend.onrender.com/api/produtos`);
-            res = await fetch(`https://centrodecompra-backend.onrender.com/api/produtos`, {
-              method: 'POST',
-              body: formData
-            });
-          }
-
-          const responseData = await res.json();
-          console.log(`Resposta do ${produtoId ? 'PUT' : 'POST'}:`, JSON.stringify(responseData, null, 2));
-
-          if (!res.ok) throw new Error(responseData.error || `Erro ${res.status}: Erro ao ${produtoId ? 'atualizar' : 'adicionar'} produto`);
-
-          mensagem.textContent = produtoId ? 'Produto atualizado com sucesso!' : 'Produto adicionado com sucesso!';
-          form.reset();
-          document.getElementById('produto-id').value = '';
-          document.getElementById('submit-button').textContent = 'Adicionar';
-          document.getElementById('cancel-button').style.display = 'none';
-          carregarProdutos();
-        } catch (error) {
-          console.error('Erro ao processar produto:', error.message);
-          erro.textContent = error.message;
-        }
-      });
-
-      function atualizarPaginacao() {
-        const prevButton = document.getElementById('prev-page');
-        const nextButton = document.getElementById('next-page');
-        const pageInfo = document.getElementById('page-info');
-        if (prevButton && nextButton && pageInfo) {
-          prevButton.disabled = currentPage === 1;
-          nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
-          pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina) || 1}`;
-        } else {
-          console.error('Elementos de paginação não encontrados:', { prevButton, nextButton, pageInfo });
-        }
-      }
-
-      document.getElementById('prev-page')?.addEventListener('click', () => {
-        if (currentPage > 1) {
-          currentPage--;
-          carregarProdutos();
-        }
-      });
-
-      document.getElementById('next-page')?.addEventListener('click', () => {
-        currentPage++;
-        carregarProdutos();
-      });
-
-      // Iniciar carregamento dos produtos
-      carregarProdutos();
-
-      // Recarregar produtos a cada 60 segundos para verificar persistência
-      setInterval(carregarProdutos, 60000);
-    });
+    carregarProdutos();
   </script>
 </body>
 </html>
