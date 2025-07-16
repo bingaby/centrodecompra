@@ -9,7 +9,195 @@
     form input, form textarea, form select { width: 100%; padding: 8px; margin-bottom: 8px; box-sizing: border-box; }
     table { border-collapse: collapse; margin-top: 20px; }
     th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+    im<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Centro de Compra</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    form, table { width: 100%; max-width: 800px; margin: auto; }
+    form input, form textarea, form select { width: 100%; padding: 8px; margin-bottom: 8px; box-sizing: border-box; }
+    table { border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
     img { max-width: 80px; }
+    button { margin: 2px; padding: 4px 8px; }
+    #preview-container { display: flex; flex-wrap: wrap; gap: 10px; }
+    #preview-container img { max-width: 100px; }
+    .feedback-message { text-align: center; margin-top: 10px; }
+    .success { color: green; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+  <h1>Admin Centro de Compra</h1>
+  <form id="form-produto">
+    <input type="hidden" id="idx" value="">
+    <input type="text" id="nome" placeholder="Nome" required>
+    <textarea id="descricao" placeholder="Descrição"></textarea>
+    <input type="text" id="categoria" placeholder="Categoria">
+    <input type="text" id="loja" placeholder="Loja">
+    <input type="url" id="link" placeholder="Link">
+    <input type="text" id="preco" placeholder="Preço">
+    <input type="file" id="imagem-input" accept="image/*" multiple>
+    <div id="preview-container"></div>
+    <button type="submit">Salvar Produto</button>
+  </form>
+  <div id="feedback-message" class="feedback-message"></div>
+
+  <table>
+    <thead><tr>
+      <th>Imagem</th><th>Nome</th><th>Loja</th><th>Preço</th><th>Ações</th>
+    </tr></thead>
+    <tbody id="produtos-tbody">
+      <tr><td colspan="5">Carregando...</td></tr>
+    </tbody>
+  </table>
+
+  <script>
+    const URL_API = 'https://script.google.com/macros/s/AKfycbwgxT3zmouHq1p3AmJrOamfXEtf9VxWxqwy3Yw8iCZSe9OKPcWB7-vl4Gqgr_9xmAOI/exec';
+    const SHEET_API = 'https://opensheet.vercel.app/1SMpUcrobcuWVGq4F_3N59rhs2_GpDo2531_2blpwEhs/Produtos';
+
+    // Verificação de acesso
+    const token = new URLSearchParams(window.location.search).get('tempToken');
+    if (token !== 'triple-click-access') {
+      alert('Acesso não autorizado. Você será redirecionado.');
+      window.location.href = 'index.html';
+    }
+
+    let produtos = [];
+
+    const form = document.getElementById('form-produto');
+    const imgInput = document.getElementById('imagem-input');
+    const previewContainer = document.getElementById('preview-container');
+    const tbody = document.getElementById('produtos-tbody');
+    const feedbackMessage = document.getElementById('feedback-message');
+
+    imgInput.addEventListener('change', e => {
+      previewContainer.innerHTML = '';
+      const files = e.target.files;
+      for (const file of files) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const img = document.createElement('img');
+          img.src = reader.result;
+          previewContainer.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      feedbackMessage.textContent = 'Salvando...';
+      feedbackMessage.className = 'feedback-message';
+      const valores = {
+        nome: document.getElementById('nome').value,
+        descricao: document.getElementById('descricao').value,
+        categoria: document.getElementById('categoria').value,
+        loja: document.getElementById('loja').value,
+        link: document.getElementById('link').value,
+        preco: document.getElementById('preco').value,
+        rowIndex: document.getElementById('idx').value || null
+      };
+
+      const files = imgInput.files;
+      if (files.length > 0) {
+        valores.imagensBase64 = await Promise.all(
+          Array.from(files).map(file => new Promise(resolve => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result.split(',')[1]);
+            reader.readAsDataURL(file);
+          }))
+        );
+      }
+
+      try {
+        const res = await fetch(URL_API, {
+          method: 'POST',
+          body: JSON.stringify(valores),
+          headers: { 'Content-Type': 'application/json' }
+        });
+        const json = await res.json();
+        if (json.success) {
+          feedbackMessage.textContent = 'Produto salvo com sucesso!';
+          feedbackMessage.className = 'feedback-message success';
+          setTimeout(() => location.reload(), 1000);
+        } else {
+          feedbackMessage.textContent = 'Erro: ' + json.error;
+          feedbackMessage.className = 'feedback-message error';
+        }
+      } catch (error) {
+        feedbackMessage.textContent = 'Erro ao salvar: ' + error.message;
+        feedbackMessage.className = 'feedback-message error';
+      }
+    });
+
+    async function carregar() {
+      try {
+        const res = await fetch(SHEET_API);
+        produtos = await res.json();
+        tbody.innerHTML = '';
+        produtos.forEach((p, i) => {
+          const urlImg = p.imagens?.split(',')[0] || 'https://via.placeholder.com/80';
+          tbody.innerHTML += `
+            <tr>
+              <td><img src="${urlImg}"></td>
+              <td>${p.nome}</td><td>${p.loja}</td><td>${p.preco}</td>
+              <td>
+                <button onclick="editar(${i})">Editar</button>
+                <button onclick="excluir(${i})">Excluir</button>
+              </td>
+            </tr>`;
+        });
+      } catch (error) {
+        feedbackMessage.textContent = 'Erro ao carregar produtos: ' + error.message;
+        feedbackMessage.className = 'feedback-message error';
+      }
+    }
+
+    function editar(i) {
+      const p = produtos[i];
+      document.getElementById('nome').value = p.nome;
+      document.getElementById('descricao').value = p.descricao;
+      document.getElementById('categoria').value = p.categoria;
+      document.getElementById('loja').value = p.loja;
+      document.getElementById('link').value = p.link;
+      document.getElementById('preco').value = p.preco;
+      document.getElementById('idx').value = i + 2; // Ajuste para índice da planilha
+      previewContainer.innerHTML = p.imagens ? p.imagens.split(',').map(url => `<img src="${url}">`).join('') : '';
+    }
+
+    async function excluir(i) {
+      if (!confirm('Excluir este produto?')) return;
+      feedbackMessage.textContent = 'Excluindo...';
+      feedbackMessage.className = 'feedback-message';
+      const payload = { action: 'delete', rowIndex: i + 2 };
+      try {
+        const res = await fetch(URL_API, {
+          method: 'POST',
+          body: JSON.stringify(payload),
+          headers: { 'Content-Type': 'application/json' }
+        });
+        const json = await res.json();
+        if (json.success) {
+          feedbackMessage.textContent = 'Produto excluído com sucesso!';
+          feedbackMessage.className = 'feedback-message success';
+          setTimeout(() => location.reload(), 1000);
+        } else {
+          feedbackMessage.textContent = 'Erro ao excluir: ' + json.error;
+          feedbackMessage.className = 'feedback-message error';
+        }
+      } catch (error) {
+        feedbackMessage.textContent = 'Erro ao excluir: ' + error.message;
+        feedbackMessage.className = 'feedback-message error';
+      }
+    }
+
+    carregar();
+  </script>
+</body>
+</html>0px; }
     button { margin: 2px; padding: 4px 8px; }
     #preview-container { display: flex; flex-wrap: wrap; gap: 10px; }
     #preview-container img { max-width: 100px; }
