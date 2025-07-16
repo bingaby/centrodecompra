@@ -18,144 +18,36 @@
   <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="logos/favicon-16x16.png">
   <script src="https://kit.fontawesome.com/YOUR_FONTAWESOME_KEY.js" crossorigin="anonymous"></script>
-  <!-- Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-XXXXXXXXXX');
-  </script>
-  <!-- Google AdSense -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXX" crossorigin="anonymous"></script>
+  <!-- Estilos mantidos conforme fornecido -->
   <style>
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.8);
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
-    }
-    .modal-content {
-      position: relative;
-      max-width: 90%;
-      max-height: 90%;
-      width: auto;
-      height: auto;
-    }
-    .modal-content .carrossel-imagens {
-      display: flex;
-      overflow: hidden;
-      width: 100%;
-      height: 100%;
-    }
-    .modal-content .carrossel-imagens img {
-      width: 100%;
-      height: auto;
-      object-fit: contain;
-      flex: 0 0 100%;
-      transition: transform 0.3s ease;
-    }
-    .modal-close {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: #FFA500;
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    .carrossel-prev, .carrossel-next {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background: rgba(0, 0, 0, 0.5);
-      color: white;
-      border: none;
-      padding: 10px;
-      cursor: pointer;
-      font-size: 18px;
-      border-radius: 4px;
-    }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); z-index: 1000; justify-content: center; align-items: center; }
+    .modal-content { position: relative; max-width: 90%; max-height: 90%; width: auto; height: auto; }
+    .modal-content .carrossel-imagens { display: flex; overflow: hidden; width: 100%; height: 100%; }
+    .modal-content .carrossel-imagens img { width: 100%; height: auto; object-fit: contain; flex: 0 0 100%; transition: transform 0.3s ease; }
+    .modal-close { position: absolute; top: 10px; right: 10px; background: #FFA500; color: white; border: none; padding: 8px 12px; border-radius: 50%; cursor: pointer; font-size: 16px; }
+    .carrossel-prev, .carrossel-next { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0, 0, 0, 0.5); color: white; border: none; padding: 10px; cursor: pointer; font-size: 18px; border-radius: 4px; }
     .carrossel-prev { left: 10px; }
     .carrossel-next { right: 10px; }
-    .carrossel-dots {
-      position: absolute;
-      bottom: 10px;
-      width: 100%;
-      text-align: center;
-    }
-    .carrossel-dot {
-      display: inline-block;
-      width: 10px;
-      height: 10px;
-      background: #ccc;
-      border-radius: 50%;
-      margin: 0 5px;
-      cursor: pointer;
-    }
+    .carrossel-dots { position: absolute; bottom: 10px; width: 100%; text-align: center; }
+    .carrossel-dot { display: inline-block; width: 10px; height: 10px; background: #ccc; border-radius: 50%; margin: 0 5px; cursor: pointer; }
     .carrossel-dot.ativo { background: #FFA500; }
-    .error-message {
-      color: red;
-      text-align: center;
-      margin-top: 10px;
-    }
-    #paginacao {
-      text-align: center;
-      margin: 20px 0;
-    }
-    #paginacao button {
-      margin: 0 10px;
-      padding: 8px 16px;
-      background-color: #ff6200;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    #paginacao button:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-    }
-    #paginacao span {
-      font-size: 16px;
-      margin: 0 10px;
-    }
-    .ad-container {
-      margin: 10px auto;
-      max-width: 300px;
-      text-align: center;
-    }
-    .lojas-parceiras {
-      margin-bottom: 10px;
-    }
-    #busca {
-      margin-bottom: 10px;
-    }
-    #grid-produtos {
-      margin-top: 10px;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 20px;
-    }
-    #ofertas-section {
-      padding: 10px 0;
-    }
+    .error-message { color: red; text-align: center; margin-top: 10px; }
+    #paginacao { text-align: center; margin: 20px 0; }
+    #paginacao button { margin: 0 10px; padding: 8px 16px; background-color: #ff6200; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    #paginacao button:disabled { background-color: #ccc; cursor: not-allowed; }
+    #paginacao span { font-size: 16px; margin: 0 10px; }
+    .lojas-parceiras { margin-bottom: 10px; }
+    #busca { margin-bottom: 10px; }
+    #grid-produtos { margin-top: 10px; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+    #ofertas-section { padding: 10px 0; }
   </style>
 </head>
 <body>
+  <!-- HTML mantido conforme fornecido -->
   <header class="site-header">
     <div class="logo-container">
       <a href="javascript:void(0)">
-        <img src="logos/logoscentrodecompras.jpeg" alt="CentrodeCompra" loading="lazy" id="site-logo-img" />
+        <img src="logos/logoscentrodecompras.jpeg" alt="CentrodeCompra" id="site-logo-img" />
       </a>
     </div>
     <div class="header-text">
@@ -232,21 +124,6 @@
         <input type="text" id="busca" placeholder="Busque por produtos..." class="barra-busca" aria-label="Buscar produtos" />
         <div id="busca-feedback" class="busca-feedback">Buscando...</div>
         <div class="loading-spinner" id="loading-spinner"></div>
-        <!-- AdSense Ad -->
-        <!-- Comentar temporariamente para testar o erro 400 -->
-        <!--
-        <div class="ad-container">
-          <ins class="adsbygoogle"
-               style="display:block"
-               data-ad-client="ca-pub-XXXXXXXXXX"
-               data-ad-slot="YOUR_AD_SLOT"
-               data-ad-format="auto"
-               data-full-width-responsive="true"></ins>
-          <script>
-            (adsbygoogle = window.adsbygoogle || []).push({});
-          </script>
-        </div>
-        -->
         <div class="grid-lojas" id="grid-produtos"></div>
         <p class="mensagem-vazia" id="mensagem-vazia">Nenhum produto encontrado.</p>
         <p class="error-message" id="error-message" style="display: none;"></p>
@@ -382,17 +259,19 @@
           headers: { 'Accept': 'application/json' }
         });
         console.log('Status da resposta:', response.status, response.statusText);
-        if (!response.ok) throw new Error(`Erro ${response.status}: Falha ao carregar produtos`);
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Erro ${response.status}: Falha ao carregar produtos - ${errorText}`);
+        }
         produtos = await response.json();
-        console.log('Dados recebidos:', produtos);
-
         if (!Array.isArray(produtos)) throw new Error('Resposta inválida: produtos não é um array');
         totalProdutos = produtos.length;
+        console.log('Dados recebidos:', produtos);
         filtrarProdutos();
         atualizarPaginacao();
       } catch (error) {
         console.error('Erro ao carregar produtos:', error);
-        errorMessage.textContent = `Erro: ${error.message}. Tente novamente mais tarde.`;
+        errorMessage.textContent = `Erro: Não foi possível carregar os produtos. Verifique se a planilha está pública e a aba "Produtos" está correta. Detalhes: ${error.message}`;
         errorMessage.style.display = 'block';
         mensagemVazia.style.display = 'none';
         gridProdutos.style.display = 'none';
