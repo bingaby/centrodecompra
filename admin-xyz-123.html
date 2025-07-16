@@ -1,254 +1,139 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Gerenciar Produtos - Centro de Compras</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8">
+  <title>Admin Centro de Compra</title>
   <style>
-    /* Seu CSS adaptado resumido para o exemplo */
-    body {
-      font-family: 'Roboto', Arial, sans-serif;
-      padding: 20px;
-      background-color: #f5f5f5;
-      margin: 0;
-    }
-    form {
-      max-width: 500px;
-      margin: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    input, select, textarea, button {
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 16px;
-    }
-    button {
-      background-color: #ff6200;
-      color: white;
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    button:hover {
-      background-color: #e55a00;
-    }
-    #mensagem {
-      margin-top: 10px;
-      color: green;
-      text-align: center;
-    }
-    #erro {
-      margin-top: 10px;
-      color: red;
-      text-align: center;
-    }
-    #produtos-lista {
-      max-width: 900px;
-      margin: 30px auto;
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    #produtos-lista table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    #produtos-lista th, #produtos-lista td {
-      padding: 12px;
-      border: 1px solid #ddd;
-      text-align: left;
-      vertical-align: middle;
-      word-break: break-word;
-    }
-    #produtos-lista th {
-      background-color: #f9f9f9;
-      font-weight: bold;
-    }
-    .thumbnail {
-      width: 50px;
-      height: 50px;
-      object-fit: contain;
-      border-radius: 4px;
-    }
+    body { font-family: sans-serif; margin: 20px; }
+    form, table { width: 100%; max-width: 800px; margin: auto; }
+    form input, form textarea, form select { width: 100%; padding: 8px; margin-bottom: 8px; box-sizing: border-box; }
+    table { border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+    img { max-width: 80px; }
+    button { margin: 2px; padding: 4px 8px; }
   </style>
 </head>
 <body>
-  <h1 style="text-align:center;">Gerenciar Produtos - Centro de Compras</h1>
-
+  <h1>Admin Centro de Compra</h1>
   <form id="form-produto">
-    <input type="text" name="nome" placeholder="Nome do produto" required />
-    <textarea name="descricao" placeholder="Descrição do produto" required></textarea>
-    <select name="categoria" required>
-      <option value="" disabled selected>Selecione uma categoria</option>
-      <option value="eletronicos">Eletrônicos</option>
-      <option value="moda">Moda</option>
-      <option value="fitness">Fitness</option>
-      <option value="casa">Casa e Decoração</option>
-      <option value="beleza">Beleza</option>
-      <option value="esportes">Esportes</option>
-      <option value="livros">Livros</option>
-      <option value="infantil">Infantil</option>
-      <option value="celulares">Celulares</option>
-      <option value="eletrodomesticos">Eletrodomésticos</option>
-      <option value="pet">Pet</option>
-      <option value="jardinagem">Jardinagem</option>
-      <option value="automotivo">Automotivo</option>
-      <option value="gastronomia">Gastronomia</option>
-      <option value="games">Games</option>
-    </select>
-    <select name="loja" required>
-      <option value="" disabled selected>Selecione uma loja</option>
-      <option value="amazon">Amazon</option>
-      <option value="magalu">Magalu</option>
-      <option value="shein">Shein</option>
-      <option value="shopee">Shopee</option>
-      <option value="mercadolivre">Mercado Livre</option>
-      <option value="alibaba">Alibaba</option>
-    </select>
-    <input type="url" name="link" placeholder="Link do produto (https://...)" required pattern="https?://.+" />
-    <input type="number" name="preco" placeholder="Preço do produto (ex.: 99.99)" step="0.01" min="0" required />
-    <input type="file" name="imagem" accept="image/*" required />
-    <button type="submit">Adicionar Produto</button>
+    <input type="hidden" id="idx" value="">
+    <input type="text" id="nome" placeholder="Nome" required>
+    <textarea id="descricao" placeholder="Descrição"></textarea>
+    <input type="text" id="categoria" placeholder="Categoria">
+    <input type="text" id="loja" placeholder="Loja">
+    <input type="url" id="link" placeholder="Link">
+    <input type="text" id="preco" placeholder="Preço">
+    <input type="file" id="imagem-input" accept="image/*">
+    <img id="preview" style="display:none" alt="Preview">
+    <button type="submit">Salvar Produto</button>
   </form>
 
-  <div id="mensagem"></div>
-  <div id="erro"></div>
-
-  <section id="produtos-lista">
-    <h2>Produtos Cadastrados</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Nome</th>
-          <th>Descrição</th>
-          <th>Categoria</th>
-          <th>Loja</th>
-          <th>Link</th>
-          <th>Preço</th>
-          <th>Imagem</th>
-        </tr>
-      </thead>
-      <tbody id="produtos-tbody">
-        <tr><td colspan="7" style="text-align:center;">Carregando produtos...</td></tr>
-      </tbody>
-    </table>
-  </section>
+  <table>
+    <thead><tr>
+      <th>Imagem</th><th>Nome</th><th>Loja</th><th>Preço</th><th>Ações</th>
+    </tr></thead>
+    <tbody id="produtos-tbody">
+      <tr><td colspan="5">Carregando...</td></tr>
+    </tbody>
+  </table>
 
   <script>
-    // CONFIGURE AQUI A URL DO SEU ENDPOINT GOOGLE APPS SCRIPT QUE RECEBE OS DADOS
-    const PLANILHA_URL = 'COLE_AQUI_SEU_ENDPOINT_APPS_SCRIPT';
+    const URL_API = 'https://script.google.com/macros/s/AKfycbzQotmkLSlQZZe92J_wKDoVbh1d9ehdmBgxXOV81Go/exec';
+    const SHEET_API = 'https://opensheet.vercel.app/1SMpUcrobcuWVGq4F_3N59rhs2_GpDo2531_2blpwEhs/Produtos';
 
-    // URL para pegar os dados via OpenSheet (leitura da planilha)
-    const PLANILHA_LEITURA_URL = 'https://opensheet.vercel.app/SEU_ID_PLANILHA/Produtos';
+    let produtos = [];
 
     const form = document.getElementById('form-produto');
-    const mensagem = document.getElementById('mensagem');
-    const erro = document.getElementById('erro');
+    const preview = document.getElementById('preview');
+    const imgInput = document.getElementById('imagem-input');
     const tbody = document.getElementById('produtos-tbody');
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      mensagem.textContent = '';
-      erro.textContent = '';
-
-      const data = new FormData(form);
-      const arquivoImagem = data.get('imagem');
-
-      if (!arquivoImagem || arquivoImagem.size === 0) {
-        erro.textContent = 'Selecione uma imagem válida!';
-        return;
+    imgInput.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        preview.src = reader.result;
+        preview.style.display = 'block';
       }
+      reader.readAsDataURL(file);
+    });
 
-      // Upload da imagem para Postimages
-      mensagem.textContent = 'Enviando imagem... aguarde...';
-      try {
-        const uploadData = new FormData();
-        uploadData.append('smfile', arquivoImagem);
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const valores = {
+        nome: document.getElementById('nome').value,
+        descricao: document.getElementById('descricao').value,
+        categoria: document.getElementById('categoria').value,
+        loja: document.getElementById('loja').value,
+        link: document.getElementById('link').value,
+        preco: document.getElementById('preco').value,
+      };
 
-        const res = await fetch('https://sm.ms/api/v2/upload', {
-          method: 'POST',
-          body: uploadData,
-        });
+      const idx = document.getElementById('idx').value;
+      let imagemBase64 = '';
 
-        const json = await res.json();
-        if (!json.success) {
-          throw new Error(json.message || 'Erro no upload da imagem');
-        }
-
-        const urlImagem = json.data.url;
-        mensagem.textContent = 'Imagem enviada com sucesso! Enviando produto...';
-
-        // Agora montar objeto para enviar para planilha
-        const produto = {
-          nome: data.get('nome'),
-          descricao: data.get('descricao'),
-          categoria: data.get('categoria'),
-          loja: data.get('loja'),
-          link: data.get('link'),
-          preco: data.get('preco'),
-          imagem: urlImagem,
+      if (imgInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = async () => {
+          imagemBase64 = reader.result.split(',')[1];
+          await enviar(imgInput.files[0].name, valores, imagemBase64, idx);
         };
-
-        // Enviar para a planilha Google (via Apps Script)
-        const resp = await fetch(PLANILHA_URL, {
-          method: 'POST',
-          body: JSON.stringify(produto),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (!resp.ok) {
-          const errText = await resp.text();
-          throw new Error('Erro ao enviar dados: ' + errText);
-        }
-
-        mensagem.textContent = 'Produto cadastrado com sucesso!';
-        form.reset();
-        carregarProdutos();
-      } catch (error) {
-        erro.textContent = error.message || 'Erro desconhecido';
+        reader.readAsDataURL(imgInput.files[0]);
+      } else {
+        await enviar(null, valores, null, idx);
       }
     });
 
-    async function carregarProdutos() {
-      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Carregando produtos...</td></tr>';
-      try {
-        const res = await fetch(PLANILHA_LEITURA_URL);
-        const produtos = await res.json();
-        if (!Array.isArray(produtos) || produtos.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Nenhum produto cadastrado.</td></tr>';
-          return;
-        }
-        tbody.innerHTML = '';
-        produtos.forEach((p) => {
-          tbody.innerHTML += `
-            <tr>
-              <td>${p.nome || ''}</td>
-              <td>${p.descricao || ''}</td>
-              <td>${p.categoria || ''}</td>
-              <td>${p.loja || ''}</td>
-              <td><a href="${p.link}" target="_blank" rel="noopener noreferrer">Link</a></td>
-              <td>R$ ${parseFloat(p.preco || 0).toFixed(2).replace('.', ',')}</td>
-              <td><img src="${p.imagem || ''}" alt="${p.nome || 'Imagem'}" class="thumbnail" onerror="this.src='https://via.placeholder.com/50x50?text=Sem+Imagem'"/></td>
-            </tr>
-          `;
-        });
-      } catch (e) {
-        tbody.innerHTML = `<tr><td colspan="7" style="color:red;text-align:center;">Erro ao carregar produtos.</td></tr>`;
-      }
+    async function enviar(nomeArquivo, dados, base64, idx) {
+      const payload = base64 
+        ? { ...dados, imagemBase64: base64 } 
+        : { ...dados };
+      const res = await fetch(URL_API, {
+        method: 'POST', body: JSON.stringify(payload),
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const json = await res.json();
+      if (json.success) {
+        location.reload();
+      } else alert('Erro: ' + json.error);
     }
 
-    carregarProdutos();
+    async function carregar() {
+      const res = await fetch(SHEET_API);
+      produtos = await res.json();
+      tbody.innerHTML = '';
+      produtos.forEach((p, i) => {
+        const urlImg = p.imagem || 'https://via.placeholder.com/80';
+        tbody.innerHTML += `
+          <tr>
+            <td><img src="${urlImg}"></td>
+            <td>${p.nome}</td><td>${p.loja}</td><td>${p.preco}</td>
+            <td>
+              <button onclick="editar(${i})">Editar</button>
+              <button onclick="excluir(${i})">Excluir</button>
+            </td>
+          </tr>`;
+      });
+    }
+
+    function editar(i) {
+      const p = produtos[i];
+      document.getElementById('nome').value = p.nome;
+      document.getElementById('descricao').value = p.descricao;
+      document.getElementById('categoria').value = p.categoria;
+      document.getElementById('loja').value = p.loja;
+      document.getElementById('link').value = p.link;
+      document.getElementById('preco').value = p.preco;
+      document.getElementById('idx').value = i;
+    }
+
+    function excluir(i) {
+      if (!confirm('Excluir este produto?')) return;
+      alert('Função para exclusão ainda não implementada, precisa backend PUT/DELETE.');
+    }
+
+    carregar();
   </script>
 </body>
 </html>
