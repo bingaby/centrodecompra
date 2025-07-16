@@ -287,7 +287,7 @@
       function escapeHTML(str) {
         if (!str) return 'N/A';
         return str.replace(/[&<>"']/g, (match) => ({
-          '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+          '&': '&', '<': '<', '>': '>', '"': '"', "'": '''
         }[match]));
       }
 
@@ -412,33 +412,41 @@
       async function editarProduto(id) {
         const erro = document.getElementById('erro');
         const mensagem = document.getElementById('mensagem');
+        const form = document.getElementById('form-produto');
+        if (!form || !erro || !mensagem) {
+          console.error('Elementos DOM não encontrados:', { form, erro, mensagem });
+          return;
+        }
+
         try {
-          console.log('Buscando produto para edição:', id);
+          console.log('Buscando produto para edição, ID:', id);
           const res = await fetch(`https://centrodecompra-backend.onrender.com/api/produtos/${id}`, {
+            method: 'GET',
             headers: {
               'Content-Type': 'application/json'
             }
           });
           console.log('Status da resposta (editar):', res.status, res.statusText);
           const data = await res.json();
-          console.log('Dados do produto para edição:', data);
+          console.log('Dados do produto para edição:', JSON.stringify(data, null, 2));
 
           if (!res.ok) {
-            throw new Error(data.error || 'Erro ao buscar produto para edição');
+            throw new Error(data.error || `Erro ${res.status}: Produto não encontrado`);
           }
 
-          document.getElementById('produto-id').value = data._id || '';
-          document.getElementById('form-produto').nome.value = data.nome || '';
-          document.getElementById('form-produto').descricao.value = data.descricao || '';
-          document.getElementById('form-produto').categoria.value = data.categoria || '';
-          document.getElementById('form-produto').loja.value = data.loja || '';
-          document.getElementById('form-produto').link.value = data.link || '';
-          document.getElementById('form-produto').preco.value = data.preco || '';
+          // Preencher o formulário
+          form.querySelector('[name="id"]').value = data._id || '';
+          form.querySelector('[name="nome"]').value = data.nome || '';
+          form.querySelector('[name="descricao"]').value = data.descricao || '';
+          form.querySelector('[name="categoria"]').value = data.categoria || '';
+          form.querySelector('[name="loja"]').value = data.loja || '';
+          form.querySelector('[name="link"]').value = data.link || '';
+          form.querySelector('[name="preco"]').value = data.preco || '';
           document.getElementById('submit-button').textContent = 'Salvar Alterações';
           document.getElementById('cancel-button').style.display = 'inline-block';
           if (mensagem) mensagem.textContent = 'Editando produto. Envie para salvar as alterações.';
         } catch (err) {
-          console.error('Erro ao editar produto:', err);
+          console.error('Erro ao editar produto:', err.message);
           if (erro) erro.textContent = err.message;
         }
       }
@@ -446,7 +454,8 @@
       function cancelarEdicao() {
         const mensagem = document.getElementById('mensagem');
         const erro = document.getElementById('erro');
-        document.getElementById('form-produto').reset();
+        const form = document.getElementById('form-produto');
+        if (form) form.reset();
         document.getElementById('produto-id').value = '';
         document.getElementById('submit-button').textContent = 'Adicionar';
         document.getElementById('cancel-button').style.display = 'none';
@@ -459,7 +468,7 @@
         const mensagem = document.getElementById('mensagem');
         const erro = document.getElementById('erro');
         try {
-          console.log('Excluindo produto:', id);
+          console.log('Excluindo produto, ID:', id);
           const res = await fetch(`https://centrodecompra-backend.onrender.com/api/produtos/${id}`, {
             method: 'DELETE',
             headers: {
@@ -468,16 +477,16 @@
           });
           console.log('Status da resposta (excluir):', res.status, res.statusText);
           const data = await res.json();
-          console.log('Resposta da exclusão:', data);
+          console.log('Resposta da exclusão:', JSON.stringify(data, null, 2));
 
           if (!res.ok) {
-            throw new Error(data.error || 'Erro ao excluir produto');
+            throw new Error(data.error || `Erro ${res.status}: Erro ao excluir produto`);
           }
 
           if (mensagem) mensagem.textContent = 'Produto excluído com sucesso';
           carregarProdutos();
         } catch (err) {
-          console.error('Erro ao excluir produto:', err);
+          console.error('Erro ao excluir produto:', err.message);
           if (erro) erro.textContent = err.message;
         }
       }
@@ -505,14 +514,16 @@
         if (erro) erro.textContent = '';
 
         try {
-          console.log(`${produtoId ? 'Atualizando' : 'Adicionando'} produto`);
+          console.log(`${produtoId ? 'Atualizando' : 'Adicionando'} produto, ID:`, produtoId || 'novo');
           let res;
           if (produtoId) {
+            console.log('Enviando PUT para:', `https://centrodecompra-backend.onrender.com/api/produtos/${produtoId}`);
             res = await fetch(`https://centrodecompra-backend.onrender.com/api/produtos/${produtoId}`, {
               method: 'PUT',
               body: formData
             });
           } else {
+            console.log('Enviando POST para:', `https://centrodecompra-backend.onrender.com/api/produtos`);
             res = await fetch(`https://centrodecompra-backend.onrender.com/api/produtos`, {
               method: 'POST',
               body: formData
@@ -520,10 +531,10 @@
           }
 
           const responseData = await res.json();
-          console.log(`Resposta do ${produtoId ? 'PUT' : 'POST'}:`, responseData);
+          console.log(`Resposta do ${produtoId ? 'PUT' : 'POST'}:`, JSON.stringify(responseData, null, 2));
 
           if (!res.ok) {
-            throw new Error(responseData.error || `Erro ao ${produtoId ? 'atualizar' : 'adicionar'} produto`);
+            throw new Error(responseData.error || `Erro ${res.status}: Erro ao ${produtoId ? 'atualizar' : 'adicionar'} produto`);
           }
 
           if (mensagem) mensagem.textContent = produtoId ? 'Produto atualizado com sucesso!' : 'Produto adicionado com sucesso!';
@@ -533,7 +544,7 @@
           document.getElementById('cancel-button').style.display = 'none';
           carregarProdutos();
         } catch (error) {
-          console.error('Erro ao processar produto:', error);
+          console.error('Erro ao processar produto:', error.message);
           if (erro) erro.textContent = error.message;
         }
       });
