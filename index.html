@@ -12,35 +12,21 @@
   <meta name="twitter:title" content="CentrodeCompra - Ofertas e Descontos" />
   <meta name="twitter:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliados seguros e atualizados!" />
   <meta name="twitter:image" content="logos/logoscentrodecompras.jpeg" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; navigate-to 'self' https://www.centrodecompra.com.br">
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    style-src 'self' https://fonts.googleapis.com 'unsafe-inline';
+    font-src https://fonts.gstatic.com;
+    script-src 'self' https://kit.fontawesome.com 'unsafe-inline';
+    img-src 'self' https://drive.google.com https://*.googleusercontent.com data:;
+    connect-src 'self' https://opensheet.vercel.app https://script.google.com;
+    navigate-to 'self' https://www.centrodecompra.com.br
+  ">
   <title>CentrodeCompra - Ofertas do Dia em Amazon, Shein, Shopee e Mais</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="logos/favicon-16x16.png">
   <script src="https://kit.fontawesome.com/YOUR_FONTAWESOME_KEY.js" crossorigin="anonymous"></script>
-  <style>
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); z-index: 1000; justify-content: center; align-items: center; }
-    .modal-content { position: relative; max-width: 90%; max-height: 90%; width: auto; height: auto; }
-    .modal-content .carrossel-imagens { display: flex; overflow: hidden; width: 100%; height: 100%; }
-    .modal-content .carrossel-imagens img { width: 100%; height: auto; object-fit: contain; flex: 0 0 100%; transition: transform 0.3s ease; }
-    .modal-close { position: absolute; top: 10px; right: 10px; background: #FFA500; color: white; border: none; padding: 8px 12px; border-radius: 50%; cursor: pointer; font-size: 16px; }
-    .carrossel-prev, .carrossel-next { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0, 0, 0, 0.5); color: white; border: none; padding: 10px; cursor: pointer; font-size: 18px; border-radius: 4px; }
-    .carrossel-prev { left: 10px; }
-    .carrossel-next { right: 10px; }
-    .carrossel-dots { position: absolute; bottom: 10px; width: 100%; text-align: center; }
-    .carrossel-dot { display: inline-block; width: 10px; height: 10px; background: #ccc; border-radius: 50%; margin: 0 5px; cursor: pointer; }
-    .carrossel-dot.ativo { background: #FFA500; }
-    .error-message { color: red; text-align: center; margin-top: 10px; }
-    #paginacao { text-align: center; margin: 20px 0; }
-    #paginacao button { margin: 0 10px; padding: 8px 16px; background-color: #ff6200; color: white; border: none; border-radius: 4px; cursor: pointer; }
-    #paginacao button:disabled { background-color: #ccc; cursor: not-allowed; }
-    #paginacao span { font-size: 16px; margin: 0 10px; }
-    .lojas-parceiras { margin-bottom: 10px; }
-    #busca { margin-bottom: 10px; }
-    #grid-produtos { margin-top: 10px; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
-    #ofertas-section { padding: 10px 0; }
-  </style>
 </head>
 <body>
   <header class="site-header">
