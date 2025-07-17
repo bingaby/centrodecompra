@@ -5,25 +5,25 @@ const PASTA_DRIVE_ID = '1Nkpfbi2idMvJEsLMZWInoWoVSbZGGTgA';
 function doGet(e) {
   return ContentService.createTextOutput(JSON.stringify({ message: "API do Centro de Compras ativa." }))
     .setMimeType(ContentService.MimeType.JSON)
-    setHeader("Access-Control-Allow-Origin", "*");
+    .setHeader('Access-Control-Allow-Origin', '*');
 }
 
 function doPost(e) {
   try {
-    // Permitir CORS para requisições POST
+    // Configurar CORS
     const headers = {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "POST",
-      "Access-Control-Allow-Headers": "Content-Type"
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type'
     };
-    
-    // Responder pré-vôo OPTIONS
-    if (e.method === "options") {
-      return ContentService.createTextOutput("")
+
+    // Responder a requisições OPTIONS (pré-vôo CORS)
+    if (e.parameter.method === 'OPTIONS') {
+      return ContentService.createTextOutput('')
         .setMimeType(ContentService.MimeType.JSON)
         .setHeaders(headers);
     }
-    
+
     const data = JSON.parse(e.postData.contents);
     const sheet = SpreadsheetApp.openById(PLANILHA_ID).getSheetByName(ABA_PRODUTOS);
     if (!sheet) throw new Error(`Aba "${ABA_PRODUTOS}" não encontrada.`);
@@ -33,18 +33,21 @@ function doPost(e) {
       const rowIndex = parseInt(data.rowIndex);
       if (rowIndex < 2) throw new Error('Índice de linha inválido.');
       sheet.deleteRow(rowIndex);
+      Logger.log(`Linha ${rowIndex} excluída com sucesso.`);
       return ContentService.createTextOutput(JSON.stringify({ success: true }))
         .setMimeType(ContentService.MimeType.JSON)
-        .setHeader("Access-Control-Allow-Origin", "*");
+        .setHeaders(headers);
     }
 
-    // Processar múltiplas imagens, se fornecidas
+    // Processar imagens
     let imagens = [];
     if (data.imagensBase64 && Array.isArray(data.imagensBase64)) {
-      imagens = data.imagensBase64.map((base64, index) =>
-        salvarImagemBase64(base64, `${data.nome || 'produto'}_${index + 1}.jpg`)
-      );
+      imagens = data.imagensBase64.map((base64, index) => {
+        Logger.log(`Salvando imagem ${index + 1} para produto: ${data.nome}`);
+        return salvarImagemBase64(base64, `${data.nome || 'produto'}_${index + 1}.jpg`);
+      });
     } else if (data.imagemBase64) {
+      Logger.log(`Salvando imagem única para produto: ${data.nome}`);
       imagens = [salvarImagemBase64(data.imagemBase64, `${data.nome || 'produto'}.jpg`)];
     }
 
@@ -74,6 +77,7 @@ function doPost(e) {
         produto.imagens,
         produto.data
       ]]);
+      Logger.log(`Produto atualizado na linha ${rowIndex}: ${produto.nome}`);
     } else {
       sheet.appendRow([
         produto.nome,
@@ -85,24 +89,40 @@ function doPost(e) {
         produto.imagens,
         produto.data
       ]);
+      Logger.log(`Produto adicionado: ${produto.nome}`);
     }
 
     return ContentService.createTextOutput(JSON.stringify({ success: true, imagemUrls: imagens }))
       .setMimeType(ContentService.MimeType.JSON)
-      .setHeader("Access-Control-Allow-Origin", "*");
+      .setHeaders(headers);
   } catch (erro) {
+    Logger.log(`Erro: ${erro.message}`);
     return ContentService.createTextOutput(JSON.stringify({ success: false, error: erro.message }))
       .setMimeType(ContentService.MimeType.JSON)
-      .setHeader("Access-Control-Allow-Origin", "*");
+      .setHeaders({
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
+      });
   }
 }
 
 function salvarImagemBase64(base64String, nomeArquivo) {
-  const pasta = DriveApp.getFolderById(PASTA_DRIVE_ID);
-  const base64Clean = base64String.replace(/^data:image\/[a-z]+;base64,/, '');
-  const bytes = Utilities.base64Decode(base64Clean);
-  const blob = Utilities.newBlob(bytes, 'image/jpeg', nomeArquivo);
-  const arquivo = pasta.createFile(blob);
-  arquivo.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-  return arquivo.getUrl();
+  try {
+    Logger.log(`Iniciando salvamento de imagem: ${nomeArquivo}`);
+    const pasta = DriveApp.getFolderById(PASTA_DRIVE_ID);
+    Logger.log(`Pasta encontrada: ${pasta.getName()}`);
+    const base64Clean = base64String.replace(/^data:image\/[a-z]+;base64,/, '');
+    const bytes = Utilities.base64Decode(base64Clean);
+    const blob = Utilities.newBlob(bytes, 'image/jpeg', nomeArquivo);
+    const arquivo = pasta.createFile(blob);
+    arquivo.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    const fileId = arquivo.getId();
+    const url = `https://drive.google.com/uc?export=view&id=${fileId}`;
+    Logger.log(`Imagem salva com sucesso: ${url}`);
+    return url;
+  } catch (erro) {
+    Logger.log(`Erro ao salvar imagem ${nomeArquivo}: ${erro.message}`);
+    throw erro;
+  }
 }
