@@ -3,15 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Ofertas com descontos reais nas principais lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliado seguros e atualizados." />
-  <meta property="og:title" content="CentrodeCompra - Ofertas e Descontos" />
-  <meta property="og:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliados seguros e atualizados!" />
-  <meta property="og:image" content="logos/logoscentrodecompras.jpeg" />
-  <meta property="og:url" content="https://www.centrodecompra.com.br/" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="CentrodeCompra - Ofertas e Descontos" />
-  <meta name="twitter:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliados seguros e atualizados!" />
-  <meta name="twitter:image" content="logos/logoscentrodecompras.jpeg" />
+  <meta name="description" content="Ofertas com descontos reais nas principais lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba." />
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
     style-src 'self' https://fonts.googleapis.com 'unsafe-inline';
@@ -20,20 +12,19 @@
     img-src 'self' https://drive.google.com https://*.googleusercontent.com data:;
     connect-src 'self' https://opensheet.vercel.app https://script.google.com
   ">
-  <title>CentrodeCompra - Ofertas do Dia em Amazon, Shein, Shopee e Mais</title>
+  <title>CentrodeCompra - Ofertas do Dia</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="logos/favicon-16x16.png">
 </head>
 <body>
   <header class="site-header">
     <div class="logo-container">
-      <img src="logos/logoscentrodecompras.jpeg" alt="CentrodeCompra" id="site-logo-img" />
+      <img src="logos/logoscentrodecompras.jpeg" alt="CentrodeCompra" />
     </div>
     <div class="header-text">
       <h1>CentrodeCompra</h1>
-      <p>O maior portal de ofertas do Brasil! Descubra as melhores oportunidades nos maiores sites de venda, com links diretos para sua compra.</p>
+      <p>Encontre as melhores ofertas do Brasil!</p>
     </div>
   </header>
 
@@ -51,126 +42,43 @@
         <li class="categoria-item ativa" data-categoria="todas" onclick="filtrarPorCategoria('todas')">Todas</li>
         <li class="categoria-item" data-categoria="eletronicos" onclick="filtrarPorCategoria('eletronicos')">Eletrônicos</li>
         <li class="categoria-item" data-categoria="moda" onclick="filtrarPorCategoria('moda')">Moda</li>
-        <li class="categoria-item" data-categoria="fitness" onclick="filtrarPorCategoria('fitness')">Fitness</li>
         <li class="categoria-item" data-categoria="casa" onclick="filtrarPorCategoria('casa')">Casa</li>
-        <li class="categoria-item" data-categoria="beleza" onclick="filtrarPorCategoria('beleza')">Beleza</li>
-        <li class="categoria-item" data-categoria="esportes" onclick="filtrarPorCategoria('esportes')">Esportes</li>
-        <li class="categoria-item" data-categoria="livros" onclick="filtrarPorCategoria('livros')">Livros</li>
-        <li class="categoria-item" data-categoria="infantil" onclick="filtrarPorCategoria('infantil')">Infantil</li>
-        <li class="categoria-item" data-categoria="celulares" onclick="filtrarPorCategoria('celulares')">Celulares</li>
-        <li class="categoria-item" data-categoria="eletrodomesticos" onclick="filtrarPorCategoria('eletrodomesticos')">Eletrodomésticos</li>
-        <li class="categoria-item" data-categoria="pet" onclick="filtrarPorCategoria('pet')">Pet</li>
-        <li class="categoria-item" data-categoria="jardinagem" onclick="filtrarPorCategoria('jardinagem')">Jardinagem</li>
-        <li class="categoria-item" data-categoria="automotivo" onclick="filtrarPorCategoria('automotivo')">Automotivo</li>
-        <li class="categoria-item" data-categoria="gastronomia" onclick="filtrarPorCategoria('gastronomia')">Gastronomia</li>
-        <li class="categoria-item" data-categoria="games" onclick="filtrarPorCategoria('games')">Games</li>
       </ul>
     </aside>
 
     <main>
       <section id="ofertas-section">
-        <h2 id="ofertas-titulo">🛍️ Ofertas do Dia</h2>
+        <h2>🛍️ Ofertas do Dia</h2>
         <div class="lojas-parceiras">
           <h3>🌟 Lojas Parceiras</h3>
           <div class="grid-lojas">
-            <div class="loja-todas ativa" onclick="filtrarPorLoja('todas')" role="button" aria-label="Filtrar por Todas as Lojas">
-              <span>Todas as Lojas</span>
-            </div>
-            <div class="loja" data-loja="amazon" onclick="filtrarPorLoja('amazon')" role="button" aria-label="Filtrar por Amazon">
-              <img src="logos/amazon.png" alt="Logo da Amazon" loading="lazy" />
+            <div class="loja-todas ativa" onclick="filtrarPorLoja('todas')" role="button">Todas</div>
+            <div class="loja" data-loja="amazon" onclick="filtrarPorLoja('amazon')" role="button">
+              <img src="logos/amazon.png" alt="Amazon" loading="lazy" />
               <span class="amazon">Amazon</span>
             </div>
-            <div class="loja" data-loja="magalu" onclick="filtrarPorLoja('magalu')" role="button" aria-label="Filtrar por Magalu">
-              <img src="logos/magalu.png" alt="Logo da Magalu" loading="lazy" />
-              <span class="magalu">Magalu</span>
-            </div>
-            <div class="loja" data-loja="shein" onclick="filtrarPorLoja('shein')" role="button" aria-label="Filtrar por Shein">
-              <img src="logos/shein.png" alt="Logo da Shein" loading="lazy" />
-              <span class="shein">Shein</span>
-            </div>
-            <div class="loja" data-loja="shopee" onclick="filtrarPorLoja('shopee')" role="button" aria-label="Filtrar por Shopee">
-              <img src="logos/shopee.png" alt="Logo da Shopee" loading="lazy" />
+            <div class="loja" data-loja="shopee" onclick="filtrarPorLoja('shopee')" role="button">
+              <img src="logos/shopee.png" alt="Shopee" loading="lazy" />
               <span class="shopee">Shopee</span>
-            </div>
-            <div class="loja" data-loja="mercadolivre" onclick="filtrarPorLoja('mercadolivre')" role="button" aria-label="Filtrar por Mercado Livre">
-              <img src="logos/mercadolivre.jpg" alt="Logo do Mercado Livre" loading="lazy" />
-              <span class="mercadolivre">Mercado Livre</span>
-            </div>
-            <div class="loja" data-loja="alibaba" onclick="filtrarPorLoja('alibaba')" role="button" aria-label="Filtrar por Alibaba">
-              <img src="logos/alibaba.png" alt="Logo da Alibaba" loading="lazy" />
-              <span class="alibaba">Alibaba</span>
             </div>
           </div>
         </div>
-        <input type="text" id="busca" placeholder="Busque por produtos..." class="barra-busca" aria-label="Buscar produtos" />
+        <input type="text" id="busca" placeholder="Busque por produtos..." class="barra-busca" />
         <div id="busca-feedback" class="busca-feedback">Buscando...</div>
         <div class="loading-spinner" id="loading-spinner">Carregando...</div>
         <div class="grid-lojas" id="grid-produtos"></div>
         <p class="mensagem-vazia" id="mensagem-vazia">Nenhum produto encontrado.</p>
-        <p class="error-message" id="error-message" style="display: none;"></p>
-        <div id="paginacao">
-          <button id="prev-page" disabled aria-label="Página anterior">Anterior</button>
-          <span id="page-info">Página 1</span>
-          <button id="next-page" aria-label="Próxima página">Próximo</button>
-        </div>
       </section>
-
-      <a class="whatsapp" href="https://wa.me/5521975179737" target="_blank">📲 Atendimento via WhatsApp</a>
-      <a class="telegram" href="https://t.me/boost/centraldecomprascdc" target="_blank">📢 Canal no Telegram</a>
-
-      <div class="social-links">
-        <a href="https://www.tiktok.com/@cdc.centraldecompas?_t=ZM-8vYQlF9u1dH&_r=1" target="_blank">
-          <div class="icon">
-            <img src="logos/tiktok.png" alt="Ícone do TikTok" loading="lazy" />
-          </div>
-          <span>TikTok</span>
-        </a>
-        <a href="https://www.instagram.com/cdccentrodecompras/?utm_source=qr&r=nametag" target="_blank">
-          <div class="icon">
-            <img src="logos/Instagram.png" alt="Ícone do Instagram" loading="lazy" />
-          </div>
-          <span>Instagram</span>
-        </a>
-        <a href="https://x.com/ComprasCdc" target="_blank">
-          <div class="icon">
-            <img src="logos/X.png" alt="Ícone do X" loading="lazy" />
-          </div>
-          <span>X</span>
-        </a>
-        <a href="https://www.youtube.com/channel/UCaKHlI-hWqwdAXS6Xsv3ZzA" target="_blank">
-          <div class="icon">
-            <img src="logos/youtube.png" alt="Ícone do YouTube" loading="lazy" />
-          </div>
-          <span>YouTube</span>
-        </a>
-      </div>
     </main>
-  </div>
-
-  <div class="modal" id="imageModal">
-    <button class="modal-close" onclick="closeModal()">✕</button>
-    <div class="modal-content" id="modalCarrossel">
-      <div class="carrossel-imagens" id="modalCarrosselImagens"></div>
-      <button class="carrossel-prev" onclick="moveModalCarrossel(-1)">◄</button>
-      <button class="carrossel-next" onclick="moveModalCarrossel(1)">►</button>
-      <div class="carrossel-dots" id="modalCarrosselDots"></div>
-    </div>
   </div>
 
   <footer>
     <p>🔧 Todos os direitos reservados <strong>Grupo CentrodeCompra "CdC"</strong> © <span id="year"></span></p>
-    <div id="admin-login" style="display: none;">
+    <div id="admin-login">
       <input type="password" id="admin-password" placeholder="Senha de admin" aria-label="Senha de administrador">
       <button onclick="verificarSenha()">Acessar Administração</button>
     </div>
   </footer>
-
-  <div class="robo-assistente">
-    <a href="https://wa.me/5521975179737" target="_blank">
-      <img src="imagens/robo.jpg" alt="Robô Assistente" class="robo-imagem" />
-      <div class="robo-texto">Posso ajudar?</div>
-    </a>
-  </div>
 
   <script>
     const PLANILHA_URL = 'https://opensheet.vercel.app/1SMpUcrobcuWVGq4F_3N59rhs2_GpDo2531_2blpwEhs/Produtos';
@@ -178,44 +86,20 @@
     let categoriaSelecionada = 'todas';
     let lojaSelecionada = 'todas';
     let termoBusca = '';
-    let currentImages = [];
-    let currentImageIndex = 0;
-    let currentPage = 1;
-    const produtosPorPagina = 28;
-    let totalProdutos = 0;
 
     function normalizarString(str) {
       return str?.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') || '';
     }
 
-    function shuffleArray(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-      return array;
-    }
-
     function atualizarAnoFooter() {
-      const yearElement = document.getElementById('year');
-      if (yearElement) {
-        yearElement.textContent = new Date().getFullYear();
-        console.log('Ano do footer atualizado:', yearElement.textContent);
-      } else {
-        console.error('Elemento #year não encontrado');
-      }
+      document.getElementById('year').textContent = new Date().getFullYear();
     }
 
     function verificarSenha() {
       const senhaCorreta = 'admin123'; // Substitua por uma senha forte
       const input = document.getElementById('admin-password');
-      if (!input) {
-        console.error('Campo de senha não encontrado');
-        alert('Erro: Campo de senha não encontrado.');
-        return;
-      }
       if (input.value === senhaCorreta) {
-        window.location.href = `./admin-xyz-123.html?tempToken=admin-access&t=${Date.now()}`;
+        window.location.href = './admin-xyz-123.html?token=admin-access';
       } else {
         alert('Senha incorreta!');
       }
@@ -224,44 +108,14 @@
     async function carregarProdutos() {
       const loadingSpinner = document.getElementById('loading-spinner');
       const mensagemVazia = document.getElementById('mensagem-vazia');
-      const errorMessage = document.getElementById('error-message');
-      const gridProdutos = document.getElementById('grid-produtos');
-
-      if (!gridProdutos || !mensagemVazia || !errorMessage || !loadingSpinner) {
-        console.error('Elementos essenciais não encontrados:', { gridProdutos, mensagemVazia, errorMessage, loadingSpinner });
-        errorMessage.textContent = 'Erro: Elementos da página não encontrados. Contate o suporte.';
-        errorMessage.style.display = 'block';
-        return;
-      }
-
       loadingSpinner.style.display = 'block';
-      mensagemVazia.style.display = 'none';
-      errorMessage.style.display = 'none';
-      gridProdutos.innerHTML = '';
-
       try {
-        console.log('Carregando produtos de:', PLANILHA_URL);
-        const response = await fetch(PLANILHA_URL, {
-          cache: 'no-store',
-          headers: { 'Accept': 'application/json' }
-        });
-        console.log('Status da resposta:', response.status, response.statusText);
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`Erro ${response.status}: Falha ao carregar produtos - ${errorText}`);
-        }
+        const response = await fetch(PLANILHA_URL);
         produtos = await response.json();
-        if (!Array.isArray(produtos)) throw new Error('Resposta inválida: produtos não é um array');
-        totalProdutos = produtos.length;
-        console.log('Dados recebidos:', produtos);
         filtrarProdutos();
-        atualizarPaginacao();
       } catch (error) {
-        console.error('Erro ao carregar produtos:', error);
-        errorMessage.textContent = `Erro: Não foi possível carregar os produtos. Verifique se a planilha está pública e a aba "Produtos" está correta. Detalhes: ${error.message}`;
-        errorMessage.style.display = 'block';
-        mensagemVazia.style.display = 'none';
-        gridProdutos.style.display = 'none';
+        mensagemVazia.textContent = 'Erro ao carregar produtos.';
+        mensagemVazia.style.display = 'block';
       } finally {
         loadingSpinner.style.display = 'none';
       }
@@ -270,12 +124,6 @@
     function filtrarProdutos() {
       const gridProdutos = document.getElementById('grid-produtos');
       const mensagemVazia = document.getElementById('mensagem-vazia');
-
-      if (!gridProdutos || !mensagemVazia) {
-        console.error('Elementos #grid-produtos ou #mensagem-vazia não encontrados');
-        return;
-      }
-
       const produtosFiltrados = produtos.filter((produto) => {
         const matchCategoria = categoriaSelecionada === 'todas' ||
           normalizarString(produto.categoria) === normalizarString(categoriaSelecionada);
@@ -286,230 +134,55 @@
         return matchCategoria && matchLoja && matchBusca;
       });
 
-      const start = (currentPage - 1) * produtosPorPagina;
-      const end = start + produtosPorPagina;
-      const produtosPaginados = shuffleArray(produtosFiltrados.slice(start, end));
-
-      console.log('Produtos filtrados:', produtosPaginados);
       gridProdutos.innerHTML = '';
-      if (produtosPaginados.length === 0) {
+      if (produtosFiltrados.length === 0) {
         mensagemVazia.style.display = 'block';
-        gridProdutos.style.display = 'none';
         return;
       }
 
       mensagemVazia.style.display = 'none';
-      gridProdutos.style.display = 'grid';
-
-      produtosPaginados.forEach((produto, produtoIndex) => {
-        const imagens = produto.imagens && typeof produto.imagens === 'string' && produto.imagens.trim()
-          ? produto.imagens.split(',').filter(img => img.trim())
-          : ['imagens/placeholder.jpg'];
-        const carrosselId = `carrossel-${produtoIndex}-${Date.now()}`;
-
+      produtosFiltrados.forEach((produto, index) => {
+        const imagens = produto.imagens?.split(',').filter(img => img.trim()) || ['imagens/placeholder.jpg'];
         const produtoDiv = document.createElement('div');
         produtoDiv.classList.add('produto-card', 'visible');
-        produtoDiv.setAttribute('data-categoria', normalizarString(produto.categoria) || 'todas');
-        produtoDiv.setAttribute('data-loja', normalizarString(produto.loja) || 'todas');
-
         produtoDiv.innerHTML = `
-          <div class="carrossel" id="${carrosselId}">
-            <div class="carrossel-imagens">
-              ${imagens.map((img, i) => `
-                <img src="${img}" alt="${produto.nome || 'Produto'} ${i + 1}" loading="lazy" width="200" height="100" onerror="this.src='imagens/placeholder.jpg'" onclick="openModal(${produtoIndex}, ${i})">
-              `).join('')}
-            </div>
-            ${imagens.length > 1 ? `
-              <button class="carrossel-prev" onclick="moveCarrossel('${carrosselId}', -1)">◄</button>
-              <button class="carrossel-next" onclick="moveCarrossel('${carrosselId}', 1)">▶</button>
-              <div class="carrossel-dots">
-                ${imagens.map((_, i) => `
-                  <span class="carrossel-dot ${i === 0 ? 'ativo' : ''}" onclick="setCarrosselImage('${carrosselId}', ${i})"></span>
-                `).join('')}
-              </div>
-            ` : ''}
-          </div>
+          <img src="${imagens[0]}" alt="${produto.nome || 'Produto'}" loading="lazy" />
           <span>${produto.nome || 'Produto sem nome'}</span>
           <span class="descricao">Loja: ${produto.loja || 'Desconhecida'}</span>
-          <p class="preco">${produto.preco ? `R$ ${produto.preco}` : `<a href="${produto.link || '#'}" target="_blank" class="ver-preco">Clique aqui para ver o preço</a>`}</p>
-          <a href="${produto.link || '#'}" target="_blank" class="ver-na-loja ${produto.loja ? normalizarString(produto.loja) : 'default'}">Comprar</a>
+          <p class="preco">${produto.preco ? `R$ ${produto.preco}` : 'Ver preço'}</p>
+          <a href="${produto.link || '#'}" target="_blank" class="ver-na-loja ${produto.loja ? normalizarString(produto.loja) : ''}">Comprar</a>
         `;
         gridProdutos.appendChild(produtoDiv);
       });
     }
 
-    function moveCarrossel(carrosselId, direction) {
-      const carrossel = document.getElementById(carrosselId);
-      if (!carrossel) {
-        console.error(`Carrossel ${carrosselId} não encontrado`);
-        return;
-      }
-      const imagens = carrossel.querySelector('.carrossel-imagens');
-      const dots = carrossel.querySelectorAll('.carrossel-dot');
-      let currentIndex = parseInt(imagens.dataset.index || 0);
-      const totalImagens = imagens.children.length;
-      currentIndex = (currentIndex + direction + totalImagens) % totalImagens;
-      imagens.style.transform = `translateX(-${currentIndex * 100}%)`;
-      imagens.dataset.index = currentIndex;
-      dots.forEach((dot, i) => dot.classList.toggle('ativo', i === currentIndex));
-    }
-
-    function setCarrosselImage(carrosselId, index) {
-      const carrossel = document.getElementById(carrosselId);
-      if (!carrossel) {
-        console.error(`Carrossel ${carrosselId} não encontrado`);
-        return;
-      }
-      const imagens = carrossel.querySelector('.carrossel-imagens');
-      const dots = carrossel.querySelectorAll('.carrossel-dot');
-      imagens.style.transform = `translateX(-${index * 100}%)`;
-      imagens.dataset.index = index;
-      dots.forEach((dot, i) => dot.classList.toggle('ativo', i === index));
-    }
-
-    async function openModal(produtoIndex, imageIndex) {
-      const modal = document.getElementById('imageModal');
-      const carrosselImagens = document.getElementById('modalCarrosselImagens');
-      const carrosselDots = document.getElementById('modalCarrosselDots');
-
-      if (!modal || !carrosselImagens || !carrosselDots) {
-        console.error('Elementos do modal não encontrados:', { modal, carrosselImagens, carrosselDots });
-        return;
-      }
-
-      try {
-        currentImages = produtos[produtoIndex]?.imagens && typeof produtos[produtoIndex].imagens === 'string'
-          ? produtos[produtoIndex].imagens.split(',').filter(img => img.trim())
-          : ['imagens/placeholder.jpg'];
-        currentImageIndex = imageIndex;
-
-        carrosselImagens.innerHTML = currentImages.map(img => `
-          <img src="${img}" alt="Imagem ampliada" onerror="this.src='imagens/placeholder.jpg'">
-        `).join('');
-        carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
-
-        carrosselDots.innerHTML = currentImages.map((_, i) => `
-          <span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})"></span>
-        `).join('');
-
-        modal.style.display = 'flex';
-      } catch (error) {
-        console.error('Erro ao abrir modal:', error);
-      }
-    }
-
-    function moveModalCarrossel(direction) {
-      const carrosselImagens = document.getElementById('modalCarrosselImagens');
-      const carrosselDots = document.getElementById('modalCarrosselDots').children;
-      const totalImagens = currentImages.length;
-      currentImageIndex = (currentImageIndex + direction + totalImagens) % totalImagens;
-      carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
-      Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
-    }
-
-    function setModalCarrosselImage(index) {
-      const carrosselImagens = document.getElementById('modalCarrosselImagens');
-      const carrosselDots = document.getElementById('modalCarrosselDots').children;
-      currentImageIndex = index;
-      carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
-      Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle('ativo', i === currentImageIndex));
-    }
-
-    function closeModal() {
-      const modal = document.getElementById('imageModal');
-      modal.style.display = 'none';
-      currentImages = [];
-      currentImageIndex = 0;
-    }
-
-    function configurarBusca() {
-      const buscaInput = document.getElementById('busca');
-      const buscaFeedback = document.getElementById('busca-feedback');
-      if (buscaInput && buscaFeedback) {
-        buscaInput.addEventListener('input', (e) => {
-          termoBusca = e.target.value;
-          buscaFeedback.style.display = termoBusca ? 'block' : 'none';
-          currentPage = 1;
-          filtrarProdutos();
-        });
-      } else {
-        console.error('Elementos de busca não encontrados:', { buscaInput, buscaFeedback });
-      }
-    }
-
     function filtrarPorCategoria(categoria) {
       categoriaSelecionada = categoria;
-      currentPage = 1;
       document.querySelectorAll('.categoria-item').forEach(item => item.classList.remove('ativa'));
-      document.querySelector(`.categoria-item[data-categoria="${categoria}"]`)?.classList.add('ativa');
-      console.log('Categoria selecionada:', categoria);
+      document.querySelector(`.categoria-item[data-categoria="${categoria}"]`).classList.add('ativa');
       filtrarProdutos();
     }
 
     function filtrarPorLoja(loja) {
       lojaSelecionada = loja;
-      currentPage = 1;
       document.querySelectorAll('.loja, .loja-todas').forEach(item => item.classList.remove('ativa'));
-      document.querySelector(`[data-loja="${loja}"]`)?.classList.add('ativa');
-      console.log('Loja selecionada:', loja);
+      document.querySelector(`[data-loja="${loja}"]`)?.classList.add('ativa') || document.querySelector('.loja-todas').classList.add('ativa');
       filtrarProdutos();
     }
 
-    function configurarPaginacao() {
-      const prevButton = document.getElementById('prev-page');
-      const nextButton = document.getElementById('next-page');
-      if (prevButton) {
-        prevButton.addEventListener('click', () => {
-          if (currentPage > 1) {
-            currentPage--;
-            filtrarProdutos();
-          }
-        });
-      } else {
-        console.error('Botão #prev-page não encontrado');
-      }
-      if (nextButton) {
-        nextButton.addEventListener('click', () => {
-          currentPage++;
-          filtrarProdutos();
-        });
-      } else {
-        console.error('Botão #next-page não encontrado');
-      }
-    }
-
-    function atualizarPaginacao() {
-      const prevButton = document.getElementById('prev-page');
-      const nextButton = document.getElementById('next-page');
-      const pageInfo = document.getElementById('page-info');
-      if (prevButton && nextButton && pageInfo) {
-        prevButton.disabled = currentPage === 1;
-        nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
-        pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina) || 1}`;
-      } else {
-        console.error('Elementos de paginação não encontrados:', { prevButton, nextButton, pageInfo });
-      }
+    function configurarBusca() {
+      const buscaInput = document.getElementById('busca');
+      buscaInput.addEventListener('input', (e) => {
+        termoBusca = e.target.value;
+        document.getElementById('busca-feedback').style.display = termoBusca ? 'block' : 'none';
+        filtrarProdutos();
+      });
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      console.log('Script carregado em:', new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }));
-      console.log('Hostname atual:', window.location.hostname); // Depuração
-      const adminLogin = document.getElementById('admin-login');
-      if (!adminLogin) {
-        console.error('Elemento #admin-login não encontrado');
-      } else if (window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1')) {
-        console.log('Exibindo formulário de admin em localhost');
-        adminLogin.style.display = 'block';
-      } else {
-        console.log('Formulário de admin oculto (não está em localhost)');
-      }
       carregarProdutos();
       configurarBusca();
-      configurarPaginacao();
       atualizarAnoFooter();
-      document.getElementById('imageModal')?.addEventListener('click', (e) => {
-        if (e.target === e.currentTarget) closeModal();
-      });
     });
   </script>
 </body>
