@@ -118,12 +118,14 @@
       };
 
       try {
+        console.log('Enviando dados para Web App:', data);
         const response = await fetch('https://script.google.com/macros/s/AKfycbz_rmlp26eGQVemwRKwTZF87OZUzTQZ42xNzJm1XEI/dev', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data),
           mode: 'cors'
         });
+        console.log('Resposta da Web App:', response.status, response.statusText);
         const result = await response.json();
         if (result.success) {
           successMessage.textContent = 'Produto adicionado com sucesso!';
