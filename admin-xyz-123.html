@@ -124,7 +124,8 @@
         const response = await fetch('https://script.google.com/macros/s/AKfycbz_rmlp26eGQVemwRKwTZF87OZUzTQZ42xNzJm1XEI/dev', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
+          body: JSON.stringify(data),
+          mode: 'cors'
         });
         const result = await response.json();
         if (result.success) {
