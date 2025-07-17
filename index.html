@@ -224,106 +224,52 @@
       }
     }
 
-    async function desativarServiceWorker() {
-      if ('serviceWorker' in navigator) {
-        try {
-          const registrations = await navigator.serviceWorker.getRegistrations();
-          for (let registration of registrations) {
-            console.log('Desativando Service Worker:', registration.scope);
-            await registration.unregister();
-          }
-        } catch (error) {
-          console.error('Erro ao desativar Service Worker:', error);
-        }
-      }
-    }
-
     async function configurarCliqueLogo() {
       const logo = document.getElementById('site-logo-img');
       if (!logo) {
-        console.error('Erro: Elemento com id="site-logo-img" não encontrado. Verifique se a imagem da logo está carregada.');
+        console.error('Erro: Elemento com id="site-logo-img" não encontrado.');
+        alert('Erro: Imagem da logo não encontrada. Verifique o console.');
         return;
       }
       let clickCount = 0;
       let clickTimer = null;
-      console.log('Configurando evento de clique na logo...');
-      
       logo.style.cursor = 'pointer';
       logo.style.pointerEvents = 'auto';
 
-      const adminUrls = [
-        './admin-xyz-123.html?tempToken=triple-click-access',
-        '/admin-xyz-123.html?tempToken=triple-click-access',
-        'https://www.centrodecompra.com.br/admin-xyz-123.html?tempToken=triple-click-access'
-      ];
-
       logo.addEventListener('click', async (e) => {
         e.preventDefault();
-        e.stopPropagation();
         clickCount++;
-        logo.style.border = '2px solid #ff6200'; // Feedback visual
+        logo.style.border = '2px solid #ff6200';
         setTimeout(() => logo.style.border = '', 200);
-        console.log(`Clique ${clickCount} registrado na logo. URL atual: ${window.location.href}`);
-        
+        console.log(`Clique ${clickCount} registrado na logo.`);
+
         if (clickCount === 1) {
           clickTimer = setTimeout(() => {
-            console.log('Contador de cliques resetado após 2000ms.');
             clickCount = 0;
+            console.log('Contador de cliques resetado após 2000ms.');
           }, 2000);
         } else if (clickCount === 3) {
           clearTimeout(clickTimer);
-          console.log('Três cliques detectados, tentando redirecionar para admin-xyz-123.html...');
-
-          // Desativar Service Worker temporariamente
-          await desativarServiceWorker();
-
-          for (let i = 0; i < adminUrls.length; i++) {
-            const adminUrl = adminUrls[i];
-            console.log(`Tentando redirecionamento (${i + 1}/${adminUrls.length}): ${adminUrl}`);
-            
-            // Verificar se o arquivo existe
+          const adminUrl = `./admin-xyz-123.html?tempToken=triple-click-access&t=${Date.now()}`;
+          console.log(`Tentando redirecionar para: ${adminUrl}`);
+          try {
             const arquivoExiste = await verificarArquivo(adminUrl);
-            if (!arquivoExiste) {
-              console.warn(`Arquivo não encontrado ou inacessível: ${adminUrl}`);
-              continue;
+            if (arquivoExiste) {
+              window.location.href = adminUrl;
+            } else {
+              throw new Error(`Arquivo ${adminUrl} não encontrado.`);
             }
-
-            try {
-              if (i === 0) {
-                window.location.href = adminUrl;
-              } else if (i === 1) {
-                window.location.assign(adminUrl);
-              } else {
-                window.location.replace(adminUrl);
-              }
-
-              await new Promise(resolve => setTimeout(resolve, 500));
-              if (window.location.href !== new URL(adminUrl, window.location.origin).href && window.location.href !== adminUrl) {
-                console.warn(`Redirecionamento (${i + 1}/${adminUrls.length}) falhou. URL atual: ${window.location.href}`);
-                if (i === adminUrls.length - 1) {
-                  console.error('Todos os métodos de redirecionamento falharam.');
-                  alert('Erro: Não foi possível redirecionar para a página de administração. Verifique se o arquivo admin-xyz-123.html existe e está acessível. Consulte o console para detalhes.');
-                }
-              } else {
-                console.log(`Redirecionamento bem-sucedido para: ${adminUrl}`);
-                break;
-              }
-            } catch (error) {
-              console.error(`Erro ao redirecionar para ${adminUrl}:`, error);
-              if (i === adminUrls.length - 1) {
-                alert('Erro ao acessar a página de administração. Verifique o console para detalhes.');
-              }
-            }
+          } catch (error) {
+            console.error('Erro ao redirecionar:', error);
+            alert('Erro: Não foi possível acessar a página de administração. Verifique se o arquivo admin-xyz-123.html existe.');
           }
           clickCount = 0;
         }
       });
 
-      logo.addEventListener('load', () => {
-        console.log('Imagem da logo carregada com sucesso:', logo.src);
-      });
       logo.addEventListener('error', () => {
         console.error('Erro ao carregar a imagem da logo:', logo.src);
+        alert('Erro: Imagem da logo não carregada. Verifique o caminho da imagem.');
       });
     }
 
