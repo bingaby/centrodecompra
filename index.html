@@ -106,7 +106,7 @@
         </div>
         <input type="text" id="busca" placeholder="Busque por produtos..." class="barra-busca" aria-label="Buscar produtos" />
         <div id="busca-feedback" class="busca-feedback">Buscando...</div>
-        <div class="loading-spinner" id="loading-spinner"></div>
+        <div class="loading-spinner" id="loading-spinner">Carregando...</div>
         <div class="grid-lojas" id="grid-produtos"></div>
         <p class="mensagem-vazia" id="mensagem-vazia">Nenhum produto encontrado.</p>
         <p class="error-message" id="error-message" style="display: none;"></p>
@@ -196,7 +196,12 @@
 
     function atualizarAnoFooter() {
       const yearElement = document.getElementById('year');
-      if (yearElement) yearElement.textContent = new Date().getFullYear();
+      if (yearElement) {
+        yearElement.textContent = new Date().getFullYear();
+        console.log('Ano do footer atualizado:', yearElement.textContent);
+      } else {
+        console.error('Elemento #year não encontrado');
+      }
     }
 
     async function verificarArquivo(url) {
@@ -266,7 +271,7 @@
       const gridProdutos = document.getElementById('grid-produtos');
 
       if (!gridProdutos || !mensagemVazia || !errorMessage || !loadingSpinner) {
-        console.error('Elementos essenciais não encontrados');
+        console.error('Elementos essenciais não encontrados:', { gridProdutos, mensagemVazia, errorMessage, loadingSpinner });
         errorMessage.textContent = 'Erro: Elementos da página não encontrados. Contate o suporte.';
         errorMessage.style.display = 'block';
         return;
@@ -446,6 +451,8 @@
           currentPage = 1;
           filtrarProdutos();
         });
+      } else {
+        console.error('Elementos de busca não encontrados:', { buscaInput, buscaFeedback });
       }
     }
 
@@ -477,12 +484,16 @@
             filtrarProdutos();
           }
         });
+      } else {
+        console.error('Botão #prev-page não encontrado');
       }
       if (nextButton) {
         nextButton.addEventListener('click', () => {
           currentPage++;
           filtrarProdutos();
         });
+      } else {
+        console.error('Botão #next-page não encontrado');
       }
     }
 
@@ -494,11 +505,13 @@
         prevButton.disabled = currentPage === 1;
         nextButton.disabled = currentPage >= Math.ceil(totalProdutos / produtosPorPagina);
         pageInfo.textContent = `Página ${currentPage} de ${Math.ceil(totalProdutos / produtosPorPagina) || 1}`;
+      } else {
+        console.error('Elementos de paginação não encontrados:', { prevButton, nextButton, pageInfo });
       }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      console.log('Script carregado');
+      console.log('Script carregado em:', new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }));
       carregarProdutos();
       configurarBusca();
       configurarPaginacao();
