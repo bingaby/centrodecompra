@@ -16,17 +16,15 @@
     default-src 'self';
     style-src 'self' https://fonts.googleapis.com 'unsafe-inline';
     font-src https://fonts.gstatic.com;
-    script-src 'self' https://kit.fontawesome.com 'unsafe-inline';
+    script-src 'self' 'unsafe-inline';
     img-src 'self' https://drive.google.com https://*.googleusercontent.com data:;
-    connect-src 'self' https://opensheet.vercel.app https://script.google.com;
-    navigate-to 'self' https://www.centrodecompra.com.br
+    connect-src 'self' https://opensheet.vercel.app https://script.google.com
   ">
   <title>CentrodeCompra - Ofertas do Dia em Amazon, Shein, Shopee e Mais</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="logos/favicon-16x16.png">
-  <script src="https://kit.fontawesome.com/YOUR_FONTAWESOME_KEY.js" crossorigin="anonymous"></script>
 </head>
 <body>
   <header class="site-header">
@@ -50,22 +48,22 @@
     <aside class="sidebar-categorias">
       <h3>Categorias</h3>
       <ul>
-        <li class="categoria-item ativa" data-categoria="todas" onclick="filtrarPorCategoria('todas')"><i class="fas fa-list mr-2"></i>Todas</li>
-        <li class="categoria-item" data-categoria="eletronicos" onclick="filtrarPorCategoria('eletronicos')"><i class="fas fa-laptop mr-2"></i>Eletrônicos</li>
-        <li class="categoria-item" data-categoria="moda" onclick="filtrarPorCategoria('moda')"><i class="fas fa-tshirt mr-2"></i>Moda</li>
-        <li class="categoria-item" data-categoria="fitness" onclick="filtrarPorCategoria('fitness')"><i class="fas fa-dumbbell mr-2"></i>Fitness</li>
-        <li class="categoria-item" data-categoria="casa" onclick="filtrarPorCategoria('casa')"><i class="fas fa-home mr-2"></i>Casa</li>
-        <li class="categoria-item" data-categoria="beleza" onclick="filtrarPorCategoria('beleza')"><i class="fas fa-magic mr-2"></i>Beleza</li>
-        <li class="categoria-item" data-categoria="esportes" onclick="filtrarPorCategoria('esportes')"><i class="fas fa-futbol mr-2"></i>Esportes</li>
-        <li class="categoria-item" data-categoria="livros" onclick="filtrarPorCategoria('livros')"><i class="fas fa-book mr-2"></i>Livros</li>
-        <li class="categoria-item" data-categoria="infantil" onclick="filtrarPorCategoria('infantil')"><i class="fas fa-baby mr-2"></i>Infantil</li>
-        <li class="categoria-item" data-categoria="celulares" onclick="filtrarPorCategoria('celulares')"><i class="fas fa-mobile-alt mr-2"></i>Celulares</li>
-        <li class="categoria-item" data-categoria="eletrodomesticos" onclick="filtrarPorCategoria('eletrodomesticos')"><i class="fas fa-blender mr-2"></i>Eletrodomésticos</li>
-        <li class="categoria-item" data-categoria="pet" onclick="filtrarPorCategoria('pet')"><i class="fas fa-paw mr-2"></i>Pet</li>
-        <li class="categoria-item" data-categoria="jardinagem" onclick="filtrarPorCategoria('jardinagem')"><i class="fas fa-leaf mr-2"></i>Jardinagem</li>
-        <li class="categoria-item" data-categoria="automotivo" onclick="filtrarPorCategoria('automotivo')"><i class="fas fa-car mr-2"></i>Automotivo</li>
-        <li class="categoria-item" data-categoria="gastronomia" onclick="filtrarPorCategoria('gastronomia')"><i class="fas fa-utensils mr-2"></i>Gastronomia</li>
-        <li class="categoria-item" data-categoria="games" onclick="filtrarPorCategoria('games')"><i class="fas fa-gamepad mr-2"></i>Games</li>
+        <li class="categoria-item ativa" data-categoria="todas" onclick="filtrarPorCategoria('todas')">Todas</li>
+        <li class="categoria-item" data-categoria="eletronicos" onclick="filtrarPorCategoria('eletronicos')">Eletrônicos</li>
+        <li class="categoria-item" data-categoria="moda" onclick="filtrarPorCategoria('moda')">Moda</li>
+        <li class="categoria-item" data-categoria="fitness" onclick="filtrarPorCategoria('fitness')">Fitness</li>
+        <li class="categoria-item" data-categoria="casa" onclick="filtrarPorCategoria('casa')">Casa</li>
+        <li class="categoria-item" data-categoria="beleza" onclick="filtrarPorCategoria('beleza')">Beleza</li>
+        <li class="categoria-item" data-categoria="esportes" onclick="filtrarPorCategoria('esportes')">Esportes</li>
+        <li class="categoria-item" data-categoria="livros" onclick="filtrarPorCategoria('livros')">Livros</li>
+        <li class="categoria-item" data-categoria="infantil" onclick="filtrarPorCategoria('infantil')">Infantil</li>
+        <li class="categoria-item" data-categoria="celulares" onclick="filtrarPorCategoria('celulares')">Celulares</li>
+        <li class="categoria-item" data-categoria="eletrodomesticos" onclick="filtrarPorCategoria('eletrodomesticos')">Eletrodomésticos</li>
+        <li class="categoria-item" data-categoria="pet" onclick="filtrarPorCategoria('pet')">Pet</li>
+        <li class="categoria-item" data-categoria="jardinagem" onclick="filtrarPorCategoria('jardinagem')">Jardinagem</li>
+        <li class="categoria-item" data-categoria="automotivo" onclick="filtrarPorCategoria('automotivo')">Automotivo</li>
+        <li class="categoria-item" data-categoria="gastronomia" onclick="filtrarPorCategoria('gastronomia')">Gastronomia</li>
+        <li class="categoria-item" data-categoria="games" onclick="filtrarPorCategoria('games')">Games</li>
       </ul>
     </aside>
 
@@ -161,6 +159,10 @@
 
   <footer>
     <p>🔧 Todos os direitos reservados <strong>Grupo CentrodeCompra "CdC"</strong> © <span id="year"></span></p>
+    <div id="admin-login" style="display: none;">
+      <input type="password" id="admin-password" placeholder="Senha de admin" aria-label="Senha de administrador">
+      <button onclick="verificarSenha()">Acessar Administração</button>
+    </div>
   </footer>
 
   <div class="robo-assistente">
@@ -204,64 +206,19 @@
       }
     }
 
-    async function verificarArquivo(url) {
-      try {
-        const response = await fetch(url, { method: 'HEAD', cache: 'no-store' });
-        console.log(`Verificação do arquivo ${url}: Status ${response.status}`);
-        return response.ok;
-      } catch (error) {
-        console.error(`Erro ao verificar arquivo ${url}:`, error);
-        return false;
-      }
-    }
-
-    async function configurarCliqueLogo() {
-      const logo = document.getElementById('site-logo-img');
-      if (!logo) {
-        console.error('Erro: Elemento com id="site-logo-img" não encontrado.');
-        alert('Erro: Imagem da logo não encontrada. Verifique o console.');
+    function verificarSenha() {
+      const senhaCorreta = 'admin123'; // Substitua por uma senha forte
+      const input = document.getElementById('admin-password');
+      if (!input) {
+        console.error('Campo de senha não encontrado');
+        alert('Erro: Campo de senha não encontrado.');
         return;
       }
-      let clickCount = 0;
-      let clickTimer = null;
-      logo.style.cursor = 'pointer';
-      logo.style.pointerEvents = 'auto';
-
-      logo.addEventListener('click', async (e) => {
-        e.preventDefault();
-        clickCount++;
-        logo.style.border = '2px solid #ff6200';
-        setTimeout(() => logo.style.border = '', 200);
-        console.log(`Clique ${clickCount} registrado na logo.`);
-
-        if (clickCount === 1) {
-          clickTimer = setTimeout(() => {
-            clickCount = 0;
-            console.log('Contador de cliques resetado após 2000ms.');
-          }, 2000);
-        } else if (clickCount === 3) {
-          clearTimeout(clickTimer);
-          const adminUrl = `./admin-xyz-123.html?tempToken=triple-click-access&t=${Date.now()}`;
-          console.log(`Tentando redirecionar para: ${adminUrl}`);
-          try {
-            const arquivoExiste = await verificarArquivo(adminUrl);
-            if (arquivoExiste) {
-              window.location.href = adminUrl;
-            } else {
-              throw new Error(`Arquivo ${adminUrl} não encontrado.`);
-            }
-          } catch (error) {
-            console.error('Erro ao redirecionar:', error);
-            alert('Erro: Não foi possível acessar a página de administração. Verifique se o arquivo admin-xyz-123.html existe.');
-          }
-          clickCount = 0;
-        }
-      });
-
-      logo.addEventListener('error', () => {
-        console.error('Erro ao carregar a imagem da logo:', logo.src);
-        alert('Erro: Imagem da logo não carregada. Verifique o caminho da imagem.');
-      });
+      if (input.value === senhaCorreta) {
+        window.location.href = `./admin-xyz-123.html?tempToken=admin-access&t=${Date.now()}`;
+      } else {
+        alert('Senha incorreta!');
+      }
     }
 
     async function carregarProdutos() {
@@ -314,6 +271,11 @@
       const gridProdutos = document.getElementById('grid-produtos');
       const mensagemVazia = document.getElementById('mensagem-vazia');
 
+      if (!gridProdutos || !mensagemVazia) {
+        console.error('Elementos #grid-produtos ou #mensagem-vazia não encontrados');
+        return;
+      }
+
       const produtosFiltrados = produtos.filter((produto) => {
         const matchCategoria = categoriaSelecionada === 'todas' ||
           normalizarString(produto.categoria) === normalizarString(categoriaSelecionada);
@@ -354,21 +316,23 @@
           <div class="carrossel" id="${carrosselId}">
             <div class="carrossel-imagens">
               ${imagens.map((img, i) => `
-                <img src="${img}" alt="${produto.nome || 'Produto'} ${i + 1}" loading="lazy" width="200" height="200" onerror="this.src='imagens/placeholder.jpg'" onclick="openModal(${produtoIndex}, ${i})">
+                <img src="${img}" alt="${produto.nome || 'Produto'} ${i + 1}" loading="lazy" width="200" height="100" onerror="this.src='imagens/placeholder.jpg'" onclick="openModal(${produtoIndex}, ${i})">
               `).join('')}
             </div>
             ${imagens.length > 1 ? `
               <button class="carrossel-prev" onclick="moveCarrossel('${carrosselId}', -1)">◄</button>
               <button class="carrossel-next" onclick="moveCarrossel('${carrosselId}', 1)">▶</button>
               <div class="carrossel-dots">
-                ${imagens.map((_, i) => `<span class="carrossel-dot ${i === 0 ? 'ativo' : ''}" onclick="setCarrosselImage('${carrosselId}', ${i})"></span>`).join('')}
+                ${imagens.map((_, i) => `
+                  <span class="carrossel-dot ${i === 0 ? 'ativo' : ''}" onclick="setCarrosselImage('${carrosselId}', ${i})"></span>
+                `).join('')}
               </div>
             ` : ''}
           </div>
           <span>${produto.nome || 'Produto sem nome'}</span>
           <span class="descricao">Loja: ${produto.loja || 'Desconhecida'}</span>
-          <p class="preco">${produto.preco ? `R$ ${produto.preco}` : '<a href="${produto.link || '#'}" target="_blank" class="ver-preco">Clique aqui para ver o preço</a>'}</p>
-          <a href="${produto.link || '#'}" target="_blank" class="ver-na-loja ${produto.loja?.toLowerCase() || 'default'}">Comprar</a>
+          <p class="preco">${produto.preco ? `R$ ${produto.preco}` : `<a href="${produto.link || '#'}" target="_blank" class="ver-preco">Clique aqui para ver o preço</a>`}</p>
+          <a href="${produto.link || '#'}" target="_blank" class="ver-na-loja ${produto.loja ? normalizarString(produto.loja) : 'default'}">Comprar</a>
         `;
         gridProdutos.appendChild(produtoDiv);
       });
@@ -376,6 +340,10 @@
 
     function moveCarrossel(carrosselId, direction) {
       const carrossel = document.getElementById(carrosselId);
+      if (!carrossel) {
+        console.error(`Carrossel ${carrosselId} não encontrado`);
+        return;
+      }
       const imagens = carrossel.querySelector('.carrossel-imagens');
       const dots = carrossel.querySelectorAll('.carrossel-dot');
       let currentIndex = parseInt(imagens.dataset.index || 0);
@@ -388,6 +356,10 @@
 
     function setCarrosselImage(carrosselId, index) {
       const carrossel = document.getElementById(carrosselId);
+      if (!carrossel) {
+        console.error(`Carrossel ${carrosselId} não encontrado`);
+        return;
+      }
       const imagens = carrossel.querySelector('.carrossel-imagens');
       const dots = carrossel.querySelectorAll('.carrossel-dot');
       imagens.style.transform = `translateX(-${index * 100}%)`;
@@ -400,16 +372,25 @@
       const carrosselImagens = document.getElementById('modalCarrosselImagens');
       const carrosselDots = document.getElementById('modalCarrosselDots');
 
+      if (!modal || !carrosselImagens || !carrosselDots) {
+        console.error('Elementos do modal não encontrados:', { modal, carrosselImagens, carrosselDots });
+        return;
+      }
+
       try {
         currentImages = produtos[produtoIndex]?.imagens && typeof produtos[produtoIndex].imagens === 'string'
           ? produtos[produtoIndex].imagens.split(',').filter(img => img.trim())
           : ['imagens/placeholder.jpg'];
         currentImageIndex = imageIndex;
 
-        carrosselImagens.innerHTML = currentImages.map(img => `<img src="${img}" alt="Imagem ampliada" onerror="this.src='imagens/placeholder.jpg'">`).join('');
+        carrosselImagens.innerHTML = currentImages.map(img => `
+          <img src="${img}" alt="Imagem ampliada" onerror="this.src='imagens/placeholder.jpg'">
+        `).join('');
         carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
 
-        carrosselDots.innerHTML = currentImages.map((_, i) => `<span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})"></span>`).join('');
+        carrosselDots.innerHTML = currentImages.map((_, i) => `
+          <span class="carrossel-dot ${i === currentImageIndex ? 'ativo' : ''}" onclick="setModalCarrosselImage(${i})"></span>
+        `).join('');
 
         modal.style.display = 'flex';
       } catch (error) {
@@ -516,7 +497,10 @@
       configurarBusca();
       configurarPaginacao();
       atualizarAnoFooter();
-      configurarCliqueLogo();
+      // Mostrar formulário de admin apenas em localhost
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        document.getElementById('admin-login').style.display = 'block';
+      }
       document.getElementById('imageModal')?.addEventListener('click', (e) => {
         if (e.target === e.currentTarget) closeModal();
       });
