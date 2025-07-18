@@ -8,20 +8,29 @@
   <meta name="description" content="Ofertas com descontos reais nas principais lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba.">
   <meta property="og:title" content="CentrodeCompra - Ofertas e Descontos">
   <meta property="og:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba.">
-  <meta property="og:image" content="logos/logoscentrodecompras.jpeg">
+  <meta property="og:image" content="https://www.centrodecompra.com.br/logos/logoscentrodecompras.jpeg">
   <meta property="og:url" content="https://www.centrodecompra.com.br/">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://pagead2.googlesyndication.com https://www.google-analytics.com https://www.google.com; worker-src 'self' blob:; img-src 'self' https://drive.google.com https://*.googleusercontent.com data:; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com;">
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://www.google-analytics.com https://www.google.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com;
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+    img-src 'self' https://drive.google.com https://*.googleusercontent.com data: https://tpc.googlesyndication.com https://pagead2.googlesyndication.com;
+    font-src 'self' https://fonts.gstatic.com;
+    worker-src 'self' blob:;
+    frame-src 'self' https://googleads.g.doubleclick.net https://tpc.googlesyndication.com;
+    connect-src 'self' https://ep1.adtrafficquality.google https://www.google-analytics.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net;
+  ">
   <title>CentrodeCompra - Ofertas do Dia</title>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4531749081462125" crossorigin="anonymous"></script>
-  <link rel="preload" href="logos/logoscentrodecompras.jpeg" as="image">
+  <link rel="preload" href="https://www.centrodecompra.com.br/logos/logoscentrodecompras.jpeg" as="image">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="logos/favicon-16x16.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="logos/apple-touch-icon.png">
-  <link rel="manifest" href="logos/site.webmanifest">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://www.centrodecompra.com.br/logos/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://www.centrodecompra.com.br/logos/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="https://www.centrodecompra.com.br/logos/apple-touch-icon.png">
+  <link rel="manifest" href="https://www.centrodecompra.com.br/logos/site.webmanifest">
   <style>
     * {
       box-sizing: border-box;
@@ -55,6 +64,7 @@
       width: 120px;
       height: 40px;
       object-fit: contain;
+      cursor: pointer;
     }
     .header-text h1 {
       font-size: 1.8em;
@@ -436,6 +446,12 @@
       font-size: 0.9em;
       margin: 20px 0;
     }
+    .adsbygoogle {
+      display: block;
+      margin: 10px auto;
+      text-align: center;
+      max-width: 100%;
+    }
     @media (forced-colors: active) {
       .container, .site-header, .sidebar, .loja, .produto-card {
         forced-color-adjust: auto;
@@ -459,6 +475,7 @@
       .robo-imagem { width: 40px; height: 40px; }
       .robo-texto { font-size: 0.8em; }
       .credibilidade-nota { padding: 10px; font-size: 0.8em; }
+      .adsbygoogle { height: 100px; }
     }
     @media (max-width: 480px) {
       .container { padding: 8px; }
@@ -468,6 +485,7 @@
       .grid-produtos { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); }
       .produto-card img { height: 120px; }
       .ver-na-loja { padding: 5px 10px; font-size: 0.8em; }
+      .adsbygoogle { height: 90px; }
     }
   </style>
 </head>
@@ -475,7 +493,7 @@
   <header class="site-header">
     <div class="logo-container">
       <a href="index.html">
-        <img src="logos/logoscentrodecompras.jpeg" alt="CentrodeCompra" id="site-logo-img" width="120" height="40" onerror="this.src='https://via.placeholder.com/120x40?text=Logo'">
+        <img src="https://www.centrodecompra.com.br/logos/logoscentrodecompras.jpeg" alt="CentrodeCompra" id="site-logo-img" width="120" height="40" onerror="this.src='https://via.placeholder.com/120x40?text=Logo'">
       </a>
     </div>
     <div class="header-text">
@@ -495,22 +513,22 @@
     <aside class="sidebar">
       <h3>Categorias</h3>
       <ul>
-        <li class="categoria-item ativa" data-categoria="todas" onclick="filtrarPorCategoria('todas')">📋 Todas</li>
-        <li class="categoria-item" data-categoria="eletronicos" onclick="filtrarPorCategoria('eletronicos')">💻 Eletrônicos</li>
-        <li class="categoria-item" data-categoria="moda" onclick="filtrarPorCategoria('moda')">👕 Moda</li>
-        <li class="categoria-item" data-categoria="fitness" onclick="filtrarPorCategoria('fitness')">🏋️ Fitness</li>
-        <li class="categoria-item" data-categoria="casa" onclick="filtrarPorCategoria('casa')">🏠 Casa</li>
-        <li class="categoria-item" data-categoria="beleza" onclick="filtrarPorCategoria('beleza')">💄 Beleza</li>
-        <li class="categoria-item" data-categoria="esportes" onclick="filtrarPorCategoria('esportes')">⚽ Esportes</li>
-        <li class="categoria-item" data-categoria="livros" onclick="filtrarPorCategoria('livros')">📚 Livros</li>
-        <li class="categoria-item" data-categoria="infantil" onclick="filtrarPorCategoria('infantil')">👶 Infantil</li>
-        <li class="categoria-item" data-categoria="celulares" onclick="filtrarPorCategoria('celulares')">📱 Celulares</li>
-        <li class="categoria-item" data-categoria="eletrodomesticos" onclick="filtrarPorCategoria('eletrodomesticos')">🍳 Eletrodomésticos</li>
-        <li class="categoria-item" data-categoria="pet" onclick="filtrarPorCategoria('pet')">🐾 Pet</li>
-        <li class="categoria-item" data-categoria="jardinagem" onclick="filtrarPorCategoria('jardinagem')">🌱 Jardinagem</li>
-        <li class="categoria-item" data-categoria="automotivo" onclick="filtrarPorCategoria('automotivo')">🚗 Automotivo</li>
-        <li class="categoria-item" data-categoria="gastronomia" onclick="filtrarPorCategoria('gastronomia')">🍽️ Gastronomia</li>
-        <li class="categoria-item" data-categoria="games" onclick="filtrarPorCategoria('games')">🎮 Games</li>
+        <li class="categoria-item ativa" data-categoria="todas">📋 Todas</li>
+        <li class="categoria-item" data-categoria="eletronicos">💻 Eletrônicos</li>
+        <li class="categoria-item" data-categoria="moda">👕 Moda</li>
+        <li class="categoria-item" data-categoria="fitness">🏋️ Fitness</li>
+        <li class="categoria-item" data-categoria="casa">🏠 Casa</li>
+        <li class="categoria-item" data-categoria="beleza">💄 Beleza</li>
+        <li class="categoria-item" data-categoria="esportes">⚽ Esportes</li>
+        <li class="categoria-item" data-categoria="livros">📚 Livros</li>
+        <li class="categoria-item" data-categoria="infantil">👶 Infantil</li>
+        <li class="categoria-item" data-categoria="celulares">📱 Celulares</li>
+        <li class="categoria-item" data-categoria="eletrodomesticos">🍳 Eletrodomésticos</li>
+        <li class="categoria-item" data-categoria="pet">🐾 Pet</li>
+        <li class="categoria-item" data-categoria="jardinagem">🌱 Jardinagem</li>
+        <li class="categoria-item" data-categoria="automotivo">🚗 Automotivo</li>
+        <li class="categoria-item" data-categoria="gastronomia">🍽️ Gastronomia</li>
+        <li class="categoria-item" data-categoria="games">🎮 Games</li>
       </ul>
     </aside>
 
@@ -527,29 +545,29 @@
         <div class="lojas-parceiras">
           <h3>🌟 Lojas Parceiras</h3>
           <div class="grid-lojas">
-            <div class="loja-todas ativa" onclick="filtrarPorLoja('todas')"><span>Todas as Lojas</span></div>
-            <div class="loja" data-loja="amazon" onclick="filtrarPorLoja('amazon')">
-              <img src="logos/amazon.png" alt="Amazon" loading="lazy" width="80" height="32" onerror="this.src='https://via.placeholder.com/80x32?text=Amazon'">
+            <div class="loja-todas ativa" data-loja="todas"><span>Todas as Lojas</span></div>
+            <div class="loja" data-loja="amazon">
+              <img src="https://www.centrodecompra.com.br/logos/amazon.png" alt="Amazon" loading="lazy" width="80" height="32" onerror="this.src='https://via.placeholder.com/80x32?text=Amazon'">
               <span>Amazon</span>
             </div>
-            <div class="loja" data-loja="magalu" onclick="filtrarPorLoja('magalu')">
-              <img src="logos/magalu.png" alt="Magalu" loading="lazy" width="80" height="32" onerror="this.src='https://via.placeholder.com/80x32?text=Magalu'">
+            <div class="loja" data-loja="magalu">
+              <img src="https://www.centrodecompra.com.br/logos/magalu.png" alt="Magalu" loading="lazy" width="80" height="32" onerror="this.src='https://via.placeholder.com/80x32?text=Magalu'">
               <span>Magalu</span>
             </div>
-            <div class="loja" data-loja="shein" onclick="filtrarPorLoja('shein')">
-              <img src="logos/shein.png" alt="Shein" loading="lazy" width="80" height="32" onerror="this.src='https://via.placeholder.com/80x32?text=Shein'">
+            <div class="loja" data-loja="shein">
+              <img src="https://www.centrodecompra.com.br/logos/shein.png" alt="Shein" loading="lazy" width="80" height="32" onerror="this.src='https://via.placeholder.com/80x32?text=Shein'">
               <span>Shein</span>
             </div>
-            <div class="loja" data-loja="shopee" onclick="filtrarPorLoja('shopee')">
-              <img src="logos/shopee.png" alt="Shopee" loading="lazy" width="80" height="32" onerror="this.src='https://via.placeholder.com/80x32?text=Shopee'">
+            <div class="loja" data-loja="shopee">
+              <img src="https://www.centrodecompra.com.br/logos/shopee.png" alt="Shopee" loading="lazy" width="80" height="32" onerror="this.src='https://via.placeholder.com/80x32?text=Shopee'">
               <span>Shopee</span>
             </div>
-            <div class="loja" data-loja="mercadolivre" onclick="filtrarPorLoja('mercadolivre')">
-              <img src="logos/mercadolivre.jpg" alt="Mercado Livre" loading="lazy" width="80" height="32" onerror="this.src='https://via.placeholder.com/80x32?text=Mercado+Livre'">
+            <div class="loja" data-loja="mercadolivre">
+              <img src="https://www.centrodecompra.com.br/logos/mercadolivre.jpg" alt="Mercado Livre" loading="lazy" width="80" height="32" onerror="this.src='https://via.placeholder.com/80x32?text=Mercado+Livre'">
               <span>Mercado Livre</span>
             </div>
-            <div class="loja" data-loja="alibaba" onclick="filtrarPorLoja('alibaba')">
-              <img src="logos/alibaba.png" alt="Alibaba" loading="lazy" width="80" height="32" onerror="this.src='https://via.placeholder.com/80x32?text=Alibaba'">
+            <div class="loja" data-loja="alibaba">
+              <img src="https://www.centrodecompra.com.br/logos/alibaba.png" alt="Alibaba" loading="lazy" width="80" height="32" onerror="this.src='https://via.placeholder.com/80x32?text=Alibaba'">
               <span>Alibaba</span>
             </div>
           </div>
@@ -568,19 +586,19 @@
       </section>
       <div class="social-links">
         <a href="https://www.tiktok.com/@cdc.centraldecompras" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><img src="logos/tiktok.png" alt="TikTok" loading="lazy" width="36" height="36" onerror="this.src='https://via.placeholder.com/36?text=TikTok'"></div>
+          <div class="icon"><img src="https://www.centrodecompra.com.br/logos/tiktok.png" alt="TikTok" loading="lazy" width="36" height="36" onerror="this.src='https://via.placeholder.com/36?text=TikTok'"></div>
           <span>TikTok</span>
         </a>
         <a href="https://www.instagram.com/cdccentrodecompras/" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><img src="logos/Instagram.png" alt="Instagram" loading="lazy" width="36" height="36" onerror="this.src='https://via.placeholder.com/36?text=Instagram'"></div>
+          <div class="icon"><img src="https://www.centrodecompra.com.br/logos/Instagram.png" alt="Instagram" loading="lazy" width="36" height="36" onerror="this.src='https://via.placeholder.com/36?text=Instagram'"></div>
           <span>Instagram</span>
         </a>
         <a href="https://x.com/ComprasCdc" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><img src="logos/X.png" alt="X" loading="lazy" width="36" height="36" onerror="this.src='https://via.placeholder.com/36?text=X'"></div>
+          <div class="icon"><img src="https://www.centrodecompra.com.br/logos/X.png" alt="X" loading="lazy" width="36" height="36" onerror="this.src='https://via.placeholder.com/36?text=X'"></div>
           <span>X</span>
         </a>
         <a href="https://www.youtube.com/channel/UCaKHlI-hWqwdAXS6Xsv3ZzA" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><img src="logos/youtube.png" alt="YouTube" loading="lazy" width="36" height="36" onerror="this.src='https://via.placeholder.com/36?text=YouTube'"></div>
+          <div class="icon"><img src="https://www.centrodecompra.com.br/logos/youtube.png" alt="YouTube" loading="lazy" width="36" height="36" onerror="this.src='https://via.placeholder.com/36?text=YouTube'"></div>
           <span>YouTube</span>
         </a>
       </div>
@@ -590,11 +608,11 @@
   </div>
 
   <div class="modal" id="imageModal">
-    <button class="modal-close" onclick="closeModal()">✕</button>
+    <button class="modal-close">✕</button>
     <div class="modal-content">
       <div class="carrossel-imagens" id="modalCarrosselImagens"></div>
-      <button class="carrossel-prev" onclick="moveModalCarrossel(-1)">◄</button>
-      <button class="carrossel-next" onclick="moveModalCarrossel(1)">▶</button>
+      <button class="carrossel-prev">◄</button>
+      <button class="carrossel-next">▶</button>
       <div class="carrossel-dots" id="modalCarrosselDots"></div>
     </div>
   </div>
@@ -608,7 +626,7 @@
 
   <div class="robo-assistente">
     <a href="https://api.whatsapp.com/send?phone=5521975179737" target="_blank" rel="noopener noreferrer">
-      <img src="imagens/robo.jpg" alt="Robô Assistente" class="robo-imagem" loading="lazy" width="50" height="50" onerror="this.src='https://via.placeholder.com/50?text=Robo'">
+      <img src="https://www.centrodecompra.com.br/imagens/robo.jpg" alt="Robô Assistente" class="robo-imagem" loading="lazy" width="50" height="50" onerror="this.src='https://via.placeholder.com/50?text=Robo'">
       <div class="robo-texto">Posso ajudar?</div>
     </a>
   </div>
@@ -773,14 +791,14 @@
           <div class="carrossel" id="${carrosselId}">
             <div class="carrossel-imagens">
               ${imagensValidadas.map((img, i) => `
-                <img src="${img}" alt="${produto.nome || 'Produto'} ${i + 1}" loading="lazy" width="160" height="160" onclick="openModal(${produtoIndex}, ${i})">
+                <img src="${img}" alt="${produto.nome || 'Produto'} ${i + 1}" loading="eager" width="160" height="160" data-modal-index="${produtoIndex}" data-image-index="${i}">
               `).join('')}
             </div>
             ${imagensValidadas.length > 1 ? `
-              <button class="carrossel-prev" onclick="moveCarrossel('${carrosselId}', -1)">◄</button>
-              <button class="carrossel-next" onclick="moveCarrossel('${carrosselId}', 1)">▶</button>
+              <button class="carrossel-prev" data-carrossel-id="${carrosselId}">◄</button>
+              <button class="carrossel-next" data-carrossel-id="${carrosselId}">▶</button>
               <div class="carrossel-dots">
-                ${imagensValidadas.map((_, i) => `<span class="carrossel-dot ${i === 0 ? 'ativa' : ''}" onclick="setCarrosselImage('${carrosselId}', ${i})"></span>`).join('')}
+                ${imagensValidadas.map((_, i) => `<span class="carrossel-dot ${i === 0 ? 'ativa' : ''}" data-carrossel-id="${carrosselId}" data-index="${i}"></span>`).join('')}
               </div>
             ` : ''}
           </div>
@@ -829,7 +847,7 @@
         carrosselImagens.innerHTML = currentImages.map(img => `<img src="${img}" alt="Imagem ampliada" style="max-width:100%; max-height:100%;">`).join('');
         carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
 
-        carrosselDots.innerHTML = currentImages.map((_, i) => `<span class="carrossel-dot ${i === currentImageIndex ? 'ativa' : ''}" onclick="setModalCarrosselImage(${i})"></span>`).join('');
+        carrosselDots.innerHTML = currentImages.map((_, i) => `<span class="carrossel-dot ${i === currentImageIndex ? 'ativa' : ''}" data-modal-index="${i}"></span>`).join('');
 
         modal.style.display = 'flex';
       } catch (error) {
@@ -874,20 +892,55 @@
       }
     }
 
-    function filtrarPorCategoria(categoria) {
-      categoriaSelecionada = categoria;
-      currentPage = 1;
-      document.querySelectorAll('.categoria-item').forEach(item => item.classList.remove('ativa'));
-      document.querySelector(`.categoria-item[data-categoria="${categoria}"]`)?.classList.add('ativa');
-      filtrarProdutos();
-    }
+    function configurarFiltros() {
+      document.querySelectorAll('.categoria-item').forEach(item => {
+        item.addEventListener('click', () => {
+          categoriaSelecionada = item.dataset.categoria;
+          currentPage = 1;
+          document.querySelectorAll('.categoria-item').forEach(i => i.classList.remove('ativa'));
+          item.classList.add('ativa');
+          filtrarProdutos();
+        });
+      });
 
-    function filtrarPorLoja(loja) {
-      lojaSelecionada = loja;
-      currentPage = 1;
-      document.querySelectorAll('.loja, .loja-todas').forEach(item => item.classList.remove('ativa'));
-      document.querySelector(`[data-loja="${loja}"]`)?.classList.add('ativa');
-      filtrarProdutos();
+      document.querySelectorAll('.loja, .loja-todas').forEach(item => {
+        item.addEventListener('click', () => {
+          lojaSelecionada = item.dataset.loja;
+          currentPage = 1;
+          document.querySelectorAll('.loja, .loja-todas').forEach(i => i.classList.remove('ativa'));
+          item.classList.add('ativa');
+          filtrarProdutos();
+        });
+      });
+
+      document.querySelectorAll('.produto-card img[data-modal-index]').forEach(img => {
+        img.addEventListener('click', () => {
+          const produtoIndex = parseInt(img.dataset.modalIndex);
+          const imageIndex = parseInt(img.dataset.imageIndex);
+          openModal(produtoIndex, imageIndex);
+        });
+      });
+
+      document.querySelectorAll('.carrossel-prev').forEach(btn => {
+        btn.addEventListener('click', () => moveCarrossel(btn.dataset.carrosselId, -1));
+      });
+
+      document.querySelectorAll('.carrossel-next').forEach(btn => {
+        btn.addEventListener('click', () => moveCarrossel(btn.dataset.carrosselId, 1));
+      });
+
+      document.querySelectorAll('.carrossel-dot').forEach(dot => {
+        dot.addEventListener('click', () => setCarrosselImage(dot.dataset.carrosselId, parseInt(dot.dataset.index)));
+      });
+
+      document.querySelector('.modal-close').addEventListener('click', closeModal);
+      document.querySelector('.carrossel-prev').addEventListener('click', () => moveModalCarrossel(-1));
+      document.querySelector('.carrossel-next').addEventListener('click', () => moveModalCarrossel(1));
+      document.querySelector('#modalCarrosselDots').addEventListener('click', (e) => {
+        if (e.target.classList.contains('carrossel-dot')) {
+          setModalCarrosselImage(parseInt(e.target.dataset.modalIndex));
+        }
+      });
     }
 
     function configurarPaginacao() {
@@ -924,6 +977,7 @@
       carregarProdutos();
       configurarBusca();
       configurarPaginacao();
+      configurarFiltros();
       atualizarAnoFooter();
       configurarCliqueLogo();
       document.getElementById('imageModal')?.addEventListener('click', (e) => {
