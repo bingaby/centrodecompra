@@ -10,12 +10,12 @@
     font-src https://fonts.gstatic.com;
     script-src 'self' 'unsafe-inline';
     img-src 'self' https://drive.google.com https://*.googleusercontent.com data:;
-    connect-src 'self' https://opensheet.vercel.app https://script.google.com
+    connect-src 'self' https://opensheet.vercel.app https://cors-anywhere.herokuapp.com https://script.google.com
   ">
   <title>CentrodeCompra - Ofertas do Dia</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
-  <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32x32.png">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
 </head>
 <body>
   <header class="site-header">
@@ -96,7 +96,7 @@
     }
 
     function verificarSenha() {
-      const senhaCorreta = 'admin123'; // Substitua por uma senha forte
+      const senhaCorreta = 'admin123'; // Substitua por uma senha forte em produção
       const input = document.getElementById('admin-password');
       if (input.value === senhaCorreta) {
         window.location.href = './admin-xyz-123.html?token=admin-access';
@@ -141,7 +141,7 @@
       }
 
       mensagemVazia.style.display = 'none';
-      produtosFiltrados.forEach((produto, index) => {
+      produtosFiltrados.forEach((produto) => {
         const imagens = produto.imagens?.split(',').filter(img => img.trim()) || ['imagens/placeholder.jpg'];
         const produtoDiv = document.createElement('div');
         produtoDiv.classList.add('produto-card', 'visible');
