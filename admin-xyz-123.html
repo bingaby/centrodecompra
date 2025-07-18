@@ -9,7 +9,7 @@
     font-src https://fonts.gstatic.com;
     script-src 'self' 'unsafe-inline';
     img-src 'self' https://drive.google.com https://*.googleusercontent.com data:;
-    connect-src 'self' https://cors-anywhere.herokuapp.com https://script.google.com
+    connect-src 'self' https://script.google.com
   ">
   <title>Admin - CentrodeCompra</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
@@ -89,13 +89,14 @@
       };
 
       try {
-        const response = await fetch('https://cors-anywhere.herokuapp.com/https://script.google.com/macros/s/AKfycbz_rmlp26eGQVemwRKwTZF87OZUzTQZ42xNzJm1XEI/dev', {
+        const response = await fetch('https://script.google.com/macros/s/AKfycbz_rmlp26eGQVemwRKwTZF87OZUzTQZ42xNzJm1XEI/dev?token=admin-access', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         });
-        if (!response.ok) {
-          throw new Error(`Erro ${response.status}: ${response.statusText}`);
+        const result = await response.json();
+        if (!response.ok || result.error) {
+          throw new Error(result.error || `Erro ${response.status}: Falha ao adicionar produto`);
         }
         successMessage.textContent = 'Produto adicionado com sucesso!';
         successMessage.style.display = 'block';
