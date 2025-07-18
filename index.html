@@ -97,7 +97,7 @@
               <span class="amazon">Amazon</span>
             </div>
             <div class="loja" data-loja="magalu" onclick="filtrarPorLoja('magalu')" role="button" aria-label="Filtrar por Magalu">
-              <img src="logos/magalu.png" alt="Logo da Magalu" loading="lazy" />
+              <img src="logos/magalu.png" altLOGO DA MAGALU" loading="lazy" />
               <span class="magalu">Magalu</span>
             </div>
             <div class="loja" data-loja="shein" onclick="filtrarPorLoja('shein')" role="button" aria-label="Filtrar por Shein">
@@ -132,7 +132,7 @@
       </section>
 
       <a class="whatsapp" href="https://wa.me/5521975179737" target="_blank">📲 Atendimento via WhatsApp</a>
-      <a class="telegram" href="https://t.me/boost/centraldecomprascdc" target="_blank">📢 Canal no Telegram</，放
+      <a class="telegram" href="https://t.me/boost/centraldecomprascdc" target="_blank">📢 Canal no Telegram</a>
 
       <div class="social-links">
         <a href="https://www.tiktok.com/@cdc.centraldecompas?_t=ZM-8vYQlF9u1dH&_r=1" target="_blank">
@@ -242,12 +242,22 @@
       const logo = document.getElementById('site-logo-img');
       if (!logo) {
         console.error('Erro: Elemento com id="site-logo-img" não encontrado.');
+        alert('Erro: Imagem da logo não encontrada. Verifique o elemento HTML.');
         return;
       }
       let clickCount = 0;
       let clickTimer = null;
       logo.style.cursor = 'pointer';
       logo.style.pointerEvents = 'auto';
+
+      logo.addEventListener('load', () => {
+        console.log('Imagem da logo carregada com sucesso:', logo.src);
+      });
+
+      logo.addEventListener('error', () => {
+        console.error('Erro ao carregar a imagem da logo:', logo.src);
+        alert('Erro: Imagem da logo não carregada. Verifique o caminho da imagem.');
+      });
 
       logo.addEventListener('click', async (e) => {
         e.preventDefault();
@@ -267,21 +277,17 @@
             await desativarServiceWorker();
             const response = await fetch(adminUrl, { method: 'HEAD', cache: 'no-store' });
             if (response.ok) {
+              console.log(`Redirecionando para ${adminUrl}`);
               window.location.href = adminUrl;
             } else {
               throw new Error(`Arquivo ${adminUrl} não encontrado (status ${response.status}).`);
             }
           } catch (error) {
             console.error('Erro ao redirecionar:', error);
-            alert('Erro: Não foi possível acessar a página de administração. Verifique se o arquivo admin-xyz-123.html existe.');
+            alert(`Erro: Não foi possível acessar a página de administração. Verifique se o arquivo admin-xyz-123.html existe. Detalhes: ${error.message}`);
           }
           clickCount = 0;
         }
-      });
-
-      logo.addEventListener('error', () => {
-        console.error('Erro ao carregar a imagem da logo:', logo.src);
-        alert('Erro: Imagem da logo não carregada. Verifique o caminho da imagem.');
       });
     }
 
