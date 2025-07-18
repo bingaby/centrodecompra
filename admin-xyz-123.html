@@ -2,145 +2,90 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Centro de Compras</title>
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
-    script-src 'self' 'unsafe-inline';
+    script-src 'self' 'unsafe-inline' https://www.gstatic.com;
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-    img-src 'self' data:;
+    img-src 'self' data: https://bingaby.github.io https://drive.google.com https://*.googleusercontent.com;
     font-src 'self' https://fonts.gstatic.com;
-    connect-src 'self' https://script.google.com https://www.googleapis.com;
+    connect-src 'self' https://script.google.com https://www.googleapis.com https://opensheet.vercel.app https://bingaby.github.io;
   ">
-  <title>Admin - CentrodeCompra</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
   <style>
-    body {
-      font-family: 'Roboto', Arial, sans-serif;
-      background-color: #f5f5f5;
-      color: #333;
-      padding: 20px;
-      max-width: 800px;
-      margin: 0 auto;
-    }
-    h1 {
-      color: #2E8B57;
-      text-align: center;
-    }
-    form {
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    label {
-      display: block;
-      margin: 10px 0 5px;
-      font-weight: 500;
-    }
-    input, select, textarea {
-      width: 100%;
-      padding: 8px;
-      margin-bottom: 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    button {
-      background-color: #FFA500;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #e69500;
-    }
-    #feedback {
-      margin-top: 10px;
-      color: #333;
-    }
-    #imagens-preview {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    #imagens-preview img {
-      max-width: 100px;
-      height: auto;
-      border-radius: 4px;
-    }
-    @media (max-width: 768px) {
-      form { padding: 15px; }
-      input, select, textarea { font-size: 0.9em; }
-      button { padding: 8px 16px; }
-    }
+    body { font-family: 'Roboto', Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 20px; }
+    .container { max-width: 800px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    h1 { color: #2E8B57; text-align: center; }
+    form { display: flex; flex-direction: column; gap: 15px; }
+    label { font-weight: bold; color: #333; }
+    input, select, textarea { padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
+    input[type="file"] { padding: 5px; }
+    button { background: #FFA500; color: #fff; padding: 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+    button:hover { background: #e69500; }
+    #feedback { text-align: center; font-weight: bold; }
+    #imagens-preview { display: flex; flex-wrap: wrap; gap: 10px; }
+    #imagens-preview img { max-width: 100px; border-radius: 4px; }
+    @media (max-width: 600px) { .container { padding: 10px; } }
   </style>
 </head>
 <body>
-  <h1>Admin - Adicionar/Editar Produto</h1>
-  <form id="produto-form">
-    <label for="nome">Nome do Produto</label>
-    <input type="text" id="nome" name="nome" required>
-
-    <label for="descricao">Descrição</label>
-    <textarea id="descricao" name="descricao" rows="4"></textarea>
-
-    <label for="categoria">Categoria</label>
-    <select id="categoria" name="categoria">
-      <option value="eletronicos">Eletrônicos</option>
-      <option value="moda">Moda</option>
-      <option value="fitness">Fitness</option>
-      <option value="casa">Casa</option>
-      <option value="beleza">Beleza</option>
-      <option value="esportes">Esportes</option>
-      <option value="livros">Livros</option>
-      <option value="infantil">Infantil</option>
-      <option value="celulares">Celulares</option>
-      <option value="eletrodomesticos">Eletrodomésticos</option>
-      <option value="pet">Pet</option>
-      <option value="jardinagem">Jardinagem</option>
-      <option value="automotivo">Automotivo</option>
-      <option value="gastronomia">Gastronomia</option>
-      <option value="games">Games</option>
-    </select>
-
-    <label for="loja">Loja</label>
-    <select id="loja" name="loja">
-      <option value="amazon">Amazon</option>
-      <option value="magalu">Magalu</option>
-      <option value="shein">Shein</option>
-      <option value="shopee">Shopee</option>
-      <option value="mercadolivre">Mercado Livre</option>
-      <option value="alibaba">Alibaba</option>
-    </select>
-
-    <label for="link">Link do Produto</label>
-    <input type="url" id="link" name="link">
-
-    <label for="preco">Preço (R$)</label>
-    <input type="text" id="preco" name="preco">
-
-    <label for="imagens">Imagens (máximo 5)</label>
-    <input type="file" id="imagens" name="imagens" accept="image/*" multiple>
-
-    <label for="rowIndex">Índice da Linha (para edição, opcional)</label>
-    <input type="number" id="rowIndex" name="rowIndex" min="2">
-
-    <div id="imagens-preview"></div>
-    <button type="submit">Salvar Produto</button>
+  <div class="container">
+    <h1>Adicionar/Editar Produto</h1>
+    <form id="produto-form">
+      <label for="nome">Nome do Produto:</label>
+      <input type="text" id="nome" name="nome" required>
+      <label for="descricao">Descrição:</label>
+      <textarea id="descricao" name="descricao" rows="4" required></textarea>
+      <label for="categoria">Categoria:</label>
+      <select id="categoria" name="categoria" required>
+        <option value="eletronicos">Eletrônicos</option>
+        <option value="roupas">Roupas</option>
+        <option value="acessorios">Acessórios</option>
+        <option value="casa">Casa</option>
+      </select>
+      <label for="loja">Loja:</label>
+      <select id="loja" name="loja" required>
+        <option value="amazon">Amazon</option>
+        <option value="mercadolivre">Mercado Livre</option>
+        <option value="shopee">Shopee</option>
+      </select>
+      <label for="link">Link do Produto:</label>
+      <input type="url" id="link" name="link" required>
+      <label for="preco">Preço (R$):</label>
+      <input type="number" id="preco" name="preco" step="0.01" required>
+      <label for="imagens">Imagens:</label>
+      <input type="file" id="imagens" name="imagens" accept="image/*" multiple>
+      <div id="imagens-preview"></div>
+      <input type="hidden" id="rowIndex" name="rowIndex">
+      <button type="submit">Salvar Produto</button>
+    </form>
     <div id="feedback"></div>
-  </form>
-
+  </div>
   <script>
-    const WEB_APP_URL = 'https://script.google.com/macros/s/.../exec'; // Substitua pela URL da Web App
-
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzAqnXXQP1ZZiS81K8MHlHrffa7AJENMeaf2zPg2yuDSm2BN-6jMCiPsXqvzwp2eWdw/exec';
+    // Verificar autenticação
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('tempToken') !== 'triple-click-access') {
+      alert('Acesso não autorizado.');
+      window.location.href = '/index.html';
+    }
+    // Visualizar imagens
+    document.getElementById('imagens').addEventListener('change', (e) => {
+      const preview = document.getElementById('imagens-preview');
+      preview.innerHTML = '';
+      Array.from(e.target.files).forEach(file => {
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        preview.appendChild(img);
+      });
+    });
+    // Enviar formulário
     document.getElementById('produto-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const feedback = document.getElementById('feedback');
       feedback.textContent = 'Enviando...';
-
       try {
         const formData = new FormData(e.target);
         const imagens = formData.getAll('imagens');
@@ -152,7 +97,6 @@
             reader.readAsDataURL(file);
           }))
         );
-
         const data = {
           nome: formData.get('nome'),
           descricao: formData.get('descricao'),
@@ -163,13 +107,11 @@
           imagensBase64: imagensBase64,
           rowIndex: formData.get('rowIndex') || undefined
         };
-
         const response = await fetch(WEB_APP_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         });
-
         const result = await response.json();
         if (result.success) {
           feedback.textContent = 'Produto salvo com sucesso!';
@@ -184,22 +126,6 @@
         feedback.textContent = `Erro: ${error.message}`;
         feedback.style.color = '#d32f2f';
       }
-    });
-
-    document.getElementById('imagens').addEventListener('change', (e) => {
-      const preview = document.getElementById('imagens-preview');
-      preview.innerHTML = '';
-      const files = e.target.files;
-      if (files.length > 5) {
-        alert('Máximo de 5 imagens permitido.');
-        e.target.value = '';
-        return;
-      }
-      Array.from(files).forEach(file => {
-        const img = document.createElement('img');
-        img.src = URL.createObjectURL(file);
-        preview.appendChild(img);
-      });
     });
   </script>
 </body>
