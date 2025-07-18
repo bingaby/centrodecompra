@@ -1,13 +1,9 @@
 {
-  "name": "api-centro-de-compras",
+  "name": "centro-de-compras-api",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
-  "scripts": {
-    "start": "node index.js"
-  },
   "dependencies": {
-    "dotenv": "^16.0.0",
     "googleapis": "^121.0.0"
   }
 }
