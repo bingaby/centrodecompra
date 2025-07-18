@@ -1,128 +1,119 @@
-const PLANILHA_ID = '1SMpUcrobcuWVGq4F_3N59rhs2_GpDo2531_2blpwEhs';
-const ABA_PRODUTOS = 'Produtos';
-const PASTA_DRIVE_ID = '1Nkpfbi2idMvJEsLMZWInoWoVSbZGGTgA';
+import { google } from 'googleapis';
 
-function doGet(e) {
-  return ContentService.createTextOutput(JSON.stringify({ message: "API do Centro de Compras ativa." }))
-    .setMimeType(ContentService.MimeType.JSON)
-    .setHeader('Access-Control-Allow-Origin', '*');
+const {
+  GOOGLE_SERVICE_ACCOUNT_EMAIL,
+  GOOGLE_PRIVATE_KEY,
+  PLANILHA_ID,
+  PASTA_DRIVE_ID
+} = process.env;
+
+if (!GOOGLE_SERVICE_ACCOUNT_EMAIL || !GOOGLE_PRIVATE_KEY || !PLANILHA_ID || !PASTA_DRIVE_ID) {
+  throw new Error('Faltando variáveis de ambiente obrigatórias.');
 }
 
-function doPost(e) {
-  try {
-    // Configurar CORS
-    const headers = {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type'
-    };
+const auth = new google.auth.JWT(
+  GOOGLE_SERVICE_ACCOUNT_EMAIL,
+  null,
+  GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+  [
+    'https://www.googleapis.com/auth/drive',
+    'https://www.googleapis.com/auth/spreadsheets'
+  ]
+);
 
-    // Responder a requisições OPTIONS (pré-vôo CORS)
-    if (e.parameter.method === 'OPTIONS') {
-      return ContentService.createTextOutput('')
-        .setMimeType(ContentService.MimeType.JSON)
-        .setHeaders(headers);
-    }
+const sheets = google.sheets({ version: 'v4', auth });
+const drive = google.drive({ version: 'v3', auth });
 
-    const data = JSON.parse(e.postData.contents);
-    const sheet = SpreadsheetApp.openById(PLANILHA_ID).getSheetByName(ABA_PRODUTOS);
-    if (!sheet) throw new Error(`Aba "${ABA_PRODUTOS}" não encontrada.`);
+async function salvarImagemBase64(base64String, nomeArquivo) {
+  const base64Data = base64String.replace(/^data:image\/\w+;base64,/, '');
+  const buffer = Buffer.from(base64Data, 'base64');
 
-    // Ação de exclusão
-    if (data.action === 'delete') {
-      const rowIndex = parseInt(data.rowIndex);
-      if (rowIndex < 2) throw new Error('Índice de linha inválido.');
-      sheet.deleteRow(rowIndex);
-      Logger.log(`Linha ${rowIndex} excluída com sucesso.`);
-      return ContentService.createTextOutput(JSON.stringify({ success: true }))
-        .setMimeType(ContentService.MimeType.JSON)
-        .setHeaders(headers);
-    }
+  const res = await drive.files.create({
+    requestBody: {
+      name: nomeArquivo,
+      parents: [PASTA_DRIVE_ID],
+      mimeType: 'image/jpeg',
+    },
+    media: {
+      mimeType: 'image/jpeg',
+      body: buffer,
+    },
+    fields: 'id',
+  });
 
-    // Processar imagens
-    let imagens = [];
-    if (data.imagensBase64 && Array.isArray(data.imagensBase64)) {
-      imagens = data.imagensBase64.map((base64, index) => {
-        Logger.log(`Salvando imagem ${index + 1} para produto: ${data.nome}`);
-        return salvarImagemBase64(base64, `${data.nome || 'produto'}_${index + 1}.jpg`);
-      });
-    } else if (data.imagemBase64) {
-      Logger.log(`Salvando imagem única para produto: ${data.nome}`);
-      imagens = [salvarImagemBase64(data.imagemBase64, `${data.nome || 'produto'}.jpg`)];
-    }
+  const fileId = res.data.id;
 
-    // Preparar dados do produto
-    const produto = {
-      nome: data.nome || '',
-      descricao: data.descricao || '',
-      categoria: data.categoria || '',
-      loja: data.loja || '',
-      link: data.link || '',
-      preco: data.preco || '',
-      imagens: imagens.join(','),
-      data: new Date().toISOString()
-    };
+  await drive.permissions.create({
+    fileId,
+    requestBody: {
+      role: 'reader',
+      type: 'anyone',
+    },
+  });
 
-    // Adicionar ou atualizar produto
-    if (data.rowIndex) {
-      const rowIndex = parseInt(data.rowIndex);
-      if (rowIndex < 2) throw new Error('Índice de linha inválido.');
-      sheet.getRange(rowIndex, 1, 1, 8).setValues([[
-        produto.nome,
-        produto.descricao,
-        produto.categoria,
-        produto.loja,
-        produto.link,
-        produto.preco,
-        produto.imagens,
-        produto.data
-      ]]);
-      Logger.log(`Produto atualizado na linha ${rowIndex}: ${produto.nome}`);
-    } else {
-      sheet.appendRow([
-        produto.nome,
-        produto.descricao,
-        produto.categoria,
-        produto.loja,
-        produto.link,
-        produto.preco,
-        produto.imagens,
-        produto.data
-      ]);
-      Logger.log(`Produto adicionado: ${produto.nome}`);
-    }
+  return `https://drive.google.com/uc?export=view&id=${fileId}`;
+}
 
-    return ContentService.createTextOutput(JSON.stringify({ success: true, imagemUrls: imagens }))
-      .setMimeType(ContentService.MimeType.JSON)
-      .setHeaders(headers);
-  } catch (erro) {
-    Logger.log(`Erro: ${erro.message}`);
-    return ContentService.createTextOutput(JSON.stringify({ success: false, error: erro.message }))
-      .setMimeType(ContentService.MimeType.JSON)
-      .setHeaders({
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type'
-      });
+export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
   }
-}
 
-function salvarImagemBase64(base64String, nomeArquivo) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Método não permitido' });
+  }
+
   try {
-    Logger.log(`Iniciando salvamento de imagem: ${nomeArquivo}`);
-    const pasta = DriveApp.getFolderById(PASTA_DRIVE_ID);
-    Logger.log(`Pasta encontrada: ${pasta.getName()}`);
-    const base64Clean = base64String.replace(/^data:image\/[a-z]+;base64,/, '');
-    const bytes = Utilities.base64Decode(base64Clean);
-    const blob = Utilities.newBlob(bytes, 'image/jpeg', nomeArquivo);
-    const arquivo = pasta.createFile(blob);
-    arquivo.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-    const fileId = arquivo.getId();
-    const url = `https://drive.google.com/uc?export=view&id=${fileId}`;
-    Logger.log(`Imagem salva com sucesso: ${url}`);
-    return url;
-  } catch (erro) {
-    Logger.log(`Erro ao salvar imagem ${nomeArquivo}: ${erro.message}`);
-    throw erro;
+    const data = req.body;
+
+    // Salvar imagens no Drive e obter URLs
+    let imagensUrls = [];
+    if (data.imagensBase64 && Array.isArray(data.imagensBase64)) {
+      imagensUrls = await Promise.all(
+        data.imagensBase64.map((imgBase64, idx) =>
+          salvarImagemBase64(imgBase64, `${data.nome || 'produto'}_${Date.now()}_${idx}.jpg`)
+        )
+      );
+    }
+
+    const linha = [
+      data.nome || '',
+      data.descricao || '',
+      data.categoria || '',
+      data.loja || '',
+      data.link || '',
+      data.preco || '',
+      imagensUrls.join(','),
+      new Date().toISOString(),
+    ];
+
+    if (data.rowIndex) {
+      const rowIndex = parseInt(data.rowIndex, 10);
+      if (rowIndex < 2) throw new Error('Índice de linha inválido.');
+
+      await sheets.spreadsheets.values.update({
+        spreadsheetId: PLANILHA_ID,
+        range: `Produtos!A${rowIndex}:H${rowIndex}`,
+        valueInputOption: 'USER_ENTERED',
+        requestBody: { values: [linha] },
+      });
+    } else {
+      await sheets.spreadsheets.values.append({
+        spreadsheetId: PLANILHA_ID,
+        range: 'Produtos!A:H',
+        valueInputOption: 'USER_ENTERED',
+        insertDataOption: 'INSERT_ROWS',
+        requestBody: { values: [linha] },
+      });
+    }
+
+    return res.status(200).json({ success: true, imagemUrls: imagensUrls });
+  } catch (error) {
+    console.error('Erro no backend:', error);
+    return res.status(500).json({ success: false, error: error.message });
   }
 }
