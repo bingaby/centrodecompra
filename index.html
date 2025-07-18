@@ -111,10 +111,11 @@
       loadingSpinner.style.display = 'block';
       try {
         const response = await fetch(PLANILHA_URL);
+        if (!response.ok) throw new Error('Erro ao carregar produtos: ' + response.status);
         produtos = await response.json();
         filtrarProdutos();
       } catch (error) {
-        mensagemVazia.textContent = 'Erro ao carregar produtos.';
+        mensagemVazia.textContent = 'Erro ao carregar produtos: ' + error.message;
         mensagemVazia.style.display = 'block';
       } finally {
         loadingSpinner.style.display = 'none';
@@ -180,6 +181,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+      console.log('Página carregada em:', window.location.href);
       carregarProdutos();
       configurarBusca();
       atualizarAnoFooter();
