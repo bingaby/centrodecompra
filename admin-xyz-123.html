@@ -94,14 +94,13 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         });
-        if (response.ok) {
-          successMessage.textContent = 'Produto adicionado com sucesso!';
-          successMessage.style.display = 'block';
-          errorMessage.style.display = 'none';
-          form.reset();
-        } else {
-          throw new Error('Falha ao adicionar produto.');
+        if (!response.ok) {
+          throw new Error(`Erro ${response.status}: ${response.statusText}`);
         }
+        successMessage.textContent = 'Produto adicionado com sucesso!';
+        successMessage.style.display = 'block';
+        errorMessage.style.display = 'none';
+        form.reset();
       } catch (error) {
         errorMessage.textContent = 'Erro: ' + error.message;
         errorMessage.style.display = 'block';
