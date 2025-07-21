@@ -32,15 +32,22 @@ self.addEventListener('install', event => {
 
 self.addEventListener('fetch', event => {
   event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        // Retorna do cache se encontrado, caso contrário faz fetch
-        return response || fetch(event.request).catch(error => {
-          console.error('Service Worker: Falha ao buscar:', error);
-          // Opcional: Retornar uma página offline personalizada
-          return caches.match('/index.html');
+    caches.match(event.request).then(cachedResponse => {
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+      return fetch(event.request).then(networkResponse => {
+        // Clona a resposta antes de usar
+        const responseClone = networkResponse.clone();
+        caches.open(CACHE_NAME).then(cache => {
+          cache.put(event.request, responseClone);
         });
-      })
+        return networkResponse;
+      }).catch(error => {
+        console.error('Service Worker: Falha ao buscar:', error);
+        return caches.match('/index.html');
+      });
+    })
   );
 });
 
