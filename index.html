@@ -12,13 +12,13 @@
   <meta property="og:url" content="https://www.centrodecompra.com.br/">
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
-    script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://www.google-analytics.com https://www.google.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://ep2.adtrafficquality.google;
+    script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://www.google-analytics.com https://www.google.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com;
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-    img-src 'self' https://drive.google.com https://*.googleusercontent.com data: https://tpc.googlesyndication.com https://pagead2.googlesyndication.com https://bingaby.github.io https://www.centrodecompra.com.br;
+    img-src 'self' https://drive.google.com https://*.googleusercontent.com data: https://tpc.googlesyndication.com https://pagead2.googlesyndication.com;
     font-src 'self' https://fonts.gstatic.com;
     worker-src 'self' blob:;
     frame-src 'self' https://googleads.g.doubleclick.net https://tpc.googlesyndication.com;
-    connect-src 'self' https://ep1.adtrafficquality.google https://ep2.adtrafficquality.google https://www.google-analytics.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://opensheet.vercel.app https://bingaby.github.io https://www.centrodecompra.com.br https://centro-de-compras-lq4c7dc5g-centrodecompra.vercel.app;
+    connect-src 'self' https://ep1.adtrafficquality.google https://www.google-analytics.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net;
   ">
   <title>CentrodeCompra - Ofertas do Dia</title>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4531749081462125" crossorigin="anonymous"></script>
@@ -93,7 +93,7 @@
     }
     .sidebar {
       width: 100%;
-      maxobert: max-width: 250px;
+      max-width: 250px;
       background-color: #fff;
       padding: 15px;
       border-radius: 8px;
@@ -211,26 +211,6 @@
       transition: transform 0.2s;
     }
     .produto-card:hover {
-      transform: translateY(-5px);
-    }
-    .produto-card img {
-      width: 100%;
-      height: 160px;
-      object-fit: contain;
-      border-radius: 4px;
-    }
-    .produto-card span {
-      display: block;
-      margin: 5px 0;
-      font-size: 0.9em;
-    }
-    .descricao {
-      font-size: 0.85em;
-      color: #666;
-    }
-    .preco a {
-      color: #FFA500;
-      text-decoration: none;.produto-card:hover {
       transform: translateY(-5px);
     }
     .produto-card img {
@@ -503,7 +483,6 @@
       .header-text h1 { font-size: 1.5em; }
       .header-text p { font-size: 0.9em; }
       .grid-produtos { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); }
-      .produto-card { padding: 8px; }
       .produto-card img { height: 120px; }
       .ver-na-loja { padding: 5px 10px; font-size: 0.8em; }
       .adsbygoogle { height: 90px; }
@@ -514,7 +493,7 @@
   <header class="site-header">
     <div class="logo-container">
       <a href="index.html">
-        <img src="https://www.centrodecompra.com.br/logos/logoscentrodecompras.jpeg" alt="CentrodeCompra" id="site-logo-img" width="120" height="40" loading="eager" onerror="this.src='https://via.placeholder.com/120x40?text=Logo'">
+        <img src="https://www.centrodecompra.com.br/logos/logoscentrodecompras.jpeg" alt="CentrodeCompra" id="site-logo-img" width="120" height="40" onerror="this.src='https://via.placeholder.com/120x40?text=Logo'">
       </a>
     </div>
     <div class="header-text">
@@ -561,11 +540,7 @@
              data-ad-client="ca-pub-4531749081462125"
              data-ad-slot="5690664546"></ins>
         <script>
-          try {
-            (adsbygoogle = window.adsbygoogle || []).push({});
-          } catch (e) {
-            console.error('Erro ao carregar AdSense:', e);
-          }
+             (adsbygoogle = window.adsbygoogle || []).push({});
         </script>
         <div class="lojas-parceiras">
           <h3>🌟 Lojas Parceiras</h3>
@@ -604,26 +579,26 @@
         <p class="mensagem-vazia" id="mensagem-vazia" style="display: none;">Nenhum produto encontrado.</p>
         <p class="error-message" id="error-message" style="display: none;"></p>
         <div class="paginacao" id="paginacao">
-          <button id="prev-page" disabled aria-label="Página anterior">Anterior</button>
+          <button id="prev-page" disabled>Anterior</button>
           <span id="page-info">Página 1</span>
-          <button id="next-page" aria-label="Próxima página">Próxima</button>
+          <button id="next-page">Próxima</button>
         </div>
       </section>
       <div class="social-links">
         <a href="https://www.tiktok.com/@cdc.centraldecompras" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><img src="https://www.centrodecompra.com.br/logos/tiktok.png" alt="TikTok" loading="eager" width="36" height="36" onerror="this.src='https://via.placeholder.com/36?text=TikTok'"></div>
+          <div class="icon"><img src="https://www.centrodecompra.com.br/logos/tiktok.png" alt="TikTok" loading="lazy" width="36" height="36" onerror="this.src='https://via.placeholder.com/36?text=TikTok'"></div>
           <span>TikTok</span>
         </a>
         <a href="https://www.instagram.com/cdccentrodecompras/" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><img src="https://www.centrodecompra.com.br/logos/Instagram.png" alt="Instagram" loading="eager" width="36" height="36" onerror="this.src='https://via.placeholder.com/36?text=Instagram'"></div>
+          <div class="icon"><img src="https://www.centrodecompra.com.br/logos/Instagram.png" alt="Instagram" loading="lazy" width="36" height="36" onerror="this.src='https://via.placeholder.com/36?text=Instagram'"></div>
           <span>Instagram</span>
         </a>
         <a href="https://x.com/ComprasCdc" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><img src="https://www.centrodecompra.com.br/logos/X.png" alt="X" loading="eager" width="36" height="36" onerror="this.src='https://via.placeholder.com/36?text=X'"></div>
+          <div class="icon"><img src="https://www.centrodecompra.com.br/logos/X.png" alt="X" loading="lazy" width="36" height="36" onerror="this.src='https://via.placeholder.com/36?text=X'"></div>
           <span>X</span>
         </a>
         <a href="https://www.youtube.com/channel/UCaKHlI-hWqwdAXS6Xsv3ZzA" target="_blank" rel="noopener noreferrer">
-          <div class="icon"><img src="https://www.centrodecompra.com.br/logos/youtube.png" alt="YouTube" loading="eager" width="36" height="36" onerror="this.src='https://via.placeholder.com/36?text=YouTube'"></div>
+          <div class="icon"><img src="https://www.centrodecompra.com.br/logos/youtube.png" alt="YouTube" loading="lazy" width="36" height="36" onerror="this.src='https://via.placeholder.com/36?text=YouTube'"></div>
           <span>YouTube</span>
         </a>
       </div>
@@ -633,11 +608,11 @@
   </div>
 
   <div class="modal" id="imageModal">
-    <риз class="modal-close" aria-label="Fechar modal">✕</button>
+    <button class="modal-close">✕</button>
     <div class="modal-content">
       <div class="carrossel-imagens" id="modalCarrosselImagens"></div>
-      <button class="carrossel-prev" aria-label="Imagem anterior">◄</button>
-      <button class="carrossel-next" aria-label="Próxima imagem">▶</button>
+      <button class="carrossel-prev">◄</button>
+      <button class="carrossel-next">▶</button>
       <div class="carrossel-dots" id="modalCarrosselDots"></div>
     </div>
   </div>
@@ -651,7 +626,7 @@
 
   <div class="robo-assistente">
     <a href="https://api.whatsapp.com/send?phone=5521975179737" target="_blank" rel="noopener noreferrer">
-      <img src="https://www.centrodecompra.com.br/imagens/robo.jpg" alt="Robô Assistente" class="robo-imagem" loading="eager" width="50" height="50" onerror="this.src='https://via.placeholder.com/50?text=Robo'">
+      <img src="https://www.centrodecompra.com.br/imagens/robo.jpg" alt="Robô Assistente" class="robo-imagem" loading="lazy" width="50" height="50" onerror="this.src='https://via.placeholder.com/50?text=Robo'">
       <div class="robo-texto">Posso ajudar?</div>
     </a>
   </div>
@@ -666,14 +641,6 @@
     let currentImageIndex = 0;
     let currentPage = 1;
     const produtosPorPagina = 24;
-    const imageCache = new Map(); // Cache para imagens validadas
-
-    // Função para sanitizar strings e evitar XSS
-    function sanitizeHTML(str) {
-      const div = document.createElement('div');
-      div.textContent = str;
-      return div.innerHTML;
-    }
 
     function normalizarString(str) {
       return str?.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') || '';
@@ -688,27 +655,16 @@
     }
 
     function atualizarAnoFooter() {
-      const yearElement = document.getElementById('year');
-      if (yearElement) {
-        yearElement.textContent = new Date().getFullYear();
-      }
+      document.getElementById('year').textContent = new Date().getFullYear();
     }
 
     async function verificarImagem(url) {
-      if (imageCache.has(url)) return imageCache.get(url);
-      try {
-        const response = await fetch(url, { method: 'HEAD', cache: 'no-store' });
-        const contentType = response.headers.get('content-type');
-        if (response.ok && contentType?.startsWith('image/')) {
-          imageCache.set(url, url);
-          return url;
-        }
-        throw new Error('Imagem inválida');
-      } catch {
-        const fallbackUrl = 'https://via.placeholder.com/160?text=Produto';
-        imageCache.set(url, fallbackUrl);
-        return fallbackUrl;
-      }
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve(url);
+        img.onerror = () => resolve('https://via.placeholder.com/160?text=Produto');
+        img.src = url;
+      });
     }
 
     async function configurarCliqueLogo() {
@@ -782,7 +738,7 @@
         atualizarPaginacao();
       } catch (error) {
         console.error('Erro ao carregar produtos:', error);
-        errorMessage.textContent = `Erro: Não foi possível carregar os produtos. Tente novamente mais tarde.`;
+        errorMessage.textContent = `Erro: Não foi possível carregar os produtos.`;
         errorMessage.style.display = 'block';
         mensagemVazia.style.display = 'none';
         gridProdutos.style.display = 'none';
@@ -831,29 +787,25 @@
         produtoDiv.setAttribute('data-categoria', normalizarString(produto.categoria) || 'todas');
         produtoDiv.setAttribute('data-loja', normalizarString(produto.loja) || 'todas');
 
-        const precoHtml = produto.preco
-          ? `R$ ${sanitizeHTML(produto.preco)}`
-          : `<a href="${sanitizeHTML(produto.link || '#')}" target="_blank" class="ver-preco">Ver preço</a>`;
-
         produtoDiv.innerHTML = `
           <div class="carrossel" id="${carrosselId}">
             <div class="carrossel-imagens">
               ${imagensValidadas.map((img, i) => `
-                <img src="${sanitizeHTML(img)}" alt="${sanitizeHTML(produto.nome || 'Produto')} ${i + 1}" loading="eager" width="160" height="160" data-modal-index="${produtoIndex}" data-image-index="${i}">
+                <img src="${img}" alt="${produto.nome || 'Produto'} ${i + 1}" loading="eager" width="160" height="160" data-modal-index="${produtoIndex}" data-image-index="${i}">
               `).join('')}
             </div>
             ${imagensValidadas.length > 1 ? `
-              <button class="carrossel-prev" data-carrossel-id="${carrosselId}" aria-label="Imagem anterior">◄</button>
-              <button class="carrossel-next" data-carrossel-id="${carrosselId}" aria-label="Próxima imagem">▶</button>
+              <button class="carrossel-prev" data-carrossel-id="${carrosselId}">◄</button>
+              <button class="carrossel-next" data-carrossel-id="${carrosselId}">▶</button>
               <div class="carrossel-dots">
                 ${imagensValidadas.map((_, i) => `<span class="carrossel-dot ${i === 0 ? 'ativa' : ''}" data-carrossel-id="${carrosselId}" data-index="${i}"></span>`).join('')}
               </div>
             ` : ''}
           </div>
-          <span>${sanitizeHTML(produto.nome || 'Produto sem nome')}</span>
-          <span class="descricao">Loja: ${sanitizeHTML(produto.loja || 'Desconhecida')}</span>
-          <p class="preco">${precoHtml}</p>
-          <a href="${sanitizeHTML(produto.link || '#')}" target="_blank" class="ver-na-loja">Comprar</a>
+          <span>${produto.nome || 'Produto sem nome'}</span>
+          <span class="descricao">Loja: ${produto.loja || 'Desconhecida'}</span>
+          <p class="preco">${produto.preco ? `R$ ${produto.preco}` : '<a href="${produto.link || '#'}" target="_blank" class="ver-preco">Ver preço</a>'}</p>
+          <a href="${produto.link || '#'}" target="_blank" class="ver-na-loja">Comprar</a>
         `;
         gridProdutos.appendChild(produtoDiv);
       });
@@ -892,7 +844,7 @@
         currentImages = await Promise.all(currentImages.map(verificarImagem));
         currentImageIndex = imageIndex;
 
-        carrosselImagens.innerHTML = currentImages.map((img) => `<img src="${sanitizeHTML(img)}" alt="Imagem ampliada" style="max-width:100%; max-height:100%;">`).join('');
+        carrosselImagens.innerHTML = currentImages.map(img => `<img src="${img}" alt="Imagem ampliada" style="max-width:100%; max-height:100%;">`).join('');
         carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
 
         carrosselDots.innerHTML = currentImages.map((_, i) => `<span class="carrossel-dot ${i === currentImageIndex ? 'ativa' : ''}" data-modal-index="${i}"></span>`).join('');
