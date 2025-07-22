@@ -18,7 +18,7 @@
     font-src 'self' https://fonts.gstatic.com;
     worker-src 'self' blob:;
     frame-src 'self' https://googleads.g.doubleclick.net https://tpc.googlesyndication.com;
-    connect-src 'self' https://ep1.adtrafficquality.google https://www.google-analytics.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net;
+    connect-src 'self' https://ep1.adtrafficquality.google https://www.google-analytics.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://centro-de-compras-api.vercel.app;
   ">
   <title>CentrodeCompra - Ofertas do Dia</title>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4531749081462125" crossorigin="anonymous"></script>
@@ -452,6 +452,33 @@
       text-align: center;
       max-width: 100%;
     }
+    .admin-section {
+      background-color: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-top: 15px;
+    }
+    .admin-section input, .admin-section textarea {
+      width: 100%;
+      padding: 8px;
+      margin: 5px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+    .admin-section button {
+      padding: 8px 16px;
+      background-color: #FFA500;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9em;
+    }
+    .admin-section button:hover {
+      background-color: #e69500;
+    }
     @media (forced-colors: active) {
       .container, .site-header, .sidebar, .loja, .produto-card {
         forced-color-adjust: auto;
@@ -500,9 +527,8 @@
       <h1>CentrodeCompra</h1>
       <p>O maior portal de compras do Brasil! Encontre as melhores ofertas.</p>
     </div>
-  </header>
-
-  <nav>
+    </header>
+    <nav>
     <a href="index.html">Promoções</a>
     <a href="cupom.html">Cupom de Desconto</a>
     <a href="sobre.html">Sobre</a>
@@ -584,6 +610,21 @@
           <button id="next-page">Próxima</button>
         </div>
       </section>
+      <section class="admin-section" style="display: none;">
+        <h2>Adicionar Produto</h2>
+        <form id="produtoForm">
+          <input type="text" id="nome" placeholder="Nome" required>
+          <textarea id="descricao" placeholder="Descrição"></textarea>
+          <input type="text" id="categoria" placeholder="Categoria" required>
+          <input type="text" id="loja" placeholder="Loja" required>
+          <input type="url" id="link" placeholder="Link" required>
+          <input type="number" id="preco" placeholder="Preço" step="0.01" required>
+          <input type="file" id="imagens" accept="image/*" multiple>
+          <input type="hidden" id="rowIndex" name="rowIndex">
+          <button type="submit">Enviar Produto</button>
+        </form>
+        <p id="form-feedback" style="display: none; color: #333;"></p>
+      </section>
       <div class="social-links">
         <a href="https://www.tiktok.com/@cdc.centraldecompras" target="_blank" rel="noopener noreferrer">
           <div class="icon"><img src="https://www.centrodecompra.com.br/logos/tiktok.png" alt="TikTok" loading="lazy" width="36" height="36" onerror="this.src='https://via.placeholder.com/36?text=TikTok'"></div>
@@ -632,7 +673,7 @@
   </div>
 
   <script>
-    const PLANILHA_URL = 'https://opensheet.vercel.app/1SMpUcrobcuWVGq4F_3N59rhs2_GpDo2531_2blpwEhs/Produtos';
+    const API_URL = 'https://centro-de-compras-api.vercel.app/api/produtos';
     let produtos = [];
     let categoriaSelecionada = 'todas';
     let lojaSelecionada = 'todas';
@@ -688,18 +729,9 @@
           clickTimer = setTimeout(() => clickCount = 0, 2000);
         } else if (clickCount === 3) {
           clearTimeout(clickTimer);
-          const adminUrl = `./admin-xyz-123.html?tempToken=triple-click-access&t=${Date.now()}`;
-          try {
-            const response = await fetch(adminUrl, { method: 'HEAD', cache: 'no-store' });
-            if (response.ok) {
-              console.log(`Redirecionando para ${adminUrl}`);
-              window.location.href = adminUrl;
-            } else {
-              throw new Error(`Página de administração não encontrada (status ${response.status}).`);
-            }
-          } catch (error) {
-            console.error('Erro ao redirecionar:', error);
-            alert(`Erro: Não foi possível acessar a página de administração.`);
+          const adminSection = document.querySelector('.admin-section');
+          if (adminSection) {
+            adminSection.style.display = 'block';
           }
           clickCount = 0;
         }
@@ -725,15 +757,16 @@
       gridProdutos.innerHTML = '';
 
       try {
-        console.log('Carregando produtos de:', PLANILHA_URL);
-        const response = await fetch(PLANILHA_URL, {
+        console.log('Carregando produtos de:', API_URL);
+        const response = await fetch(API_URL, {
           cache: 'no-store',
           headers: { 'Accept': 'application/json' }
         });
         if (!response.ok) throw new Error(`Erro ${response.status}: Falha ao carregar produtos`);
-        produtos = await response.json();
-        if (!Array.isArray(produtos)) throw new Error('Resposta inválida: produtos não é um array');
-        console.log('Dados recebidos:', produtos);
+        const data = await response.json();
+        if (!data.success || !Array.isArray(data.produtos)) throw new Error('Resposta inválida: produtos não encontrados');
+        console.log('Dados recebidos:', data.produtos);
+        produtos = data.produtos;
         filtrarProdutos();
         atualizarPaginacao();
       } catch (error) {
@@ -842,7 +875,7 @@
           ? produtos[produtoIndex].imagens.split(',').filter(img => img.trim())
           : ['https://via.placeholder.com/160?text=Produto'];
         currentImages = await Promise.all(currentImages.map(verificarImagem));
-        currentImageIndex = imageIndex;
+        currentImageIndex = imageVimageIndex;
 
         carrosselImagens.innerHTML = currentImages.map(img => `<img src="${img}" alt="Imagem ampliada" style="max-width:100%; max-height:100%;">`).join('');
         carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
@@ -913,24 +946,22 @@
         });
       });
 
-      document.querySelectorAll('.produto-card img[data-modal-index]').forEach(img => {
-        img.addEventListener('click', () => {
-          const produtoIndex = parseInt(img.dataset.modalIndex);
-          const imageIndex = parseInt(img.dataset.imageIndex);
+      document.addEventListener('click', (e) => {
+        if (e.target.matches('.produto-card img[data-modal-index]')) {
+          const produtoIndex = parseInt(e.target.dataset.modalIndex);
+          const imageIndex = parseInt(e.target.dataset.imageIndex);
           openModal(produtoIndex, imageIndex);
-        });
+        }
       });
 
-      document.querySelectorAll('.carrossel-prev').forEach(btn => {
-        btn.addEventListener('click', () => moveCarrossel(btn.dataset.carrosselId, -1));
-      });
-
-      document.querySelectorAll('.carrossel-next').forEach(btn => {
-        btn.addEventListener('click', () => moveCarrossel(btn.dataset.carrosselId, 1));
-      });
-
-      document.querySelectorAll('.carrossel-dot').forEach(dot => {
-        dot.addEventListener('click', () => setCarrosselImage(dot.dataset.carrosselId, parseInt(dot.dataset.index)));
+      document.addEventListener('click', (e) => {
+        if (e.target.matches('.carrossel-prev')) {
+          moveCarrossel(e.target.dataset.carrosselId, -1);
+        } else if (e.target.matches('.carrossel-next')) {
+          moveCarrossel(e.target.dataset.carrosselId, 1);
+        } else if (e.target.matches('.carrossel-dot')) {
+          setCarrosselImage(e.target.dataset.carrosselId, parseInt(e.target.dataset.index));
+        }
       });
 
       document.querySelector('.modal-close').addEventListener('click', closeModal);
@@ -973,11 +1004,65 @@
       }
     }
 
+    async function configurarFormulario() {
+      const form = document.getElementById('produtoForm');
+      const feedback = document.getElementById('form-feedback');
+      if (!form || !feedback) return;
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        feedback.style.display = 'none';
+        feedback.style.color = '#333';
+
+        const toBase64 = file => new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = error => reject(error);
+        });
+
+        try {
+          const imagens = document.getElementById('imagens').files;
+          const imagensBase64 = await Promise.all(Array.from(imagens).map(toBase64));
+          const data = {
+            nome: document.getElementById('nome').value,
+            descricao: document.getElementById('descricao').value,
+            categoria: document.getElementById('categoria').value,
+            loja: document.getElementById('loja').value,
+            link: document.getElementById('link').value,
+            preco: document.getElementById('preco').value,
+            imagensBase64,
+            rowIndex: document.getElementById('rowIndex').value || undefined
+          };
+
+          const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
+          const result = await response.json();
+          if (!response.ok || !result.success) throw new Error(result.error || 'Erro ao enviar produto');
+          
+          feedback.textContent = 'Produto enviado com sucesso!';
+          feedback.style.color = '#28a745';
+          feedback.style.display = 'block';
+          form.reset();
+          await carregarProdutos();
+        } catch (error) {
+          console.error('Erro ao enviar produto:', error);
+          feedback.textContent = `Erro: ${error.message}`;
+          feedback.style.color = '#dc3545';
+          feedback.style.display = 'block';
+        }
+      });
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       carregarProdutos();
       configurarBusca();
       configurarPaginacao();
       configurarFiltros();
+      configurarFormulario();
       atualizarAnoFooter();
       configurarCliqueLogo();
       document.getElementById('imageModal')?.addEventListener('click', (e) => {
