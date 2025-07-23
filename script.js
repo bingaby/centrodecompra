@@ -1,5 +1,5 @@
 <script>
-  const BACKEND_URL = 'https://api-centro-de-compras.onrender.com/api/produtos';
+  const BACKEND_URL = 'https://api-centro-de-compras.onrender.com';
 
   // Verificar autenticação
   const urlParams = new URLSearchParams(window.location.search);
