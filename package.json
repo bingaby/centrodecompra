@@ -1,9 +1,7 @@
 {
-  "name": "centro-de-compras-api",
+  "name": "centro-de-compras-frontend",
   "version": "1.0.0",
-  "main": "index.js",
-  "license": "MIT",
-  "dependencies": {
-    "googleapis": "^121.0.0"
+  "scripts": {
+    "deploy": "vercel --prod"
   }
 }
