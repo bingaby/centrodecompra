@@ -1,5 +1,5 @@
 <script>
-  const BACKEND_URL = 'https://centro-de-compras-lq4c7dc5g-centrodecompra.vercel.app/api/produtos';
+  const BACKEND_URL = 'https://api-centro-de-compras.onrender.com/api/produtos';
 
   // Verificar autenticação
   const urlParams = new URLSearchParams(window.location.search);
