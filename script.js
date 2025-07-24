@@ -1,36 +1,3 @@
-const BACKEND_URL = 'https://api-centro-de-compras.onrender.com/api/produtos';
-let currentPage = 1;
-const itemsPerPage = 25;
-let currentCategoria = 'todas';
-let currentLoja = 'todas';
-let searchQuery = '';
-
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('year').textContent = new Date().getFullYear();
-  carregarProdutos();
-  document.getElementById('busca').addEventListener('input', (e) => {
-    searchQuery = e.target.value.toLowerCase();
-    currentPage = 1;
-    carregarProdutos();
-  });
-});
-
-function filtrarPorCategoria(categoria) {
-  currentCategoria = categoria;
-  currentPage = 1;
-  document.querySelectorAll('.categoria-item').forEach(item => item.classList.remove('ativa'));
-  document.querySelector(`.categoria-item[data-categoria="${categoria}"]`).classList.add('ativa');
-  carregarProdutos();
-}
-
-function filtrarPorLoja(loja) {
-  currentLoja = loja;
-  currentPage = 1;
-  document.querySelectorAll('.loja, .loja-todas').forEach(item => item.classList.remove('ativa'));
-  document.querySelector(`[data-loja="${loja}"], .loja-todas`).classList.add('ativa');
-  carregarProdutos();
-}
-
 async function carregarProdutos() {
   const spinner = document.getElementById('loading-spinner');
   const grid = document.getElementById('grid-produtos');
@@ -46,8 +13,12 @@ async function carregarProdutos() {
   errorMessage.style.display = 'none';
 
   try {
-    const response = await fetch(`${BACKEND_URL}?page=${currentPage}&limit=${itemsPerPage}`);
-    if (!response.ok) throw new Error(`Erro ${response.status}: ${await response.text()}`);
+    const response = await fetch(`${BACKEND_URL}?page=${currentPage}&limit=${itemsPerPage}`, {
+      headers: { 'Accept': 'application/json' },
+    });
+    if (!response.ok) {
+      throw new Error(`Erro HTTP ${response.status}: ${await response.text()}`);
+    }
     const { produtos, total, totalPages } = await response.json();
 
     let filteredProdutos = produtos;
@@ -107,28 +78,9 @@ async function carregarProdutos() {
     };
   } catch (error) {
     console.error('Erro:', error);
-    errorMessage.textContent = `Erro ao carregar produtos: ${error.message}`;
+    errorMessage.textContent = `Erro ao carregar produtos: ${error.message}. Verifique se a API está online.`;
     errorMessage.style.display = 'block';
   } finally {
     spinner.style.display = 'none';
   }
-}
-
-function moveCarrossel(rowIndex, direction) {
-  const carrossel = document.getElementById(`carrossel-${rowIndex}`);
-  const images = carrossel.querySelectorAll('img');
-  const dots = document.getElementById(`dots-${rowIndex}`).querySelectorAll('.carrossel-dot');
-  let current = parseInt(carrossel.dataset.current || 0);
-  current = (current + direction + images.length) % images.length;
-  carrossel.dataset.current = current;
-  carrossel.style.transform = `translateX(-${current * 100}%)`;
-  dots.forEach((dot, i) => dot.classList.toggle('ativa', i === current));
-}
-
-function setCarrossel(rowIndex, index) {
-  const carrossel = document.getElementById(`carrossel-${rowIndex}`);
-  const dots = document.getElementById(`dots-${rowIndex}`).querySelectorAll('.carrossel-dot');
-  carrossel.dataset.current = index;
-  carrossel.style.transform = `translateX(-${index * 100}%)`;
-  dots.forEach((dot, i) => dot.classList.toggle('ativa', i === index));
 }
