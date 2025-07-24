@@ -1,4 +1,3 @@
-// public/admin.js
 document.addEventListener('DOMContentLoaded', () => {
   const urlParams = new URLSearchParams(window.location.search);
   const tempToken = urlParams.get('tempToken');
@@ -43,17 +42,19 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const response = await fetch('https://api-centro-de-compras.onrender.com/api/produtos', {
         method: 'POST',
-        body: formData
+        headers: {
+          'X-Admin-Token': tempToken, // Enviar o token para validação no backend
+        },
+        body: formData,
       });
 
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Resposta do servidor:', errorText);
-        throw new Error(`Erro ${response.status}: ${response.statusText} - ${errorText}`);
+        throw new Error(`Erro ${response.status}: ${errorText}`);
       }
 
       const result = await response.json();
-
       feedback.textContent = 'Produto salvo com sucesso!';
       feedback.style.color = 'green';
       form.reset();
