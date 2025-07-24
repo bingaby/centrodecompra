@@ -7,11 +7,11 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
-    script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://www.gstatic.com;
+    script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://www.gstatic.com https://www.googletagmanager.com;
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com;
-    img-src 'self' data: https://drive.google.com https://*.googleusercontent.com;
+    img-src 'self' data: https://drive.google.com https://*.googleusercontent.com https://firebasestorage.googleapis.com;
     font-src 'self' https://fonts.gstatic.com;
-    connect-src 'self' https://api-centro-de-compras.onrender.com https://ep1.adtrafficquality.google;
+    connect-src 'self' https://api-centro-de-compras.onrender.com https://ep1.adtrafficquality.google https://firebase.googleapis.com https://firebaseinstallations.googleapis.com;
     frame-src 'self' https://googleads.g.doubleclick.net;
   ">
   <title>Centro de Compras - Ofertas do Dia</title>
@@ -105,7 +105,9 @@
         </div>
         <input type="text" id="busca" placeholder="Busque por produtos..." class="barra-busca">
         <div id="busca-feedback" class="busca-feedback"></div>
-        <div class="loading-spinner" id="loading-spinner"></div>
+        <div class="loading-spinner" id="loading-spinner">
+          <i class="fas fa-spinner"></i>
+        </div>
         <div class="grid-produtos" id="grid-produtos"></div>
         <p class="mensagem-vazia" id="mensagem-vazia" style="display: none;">Nenhum produto encontrado.</p>
         <p class="error-message" id="error-message" style="display: none;"></p>
