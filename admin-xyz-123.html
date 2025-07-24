@@ -12,7 +12,7 @@
     connect-src 'self' https://api-centro-de-compras.onrender.com;
   ">
   <title>Painel Administrativo - Centro de Compras</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="style.css">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 <body>
@@ -33,9 +33,20 @@
         <label for="categoria">Categoria:</label>
         <select id="categoria" name="categoria" required>
           <option value="eletronicos">Eletrônicos</option>
-          <option value="roupas">Roupas</option>
+          <option value="moda">Moda</option>
+          <option value="fitness">Fitness</option>
           <option value="casa">Casa</option>
+          <option value="beleza">Beleza</option>
           <option value="esportes">Esportes</option>
+          <option value="livros">Livros</option>
+          <option value="infantil">Infantil</option>
+          <option value="celulares">Celulares</option>
+          <option value="eletrodomesticos">Eletrodomésticos</option>
+          <option value="pet">Pet</option>
+          <option value="jardinagem">Jardinagem</option>
+          <option value="automotivo">Automotivo</option>
+          <option value="gastronomia">Gastronomia</option>
+          <option value="games">Games</option>
         </select>
         <label for="loja">Loja:</label>
         <select id="loja" name="loja" required>
@@ -64,89 +75,6 @@
       <p>© <span id="year"></span> Centro de Compras. Todos os direitos reservados.</p>
     </div>
   </footer>
-  <script>
-    const BACKEND_URL = 'https://api-centro-de-compras.onrender.com';
-
-    // Atualizar ano no footer
-    document.getElementById('year').textContent = new Date().getFullYear();
-
-    // Verificar autenticação
-    const senhaCorreta = 'sua-senha-forte-123'; // Substitua por uma senha forte
-    const senha = prompt('Digite a senha para acessar o painel administrativo:');
-    if (senha !== senhaCorreta) {
-      alert('Acesso não autorizado.');
-      window.location.href = '/index.html';
-    }
-
-    // Visualizar imagens
-    document.getElementById('imagens').addEventListener('change', (e) => {
-      const preview = document.getElementById('imagens-preview');
-      preview.innerHTML = '';
-      Array.from(e.target.files).forEach(file => {
-        if (!file.type.startsWith('image/')) {
-          console.error('Arquivo inválido:', file.name);
-          return;
-        }
-        const img = document.createElement('img');
-        img.src = URL.createObjectURL(file);
-        img.alt = 'Prévia do produto';
-        img.style.maxWidth = '100px';
-        img.style.margin = '5px';
-        img.onerror = () => { img.src = 'https://via.placeholder.com/100?text=Imagem+Indisponivel'; };
-        preview.appendChild(img);
-      });
-    });
-
-    // Enviar formulário
-    document.getElementById('produto-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const feedback = document.getElementById('feedback');
-      feedback.textContent = 'Enviando...';
-      feedback.style.color = '#333';
-      try {
-        const formData = new FormData(e.target);
-        const imagens = formData.getAll('imagens');
-        const imagensBase64 = await Promise.all(
-          Array.from(imagens).map(file => new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-          }))
-        );
-        const data = {
-          nome: formData.get('nome'),
-          descricao: formData.get('descricao'),
-          categoria: formData.get('categoria'),
-          loja: formData.get('loja'),
-          link: formData.get('link'),
-          preco: formData.get('preco'),
-          imagensBase64: imagensBase64,
-          rowIndex: formData.get('rowIndex') || undefined
-        };
-        const response = await fetch(BACKEND_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
-        });
-        if (!response.ok) {
-          throw new Error(`Erro ${response.status}: ${await response.text()}`);
-        }
-        const result = await response.json();
-        if (result.success) {
-          feedback.textContent = 'Produto salvo com sucesso!';
-          feedback.style.color = '#2E8B57';
-          e.target.reset();
-          document.getElementById('imagens-preview').innerHTML = '';
-        } else {
-          throw new Error(result.error || 'Erro ao salvar produto');
-        }
-      } catch (error) {
-        console.error('Erro:', error);
-        feedback.textContent = `Erro: ${error.message}`;
-        feedback.style.color = '#d32f2f';
-      }
-    });
-  </script>
+  <script src="admin.js"></script>
 </body>
 </html>
