@@ -9,11 +9,16 @@
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com;
     img-src 'self' data: https://drive.google.com https://*.googleusercontent.com https://firebasestorage.googleapis.com;
     font-src 'self' https://fonts.gstatic.com;
-    connect-src 'self' https://api-centro-de-compras.onrender.com https://firebase.googleapis.com https://firebaseinstallations.googleapis.com;
+    connect-src 'self' https://api-centro-de-compras.onrender.com https://firebase.googleapis.com https://firebaseinstallations.googleapis.com https://www.google-analytics.com;
   ">
   <title>Painel Admin - Centro de Compras</title>
   <link rel="stylesheet" href="/style.css" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <link rel="icon" type="image/x-icon" href="/logos/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/logos/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/logos/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/logos/apple-touch-icon.png">
+  <link rel="manifest" href="/logos/site.webmanifest">
   <style>
     body {
       font-family: 'Roboto', sans-serif;
@@ -108,12 +113,15 @@
       measurementId: "G-PM11NQL61N"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const analytics = getAnalytics(app);
-
-    window.firebaseApp = app;
-    window.firebaseDb = db;
+    try {
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+      const analytics = getAnalytics(app);
+      window.firebaseApp = app;
+      window.firebaseDb = db;
+    } catch (error) {
+      console.error('Erro ao inicializar Firebase:', error);
+    }
   </script>
 </head>
 <body>
