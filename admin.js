@@ -41,21 +41,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const formData = new FormData(form);
 
     try {
-      const response = await fetch('/api/produtos', {
+      const response = await fetch('https://api-centro-de-compras.onrender.com/api/produtos', {
         method: 'POST',
         body: formData
       });
 
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Resposta do servidor:', errorText);
+        throw new Error(`Erro ${response.status}: ${response.statusText} - ${errorText}`);
+      }
+
       const result = await response.json();
 
-      if (response.ok) {
-        feedback.textContent = 'Produto salvo com sucesso!';
-        feedback.style.color = 'green';
-        form.reset();
-      } else {
-        feedback.textContent = `Erro: ${result.error}`;
-        feedback.style.color = 'red';
-      }
+      feedback.textContent = 'Produto salvo com sucesso!';
+      feedback.style.color = 'green';
+      form.reset();
     } catch (error) {
       console.error('Erro ao enviar formulário:', error);
       feedback.textContent = `Erro: ${error.message}`;
