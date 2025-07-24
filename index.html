@@ -7,11 +7,12 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
-    script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com;
-    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+    script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://www.gstatic.com;
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com;
     img-src 'self' data: https://drive.google.com https://*.googleusercontent.com;
     font-src 'self' https://fonts.gstatic.com;
-    connect-src 'self' https://api-centro-de-compras.onrender.com;
+    connect-src 'self' https://api-centro-de-compras.onrender.com https://ep1.adtrafficquality.google;
+    frame-src 'self' https://googleads.g.doubleclick.net;
   ">
   <title>Centro de Compras - Ofertas do Dia</title>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4531749081462125" crossorigin="anonymous"></script>
@@ -160,25 +161,29 @@
       <div class="robo-texto">Posso ajudar?</div>
     </a>
   </div>
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-analytics.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDryJc0Y7JV_Os5DZdEDts5XaFUEtJ7wDk",
-    authDomain: "centrodecompra-5fa91.firebaseapp.com",
-    projectId: "centrodecompra-5fa91",
-    storageBucket: "centrodecompra-5fa91.firebasestorage.app",
-    messagingSenderId: "276696026262",
-    appId: "1:276696026262:web:979a68c0796ea1d17346b7",
-    measurementId: "G-PM11NQL61N"
-  };
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
 
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDryJc0Y7JV_Os5DZdEDts5XaFUEtJ7wDk",
+      authDomain: "centrodecompra-5fa91.firebaseapp.com",
+      projectId: "centrodecompra-5fa91",
+      storageBucket: "centrodecompra-5fa91.firebasestorage.app",
+      messagingSenderId: "276696026262",
+      appId: "1:276696026262:web:979a68c0796ea1d17346b7",
+      measurementId: "G-PM11NQL61N"
+    };
 
-  <script defer src="/firebase.js"></script>
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const analytics = getAnalytics(app);
+
+    window.firebaseApp = app;
+    window.firebaseDb = db;
+  </script>
   <script defer src="/script.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -194,9 +199,9 @@
       console.log('Script de três cliques inicializado');
 
       logo.addEventListener('click', (event) => {
-        event.preventDefault(); // Impede o redirecionamento padrão do <a>
+        event.preventDefault();
         clickCount++;
-        console.log(Clique ${clickCount} na logo);
+        console.log(`Clique ${clickCount} na logo`);
 
         if (clickCount === 1) {
           clickTimer = setTimeout(() => {
