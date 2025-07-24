@@ -5,32 +5,131 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
-    script-src 'self' 'unsafe-inline';
-    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-    img-src 'self' data: https://drive.google.com https://*.googleusercontent.com;
+    script-src 'self' 'unsafe-inline' https://www.gstatic.com;
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com;
+    img-src 'self' data: https://drive.google.com https://*.googleusercontent.com https://firebasestorage.googleapis.com;
     font-src 'self' https://fonts.gstatic.com;
     connect-src 'self' https://api-centro-de-compras.onrender.com;
   ">
-  <title>Painel Administrativo - Centro de Compras</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <title>Painel Admin - Centro de Compras</title>
+  <link rel="stylesheet" href="/style.css" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    .admin-container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .admin-container h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 1.5rem;
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #444;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+    .form-group textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+    .form-group input[type="file"] {
+      padding: 0.5rem;
+    }
+    button[type="submit"] {
+      background: #28a745;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+      display: block;
+      margin: 1rem auto;
+    }
+    button[type="submit"]:hover {
+      background: #218838;
+    }
+    #form-feedback {
+      margin-top: 1rem;
+      font-weight: 600;
+      text-align: center;
+      min-height: 1.5rem;
+    }
+    .loading-spinner {
+      display: none;
+      text-align: center;
+      margin: 1rem 0;
+    }
+    .loading-spinner i {
+      font-size: 1.5rem;
+      color: #007bff;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDryJc0Y7JV_Os5DZdEDts5XaFUEtJ7wDk",
+      authDomain: "centrodecompra-5fa91.firebaseapp.com",
+      projectId: "centrodecompra-5fa91",
+      storageBucket: "centrodecompra-5fa91.firebasestorage.app",
+      messagingSenderId: "276696026262",
+      appId: "1:276696026262:web:979a68c0796ea1d17346b7",
+      measurementId: "G-PM11NQL61N"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const analytics = getAnalytics(app);
+
+    window.firebaseApp = app;
+    window.firebaseDb = db;
+  </script>
 </head>
 <body>
-  <header>
-    <div class="container">
-      <h1>Painel Administrativo</h1>
-      <a href="/index.html">Voltar ao Site</a>
-    </div>
-  </header>
-  <main>
-    <div class="container">
-      <form id="produto-form">
-        <h2>Adicionar/Editar Produto</h2>
-        <label for="nome">Nome do Produto:</label>
+  <div class="admin-container">
+    <h1>Painel de Administração</h1>
+    <form id="produto-form">
+      <div class="form-group">
+        <label for="nome">Nome do Produto</label>
         <input type="text" id="nome" name="nome" required>
-        <label for="descricao">Descrição:</label>
-        <textarea id="descricao" name="descricao"></textarea>
-        <label for="categoria">Categoria:</label>
+      </div>
+      <div class="form-group">
+        <label for="descricao">Descrição</label>
+        <textarea id="descricao" name="descricao" required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="categoria">Categoria</label>
         <select id="categoria" name="categoria" required>
           <option value="eletronicos">Eletrônicos</option>
           <option value="moda">Moda</option>
@@ -48,7 +147,9 @@
           <option value="gastronomia">Gastronomia</option>
           <option value="games">Games</option>
         </select>
-        <label for="loja">Loja:</label>
+      </div>
+      <div class="form-group">
+        <label for="loja">Loja</label>
         <select id="loja" name="loja" required>
           <option value="amazon">Amazon</option>
           <option value="magalu">Magalu</option>
@@ -57,24 +158,26 @@
           <option value="mercadolivre">Mercado Livre</option>
           <option value="alibaba">Alibaba</option>
         </select>
-        <label for="link">Link do Produto:</label>
+      </div>
+      <div class="form-group">
+        <label for="link">Link do Produto</label>
         <input type="url" id="link" name="link" required>
-        <label for="preco">Preço (R$):</label>
+      </div>
+      <div class="form-group">
+        <label for="preco">Preço (R$)</label>
         <input type="number" id="preco" name="preco" step="0.01" required>
-        <label for="imagens">Imagens:</label>
+      </div>
+      <div class="form-group">
+        <label for="imagens">Imagens (máximo 5)</label>
         <input type="file" id="imagens" name="imagens" accept="image/*" multiple>
-        <div id="imagens-preview"></div>
-        <input type="hidden" id="rowIndex" name="rowIndex">
-        <button type="submit">Salvar Produto</button>
-        <p id="feedback"></p>
-      </form>
+      </div>
+      <button type="submit">Salvar Produto</button>
+    </form>
+    <div class="loading-spinner" id="loading-spinner">
+      <i class="fas fa-spinner"></i>
     </div>
-  </main>
-  <footer>
-    <div class="container">
-      <p>© <span id="year"></span> Centro de Compras. Todos os direitos reservados.</p>
-    </div>
-  </footer>
-  <script src="admin.js"></script>
+    <div id="form-feedback"></div>
+  </div>
+  <script defer src="/admin.js"></script>
 </body>
 </html>
