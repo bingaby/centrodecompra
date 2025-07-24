@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="google-adsense-account" content="ca-pub-4531749081462125">
   <meta name="twitter:card" content="summary_large_image">
-  <!-- Adicionado CSP para permitir conexões com a API e imagens do Google Drive -->
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
     script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com;
@@ -26,15 +25,12 @@
   <link rel="icon" type="image/png" sizes="16x16" href="/logos/favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/logos/apple-touch-icon.png">
   <link rel="manifest" href="/logos/site.webmanifest">
-  <!-- Adicionado Font Awesome para ícones -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
 </head>
 <body>
   <header class="site-header">
     <div class="logo-container">
-      <a href="/index.html">
-        <img src="/logos/logoscentrodecompras.jpeg" alt="Centro de Compras" id="site-logo-img" width="150" height="50">
-      </a>
+      <img src="/logos/logoscentrodecompras.jpeg" alt="Centro de Compras" id="site-logo-img" width="150" height="50" style="cursor: pointer;">
     </div>
     <div class="header-text">
       <h1>Centro de Compra</h1>
@@ -165,23 +161,35 @@
     </a>
   </div>
 
-  <script defer src="/script.js"></script>
   <script defer src="/firebase.js"></script>
-  <!-- Script para redirecionamento com três cliques na logo -->
+  <script defer src="/script.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const logo = document.getElementById('site-logo-img');
       let clickCount = 0;
       let clickTimer = null;
 
-      logo.addEventListener('click', () => {
+      if (!logo) {
+        console.error('Erro: Logo com ID "site-logo-img" não encontrada');
+        return;
+      }
+
+      console.log('Script de três cliques inicializado');
+
+      logo.addEventListener('click', (event) => {
+        event.preventDefault(); // Impede o redirecionamento padrão do <a>
         clickCount++;
+        console.log(`Clique ${clickCount} na logo`);
+
         if (clickCount === 1) {
           clickTimer = setTimeout(() => {
-            clickCount = 0; // Reseta após 2 segundos
+            console.log('Contagem de cliques resetada');
+            clickCount = 0;
           }, 2000);
         }
+
         if (clickCount === 3) {
+          console.log('Três cliques detectados, redirecionando para admin');
           clearTimeout(clickTimer);
           window.location.href = '/admin-xyz-123.html?tempToken=triple-click-access';
           clickCount = 0;
