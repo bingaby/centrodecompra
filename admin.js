@@ -1,88 +1,67 @@
-const BACKEND_URL = 'https://api-centro-de-compras.onrender.com/api/produtos';
+// public/admin.js
+document.addEventListener('DOMContentLoaded', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const tempToken = urlParams.get('tempToken');
 
-// Atualizar ano no footer
-document.getElementById('year').textContent = new Date().getFullYear();
+  console.log('Token recebido:', tempToken);
 
-// Verificar autenticação
-const urlParams = new URLSearchParams(window.location.search);
-if (urlParams.get('tempToken') !== 'triple-click-access') {
-  alert('Acesso não autorizado.');
-  window.location.href = '/index.html';
-}
-
-// Visualizar imagens
-document.getElementById('imagens').addEventListener('change', (e) => {
-  const preview = document.getElementById('imagens-preview');
-  preview.innerHTML = '';
-  Array.from(e.target.files).forEach(file => {
-    if (!file.type.startsWith('image/')) {
-      alert(`Arquivo inválido: ${file.name}`);
-      return;
-    }
-    const img = document.createElement('img');
-    img.src = URL.createObjectURL(file);
-    img.alt = 'Prévia do produto';
-    img.style.maxWidth = '100px';
-    img.style.margin = '5px';
-    img.onerror = () => { img.src = 'https://via.placeholder.com/100?text=Imagem+Indisponivel'; };
-    preview.appendChild(img);
-  });
-});
-
-// Enviar formulário
-document.getElementById('produto-form').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const feedback = document.getElementById('feedback');
-  feedback.textContent = 'Enviando...';
-  feedback.style.color = '#333';
-  try {
-    const formData = new FormData(e.target);
-    const imagens = formData.getAll('imagens');
-    if (imagens.length === 0) {
-      throw new Error('Selecione pelo menos uma imagem');
-    }
-    const imagensBase64 = await Promise.all(
-      Array.from(imagens).map(file => new Promise((resolve, reject) => {
-        if (!file.type.startsWith('image/')) {
-          reject(new Error(`Arquivo inválido: ${file.name}`));
-          return;
-        }
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      }))
-    );
-    const data = {
-      nome: formData.get('nome'),
-      descricao: formData.get('descricao'),
-      categoria: formData.get('categoria'),
-      loja: formData.get('loja'),
-      link: formData.get('link'),
-      preco: formData.get('preco'),
-      imagensBase64,
-      rowIndex: formData.get('rowIndex') || undefined,
-    };
-    const response = await fetch(BACKEND_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    if (!response.ok) {
-      throw new Error(`Erro ${response.status}: ${await response.text()}`);
-    }
-    const result = await response.json();
-    if (result.success) {
-      feedback.textContent = 'Produto salvo com sucesso!';
-      feedback.style.color = '#2E8B57';
-      e.target.reset();
-      document.getElementById('imagens-preview').innerHTML = '';
-    } else {
-      throw new Error(result.error || 'Erro ao salvar produto');
-    }
-  } catch (error) {
-    console.error('Erro:', error);
-    feedback.textContent = `Erro: ${error.message}`;
-    feedback.style.color = '#d32f2f';
+  if (tempToken !== 'triple-click-access') {
+    console.error('Acesso não autorizado: token inválido');
+    alert('Acesso não autorizado. Você será redirecionado.');
+    window.location.href = '/index.html';
+    return;
   }
+
+  console.log('Acesso autorizado, carregando página admin');
+
+  const form = document.getElementById('produto-form');
+  const feedback = document.getElementById('form-feedback');
+  const spinner = document.getElementById('loading-spinner');
+
+  if (!form) {
+    console.error('Formulário não encontrado');
+    feedback.textContent = 'Erro: Formulário não encontrado';
+    feedback.style.color = 'red';
+    return;
+  }
+
+  // Verificar inicialização do Firebase
+  if (!window.firebaseApp || !window.firebaseDb) {
+    console.warn('Firebase não inicializado');
+    feedback.textContent = 'Aviso: Firebase não inicializado, algumas funcionalidades podem estar limitadas';
+    feedback.style.color = 'orange';
+  }
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    feedback.textContent = 'Salvando produto...';
+    feedback.style.color = 'blue';
+    if (spinner) spinner.style.display = 'block';
+
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch('/api/produtos', {
+        method: 'POST',
+        body: formData
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        feedback.textContent = 'Produto salvo com sucesso!';
+        feedback.style.color = 'green';
+        form.reset();
+      } else {
+        feedback.textContent = `Erro: ${result.error}`;
+        feedback.style.color = 'red';
+      }
+    } catch (error) {
+      console.error('Erro ao enviar formulário:', error);
+      feedback.textContent = `Erro: ${error.message}`;
+      feedback.style.color = 'red';
+    } finally {
+      if (spinner) spinner.style.display = 'none';
+    }
+  });
 });
