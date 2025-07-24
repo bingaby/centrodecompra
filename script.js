@@ -1,90 +1,134 @@
-<script>
-  const BACKEND_URL = 'https://api-centro-de-compras.onrender.com/api/produtos';
+const BACKEND_URL = 'https://api-centro-de-compras.onrender.com/api/produtos';
+let currentPage = 1;
+const itemsPerPage = 25;
+let currentCategoria = 'todas';
+let currentLoja = 'todas';
+let searchQuery = '';
 
-  // Atualizar ano no footer
+document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('year').textContent = new Date().getFullYear();
-
-  // Verificar autenticação
-  const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.get('tempToken') !== 'triple-click-access') {
-    alert('Acesso não autorizado.');
-    window.location.href = '/index.html';
-  }
-
-  // Visualizar imagens
-  document.getElementById('imagens').addEventListener('change', (e) => {
-    const preview = document.getElementById('imagens-preview');
-    preview.innerHTML = '';
-    Array.from(e.target.files).forEach(file => {
-      if (!file.type.startsWith('image/')) {
-        alert(`Arquivo inválido: ${file.name}`);
-        return;
-      }
-      const img = document.createElement('img');
-      img.src = URL.createObjectURL(file);
-      img.alt = 'Prévia do produto';
-      img.style.maxWidth = '100px';
-      img.style.margin = '5px';
-      img.onerror = () => { img.src = 'https://via.placeholder.com/100?text=Imagem+Indisponivel'; };
-      preview.appendChild(img);
-    });
+  carregarProdutos();
+  document.getElementById('busca').addEventListener('input', (e) => {
+    searchQuery = e.target.value.toLowerCase();
+    currentPage = 1;
+    carregarProdutos();
   });
+});
 
-  // Enviar formulário
-  document.getElementById('produto-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const feedback = document.getElementById('feedback');
-    feedback.textContent = 'Enviando...';
-    feedback.style.color = '#333';
-    try {
-      const formData = new FormData(e.target);
-      const imagens = formData.getAll('imagens');
-      if (imagens.length === 0) {
-        throw new Error('Selecione pelo menos uma imagem');
-      }
-      const imagensBase64 = await Promise.all(
-        Array.from(imagens).map(file => new Promise((resolve, reject) => {
-          if (!file.type.startsWith('image/')) {
-            reject(new Error(`Arquivo inválido: ${file.name}`));
-            return;
-          }
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result);
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        }))
-      );
-      const data = {
-        nome: formData.get('nome'),
-        descricao: formData.get('descricao'),
-        categoria: formData.get('categoria'),
-        loja: formData.get('loja'),
-        link: formData.get('link'),
-        preco: formData.get('preco'),
-        imagensBase64,
-        rowIndex: formData.get('rowIndex') || undefined,
-      };
-      const response = await fetch(BACKEND_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-      if (!response.ok) {
-        throw new Error(`Erro ${response.status}: ${await response.text()}`);
-      }
-      const result = await response.json();
-      if (result.success) {
-        feedback.textContent = 'Produto salvo com sucesso!';
-        feedback.style.color = '#2E8B57';
-        e.target.reset();
-        document.getElementById('imagens-preview').innerHTML = '';
-      } else {
-        throw new Error(result.error || 'Erro ao salvar produto');
-      }
-    } catch (error) {
-      console.error('Erro:', error);
-      feedback.textContent = `Erro: ${error.message}`;
-      feedback.style.color = '#d32f2f';
+function filtrarPorCategoria(categoria) {
+  currentCategoria = categoria;
+  currentPage = 1;
+  document.querySelectorAll('.categoria-item').forEach(item => item.classList.remove('ativa'));
+  document.querySelector(`.categoria-item[data-categoria="${categoria}"]`).classList.add('ativa');
+  carregarProdutos();
+}
+
+function filtrarPorLoja(loja) {
+  currentLoja = loja;
+  currentPage = 1;
+  document.querySelectorAll('.loja, .loja-todas').forEach(item => item.classList.remove('ativa'));
+  document.querySelector(`[data-loja="${loja}"], .loja-todas`).classList.add('ativa');
+  carregarProdutos();
+}
+
+async function carregarProdutos() {
+  const spinner = document.getElementById('loading-spinner');
+  const grid = document.getElementById('grid-produtos');
+  const mensagemVazia = document.getElementById('mensagem-vazia');
+  const errorMessage = document.getElementById('error-message');
+  const pageInfo = document.getElementById('page-info');
+  const prevButton = document.getElementById('prev-page');
+  const nextButton = document.getElementById('next-page');
+
+  spinner.style.display = 'block';
+  grid.innerHTML = '';
+  mensagemVazia.style.display = 'none';
+  errorMessage.style.display = 'none';
+
+  try {
+    const response = await fetch(`${BACKEND_URL}?page=${currentPage}&limit=${itemsPerPage}`);
+    if (!response.ok) throw new Error(`Erro ${response.status}: ${await response.text()}`);
+    const { produtos, total, totalPages } = await response.json();
+
+    let filteredProdutos = produtos;
+    if (currentCategoria !== 'todas') {
+      filteredProdutos = filteredProdutos.filter(p => p.categoria === currentCategoria);
     }
-  });
-</script>
+    if (currentLoja !== 'todas') {
+      filteredProdutos = filteredProdutos.filter(p => p.loja === currentLoja);
+    }
+    if (searchQuery) {
+      filteredProdutos = filteredProdutos.filter(p => p.nome.toLowerCase().includes(searchQuery) || p.descricao.toLowerCase().includes(searchQuery));
+    }
+
+    if (filteredProdutos.length === 0) {
+      mensagemVazia.style.display = 'block';
+    } else {
+      filteredProdutos.forEach(produto => {
+        const card = document.createElement('div');
+        card.className = 'produto-card';
+        card.innerHTML = `
+          <div class="carrossel">
+            <div class="carrossel-imagens" id="carrossel-${produto.rowIndex}">
+              ${produto.imagens.map(img => `<img src="${img}" alt="${produto.nome}" onerror="this.src='https://via.placeholder.com/200?text=Imagem+Indisponivel'">`).join('')}
+            </div>
+            ${produto.imagens.length > 1 ? `
+              <button class="carrossel-prev" onclick="moveCarrossel(${produto.rowIndex}, -1)">◄</button>
+              <button class="carrossel-next" onclick="moveCarrossel(${produto.rowIndex}, 1)">▶</button>
+              <div class="carrossel-dots" id="dots-${produto.rowIndex}">
+                ${produto.imagens.map((_, i) => `<span class="carrossel-dot ${i === 0 ? 'ativa' : ''}" onclick="setCarrossel(${produto.rowIndex}, ${i})"></span>`).join('')}
+              </div>
+            ` : ''}
+          </div>
+          <span>${produto.nome}</span>
+          <span class="descricao">${produto.descricao}</span>
+          <span class="preco">R$${produto.preco}</span>
+          <a href="${produto.link}" class="ver-na-loja" target="_blank">Ver na Loja</a>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    pageInfo.textContent = `Página ${currentPage} de ${totalPages}`;
+    prevButton.disabled = currentPage === 1;
+    nextButton.disabled = currentPage === totalPages;
+
+    prevButton.onclick = () => {
+      if (currentPage > 1) {
+        currentPage--;
+        carregarProdutos();
+      }
+    };
+    nextButton.onclick = () => {
+      if (currentPage < totalPages) {
+        currentPage++;
+        carregarProdutos();
+      }
+    };
+  } catch (error) {
+    console.error('Erro:', error);
+    errorMessage.textContent = `Erro ao carregar produtos: ${error.message}`;
+    errorMessage.style.display = 'block';
+  } finally {
+    spinner.style.display = 'none';
+  }
+}
+
+function moveCarrossel(rowIndex, direction) {
+  const carrossel = document.getElementById(`carrossel-${rowIndex}`);
+  const images = carrossel.querySelectorAll('img');
+  const dots = document.getElementById(`dots-${rowIndex}`).querySelectorAll('.carrossel-dot');
+  let current = parseInt(carrossel.dataset.current || 0);
+  current = (current + direction + images.length) % images.length;
+  carrossel.dataset.current = current;
+  carrossel.style.transform = `translateX(-${current * 100}%)`;
+  dots.forEach((dot, i) => dot.classList.toggle('ativa', i === current));
+}
+
+function setCarrossel(rowIndex, index) {
+  const carrossel = document.getElementById(`carrossel-${rowIndex}`);
+  const dots = document.getElementById(`dots-${rowIndex}`).querySelectorAll('.carrossel-dot');
+  carrossel.dataset.current = index;
+  carrossel.style.transform = `translateX(-${index * 100}%)`;
+  dots.forEach((dot, i) => dot.classList.toggle('ativa', i === index));
+}
