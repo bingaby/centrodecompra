@@ -1,6 +1,8 @@
 {
   "hosting": {
     "public": "dist",
+    "cleanUrls": true,
+    "trailingSlash": false,
     "rewrites": [
       {
         "source": "/favicon.ico",
