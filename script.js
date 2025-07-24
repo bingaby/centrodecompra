@@ -1,5 +1,8 @@
 <script>
-  const BACKEND_URL = 'https://api-centro-de-compras.onrender.com';
+  const BACKEND_URL = 'https://api-centro-de-compras.onrender.com/api/produtos';
+
+  // Atualizar ano no footer
+  document.getElementById('year').textContent = new Date().getFullYear();
 
   // Verificar autenticação
   const urlParams = new URLSearchParams(window.location.search);
@@ -13,6 +16,10 @@
     const preview = document.getElementById('imagens-preview');
     preview.innerHTML = '';
     Array.from(e.target.files).forEach(file => {
+      if (!file.type.startsWith('image/')) {
+        alert(`Arquivo inválido: ${file.name}`);
+        return;
+      }
       const img = document.createElement('img');
       img.src = URL.createObjectURL(file);
       img.alt = 'Prévia do produto';
@@ -32,8 +39,15 @@
     try {
       const formData = new FormData(e.target);
       const imagens = formData.getAll('imagens');
+      if (imagens.length === 0) {
+        throw new Error('Selecione pelo menos uma imagem');
+      }
       const imagensBase64 = await Promise.all(
         Array.from(imagens).map(file => new Promise((resolve, reject) => {
+          if (!file.type.startsWith('image/')) {
+            reject(new Error(`Arquivo inválido: ${file.name}`));
+            return;
+          }
           const reader = new FileReader();
           reader.onload = () => resolve(reader.result);
           reader.onerror = reject;
@@ -47,13 +61,13 @@
         loja: formData.get('loja'),
         link: formData.get('link'),
         preco: formData.get('preco'),
-        imagensBase64: imagensBase64,
-        rowIndex: formData.get('rowIndex') || undefined
+        imagensBase64,
+        rowIndex: formData.get('rowIndex') || undefined,
       };
       const response = await fetch(BACKEND_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       });
       if (!response.ok) {
         throw new Error(`Erro ${response.status}: ${await response.text()}`);
