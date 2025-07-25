@@ -49,11 +49,18 @@ form.addEventListener('submit', async (e) => {
       throw new Error('Preço inválido');
     }
 
-    // Faz upload das imagens para o Firebase Storage
+    // Valida imagens
     const imagens = form.imagens.files;
     if (imagens.length > 5) {
       throw new Error('Máximo de 5 imagens permitidas');
     }
+    for (const imagem of imagens) {
+      if (imagem.size > 2 * 1024 * 1024) {
+        throw new Error('Imagem muito grande. Máximo 2 MB por imagem.');
+      }
+    }
+
+    // Faz upload das imagens para o Firebase Storage
     const imagensUrls = [];
     for (const imagem of imagens) {
       const storageRef = window.firebase.storage.ref(storage, `produtos/${nome}/${Date.now()}-${imagem.name}`);
