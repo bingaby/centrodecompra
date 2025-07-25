@@ -2,23 +2,20 @@ const express = require('express');
 const admin = require('firebase-admin');
 const formidable = require('formidable');
 const { v4: uuidv4 } = require('uuid');
+const cors = require('cors');
 
 const app = express();
 app.use(express.json());
+
+// ✅ CORS configurado
 app.use(cors({
   origin: ['https://www.centrodecompra.com.br'],
 }));
 
-// Inicialização do Firebase (mantida como no código original)
-
+// ✅ ROTA POST sem proteção por token
 app.post('/api/produtos', async (req, res) => {
-  // Autenticação (substitua por autenticação robusta)
-  const token = req.headers['x-admin-token'];
-  if (token !== 'triple-click-access') {
-    return res.status(401).json({ error: 'Acesso não autorizado' });
-  }
-
   const form = formidable({ multiples: true });
+
   try {
     const { fields, files } = await new Promise((resolve, reject) => {
       form.parse(req, (err, fields, files) => {
@@ -67,6 +64,7 @@ app.post('/api/produtos', async (req, res) => {
         action: 'read',
         expires: '03-09-2491',
       });
+
       productData.imagemUrl = url;
     }
 
@@ -85,7 +83,7 @@ app.post('/api/produtos', async (req, res) => {
   }
 });
 
-// Função auxiliar para sanitizar nomes de arquivos
+// Função para sanitizar nomes de arquivos
 function sanitizeFileName(name) {
   return name.replace(/[^a-zA-Z0-9-_]/g, '_').toLowerCase();
 }
