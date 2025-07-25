@@ -1,43 +1,37 @@
-// server.js
 const express = require('express');
 const multer = require('multer');
 const dotenv = require('dotenv');
-const path = require('path');
+const admin = require('firebase-admin');
 const cors = require('cors');
-const { initializeApp } = require('firebase/app');
-const { getFirestore, collection, addDoc } = require('firebase/firestore');
 
 dotenv.config();
 
-const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY || "AIzaSyDryJc0Y7JV_Os5DZdEDts5XaFUEtJ7wDk",
-  authDomain: "centrodecompra-5fa91.firebaseapp.com",
-  projectId: "centrodecompra-5fa91",
-  storageBucket: "centrodecompra-5fa91.firebasestorage.app",
-  messagingSenderId: "276696026262",
-  appId: "1:276696026262:web:979a68c0796ea1d17346b7",
-  measurementId: "G-PM11NQL61N"
-};
+admin.initializeApp({
+  credential: admin.credential.cert({
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+  }),
+  storageBucket: 'centrodecompra-5fa91.appspot.com',
+});
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const db = admin.firestore();
+const storage = admin.storage().bucket();
 
 const expressApp = express();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
 
 expressApp.use(cors({
-  origin: ['https://www.centrodecompra.com.br', 'http://localhost:3000', 'https://api-centro-de-compras.onrender.com'],
+  origin: ['https://www.centrodecompra.com.br', 'http://localhost:3000'],
   methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type'],
+  allowedHeaders: ['Content-Type', 'x-admin-token'],
 }));
-
-expressApp.use(express.static(path.join(__dirname, 'public')));
 expressApp.use(express.json());
 
 expressApp.options('/api/produtos', (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Origin', 'https://www.centrodecompra.com.br');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-admin-token');
   res.status(204).send();
 });
 
@@ -48,9 +42,16 @@ expressApp.post('/api/produtos', upload.array('imagens', 5), async (req, res) =>
       return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
     }
 
-    const imagensBase64 = req.files && req.files.length > 0
-      ? req.files.map(file => `data:${file.mimetype};base64,${file.buffer.toString('base64')}`)
-      : [];
+    const imagensUrls = [];
+    if (req.files && req.files.length > 0) {
+      for (const file of req.files) {
+        const fileName = `produtos/${nome}/${Date.now()}-${file.originalname}`;
+        const fileRef = storage.file(fileName);
+        await fileRef.save(file.buffer, { contentType: file.mimetype });
+        const [url] = await fileRef.getSignedUrl({ action: 'read', expires: '03-09-2491' });
+        imagensUrls.push(url);
+      }
+    }
 
     const produto = {
       nome,
@@ -59,11 +60,11 @@ expressApp.post('/api/produtos', upload.array('imagens', 5), async (req, res) =>
       loja,
       link,
       preco: parseFloat(preco),
-      imagensBase64,
-      createdAt: new Date()
+      imagensUrls,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
     };
 
-    await addDoc(collection(db, 'produtos'), produto);
+    await db.collection('produtos').add(produto);
     res.status(200).json({ message: 'Produto salvo com sucesso' });
   } catch (error) {
     console.error('Erro ao salvar produto:', error);
