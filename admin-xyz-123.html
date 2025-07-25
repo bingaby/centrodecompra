@@ -3,20 +3,66 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' 'unsafe-inline' https://www.gstatic.com https://cdn.firebase.com;
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+    font-src 'self' https://fonts.gstatic.com;
+    connect-src 'self' https://*.firebaseio.com https://*.firebasestorage.googleapis.com;
+  ">
   <title>Painel Admin - Centro de Compra</title>
-  <!-- CSP ajustado para permitir fontes e scripts do Firebase -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; script-src 'self' https://www.gstatic.com https://cdn.firebase.com; connect-src 'self' https://*.firebaseio.com https://*.firebasestorage.googleapis.com;">
-  <!-- Estilos básicos -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
   <style>
-    body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
-    .form-group { margin-bottom: 15px; }
-    label { display: block; margin-bottom: 5px; }
-    input, textarea, select { width: 100%; padding: 8px; margin-bottom: 10px; }
-    button { padding: 10px 20px; background-color: #007bff; color: white; border: none; cursor: pointer; }
-    button:disabled { background-color: #cccccc; cursor: not-allowed; }
-    #spinner { display: none; margin-top: 10px; }
-    #message { margin-top: 10px; color: green; }
-    #message.error { color: red; }
+    body {
+      font-family: 'Roboto', Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+    #spinner {
+      display: none;
+      margin-top: 10px;
+      font-size: 1.2em;
+    }
+    #message {
+      margin-top: 10px;
+      font-size: 1.1em;
+    }
+    #message.error {
+      color: red;
+    }
+    #message.success {
+      color: green;
+    }
   </style>
   <!-- Firebase SDK via CDN -->
   <script type="module">
@@ -34,12 +80,10 @@
       measurementId: "G-PM11NQL61N"
     };
 
-    // Inicializa Firebase e expõe objetos no window
     window.firebaseApp = initializeApp(firebaseConfig);
     window.firebaseDb = getFirestore(window.firebaseApp);
     window.firebaseStorage = getStorage(window.firebaseApp);
   </script>
-  <!-- Carrega o admin.js -->
   <script src="admin.js"></script>
 </head>
 <body>
@@ -55,11 +99,36 @@
     </div>
     <div class="form-group">
       <label for="categoria">Categoria</label>
-      <input type="text" id="categoria" name="categoria" required>
+      <select id="categoria" name="categoria" required>
+        <option value="">Selecione uma categoria</option>
+        <option value="eletronicos">Eletrônicos</option>
+        <option value="moda">Moda</option>
+        <option value="fitness">Fitness</option>
+        <option value="casa">Casa</option>
+        <option value="beleza">Beleza</option>
+        <option value="esportes">Esportes</option>
+        <option value="livros">Livros</option>
+        <option value="infantil">Infantil</option>
+        <option value="celulares">Celulares</option>
+        <option value="eletrodomesticos">Eletrodomésticos</option>
+        <option value="pet">Pet</option>
+        <option value="jardinagem">Jardinagem</option>
+        <option value="automotivo">Automotivo</option>
+        <option value="gastronomia">Gastronomia</option>
+        <option value="games">Games</option>
+      </select>
     </div>
     <div class="form-group">
       <label for="loja">Loja</label>
-      <input type="text" id="loja" name="loja" required>
+      <select id="loja" name="loja" required>
+        <option value="">Selecione uma loja</option>
+        <option value="amazon">Amazon</option>
+        <option value="magalu">Magalu</option>
+        <option value="shein">Shein</option>
+        <option value="shopee">Shopee</option>
+        <option value="mercadolivre">Mercado Livre</option>
+        <option value="alibaba">Alibaba</option>
+      </select>
     </div>
     <div class="form-group">
       <label for="link">Link do Produto</label>
@@ -70,7 +139,7 @@
       <input type="number" id="preco" name="preco" step="0.01" required>
     </div>
     <div class="form-group">
-      <label for="imagens">Imagens</label>
+      <label for="imagens">Imagens (máximo 5)</label>
       <input type="file" id="imagens" name="imagens" accept="image/*" multiple>
     </div>
     <button type="submit" id="submit-btn">Cadastrar Produto</button>
