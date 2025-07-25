@@ -3,12 +3,13 @@ import { getFirestore, collection, getDocs } from 'https://www.gstatic.com/fireb
 
 // 🔥 Configuração do Firebase (substitua pelos seus dados)
 const firebaseConfig = {
-  apiKey: "SUA_API_KEY",
-  authDomain: "SEU_PROJETO.firebaseapp.com",
-  projectId: "SEU_PROJETO",
-  storageBucket: "SEU_PROJETO.appspot.com",
-  messagingSenderId: "SEU_ID",
-  appId: "SEU_APP_ID"
+   apiKey: "AIzaSyDryJc0Y7JV_Os5DZdEDts5XaFUEtJ7wDk",
+      authDomain: "centrodecompra-5fa91.firebaseapp.com",
+      projectId: "centrodecompra-5fa91",
+      storageBucket: "centrodecompra-5fa91.appspot.com",
+      messagingSenderId: "276696026262",
+      appId: "1:276696026262:web:979a68c0796ea1d17346b7",
+      measurementId: "G-PM11NQL61N"
 };
 
 // Inicializa o Firebase
