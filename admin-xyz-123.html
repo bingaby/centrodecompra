@@ -9,7 +9,7 @@
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
     font-src 'self' https://fonts.gstatic.com;
     img-src 'self' data: https://res.cloudinary.com;
-    connect-src 'self' https://*.firebaseio.com https://firestore.googleapis.com https://api.cloudinary.com;
+    connect-src 'self' https://*.firebaseio.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://api.cloudinary.com;
   ">
   <title>Painel Admin - Centro de Compra</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,6 +44,7 @@
       border: none;
       border-radius: 4px;
       cursor: pointer;
+      margin-right: 10px;
     }
     button:disabled {
       background-color: #cccccc;
@@ -68,10 +69,34 @@
       width: 100px;
       margin: 5px;
     }
+    #productList {
+      margin-top: 30px;
+    }
+    .product-item {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .product-item img {
+      max-width: 50px;
+      margin-right: 10px;
+    }
+    .product-details {
+      flex-grow: 1;
+    }
+    .product-actions {
+      display: flex;
+      gap: 10px;
+    }
   </style>
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
     import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+    import { getAuth } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 
     const firebaseConfig = {
       apiKey: "AIzaSyDryJc0Y7JV_Os5DZdEDts5XaFUEtJ7wDk",
@@ -85,11 +110,13 @@
 
     window.firebaseApp = initializeApp(firebaseConfig);
     window.firebaseDb = getFirestore(window.firebaseApp);
+    window.firebaseAuth = getAuth(window.firebaseApp);
   </script>
 </head>
 <body>
-  <h1>Painel de Administração</h1>
+  <h1>Painel de Administração - adm-xyz-123</h1>
   <form id="produto-form">
+    <input type="hidden" id="produto-id" name="produto-id">
     <div class="form-group">
       <label for="nome">Nome do Produto</label>
       <input type="text" id="nome" name="nome" required>
@@ -143,9 +170,14 @@
       <div id="imagePreview"></div>
     </div>
     <button type="submit" id="submit-btn">Cadastrar Produto</button>
+    <button type="button" id="cancel-btn" style="display: none;">Cancelar Edição</button>
     <div id="spinner">Carregando...</div>
     <div id="message"></div>
   </form>
+  <div id="productList">
+    <h2>Lista de Produtos</h2>
+    <div id="products"></div>
+  </div>
   <script src="/admin.js" type="module"></script>
 </body>
 </html>
