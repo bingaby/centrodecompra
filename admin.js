@@ -1,3 +1,14 @@
+// Verifica o token de acesso
+const urlParams = new URLSearchParams(window.location.search);
+const token = urlParams.get('tempToken');
+if (token !== 'triple-click-access') {
+  alert('Acesso não autorizado. Redirecionando para a página inicial.');
+  window.location.href = '/index.html';
+  throw new Error('Acesso não autorizado');
+}
+console.log('Token recebido: triple-click-access');
+console.log('Acesso autorizado, carregando página admin');
+
 // Acessa objetos Firebase do window
 const db = window.firebaseDb;
 const storage = window.firebaseStorage;
@@ -11,7 +22,7 @@ const message = document.getElementById('message');
 // Função para exibir mensagens
 function showMessage(text, isError = false) {
   message.textContent = text;
-  message.className = isError ? 'error' : '';
+  message.className = isError ? 'error' : 'success';
 }
 
 // Manipula o envio do formulário
@@ -23,11 +34,11 @@ form.addEventListener('submit', async (e) => {
 
   try {
     // Coleta dados do formulário
-    const nome = form.nome.value;
-    const descricao = form.descricao.value;
+    const nome = form.nome.value.trim();
+    const descricao = form.descricao.value.trim();
     const categoria = form.categoria.value;
     const loja = form.loja.value;
-    const link = form.link.value;
+    const link = form.link.value.trim();
     const preco = parseFloat(form.preco.value);
 
     // Valida campos
@@ -40,6 +51,9 @@ form.addEventListener('submit', async (e) => {
 
     // Faz upload das imagens para o Firebase Storage
     const imagens = form.imagens.files;
+    if (imagens.length > 5) {
+      throw new Error('Máximo de 5 imagens permitidas');
+    }
     const imagensUrls = [];
     for (const imagem of imagens) {
       const storageRef = window.firebase.storage.ref(storage, `produtos/${nome}/${Date.now()}-${imagem.name}`);
@@ -57,7 +71,7 @@ form.addEventListener('submit', async (e) => {
       link,
       preco,
       imagensUrls,
-      createdAt: new Date()
+      createdAt: new Date(),
     };
     await window.firebase.firestore.addDoc(window.firebase.firestore.collection(db, 'produtos'), produto);
 
@@ -65,6 +79,7 @@ form.addEventListener('submit', async (e) => {
     showMessage('Produto cadastrado com sucesso!');
     form.reset();
   } catch (error) {
+    console.error('Erro ao enviar formulário:', error);
     showMessage(`Erro ao cadastrar produto: ${error.message}`, true);
   } finally {
     submitBtn.disabled = false;
