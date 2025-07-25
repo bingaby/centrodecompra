@@ -9,21 +9,61 @@ if (token !== 'triple-click-access') {
 console.log('Token recebido: triple-click-access');
 console.log('Acesso autorizado, carregando página admin');
 
-// Acessa objetos Firebase do window
+// Acessa o Firestore
 const db = window.firebaseDb;
-const storage = window.firebaseStorage;
 
 // Seleciona elementos do formulário
 const form = document.getElementById('produto-form');
 const submitBtn = document.getElementById('submit-btn');
 const spinner = document.getElementById('spinner');
 const message = document.getElementById('message');
+const imagePreview = document.getElementById('imagePreview');
 
 // Função para exibir mensagens
 function showMessage(text, isError = false) {
   message.textContent = text;
   message.className = isError ? 'error' : 'success';
 }
+
+// Função para fazer upload de uma imagem para o Cloudinary
+async function uploadImage(file, nome) {
+  if (file.size > 2 * 1024 * 1024) {
+    throw new Error('Imagem muito grande. Máximo 2 MB por imagem.');
+  }
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', 'centrodecompra_upload'); // Usa o preset configurado
+  formData.append('folder', `produtos/${nome}`); // Organiza imagens por nome do produto
+  formData.append('cloud_name', 'damasyarq'); // Substitua pelo seu cloud_name
+
+  const response = await fetch('https://api.cloudinary.com/v1_1/damasyarq/image/upload', {
+    method: 'POST',
+    body: formData
+  });
+  const data = await response.json();
+  if (data.error) {
+    throw new Error(data.error.message);
+  }
+  return data.secure_url; // Retorna a URL segura da imagem
+}
+
+// Pré-visualização das imagens selecionadas
+document.getElementById('imagens').addEventListener('change', (e) => {
+  imagePreview.innerHTML = '';
+  const files = e.target.files;
+  if (files.length > 5) {
+    showMessage('Máximo de 5 imagens permitidas', true);
+    e.target.value = '';
+    return;
+  }
+  for (const file of files) {
+    const img = document.createElement('img');
+    img.src = URL.createObjectURL(file);
+    img.alt = 'Pré-visualização';
+    img.style.width = '100px';
+    imagePreview.appendChild(img);
+  }
+});
 
 // Manipula o envio do formulário
 form.addEventListener('submit', async (e) => {
@@ -49,23 +89,14 @@ form.addEventListener('submit', async (e) => {
       throw new Error('Preço inválido');
     }
 
-    // Valida imagens
+    // Faz upload das imagens para o Cloudinary
     const imagens = form.imagens.files;
     if (imagens.length > 5) {
       throw new Error('Máximo de 5 imagens permitidas');
     }
-    for (const imagem of imagens) {
-      if (imagem.size > 2 * 1024 * 1024) {
-        throw new Error('Imagem muito grande. Máximo 2 MB por imagem.');
-      }
-    }
-
-    // Faz upload das imagens para o Firebase Storage
     const imagensUrls = [];
     for (const imagem of imagens) {
-      const storageRef = window.firebase.storage.ref(storage, `produtos/${nome}/${Date.now()}-${imagem.name}`);
-      await window.firebase.storage.uploadBytes(storageRef, imagem);
-      const url = await window.firebase.storage.getDownloadURL(storageRef);
+      const url = await uploadImage(imagem, nome);
       imagensUrls.push(url);
     }
 
@@ -85,6 +116,7 @@ form.addEventListener('submit', async (e) => {
     // Exibe mensagem de sucesso e limpa o formulário
     showMessage('Produto cadastrado com sucesso!');
     form.reset();
+    imagePreview.innerHTML = '';
   } catch (error) {
     console.error('Erro ao enviar formulário:', error);
     showMessage(`Erro ao cadastrar produto: ${error.message}`, true);
