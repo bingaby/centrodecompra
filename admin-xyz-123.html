@@ -64,7 +64,6 @@
       color: green;
     }
   </style>
-  <!-- Firebase SDK via CDN -->
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
     import { getFirestore, collection, addDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
@@ -139,7 +138,7 @@
       <input type="number" id="preco" name="preco" step="0.01" required>
     </div>
     <div class="form-group">
-      <label for="imagens">Imagens (máximo 5)</label>
+      <label for="imagens">Imagens (máximo 5, 2 MB cada)</label>
       <input type="file" id="imagens" name="imagens" accept="image/*" multiple>
     </div>
     <button type="submit" id="submit-btn">Cadastrar Produto</button>
