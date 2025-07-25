@@ -5,10 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
-    script-src 'self' 'unsafe-inline' https://www.gstatic.com https://cdn.firebase.com;
+    script-src 'self' 'unsafe-inline' https://www.gstatic.com;
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
     font-src 'self' https://fonts.gstatic.com;
-    connect-src 'self' https://*.firebaseio.com https://*.firebasestorage.googleapis.com https://firebase.googleapis.com;
+    img-src 'self' data: https://res.cloudinary.com;
+    connect-src 'self' https://*.firebaseio.com https://firestore.googleapis.com https://api.cloudinary.com;
   ">
   <title>Painel Admin - Centro de Compra</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -63,11 +64,14 @@
     #message.success {
       color: green;
     }
+    #imagePreview img {
+      width: 100px;
+      margin: 5px;
+    }
   </style>
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-    import { getFirestore, collection, addDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
-    import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
+    import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
     const firebaseConfig = {
       apiKey: "AIzaSyDryJc0Y7JV_Os5DZdEDts5XaFUEtJ7wDk",
@@ -81,12 +85,10 @@
 
     window.firebaseApp = initializeApp(firebaseConfig);
     window.firebaseDb = getFirestore(window.firebaseApp);
-    window.firebaseStorage = getStorage(window.firebaseApp);
   </script>
-  <script src="/admin.js"></script>
 </head>
 <body>
-  <h1>Painel Admin - Cadastro de Produtos</h1>
+  <h1>Painel de Administração</h1>
   <form id="produto-form">
     <div class="form-group">
       <label for="nome">Nome do Produto</label>
@@ -99,7 +101,6 @@
     <div class="form-group">
       <label for="categoria">Categoria</label>
       <select id="categoria" name="categoria" required>
-        <option value="">Selecione uma categoria</option>
         <option value="eletronicos">Eletrônicos</option>
         <option value="moda">Moda</option>
         <option value="fitness">Fitness</option>
@@ -120,7 +121,6 @@
     <div class="form-group">
       <label for="loja">Loja</label>
       <select id="loja" name="loja" required>
-        <option value="">Selecione uma loja</option>
         <option value="amazon">Amazon</option>
         <option value="magalu">Magalu</option>
         <option value="shein">Shein</option>
@@ -138,12 +138,14 @@
       <input type="number" id="preco" name="preco" step="0.01" required>
     </div>
     <div class="form-group">
-      <label for="imagens">Imagens (máximo 5, 2 MB cada)</label>
-      <input type="file" id="imagens" name="imagens" accept="image/*" multiple>
+      <label for="imagens">Imagens (máx. 5, 2 MB cada)</label>
+      <input type="file" id="imagens" name="imagens" accept="image/jpeg,image/png,image/webp,image/avif" multiple>
+      <div id="imagePreview"></div>
     </div>
     <button type="submit" id="submit-btn">Cadastrar Produto</button>
+    <div id="spinner">Carregando...</div>
+    <div id="message"></div>
   </form>
-  <div id="spinner">Carregando...</div>
-  <div id="message"></div>
+  <script src="/admin.js" type="module"></script>
 </body>
 </html>
