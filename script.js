@@ -1,12 +1,24 @@
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import { getFirestore, collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
-// Acessa o Firestore
-const db = window.firebaseDb;
+// 🔥 Configuração do Firebase (substitua pelos seus dados)
+const firebaseConfig = {
+  apiKey: "SUA_API_KEY",
+  authDomain: "SEU_PROJETO.firebaseapp.com",
+  projectId: "SEU_PROJETO",
+  storageBucket: "SEU_PROJETO.appspot.com",
+  messagingSenderId: "SEU_ID",
+  appId: "SEU_APP_ID"
+};
+
+// Inicializa o Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 // Função para otimizar URLs do Cloudinary
 function optimizeCloudinaryUrl(url) {
   const urlParts = url.split('/upload/');
-  return `${urlParts[0]}/upload/f_auto,q_auto,w_300/${urlParts[1]}`; // w_300 para thumbnails
+  return `${urlParts[0]}/upload/f_auto,q_auto,w_300/${urlParts[1]}`;
 }
 
 // Carrega e exibe produtos
@@ -19,7 +31,8 @@ async function loadProducts() {
     mensagemVazia.style.display = 'none';
     errorMessage.style.display = 'none';
 
-    const querySnapshot = await window.firebase.firestore.getDocs(window.firebase.firestore.collection(db, 'produtos'));
+    const querySnapshot = await getDocs(collection(db, 'produtos'));
+
     if (querySnapshot.empty) {
       mensagemVazia.style.display = 'block';
       return;
@@ -45,10 +58,12 @@ async function loadProducts() {
     });
   } catch (error) {
     console.error('Erro ao carregar produtos:', error);
-    errorMessage.textContent = 'Erro ao carregar produtos. Tente novamente.';
-    errorMessage.style.display = 'block';
+    const errorMessage = document.getElementById('error-message');
+    if (errorMessage) {
+      errorMessage.textContent = 'Erro ao carregar produtos. Tente novamente.';
+      errorMessage.style.display = 'block';
+    }
   }
 }
 
-// Carrega produtos ao iniciar
 window.addEventListener('load', loadProducts);
