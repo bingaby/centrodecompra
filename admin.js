@@ -26,6 +26,8 @@ function showMessage(text, isError = false) {
 }
 
 // Função para fazer upload de uma imagem para o Cloudinary
+formData.append('upload_preset', 'centrodecompra_upload');
+
 const url = 'https://api.cloudinary.com/v1_1/damasyarq/image/upload';
 async function uploadImage(file, nome) {
   if (file.size > 2 * 1024 * 1024) {
