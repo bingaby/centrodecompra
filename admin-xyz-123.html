@@ -3,189 +3,79 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="
-    default-src 'self';
-    script-src 'self' 'unsafe-inline' https://www.gstatic.com https://www.googletagmanager.com;
-    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com;
-    img-src 'self' data: https://drive.google.com https://*.googleusercontent.com https://firebasestorage.googleapis.com;
-    font-src 'self' https://fonts.gstatic.com;
-    connect-src 'self' https://api-centro-de-compras.onrender.com https://firebase.googleapis.com https://firebaseinstallations.googleapis.com https://www.google-analytics.com;
-  ">
-  <title>Painel Admin - Centro de Compras</title>
-  <link rel="stylesheet" href="/style.css" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
-  <link rel="icon" type="image/x-icon" href="/logos/favicon.ico">
-  <link rel="icon" type="image/png" sizes="32x32" href="/logos/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/logos/favicon-16x16.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="/logos/apple-touch-icon.png">
-  <link rel="manifest" href="/logos/site.webmanifest">
+  <title>Painel Admin - Centro de Compra</title>
+  <!-- CSP ajustado para permitir fontes e scripts do Firebase -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; script-src 'self' https://www.gstatic.com https://cdn.firebase.com; connect-src 'self' https://*.firebaseio.com https://*.firebasestorage.googleapis.com;">
+  <!-- Estilos básicos -->
   <style>
-    body {
-      font-family: 'Roboto', sans-serif;
-      background: #f4f4f4;
-      margin: 0;
-      padding: 0;
-    }
-    .admin-container {
-      max-width: 900px;
-      margin: 2rem auto;
-      padding: 2rem;
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    .admin-container h1 {
-      text-align: center;
-      color: #333;
-      margin-bottom: 1.5rem;
-    }
-    .form-group {
-      margin-bottom: 1.5rem;
-    }
-    .form-group label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 600;
-      color: #444;
-    }
-    .form-group input, .form-group select, .form-group textarea {
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      font-size: 1rem;
-      box-sizing: border-box;
-    }
-    .form-group textarea {
-      resize: vertical;
-      min-height: 100px;
-    }
-    .form-group input[type="file"] {
-      padding: 0.5rem;
-    }
-    button[type="submit"] {
-      background: #28a745;
-      color: white;
-      padding: 0.75rem 1.5rem;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 1rem;
-      display: block;
-      margin: 1rem auto;
-    }
-    button[type="submit"]:hover {
-      background: #218838;
-    }
-    #form-feedback {
-      margin-top: 1rem;
-      font-weight: 600;
-      text-align: center;
-      min-height: 1.5rem;
-    }
-    .loading-spinner {
-      display: none;
-      text-align: center;
-      margin: 1rem 0;
-    }
-    .loading-spinner i {
-      font-size: 1.5rem;
-      color: #007bff;
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; }
+    input, textarea, select { width: 100%; padding: 8px; margin-bottom: 10px; }
+    button { padding: 10px 20px; background-color: #007bff; color: white; border: none; cursor: pointer; }
+    button:disabled { background-color: #cccccc; cursor: not-allowed; }
+    #spinner { display: none; margin-top: 10px; }
+    #message { margin-top: 10px; color: green; }
+    #message.error { color: red; }
   </style>
+  <!-- Firebase SDK via CDN -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+    import { getFirestore, collection, addDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+    import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
 
     const firebaseConfig = {
       apiKey: "AIzaSyDryJc0Y7JV_Os5DZdEDts5XaFUEtJ7wDk",
       authDomain: "centrodecompra-5fa91.firebaseapp.com",
       projectId: "centrodecompra-5fa91",
-      storageBucket: "centrodecompra-5fa91.firebasestorage.app",
+      storageBucket: "centrodecompra-5fa91.appspot.com",
       messagingSenderId: "276696026262",
       appId: "1:276696026262:web:979a68c0796ea1d17346b7",
       measurementId: "G-PM11NQL61N"
     };
 
-    try {
-      const app = initializeApp(firebaseConfig);
-      const db = getFirestore(app);
-      const analytics = getAnalytics(app);
-      window.firebaseApp = app;
-      window.firebaseDb = db;
-    } catch (error) {
-      console.error('Erro ao inicializar Firebase:', error);
-    }
+    // Inicializa Firebase e expõe objetos no window
+    window.firebaseApp = initializeApp(firebaseConfig);
+    window.firebaseDb = getFirestore(window.firebaseApp);
+    window.firebaseStorage = getStorage(window.firebaseApp);
   </script>
+  <!-- Carrega o admin.js -->
+  <script src="admin.js"></script>
 </head>
 <body>
-  <div class="admin-container">
-    <h1>Painel de Administração</h1>
-    <form id="produto-form">
-      <div class="form-group">
-        <label for="nome">Nome do Produto</label>
-        <input type="text" id="nome" name="nome" required>
-      </div>
-      <div class="form-group">
-        <label for="descricao">Descrição</label>
-        <textarea id="descricao" name="descricao" required></textarea>
-      </div>
-      <div class="form-group">
-        <label for="categoria">Categoria</label>
-        <select id="categoria" name="categoria" required>
-          <option value="eletronicos">Eletrônicos</option>
-          <option value="moda">Moda</option>
-          <option value="fitness">Fitness</option>
-          <option value="casa">Casa</option>
-          <option value="beleza">Beleza</option>
-          <option value="esportes">Esportes</option>
-          <option value="livros">Livros</option>
-          <option value="infantil">Infantil</option>
-          <option value="celulares">Celulares</option>
-          <option value="eletrodomesticos">Eletrodomésticos</option>
-          <option value="pet">Pet</option>
-          <option value="jardinagem">Jardinagem</option>
-          <option value="automotivo">Automotivo</option>
-          <option value="gastronomia">Gastronomia</option>
-          <option value="games">Games</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="loja">Loja</label>
-        <select id="loja" name="loja" required>
-          <option value="amazon">Amazon</option>
-          <option value="magalu">Magalu</option>
-          <option value="shein">Shein</option>
-          <option value="shopee">Shopee</option>
-          <option value="mercadolivre">Mercado Livre</option>
-          <option value="alibaba">Alibaba</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="link">Link do Produto</label>
-        <input type="url" id="link" name="link" required>
-      </div>
-      <div class="form-group">
-        <label for="preco">Preço (R$)</label>
-        <input type="number" id="preco" name="preco" step="0.01" required>
-      </div>
-      <div class="form-group">
-        <label for="imagens">Imagens (máximo 5)</label>
-        <input type="file" id="imagens" name="imagens" accept="image/*" multiple>
-      </div>
-      <button type="submit">Salvar Produto</button>
-    </form>
-    <div class="loading-spinner" id="loading-spinner">
-      <i class="fas fa-spinner"></i>
+  <h1>Painel Admin - Cadastro de Produtos</h1>
+  <form id="produto-form">
+    <div class="form-group">
+      <label for="nome">Nome do Produto</label>
+      <input type="text" id="nome" name="nome" required>
     </div>
-    <div id="form-feedback"></div>
-  </div>
-  <script defer src="/admin.js"></script>
+    <div class="form-group">
+      <label for="descricao">Descrição</label>
+      <textarea id="descricao" name="descricao" required></textarea>
+    </div>
+    <div class="form-group">
+      <label for="categoria">Categoria</label>
+      <input type="text" id="categoria" name="categoria" required>
+    </div>
+    <div class="form-group">
+      <label for="loja">Loja</label>
+      <input type="text" id="loja" name="loja" required>
+    </div>
+    <div class="form-group">
+      <label for="link">Link do Produto</label>
+      <input type="url" id="link" name="link" required>
+    </div>
+    <div class="form-group">
+      <label for="preco">Preço (R$)</label>
+      <input type="number" id="preco" name="preco" step="0.01" required>
+    </div>
+    <div class="form-group">
+      <label for="imagens">Imagens</label>
+      <input type="file" id="imagens" name="imagens" accept="image/*" multiple>
+    </div>
+    <button type="submit" id="submit-btn">Cadastrar Produto</button>
+  </form>
+  <div id="spinner">Carregando...</div>
+  <div id="message"></div>
 </body>
 </html>
