@@ -68,4 +68,3 @@ form.addEventListener("submit", async (e) => {
     loadingSpinner.style.display = "none";
   }
 });
-
