@@ -3,22 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="
-    default-src 'self';
-    script-src 'self' 'unsafe-inline' https://www.gstatic.com;
-    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-    font-src 'self' https://fonts.gstatic.com;
-    img-src 'self' data: https://res.cloudinary.com;
-    connect-src 'self' https://*.firebaseio.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://api.cloudinary.com;
-  ">
-  <title>Painel Admin - Centro de Compra</title>
+  <title>Adicionar Produto - Centro de Compras</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
   <style>
     body {
       font-family: 'Roboto', Arial, sans-serif;
-      max-width: 800px;
+      max-width: 600px;
       margin: 0 auto;
       padding: 20px;
     }
@@ -30,10 +22,9 @@
       margin-bottom: 5px;
       font-weight: bold;
     }
-    input, textarea, select {
+    input, select, textarea {
       width: 100%;
       padding: 8px;
-      margin-bottom: 10px;
       border: 1px solid #ccc;
       border-radius: 4px;
     }
@@ -44,16 +35,6 @@
       border: none;
       border-radius: 4px;
       cursor: pointer;
-      margin-right: 10px;
-    }
-    button:disabled {
-      background-color: #cccccc;
-      cursor: not-allowed;
-    }
-    #spinner {
-      display: none;
-      margin-top: 10px;
-      font-size: 1.2em;
     }
     #message {
       margin-top: 10px;
@@ -65,38 +46,10 @@
     #message.success {
       color: green;
     }
-    #imagePreview img {
-      width: 100px;
-      margin: 5px;
-    }
-    #productList {
-      margin-top: 30px;
-    }
-    .product-item {
-      border: 1px solid #ccc;
-      padding: 10px;
-      margin-bottom: 10px;
-      border-radius: 4px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .product-item img {
-      max-width: 50px;
-      margin-right: 10px;
-    }
-    .product-details {
-      flex-grow: 1;
-    }
-    .product-actions {
-      display: flex;
-      gap: 10px;
-    }
   </style>
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
     import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
-    import { getAuth } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 
     const firebaseConfig = {
       apiKey: "AIzaSyDryJc0Y7JV_Os5DZdEDts5XaFUEtJ7wDk",
@@ -108,15 +61,13 @@
       measurementId: "G-PM11NQL61N"
     };
 
-    window.firebaseApp = initializeApp(firebaseConfig);
-    window.firebaseDb = getFirestore(window.firebaseApp);
-    window.firebaseAuth = getAuth(window.firebaseApp);
+    const app = initializeApp(firebaseConfig);
+    window.firebaseDb = getFirestore(app);
   </script>
 </head>
 <body>
-  <h1>Painel de Administração - adm-xyz-123</h1>
+  <h1>Adicionar Produto</h1>
   <form id="produto-form">
-    <input type="hidden" id="produto-id" name="produto-id">
     <div class="form-group">
       <label for="nome">Nome do Produto</label>
       <input type="text" id="nome" name="nome" required>
@@ -146,6 +97,14 @@
       </select>
     </div>
     <div class="form-group">
+      <label for="tamanho">Tamanho</label>
+      <select id="tamanho" name="tamanho" required>
+        <option value="pequeno">Pequeno</option>
+        <option value="medio">Médio</option>
+        <option value="grande">Grande</option>
+      </select>
+    </div>
+    <div class="form-group">
       <label for="loja">Loja</label>
       <select id="loja" name="loja" required>
         <option value="amazon">Amazon</option>
@@ -165,19 +124,47 @@
       <input type="number" id="preco" name="preco" step="0.01" required>
     </div>
     <div class="form-group">
-      <label for="imagens">Imagens (máx. 5, 2 MB cada)</label>
-      <input type="file" id="imagens" name="imagens" accept="image/jpeg,image/png,image/webp,image/avif" multiple>
-      <div id="imagePreview"></div>
+      <label for="imagem">URL da Imagem</label>
+      <input type="url" id="imagem" name="imagem" placeholder="Insira a URL da imagem">
+      <small>Exemplo: https://exemplo.com/imagem.jpg</small>
     </div>
-    <button type="submit" id="submit-btn">Cadastrar Produto</button>
-    <button type="button" id="cancel-btn" style="display: none;">Cancelar Edição</button>
-    <div id="spinner">Carregando...</div>
+    <button type="submit">Adicionar Produto</button>
     <div id="message"></div>
   </form>
-  <div id="productList">
-    <h2>Lista de Produtos</h2>
-    <div id="products"></div>
-  </div>
-  <script src="/admin.js" type="module"></script>
+  <script type="module">
+    import { addDoc, collection } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+    const form = document.getElementById('produto-form');
+    const message = document.getElementById('message');
+
+    const showMessage = (text, isError = false) => {
+      message.textContent = text;
+      message.className = isError ? 'error' : 'success';
+      setTimeout(() => { message.textContent = ''; message.className = ''; }, 5000);
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const produto = {
+        nome: form.nome.value,
+        descricao: form.descricao.value,
+        categoria: form.categoria.value,
+        tamanho: form.tamanho.value,
+        loja: form.loja.value,
+        link: form.link.value,
+        preco: parseFloat(form.preco.value),
+        imagens: form.imagem.value ? [form.imagem.value] : [],
+        criadoEm: new Date()
+      };
+
+      try {
+        await addDoc(collection(window.firebaseDb, 'produtos'), produto);
+        showMessage('Produto adicionado com sucesso!');
+        form.reset();
+      } catch (error) {
+        showMessage('Erro ao adicionar produto: ' + error.message, true);
+      }
+    });
+  </script>
 </body>
 </html>
