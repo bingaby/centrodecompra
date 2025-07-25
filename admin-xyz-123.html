@@ -8,7 +8,7 @@
     script-src 'self' 'unsafe-inline' https://www.gstatic.com https://cdn.firebase.com;
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
     font-src 'self' https://fonts.gstatic.com;
-    connect-src 'self' https://*.firebaseio.com https://*.firebasestorage.googleapis.com;
+    connect-src 'self' https://*.firebaseio.com https://*.firebasestorage.googleapis.com https://firebase.googleapis.com;
   ">
   <title>Painel Admin - Centro de Compra</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -83,7 +83,7 @@
     window.firebaseDb = getFirestore(window.firebaseApp);
     window.firebaseStorage = getStorage(window.firebaseApp);
   </script>
-  <script src="admin.js"></script>
+  <script src="/admin.js"></script>
 </head>
 <body>
   <h1>Painel Admin - Cadastro de Produtos</h1>
