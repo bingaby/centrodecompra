@@ -7,11 +7,11 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
-    script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://www.gstatic.com https://www.googletagmanager.com https://cdn.firebase.com;
+    script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://www.gstatic.com https://www.googletagmanager.com https://cdn.firebase.com https://ep2.adtrafficquality.google;
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com;
     img-src 'self' data: https://drive.google.com https://*.googleusercontent.com https://firebasestorage.googleapis.com;
     font-src 'self' https://fonts.gstatic.com;
-    connect-src 'self' https://*.firebaseio.com https://*.firebasestorage.googleapis.com https://ep1.adtrafficquality.google https://firebaseinstallations.googleapis.com;
+    connect-src 'self' https://*.firebaseio.com https://*.firebasestorage.googleapis.com https://ep1.adtrafficquality.google https://firebaseinstallations.googleapis.com https://firebase.googleapis.com;
     frame-src 'self' https://googleads.g.doubleclick.net;
   ">
   <title>Centro de Compras - Ofertas do Dia</title>
@@ -26,7 +26,7 @@
   <link rel="icon" type="image/png" sizes="16x16" href="/logos/favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/logos/apple-touch-icon.png">
   <link rel="manifest" href="/logos/site.webmanifest">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNs5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
 </head>
 <body>
   <header class="site-header">
@@ -167,13 +167,12 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
-
+    // Removido getAnalytics para evitar erro de CSP
     const firebaseConfig = {
       apiKey: "AIzaSyDryJc0Y7JV_Os5DZdEDts5XaFUEtJ7wDk",
       authDomain: "centrodecompra-5fa91.firebaseapp.com",
       projectId: "centrodecompra-5fa91",
-      storageBucket: "centrodecompra-5fa91.firebasestorage.app",
+      storageBucket: "centrodecompra-5fa91.appspot.com",
       messagingSenderId: "276696026262",
       appId: "1:276696026262:web:979a68c0796ea1d17346b7",
       measurementId: "G-PM11NQL61N"
@@ -181,7 +180,6 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const analytics = getAnalytics(app);
 
     window.firebaseApp = app;
     window.firebaseDb = db;
