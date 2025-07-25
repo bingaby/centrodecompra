@@ -3,6 +3,21 @@ const admin = require('firebase-admin');
 const formidable = require('formidable');
 
 const app = express();
+const cors = require('cors');
+
+const allowedOrigins = ['https://www.centrodecompra.com.br'];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Permitir ferramentas locais como Postman (sem origin)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+}));
+
 
 // Verificar variáveis de ambiente
 const requiredEnvVars = ['FIREBASE_PROJECT_ID', 'FIREBASE_PRIVATE_KEY', 'FIREBASE_CLIENT_EMAIL'];
