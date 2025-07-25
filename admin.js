@@ -1,70 +1,73 @@
-import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
-
+// Acessa objetos Firebase do window
 const db = window.firebaseDb;
-const storage = getStorage();
+const storage = window.firebaseStorage;
 
-const form = document.getElementById("produto-form");
-const loadingSpinner = document.getElementById("loading-spinner");
-const feedback = document.getElementById("form-feedback");
+// Seleciona elementos do formulário
+const form = document.getElementById('produto-form');
+const submitBtn = document.getElementById('submit-btn');
+const spinner = document.getElementById('spinner');
+const message = document.getElementById('message');
 
-form.addEventListener("submit", async (e) => {
+// Função para exibir mensagens
+function showMessage(text, isError = false) {
+  message.textContent = text;
+  message.className = isError ? 'error' : '';
+}
+
+// Manipula o envio do formulário
+form.addEventListener('submit', async (e) => {
   e.preventDefault();
-
-  feedback.textContent = "";
-  loadingSpinner.style.display = "block";
-
-  const nome = form.nome.value.trim();
-  const descricao = form.descricao.value.trim();
-  const categoria = form.categoria.value;
-  const loja = form.loja.value;
-  const link = form.link.value.trim();
-  const preco = parseFloat(form.preco.value);
-  const imagens = form.imagens.files;
-
-  if (!nome || !descricao || !categoria || !loja || !link || isNaN(preco)) {
-    feedback.textContent = "Por favor, preencha todos os campos corretamente.";
-    loadingSpinner.style.display = "none";
-    return;
-  }
-
-  if (imagens.length > 5) {
-    feedback.textContent = "Você pode enviar no máximo 5 imagens.";
-    loadingSpinner.style.display = "none";
-    return;
-  }
+  submitBtn.disabled = true;
+  spinner.style.display = 'block';
+  showMessage('');
 
   try {
-    // Upload das imagens para Storage e pegar URLs
-    const urls = [];
-    for (let i = 0; i < imagens.length; i++) {
-      const file = imagens[i];
-      const storageRef = ref(storage, `produtos/${Date.now()}_${file.name}`);
-      await uploadBytes(storageRef, file);
-      const url = await getDownloadURL(storageRef);
-      urls.push(url);
+    // Coleta dados do formulário
+    const nome = form.nome.value;
+    const descricao = form.descricao.value;
+    const categoria = form.categoria.value;
+    const loja = form.loja.value;
+    const link = form.link.value;
+    const preco = parseFloat(form.preco.value);
+
+    // Valida campos
+    if (!nome || !descricao || !categoria || !loja || !link || !preco) {
+      throw new Error('Todos os campos são obrigatórios');
+    }
+    if (isNaN(preco) || preco <= 0) {
+      throw new Error('Preço inválido');
     }
 
-    // Salvar produto no Firestore
-    await addDoc(collection(db, "produtos"), {
+    // Faz upload das imagens para o Firebase Storage
+    const imagens = form.imagens.files;
+    const imagensUrls = [];
+    for (const imagem of imagens) {
+      const storageRef = window.firebase.storage.ref(storage, `produtos/${nome}/${Date.now()}-${imagem.name}`);
+      await window.firebase.storage.uploadBytes(storageRef, imagem);
+      const url = await window.firebase.storage.getDownloadURL(storageRef);
+      imagensUrls.push(url);
+    }
+
+    // Salva os dados no Firestore
+    const produto = {
       nome,
       descricao,
       categoria,
       loja,
       link,
       preco,
-      imagemUrls: urls,
-      createdAt: serverTimestamp(),
-    });
+      imagensUrls,
+      createdAt: new Date()
+    };
+    await window.firebase.firestore.addDoc(window.firebase.firestore.collection(db, 'produtos'), produto);
 
-    feedback.style.color = "green";
-    feedback.textContent = "Produto salvo com sucesso!";
+    // Exibe mensagem de sucesso e limpa o formulário
+    showMessage('Produto cadastrado com sucesso!');
     form.reset();
   } catch (error) {
-    console.error(error);
-    feedback.style.color = "red";
-    feedback.textContent = "Erro ao salvar produto: " + error.message;
+    showMessage(`Erro ao cadastrar produto: ${error.message}`, true);
   } finally {
-    loadingSpinner.style.display = "none";
+    submitBtn.disabled = false;
+    spinner.style.display = 'none';
   }
 });
