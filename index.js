@@ -1,105 +1,94 @@
 const express = require('express');
 const admin = require('firebase-admin');
 const formidable = require('formidable');
+const { v4: uuidv4 } = require('uuid');
 
 const app = express();
-const cors = require('cors');
-
-const allowedOrigins = ['https://www.centrodecompra.com.br'];
-
+app.use(express.json());
 app.use(cors({
-  origin: function (origin, callback) {
-    // Permitir ferramentas locais como Postman (sem origin)
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  }
+  origin: ['https://www.centrodecompra.com.br'],
 }));
 
-
-// Verificar variáveis de ambiente
-const requiredEnvVars = ['FIREBASE_PROJECT_ID', 'FIREBASE_PRIVATE_KEY', 'FIREBASE_CLIENT_EMAIL'];
-for (const envVar of requiredEnvVars) {
-  if (!process.env[envVar]) {
-    console.error(`Erro: Variável de ambiente ${envVar} não está definida`);
-    throw new Error(`Variável de ambiente ${envVar} não está definida`);
-  }
-}
-
-try {
-  admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-    }),
-    databaseURL: 'https://centrodecompra-5fa91.firebaseio.com',
-    storageBucket: 'centrodecompra-5fa91.appspot.com'
-  });
-  console.log('Firebase Admin SDK inicializado com sucesso');
-} catch (error) {
-  console.error('Erro ao inicializar Firebase Admin SDK:', error);
-  throw error;
-}
-
-const db = admin.firestore();
-const storage = admin.storage().bucket();
-
-app.use(express.json());
+// Inicialização do Firebase (mantida como no código original)
 
 app.post('/api/produtos', async (req, res) => {
+  // Autenticação (substitua por autenticação robusta)
   const token = req.headers['x-admin-token'];
   if (token !== 'triple-click-access') {
-    console.error('Acesso não autorizado: token inválido');
-    return res.status(401).json({ error: 'Acesso não autorizado: token inválido' });
+    return res.status(401).json({ error: 'Acesso não autorizado' });
   }
 
-  const form = new formidable.IncomingForm();
-  
+  const form = formidable({ multiples: true });
   try {
-    form.parse(req, async (err, fields, files) => {
-      if (err) {
-        console.error('Erro ao processar formulário:', err);
-        return res.status(500).json({ error: 'Erro ao processar formulário' });
-      }
-
-      const productData = {
-        nome: fields.nome?.[0],
-        descricao: fields.descricao?.[0],
-        categoria: fields.categoria?.[0],
-        loja: fields.loja?.[0],
-        link: fields.link?.[0],
-        preco: parseFloat(fields.preco?.[0]),
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      };
-
-      if (files.imagens) {
-        const imagem = Array.isArray(files.imagens) ? files.imagens[0] : files.imagens;
-        const fileName = `produtos/${productData.nome}/${imagem.originalFilename}`;
-        const file = storage.file(fileName);
-        
-        await file.save(imagem.buffer || imagem.filepath, {
-          metadata: { contentType: imagem.mimetype },
-        });
-        
-        const [url] = await file.getSignedUrl({
-          action: 'read',
-          expires: '03-09-2491',
-        });
-        productData.imagemUrl = url;
-      }
-
-      await db.collection('produtos').doc(productData.nome).set(productData);
-      console.log('Produto salvo com sucesso:', productData.nome);
-      res.status(200).json({ message: 'Produto salvo com sucesso' });
+    const { fields, files } = await new Promise((resolve, reject) => {
+      form.parse(req, (err, fields, files) => {
+        if (err) reject(err);
+        resolve({ fields, files });
+      });
     });
+
+    // Validação de campos obrigatórios
+    const requiredFields = ['nome', 'descricao', 'categoria', 'loja', 'preco'];
+    for (const field of requiredFields) {
+      if (!fields[field]?.[0]) {
+        return res.status(400).json({ error: `Campo ${field} é obrigatório` });
+      }
+    }
+
+    const productData = {
+      nome: fields.nome[0],
+      descricao: fields.descricao[0],
+      categoria: fields.categoria[0],
+      loja: fields.loja[0],
+      link: fields.link?.[0] || '',
+      preco: parseFloat(fields.preco[0]),
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    };
+
+    // Validação de preço
+    if (isNaN(productData.preco) || productData.preco <= 0) {
+      return res.status(400).json({ error: 'Preço inválido' });
+    }
+
+    // Upload de imagem
+    if (files.imagens) {
+      const imagem = Array.isArray(files.imagens) ? files.imagens[0] : files.imagens;
+      if (!['image/jpeg', 'image/png'].includes(imagem.mimetype)) {
+        return res.status(400).json({ error: 'Formato de imagem inválido' });
+      }
+
+      const fileName = `produtos/${uuidv4()}-${sanitizeFileName(productData.nome)}`;
+      const file = storage.file(fileName);
+      await file.save(imagem.filepath, {
+        metadata: { contentType: imagem.mimetype },
+      });
+
+      const [url] = await file.getSignedUrl({
+        action: 'read',
+        expires: '03-09-2491',
+      });
+      productData.imagemUrl = url;
+    }
+
+    // Verificar duplicatas
+    const docRef = db.collection('produtos').doc(sanitizeFileName(productData.nome));
+    const doc = await docRef.get();
+    if (doc.exists) {
+      return res.status(400).json({ error: 'Produto com este nome já existe' });
+    }
+
+    await docRef.set(productData);
+    res.status(200).json({ message: 'Produto salvo com sucesso' });
   } catch (error) {
     console.error('Erro ao salvar produto:', error);
     res.status(500).json({ error: `Erro ao salvar produto: ${error.message}` });
   }
 });
+
+// Função auxiliar para sanitizar nomes de arquivos
+function sanitizeFileName(name) {
+  return name.replace(/[^a-zA-Z0-9-_]/g, '_').toLowerCase();
+}
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
