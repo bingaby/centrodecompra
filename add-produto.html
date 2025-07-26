@@ -104,8 +104,9 @@
     </div>
 
     <script>
-        // Use a URL de implantação mais recente que você me forneceu:
-        const urlScript = 'https://script.google.com/macros/s/AKfycbycqdQmcdYiW9twxdvIWA76__Dy3YzxmcQjOXK4AAhCVyfIplNQ3qNX4E_J8MOYDmiI/exec';
+        // SUBSTITUIR ESTE DEPLOYMENT_ID PELA IMPLANTAÇÃO ATIVA MAIS RECENTE
+        const DEPLOYMENT_ID = 'AKfycbxrJSX2J2h4kCF8LfS8W4bQr43Qt4tYwldRvxkzwejWFQ0COPmaPJT8my_VJsNkLbWiIA';
+        const urlScript = `https://script.google.com/macros/s/${DEPLOYMENT_ID}/exec`;
 
         const productForm = document.getElementById('productForm');
         const messageDiv = document.getElementById('message');
@@ -116,14 +117,20 @@
             messageDiv.style.display = 'none'; // Esconde mensagens antigas
             messageDiv.className = 'message'; // Limpa classes de estilo
 
-            // Validação simples dos campos obrigatórios
-            const requiredFields = ['nome', 'categoria', 'loja', 'imagens', 'preco', 'link'];
+            // Validação simples dos campos obrigatórios antes do envio
+            const requiredFields = ['nome', 'categoria', 'loja', 'preco', 'link'];
             for (const fieldId of requiredFields) {
                 const field = document.getElementById(fieldId);
                 if (!field.value) {
-                    displayMessage('Por favor, preencha todos os campos obrigatórios.', 'error');
+                    displayMessage('Por favor, preencha todos os campos obrigatórios (exceto descrição, se for opcional).', 'error');
                     return;
                 }
+            }
+            // Validação para o campo de imagem
+            const imageInput = document.getElementById('imagens');
+            if (imageInput.files.length === 0) {
+                displayMessage('Por favor, selecione uma imagem para o produto.', 'error');
+                return;
             }
 
             const formData = new FormData(this); // Coleta todos os dados do formulário, incluindo o arquivo
