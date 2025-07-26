@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Adicionar Produto</title>
-    <meta http-equiv="Content-Security-Policy" content="
+      <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
     script-src 'self' 'unsafe-inline';
     style-src 'self' 'unsafe-inline';
@@ -19,9 +19,10 @@
     h1 { text-align: center; color: #333; margin-bottom: 25px; }
     .form-group { margin-bottom: 20px; }
     label { display: block; font-weight: bold; margin-bottom: 8px; color: #555; }
+    /* Estilos para todos os inputs de texto, URL, textarea e selects */
     input[type="text"],
     input[type="url"],
-    input[type="file"], /* Adicionado para input type="file" */
+    input[type="file"], /* Estilo para input type="file" */
     textarea,
     select {
       width: calc(100% - 20px); /* Ajuste para padding */
@@ -113,17 +114,7 @@
         <option value="alibaba">Alibaba</option>
       </select>
     </div>
-    <div class="form-group">
-      <label for="tamanho">Tamanho</label>
-      <select id="tamanho" name="tamanho" required>
-        <option value="">Selecione o Tamanho</option>
-        <option value="pequeno">Pequeno</option>
-        <option value="medio">Médio</option>
-        <option value="grande">Grande</option>
-      </select>
-    </div>
-
-    <button type="submit">Adicionar Produto</button>
+        <button type="submit">Adicionar Produto</button>
     <div id="message"></div>
   </form>
 
@@ -132,7 +123,6 @@
     const messageDiv = document.getElementById('message');
 
     // SEU ID DE IMPLANTAÇÃO DO GOOGLE APPS SCRIPT AQUI!
-    // Use o ID que você me forneceu: AKfycbyq0caZb8YCyN-h6E6Os4usnz_a_-wps06_t11llvaaQnDzv4XtAco4piR8a3uhe1-sng
     const DEPLOYMENT_ID = 'AKfycbyq0caZb8YCyN-h6E6Os4usnz_a_-wps06_t11llvaaQnDzv4XtAco4piR8a3uhe1-sng';
     const SCRIPT_URL = `https://script.google.com/macros/s/${DEPLOYMENT_ID}/exec`;
 
@@ -175,7 +165,7 @@
       formData.append('link', form.link.value);
       formData.append('categoria', form.categoria.value);
       formData.append('loja', form.loja.value);
-      formData.append('tamanho', form.tamanho.value);
+      // formData.append('tamanho', form.tamanho.value); // REMOVIDO: Campo 'tamanho'
       formData.append('imagens', imagemInput.files[0]); // Adiciona o arquivo Blob
 
       console.log('Dados do FormData a serem enviados:');
@@ -188,8 +178,6 @@
           method: 'POST',
           body: formData // IMPORTANTE: Envia o FormData diretamente, sem JSON.stringify
           // NÂO adicione 'Content-Type': 'application/json' aqui.
-          // O navegador define automaticamente o 'Content-Type' como 'multipart/form-data'
-          // quando você usa FormData.
         });
 
         if (response.ok) {
