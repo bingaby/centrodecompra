@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
-        script-src 'self' 'unsafe-inline'; /* 'unsafe-inline' é para scripts inline, mas tente evitá-lo se possível */
-        style-src 'self' 'unsafe-inline'; /* 'unsafe-inline' é para estilos inline, mas tente evitá-lo se possível */
-        img-src 'self' data: https:; /* Permite imagens de URLs externas e data URIs */
+        script-src 'self' 'unsafe-inline';
+        style-src 'self' 'unsafe-inline'; /* Adicionado 'unsafe-inline' para permitir estilos inline */
+        img-src 'self' data: https:;
         connect-src 'self' https://script.google.com; /* Crucial para o fetch API se comunicar com o Apps Script */
         font-src 'self';
         object-src 'none';
@@ -114,8 +114,8 @@
 
     <script>
         // ATENÇÃO: Substitua 'SUA_URL_DO_WEBAPP_APPS_SCRIPT' pela URL real da sua implantação
-        // Esta é a URL que você me forneceu: AKfycbycqdQmcdYiW9twxdvIWA76__Dy3YzxmcQjOXK4AAhCVyfIplNQ3qNX4E_J8MOYDmiQ
-        const urlScript = 'https://script.google.com/macros/s/AKfycbycqdQmcdYiW9twxdvIWA76__Dy3YzxmcQjOXK4AAhCVyfIplNQ3qNX4E_J8MOYDmiQ/exec';
+        // Esta é a URL MAIS RECENTE que você me forneceu: AKfycbyFVmPFLfed9asgIXPjHTMuAxfkqGJMAuvBCPlgtEjO
+        const urlScript = 'https://script.google.com/macros/s/AKfycbyFVmPFLfed9asgIXPjHTMuAxfkqGJMAuvBCPlgtEjO/exec';
 
         const productForm = document.getElementById('productForm');
         const messageDiv = document.getElementById('message');
