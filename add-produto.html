@@ -1,205 +1,181 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Adicionar Produto</title>
-      <meta http-equiv="Content-Security-Policy" content="
-    default-src 'self';
-    script-src 'self' 'unsafe-inline';
-    style-src 'self' 'unsafe-inline';
-    img-src 'self' data: https:; /* Permite imagens de URLs externas e data URIs */
-    connect-src 'self' https://script.google.com; /* Crucial para o fetch API */
-    font-src 'self';
-    object-src 'none';
-    base-uri 'self';
-  ">
-  <style>
-    body { font-family: Arial, sans-serif; max-width: 500px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); background-color: #f9f9f9; }
-    h1 { text-align: center; color: #333; margin-bottom: 25px; }
-    .form-group { margin-bottom: 20px; }
-    label { display: block; font-weight: bold; margin-bottom: 8px; color: #555; }
-    /* Estilos para todos os inputs de texto, URL, textarea e selects */
-    input[type="text"],
-    input[type="url"],
-    input[type="file"], /* Estilo para input type="file" */
-    textarea,
-    select {
-      width: calc(100% - 20px); /* Ajuste para padding */
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      box-sizing: border-box; /* Garante que padding não aumente a largura total */
-      font-size: 16px;
-    }
-    textarea { resize: vertical; min-height: 80px; } /* Estilo específico para textarea */
-    button {
-      padding: 12px 25px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 17px;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-      width: 100%;
-    }
-    button:hover { background-color: #0056b3; transform: translateY(-1px); }
-    button:active { transform: translateY(0); }
-    #message {
-      margin-top: 20px;
-      padding: 12px;
-      border-radius: 4px;
-      text-align: center;
-      font-weight: bold;
-      display: none; /* Escondido por padrão */
-    }
-    #message.error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-    #message.success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline'; /* 'unsafe-inline' é para scripts inline, mas tente evitá-lo se possível */
+        style-src 'self' 'unsafe-inline'; /* 'unsafe-inline' é para estilos inline, mas tente evitá-lo se possível */
+        img-src 'self' data: https:; /* Permite imagens de URLs externas e data URIs */
+        connect-src 'self' https://script.google.com; /* Crucial para o fetch API se comunicar com o Apps Script */
+        font-src 'self';
+        object-src 'none';
+        base-uri 'self';
+    ">
+    <title>Adicionar Produto</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="number"],
+        input[type="url"],
+        textarea,
+        select {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        input[type="file"] {
+            margin-bottom: 15px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
 </head>
 <body>
-  <h1>Adicionar Produto</h1>
-  <form id="produto-form" enctype="multipart/form-data">     <div class="form-group">
-      <label for="nome">Nome do Produto</label>
-      <input type="text" id="nome" name="nome" required>
-    </div>
-    <div class="form-group">
-      <label for="descricao">Descrição do Produto</label>
-      <textarea id="descricao" name="descricao" rows="4"></textarea>
-    </div>
-    <div class="form-group">
-      <label for="preco">Preço (R$)</label>
-      <input type="text" id="preco" name="preco" placeholder="Ex: 123.45 ou 123,45" required>
-    </div>
-    <div class="form-group">
-      <label for="link">Link do Produto</label>
-      <input type="url" id="link" name="link" placeholder="https://exemplo.com/produto-xyz" required>
-    </div>
-    <div class="form-group">
-      <label for="imagens">Fazer Upload da Imagem</label>
-      <input type="file" id="imagens" name="imagens" accept="image/*" required>     </div>
-    <div class="form-group">
-      <label for="categoria">Categoria</label>
-      <select id="categoria" name="categoria" required>
-        <option value="">Selecione a Categoria</option>
-        <option value="todas">Todas</option>
-        <option value="eletronicos">Eletrônicos</option>
-        <option value="moda">Moda</option>
-        <option value="fitness">Fitness</option>
-        <option value="casa">Casa</option>
-        <option value="beleza">Beleza</option>
-        <option value="esportes">Esportes</option>
-        <option value="livros">Livros</option>
-        <option value="infantil">Infantil</option>
-        <option value="celulares">Celulares</option>
-        <option value="eletrodomesticos">Eletrodomésticos</option>
-        <option value="pet">Pet</option>
-        <option value="jardinagem">Jardinagem</option>
-        <option value="automotivo">Automotivo</option>
-        <option value="gastronomia">Gastronomia</option>
-        <option value="games">Games</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="loja">Loja</label>
-      <select id="loja" name="loja" required>
-        <option value="">Selecione a Loja</option>
-        <option value="todas">Todas</option>
-        <option value="amazon">Amazon</option>
-        <option value="magalu">Magalu</option>
-        <option value="shein">Shein</option>
-        <option value="shopee">Shopee</option>
-        <option value="mercadolivre">Mercado Livre</option>
-        <option value="alibaba">Alibaba</option>
-      </select>
-    </div>
-        <button type="submit">Adicionar Produto</button>
-    <div id="message"></div>
-  </form>
+    <div class="container">
+        <h1>Adicionar Novo Produto</h1>
+        <form id="productForm">
+            <label for="nome">Nome do Produto:</label>
+            <input type="text" id="nome" name="nome" required>
 
-  <script>
-    const form = document.getElementById('produto-form');
-    const messageDiv = document.getElementById('message');
+            <label for="descricao">Descrição:</label>
+            <textarea id="descricao" name="descricao" rows="4"></textarea>
 
-    // SEU ID DE IMPLANTAÇÃO DO GOOGLE APPS SCRIPT AQUI!
-    const DEPLOYMENT_ID = 'AKfycbyq0caZb8YCyN-h6E6Os4usnz_a_-wps06_t11llvaaQnDzv4XtAco4piR8a3uhe1-sng';
-    const SCRIPT_URL = `https://script.google.com/macros/s/${DEPLOYMENT_ID}/exec`;
+            <label for="categoria">Categoria:</label>
+            <input type="text" id="categoria" name="categoria" required>
 
-    // --- Verificação de Token de Acesso ---
-    const urlParams = new URLSearchParams(window.location.search);
-    const tempToken = urlParams.get('tempToken');
-    if (tempToken !== 'triple-click-access') {
-      alert('Acesso não autorizado. Você será redirecionado.');
-      window.location.href = '/index.html'; // Ou sua URL completa: 'https://www.centrodecompra.com.br/index.html'
-    }
+            <label for="loja">Loja:</label>
+            <input type="text" id="loja" name="loja" required>
 
-    // --- Função para exibir mensagens ---
-    const showMessage = (text, isError = false) => {
-      messageDiv.textContent = text;
-      messageDiv.className = isError ? 'error' : 'success';
-      messageDiv.style.display = 'block';
-      setTimeout(() => {
-        messageDiv.textContent = '';
-        messageDiv.className = '';
-        messageDiv.style.display = 'none';
-      }, 5000);
-    };
+            <label for="imagens">Imagem do Produto:</label>
+            <input type="file" id="imagens" name="imagens" accept="image/*" required>
 
-    // --- Event Listener para Submissão do Formulário ---
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      showMessage('Enviando produto e imagem...', false);
+            <label for="preco">Preço:</label>
+            <input type="number" id="preco" name="preco" step="0.01" required>
 
-      const imagemInput = document.getElementById('imagens');
-      if (!imagemInput.files[0]) {
-        showMessage('Por favor, selecione uma imagem para upload.', true);
-        return;
-      }
+            <label for="link">Link do Produto:</label>
+            <input type="url" id="link" name="link" required>
 
-      // Usa FormData para lidar com upload de arquivo
-      const formData = new FormData();
-      formData.append('nome', form.nome.value);
-      formData.append('descricao', form.descricao.value);
-      formData.append('preco', form.preco.value);
-      formData.append('link', form.link.value);
-      formData.append('categoria', form.categoria.value);
-      formData.append('loja', form.loja.value);
-      // formData.append('tamanho', form.tamanho.value); // REMOVIDO: Campo 'tamanho'
-      formData.append('imagens', imagemInput.files[0]); // Adiciona o arquivo Blob
+            <button type="submit">Adicionar Produto</button>
+        </form>
+        <div id="message" class="message" style="display: none;"></div>
+    </div>
 
-      console.log('Dados do FormData a serem enviados:');
-      for (let [key, value] of formData.entries()) {
-        console.log(`${key}: ${value}`);
-      }
+    <script>
+        // ATENÇÃO: Substitua 'SUA_URL_DO_WEBAPP_APPS_SCRIPT' pela URL real da sua implantação
+        // Esta é a URL que você me forneceu: AKfycbycqdQmcdYiW9twxdvIWA76__Dy3YzxmcQjOXK4AAhCVyfIplNQ3qNX4E_J8MOYDmiQ
+        const urlScript = 'https://script.google.com/macros/s/AKfycbycqdQmcdYiW9twxdvIWA76__Dy3YzxmcQjOXK4AAhCVyfIplNQ3qNX4E_J8MOYDmiQ/exec';
 
-      try {
-        const response = await fetch(SCRIPT_URL, {
-          method: 'POST',
-          body: formData // IMPORTANTE: Envia o FormData diretamente, sem JSON.stringify
-          // NÂO adicione 'Content-Type': 'application/json' aqui.
-        });
+        const productForm = document.getElementById('productForm');
+        const messageDiv = document.getElementById('message');
 
-        if (response.ok) {
-          const result = await response.json();
-          console.log('Resposta do servidor:', result);
+        productForm.addEventListener('submit', async function(e) {
+            e.preventDefault(); // Impede o envio padrão do formulário
 
-          if (result.status === 'success') {
-            showMessage('Produto adicionado com sucesso! Imagem salva: ' + result.imageUrl, false);
-            form.reset();
-          } else {
-            showMessage('Erro ao adicionar produto: ' + (result.message || 'Resposta inesperada.'), true);
-          }
-        } else {
-          const errorText = await response.text();
-          console.error('Erro na resposta do servidor (status ' + response.status + '):', errorText);
-          showMessage('Erro ao adicionar produto: ' + response.statusText + ' (' + response.status + ')', true);
-        }
-      } catch (error) {
-        console.error('Erro de conexão ou sistema:', error);
-        showMessage('Erro de conexão ao servidor: ' + error.message, true);
-      }
-    });
-  </script>
+            messageDiv.style.display = 'none'; // Esconde mensagens antigas
+            messageDiv.className = 'message'; // Limpa classes de estilo
+
+            // Validação simples dos campos obrigatórios
+            const requiredFields = ['nome', 'categoria', 'loja', 'imagens', 'preco', 'link'];
+            for (const fieldId of requiredFields) {
+                const field = document.getElementById(fieldId);
+                if (!field.value) {
+                    displayMessage('Por favor, preencha todos os campos obrigatórios.', 'error');
+                    return;
+                }
+            }
+
+            const formData = new FormData(this); // Coleta todos os dados do formulário, incluindo o arquivo
+
+            console.log('Dados do FormData a serem enviados:');
+            for (let pair of formData.entries()) {
+                console.log(pair[0] + ': ' + pair[1]);
+            }
+
+            try {
+                const response = await fetch(urlScript, {
+                    method: 'POST',
+                    body: formData // FormData envia como multipart/form-data automaticamente
+                });
+
+                if (!response.ok) {
+                    // Se a resposta não for HTTP 2xx, lança um erro
+                    const errorText = await response.text();
+                    throw new Error(`Erro HTTP! Status: ${response.status} - ${errorText}`);
+                }
+
+                const result = await response.json(); // Tenta parsear a resposta como JSON
+                console.log('Resposta do Apps Script:', result);
+
+                if (result.status === 'success') {
+                    displayMessage(result.message, 'success');
+                    productForm.reset(); // Limpa o formulário após o sucesso
+                } else {
+                    displayMessage('Erro ao adicionar produto: ' + result.message, 'error');
+                }
+
+            } catch (error) {
+                console.error('Erro de conexão ou sistema:', error);
+                displayMessage('Erro de conexão ou sistema: ' + error.message, 'error');
+            }
+        });
+
+        function displayMessage(msg, type) {
+            messageDiv.textContent = msg;
+            messageDiv.className = 'message ' + type;
+            messageDiv.style.display = 'block';
+        }
+    </script>
 </body>
 </html>
