@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-eval' https://script.google.com https://accounts.google.com; img-src 'self' data: https:; connect-src 'self' https://script.google.com https://script.googleusercontent.com https://www.google.com https://accounts.google.com; font-src 'self'; object-src 'none'; base-uri 'self';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://script.google.com https://script.googleusercontent.com https://cors-anywhere.herokuapp.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://script.google.com;">
     <title>Adicionar Produto</title>
     <style>
         body {
@@ -104,20 +104,19 @@
     </div>
 
     <script>
-        // SUBSTITUA ESTE DEPLOYMENT_ID PELA SUA IMPLANTAÇÃO ATIVA MAIS RECENTE
-        const DEPLOYMENT_ID = 'AKfycbw7KbQMK_69VHQdjblO17ojHmb4RqPrZKpPecrIwHEY6W19bbWD6YiGTx2t9J--9kunAA'; // Exemplo
-        const urlScript = `https://script.google.com/macros/s/${DEPLOYMENT_ID}/exec`;
+        // --- URL com proxy CORS e novo DEPLOYMENT_ID ---
+        const DEPLOYMENT_ID = 'AKfycbw7KbQMK_69VHQdjblO17ojHmb4RqPrZKpPecrIwHEY6W19bbWD6YiGTx2t9J--9kunAA';
+        const urlScript = 'https://cors-anywhere.herokuapp.com/https://script.google.com/macros/s/' + DEPLOYMENT_ID + '/exec';
+        // Para produção, substitua por: 'https://your-proxy.com/https://script.google.com/macros/s/' + DEPLOYMENT_ID + '/exec'
 
         const productForm = document.getElementById('productForm');
         const messageDiv = document.getElementById('message');
 
         productForm.addEventListener('submit', async function(e) {
-            e.preventDefault(); // Impede o envio padrão do formulário
+            e.preventDefault();
+            messageDiv.style.display = 'none';
+            messageDiv.className = 'message';
 
-            messageDiv.style.display = 'none'; // Esconde mensagens antigas
-            messageDiv.className = 'message'; // Limpa classes de estilo
-
-            // Validação dos campos obrigatórios antes de enviar
             const requiredFields = ['nome', 'categoria', 'loja', 'preco', 'link'];
             for (const fieldId of requiredFields) {
                 const field = document.getElementById(fieldId);
@@ -126,42 +125,39 @@
                     return;
                 }
             }
-            // Validação para o campo de imagem
+
             const imageInput = document.getElementById('imagens');
             if (imageInput.files.length === 0) {
-                displayMessage('Por favor, selecione uma imagem para o produto.', 'error');
+                displayMessage("O campo 'Imagens' é obrigatório e requer um arquivo válido.", 'error');
                 return;
             }
 
-            const formData = new FormData(this); // Coleta todos os dados do formulário, incluindo o arquivo
-
+            const formData = new FormData(this);
             console.log('Dados do FormData a serem enviados:');
             for (let pair of formData.entries()) {
-                console.log(pair[0] + ': ' + pair[1]);
+                console.log(pair[0] + ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]));
             }
 
             try {
                 const response = await fetch(urlScript, {
                     method: 'POST',
-                    body: formData // FormData envia como multipart/form-data automaticamente
+                    body: formData
                 });
 
                 if (!response.ok) {
-                    // Se a resposta não for HTTP 2xx, lança um erro
                     const errorText = await response.text();
                     throw new Error(`Erro HTTP! Status: ${response.status} - ${errorText}`);
                 }
 
-                const result = await response.json(); // Tenta analisar a resposta como JSON
+                const result = await response.json();
                 console.log('Resposta do Apps Script:', result);
 
-                if (result.status === 'success') { // Verifica o status retornado pelo Apps Script
+                if (result.status === 'success') {
                     displayMessage(result.message, 'success');
-                    productForm.reset(); // Limpa o formulário após o sucesso
+                    productForm.reset();
                 } else {
                     displayMessage('Erro ao adicionar produto: ' + result.message, 'error');
                 }
-
             } catch (error) {
                 console.error('Erro de conexão ou sistema:', error);
                 displayMessage('Erro de conexão ou sistema: ' + error.message, 'error');
