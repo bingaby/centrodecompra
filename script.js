@@ -18,7 +18,7 @@ const loadProducts = async () => {
   productGrid.innerHTML = '';
 
   try {
-    const response = await fetch('SUA_URL_DO_APPS_SCRIPT'); // Substitua pela URL do Apps Script
+    const response = await fetch('https://script.google.com/macros/s/AKfycbxm-eaVEXSlnDSPeeWUEbZuP6ZqdeFZQSxRUjf17rXAuKUnV9AVTTLJ7Oybp-SszoGn/exec'); // Substitua pela URL do Apps Script
     const produtos = await response.json();
     console.log('Produtos encontrados:', produtos); // Depuração
 
