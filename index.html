@@ -7,11 +7,11 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
-        script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://www.gstatic.com https://www.googletagmanager.com https://cdn.firebase.com https://ep2.adtrafficquality.google https://script.google.com; /* Adicionado script.google.com para o GAS */
+        script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://www.gstatic.com https://www.googletagmanager.com https://cdn.firebase.com https://ep2.adtrafficquality.google https://script.google.com;
         style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com;
         img-src 'self' data: https://drive.google.com https://*.googleusercontent.com https://firebasestorage.googleapis.com;
         font-src 'self' https://fonts.gstatic.com;
-        connect-src 'self' https://*.firebaseio.com https://*.firebasestorage.googleapis.com https://ep1.adtrafficquality.google https://firebaseinstallations.googleapis.com https://firebase.googleapis.com;
+        connect-src 'self' https://*.firebaseio.com https://*.firebasestorage.googleapis.com https://ep1.adtrafficquality.google https://firebaseinstallations.googleapis.com https://firebase.googleapis.com https://script.google.com; /* Adicionado script.google.com para o Apps Script */
         frame-src 'self' https://googleads.g.doubleclick.net;
     ">
     <title>Centro de Compras - Ofertas do Dia</title>
@@ -224,8 +224,8 @@
 
         // --- INÍCIO DO CÓDIGO PARA INTEGRAR COM O GOOGLE APPS SCRIPT ---
 
-        // Seu ID de Implantação do Google Apps Script
-        const DEPLOYMENT_ID = 'AKfycbzt4TzxYjMmU9QlVjezqAEvb7r5lY--wBglntJpK1Y2fUb9WlEhhk2xDn76lBG6IDbTjg';
+        // Seu ID de Implantação do Google Apps Script - ATUALIZADO PARA A ÚLTIMA URL
+        const DEPLOYMENT_ID = 'AKfycbyFVmPFLfed9asgIXPjHTMuAxfkqGJMAuvBCPlgtEjO'; 
         const SCRIPT_URL = `https://script.google.com/macros/s/${DEPLOYMENT_ID}/exec`;
         const CALLBACK_FUNCTION_NAME = 'renderizarProdutosDaPlanilha'; // Um nome único para a função de callback
 
@@ -254,9 +254,10 @@
                 produtoCard.className = 'produto-card'; // Assumindo que você tem estilos para 'produto-card' no seu style.css
 
                 // Imagem do produto
-                if (produto.imagem) {
+                // O campo da imagem agora é 'imagens' conforme a ordem da planilha
+                if (produto.imagens) { 
                     const img = document.createElement('img');
-                    img.src = produto.imagem;
+                    img.src = produto.imagens; 
                     img.alt = produto.nome || 'Produto';
                     img.loading = 'lazy'; // Para carregamento otimizado
                     produtoCard.appendChild(img);
@@ -275,23 +276,26 @@
                 // Preço do produto
                 const preco = document.createElement('p');
                 preco.className = 'preco'; // Adicione uma classe para estilização se quiser
-                preco.textContent = produto.preco || 'Preço indisponível';
+                preco.textContent = `R$ ${parseFloat(produto.preco).toFixed(2).replace('.', ',')}` || 'Preço indisponível'; // Formata para BRL
                 produtoCard.appendChild(preco);
 
-                // Data (opcional, pode ser formatada)
+                // Data (opcional, pode ser formatada) - Adicionada a data atual se não houver no produto
                 const data = document.createElement('p');
                 let dataFormatada = 'N/A';
-                if (produto.data) {
+                if (produto.data) { // Se houver um campo 'data' na planilha
                     try {
                         const d = new Date(produto.data);
-                        if (!isNaN(d.getTime())) { // Verifica se a data é válida
+                        if (!isNaN(d.getTime())) {
                             dataFormatada = `Adicionado em: ${d.toLocaleDateString('pt-BR')}`;
                         } else {
-                            dataFormatada = `Adicionado em: ${produto.data}`; // Se não for data válida, mostra o texto original
+                            dataFormatada = `Adicionado em: ${produto.data}`;
                         }
                     } catch (e) {
                         dataFormatada = `Adicionado em: ${produto.data}`;
                     }
+                } else { // Se não houver campo 'data' na planilha, usa a data atual
+                    const now = new Date();
+                    dataFormatada = `Adicionado em: ${now.toLocaleDateString('pt-BR')}`;
                 }
                 data.className = 'data-adicao';
                 data.textContent = dataFormatada;
@@ -305,7 +309,6 @@
                 button.className = 'btn-ir-loja'; // Adicione uma classe para estilização
                 button.textContent = 'Ir para a Loja';
                 produtoCard.appendChild(button);
-
 
                 gridProdutos.appendChild(produtoCard);
             });
