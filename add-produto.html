@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://script.google.com https://script.googleusercontent.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://script.google.com;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-eval' https://script.google.com https://accounts.google.com; img-src 'self' data: https:; connect-src 'self' https://script.google.com https://script.googleusercontent.com https://www.google.com https://accounts.google.com; font-src 'self'; object-src 'none'; base-uri 'self';">
     <title>Adicionar Produto</title>
     <style>
         body {
@@ -92,10 +92,6 @@
             <label for="imagens">Imagem do Produto:</label>
             <input type="file" id="imagens" name="imagens" accept="image/*" required>
 
-            <!-- Campo opcional para URL da imagem (descomente se quiser permitir URLs) -->
-            <!-- <label for="imagensUrl">Ou insira a URL da Imagem:</label> -->
-            <!-- <input type="url" id="imagensUrl" name="imagens"> -->
-
             <label for="preco">Preço:</label>
             <input type="number" id="preco" name="preco" step="0.01" required>
 
@@ -108,8 +104,8 @@
     </div>
 
     <script>
-        // --- ID de implantação atualizado ---
-        const DEPLOYMENT_ID = 'AKfycbyFVmPFLfed9asgIXPjHTMuAxfkqGJMAuvBCPlgtEjO';
+        // SUBSTITUA ESTE DEPLOYMENT_ID PELA SUA IMPLANTAÇÃO ATIVA MAIS RECENTE
+        const DEPLOYMENT_ID = 'AKfycbycqdQmcdYiW9twxdvIWA76__Dy3YzxmcQjOXK4AAhCVyfIplNQ3qNX4E_J8MOYDmiI'; // Exemplo
         const urlScript = `https://script.google.com/macros/s/${DEPLOYMENT_ID}/exec`;
 
         const productForm = document.getElementById('productForm');
@@ -130,27 +126,18 @@
                     return;
                 }
             }
-
             // Validação para o campo de imagem
             const imageInput = document.getElementById('imagens');
-            // const imageUrlInput = document.getElementById('imagensUrl'); // Descomente se usar campo de URL
-            if (imageInput.files.length === 0 /* && !imageUrlInput.value */) {
-                displayMessage("O campo 'Imagens' é obrigatório e requer um arquivo válido.", 'error');
+            if (imageInput.files.length === 0) {
+                displayMessage('Por favor, selecione uma imagem para o produto.', 'error');
                 return;
             }
 
             const formData = new FormData(this); // Coleta todos os dados do formulário, incluindo o arquivo
 
-            // Se usar o campo de URL, descomente e ajuste a lógica abaixo
-            /*
-            if (imageUrlInput && imageUrlInput.value) {
-                formData.set('imagens', imageUrlInput.value); // Substitui o campo imagens por URL, se fornecido
-            }
-            */
-
             console.log('Dados do FormData a serem enviados:');
             for (let pair of formData.entries()) {
-                console.log(pair[0] + ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]));
+                console.log(pair[0] + ': ' + pair[1]);
             }
 
             try {
@@ -160,16 +147,17 @@
                 });
 
                 if (!response.ok) {
+                    // Se a resposta não for HTTP 2xx, lança um erro
                     const errorText = await response.text();
                     throw new Error(`Erro HTTP! Status: ${response.status} - ${errorText}`);
                 }
 
-                const result = await response.json();
+                const result = await response.json(); // Tenta analisar a resposta como JSON
                 console.log('Resposta do Apps Script:', result);
 
-                if (result.status === 'success') {
+                if (result.status === 'success') { // Verifica o status retornado pelo Apps Script
                     displayMessage(result.message, 'success');
-                    productForm.reset();
+                    productForm.reset(); // Limpa o formulário após o sucesso
                 } else {
                     displayMessage('Erro ao adicionar produto: ' + result.message, 'error');
                 }
