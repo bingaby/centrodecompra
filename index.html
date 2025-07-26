@@ -5,15 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-adsense-account" content="ca-pub-4531749081462125">
     <meta name="twitter:card" content="summary_large_image">
-    <meta http-equiv="Content-Security-Policy" content="
-        default-src 'self';
-        script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://www.gstatic.com https://www.googletagmanager.com https://cdn.firebase.com https://ep2.adtrafficquality.google https://script.google.com;
-        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com;
-        img-src 'self' data: https://drive.google.com https://*.googleusercontent.com https://firebasestorage.googleapis.com;
-        font-src 'self' https://fonts.gstatic.com;
-        connect-src 'self' https://*.firebaseio.com https://*.firebasestorage.googleapis.com https://ep1.adtrafficquality.google https://firebaseinstallations.googleapis.com https://firebase.googleapis.com https://script.google.com; /* Adicionado script.google.com para o Apps Script */
-        frame-src 'self' https://googleads.g.doubleclick.net;
-    ">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://www.gstatic.com https://www.googletagmanager.com https://cdn.firebase.com https://ep2.adtrafficquality.google https://script.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; img-src 'self' data: https://drive.google.com https://*.googleusercontent.com https://firebasestorage.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.firebaseio.com https://*.firebasestorage.googleapis.com https://ep1.adtrafficquality.google https://firebaseinstallations.googleapis.com https://firebase.googleapis.com https://script.google.com; frame-src 'self' https://googleads.g.doubleclick.net;">
     <title>Centro de Compras - Ofertas do Dia</title>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4531749081462125" crossorigin="anonymous"></script>
     <link rel="preload" href="/logos/logoscentrodecompras.jpeg" as="image">
@@ -225,7 +217,7 @@
         // --- INÍCIO DO CÓDIGO PARA INTEGRAR COM O GOOGLE APPS SCRIPT ---
 
         // Seu ID de Implantação do Google Apps Script - ATUALIZADO PARA A ÚLTIMA URL
-        const DEPLOYMENT_ID = 'AKfycbyFVmPFLfed9asgIXPjHTMuAxfkqGJMAuvBCPlgtEjO'; 
+        const DEPLOYMENT_ID = 'AKfycbycqdQmcdYiW9twxdvIWA76__Dy3YzxmcQjOXK4AAhCVyfIplNQ3qNX4E_J8MOYDmiI';
         const SCRIPT_URL = `https://script.google.com/macros/s/${DEPLOYMENT_ID}/exec`;
         const CALLBACK_FUNCTION_NAME = 'renderizarProdutosDaPlanilha'; // Um nome único para a função de callback
 
@@ -255,9 +247,9 @@
 
                 // Imagem do produto
                 // O campo da imagem agora é 'imagens' conforme a ordem da planilha
-                if (produto.imagens) { 
+                if (produto.imagens) {
                     const img = document.createElement('img');
-                    img.src = produto.imagens; 
+                    img.src = produto.imagens;
                     img.alt = produto.nome || 'Produto';
                     img.loading = 'lazy'; // Para carregamento otimizado
                     produtoCard.appendChild(img);
