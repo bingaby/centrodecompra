@@ -104,8 +104,8 @@
     </div>
 
     <script>
-        // SUBSTITUIR ESTE DEPLOYMENT_ID PELA IMPLANTAÇÃO ATIVA MAIS RECENTE
-        const DEPLOYMENT_ID = 'AKfycbxrJSX2J2h4kCF8LfS8W4bQr43Qt4tYwldRvxkzwejWFQ0COPmaPJT8my_VJsNkLbWiIA';
+        // --- SUBSTITUIR ESTE DEPLOYMENT_ID PELA SUA IMPLANTAÇÃO ATIVA MAIS RECENTE ---
+        const DEPLOYMENT_ID = 'AKfycbycqdQmcdYiW9twxdvIWA76__Dy3YzxmcQjOXK4AAhCVyfIplNQ3qNX4E_J8MOYDmiI';
         const urlScript = `https://script.google.com/macros/s/${DEPLOYMENT_ID}/exec`;
 
         const productForm = document.getElementById('productForm');
@@ -117,7 +117,7 @@
             messageDiv.style.display = 'none'; // Esconde mensagens antigas
             messageDiv.className = 'message'; // Limpa classes de estilo
 
-            // Validação simples dos campos obrigatórios antes do envio
+            // Validação dos campos obrigatórios antes de enviar
             const requiredFields = ['nome', 'categoria', 'loja', 'preco', 'link'];
             for (const fieldId of requiredFields) {
                 const field = document.getElementById(fieldId);
@@ -152,10 +152,10 @@
                     throw new Error(`Erro HTTP! Status: ${response.status} - ${errorText}`);
                 }
 
-                const result = await response.json(); // Tenta parsear a resposta como JSON
+                const result = await response.json(); // Tenta analisar a resposta como JSON
                 console.log('Resposta do Apps Script:', result);
 
-                if (result.status === 'success') {
+                if (result.status === 'success') { // Verifica o status retornado pelo Apps Script
                     displayMessage(result.message, 'success');
                     productForm.reset(); // Limpa o formulário após o sucesso
                 } else {
