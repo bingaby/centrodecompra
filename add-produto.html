@@ -3,67 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Adicionar Produto - Centro de Compras</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <title>Adicionar Produto</title>
   <style>
-    body {
-      font-family: 'Roboto', Arial, sans-serif;
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    .form-group {
-      margin-bottom: 15px;
-    }
-    label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-    }
-    input, select, textarea {
-      width: 100%;
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    button {
-      padding: 10px 20px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    #message {
-      margin-top: 10px;
-      font-size: 1.1em;
-    }
-    #message.error {
-      color: red;
-    }
-    #message.success {
-      color: green;
-    }
+    body { font-family: Arial, sans-serif; max-width: 500px; margin: 20px auto; padding: 20px; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; font-weight: bold; }
+    input, select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+    button { padding: 10px 20px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    #message { margin-top: 10px; font-size: 16px; }
+    #message.error { color: red; }
+    #message.success { color: green; }
   </style>
-  <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-    import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyDryJc0Y7JV_Os5DZdEDts5XaFUEtJ7wDk",
-      authDomain: "centrodecompra-5fa91.firebaseapp.com",
-      projectId: "centrodecompra-5fa91",
-      storageBucket: "centrodecompra-5fa91.appspot.com",
-      messagingSenderId: "276696026262",
-      appId: "1:276696026262:web:979a68c0796ea1d17346b7",
-      measurementId: "G-PM11NQL61N"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    window.firebaseDb = getFirestore(app);
-  </script>
 </head>
 <body>
   <h1>Adicionar Produto</h1>
@@ -73,12 +23,21 @@
       <input type="text" id="nome" name="nome" required>
     </div>
     <div class="form-group">
-      <label for="descricao">Descrição</label>
-      <textarea id="descricao" name="descricao" required></textarea>
+      <label for="preco">Preço (R$)</label>
+      <input type="number" id="preco" name="preco" step="0.01" required>
+    </div>
+    <div class="form-group">
+      <label for="tamanho">Tamanho</label>
+      <select id="tamanho" name="tamanho" required>
+        <option value="pequeno">Pequeno</option>
+        <option value="medio">Médio</option>
+        <option value="grande">Grande</option>
+      </select>
     </div>
     <div class="form-group">
       <label for="categoria">Categoria</label>
       <select id="categoria" name="categoria" required>
+        <option value="todas">Todas</option>
         <option value="eletronicos">Eletrônicos</option>
         <option value="moda">Moda</option>
         <option value="fitness">Fitness</option>
@@ -97,16 +56,9 @@
       </select>
     </div>
     <div class="form-group">
-      <label for="tamanho">Tamanho</label>
-      <select id="tamanho" name="tamanho" required>
-        <option value="pequeno">Pequeno</option>
-        <option value="medio">Médio</option>
-        <option value="grande">Grande</option>
-      </select>
-    </div>
-    <div class="form-group">
       <label for="loja">Loja</label>
       <select id="loja" name="loja" required>
+        <option value="todas">Todas</option>
         <option value="amazon">Amazon</option>
         <option value="magalu">Magalu</option>
         <option value="shein">Shein</option>
@@ -116,26 +68,22 @@
       </select>
     </div>
     <div class="form-group">
-      <label for="link">Link do Produto</label>
-      <input type="url" id="link" name="link" required>
+      <label for="imagem">Imagem</label>
+      <input type="file" id="imagem" name="imagem" accept="image/*" required>
     </div>
-    <div class="form-group">
-      <label for="preco">Preço (R$)</label>
-      <input type="number" id="preco" name="preco" step="0.01" required>
-    </div>
-    <div class="form-group">
-      <label for="imagem">URL da Imagem</label>
-      <input type="url" id="imagem" name="imagem" placeholder="Insira a URL da imagem">
-      <small>Exemplo: https://exemplo.com/imagem.jpg</small>
-    </div>
-    <button type="submit">Adicionar Produto</button>
+    <button type="submit">Adicionar</button>
     <div id="message"></div>
   </form>
-  <script type="module">
-    import { addDoc, collection } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
-
+  <script>
     const form = document.getElementById('produto-form');
     const message = document.getElementById('message');
+
+    // Verificar token de acesso
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('tempToken') !== 'triple-click-access') {
+      alert('Acesso não autorizado.');
+      window.location.href = '/index.html';
+    }
 
     const showMessage = (text, isError = false) => {
       message.textContent = text;
@@ -145,25 +93,46 @@
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const produto = {
-        nome: form.nome.value,
-        descricao: form.descricao.value,
-        categoria: form.categoria.value,
-        tamanho: form.tamanho.value,
-        loja: form.loja.value,
-        link: form.link.value,
-        preco: parseFloat(form.preco.value),
-        imagens: form.imagem.value ? [form.imagem.value] : [],
-        criadoEm: new Date()
-      };
+      console.log('Formulário submetido');
 
-      try {
-        await addDoc(collection(window.firebaseDb, 'produtos'), produto);
-        showMessage('Produto adicionado com sucesso!');
-        form.reset();
-      } catch (error) {
-        showMessage('Erro ao adicionar produto: ' + error.message, true);
+      const imagemInput = document.getElementById('imagem');
+      if (!imagemInput.files[0]) {
+        showMessage('Por favor, selecione uma imagem', true);
+        return;
       }
+
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        const produto = {
+          nome: form.nome.value,
+          preco: parseFloat(form.preco.value),
+          tamanho: form.tamanho.value,
+          categoria: form.categoria.value,
+          loja: form.loja.value,
+          imagem: event.target.result
+        };
+        console.log('Produto a ser enviado:', produto);
+
+        try {
+          const response = await fetch('https://script.google.com/macros/s/AKfycbznGd2bFt6qpmJOwupDmhlAwkYAB_Tw0ieVe0JgyGBx9b6QxagA-15WQcsqeVPgSEcP/exec', {
+            method: 'POST',
+            body: JSON.stringify(produto),
+            headers: { 'Content-Type': 'application/json' }
+          });
+          const result = await response.json();
+          console.log('Resposta do servidor:', result);
+          if (result.status === 'success') {
+            showMessage('Produto adicionado com sucesso!');
+            form.reset();
+          } else {
+            showMessage('Erro ao adicionar produto: ' + result.message, true);
+          }
+        } catch (error) {
+          console.error('Erro ao enviar:', error);
+          showMessage('Erro ao adicionar produto: ' + error.message, true);
+        }
+      };
+      reader.readAsDataURL(imagemInput.files[0]);
     });
   </script>
 </body>
