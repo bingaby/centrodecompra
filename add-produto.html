@@ -3,16 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="
-        default-src 'self';
-        script-src 'self' 'unsafe-inline';
-        style-src 'self' 'unsafe-inline'; /* Adicionado 'unsafe-inline' para permitir estilos inline */
-        img-src 'self' data: https:;
-        connect-src 'self' https://script.google.com; /* Crucial para o fetch API se comunicar com o Apps Script */
-        font-src 'self';
-        object-src 'none';
-        base-uri 'self';
-    ">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://script.google.com; font-src 'self'; object-src 'none'; base-uri 'self';">
     <title>Adicionar Produto</title>
     <style>
         body {
@@ -113,9 +104,8 @@
     </div>
 
     <script>
-        // ATENÇÃO: Substitua 'SUA_URL_DO_WEBAPP_APPS_SCRIPT' pela URL real da sua implantação
-        // Esta é a URL MAIS RECENTE que você me forneceu: AKfycbyFVmPFLfed9asgIXPjHTMuAxfkqGJMAuvBCPlgtEjO
-        const urlScript = 'https://script.google.com/macros/s/AKfycbyFVmPFLfed9asgIXPjHTMuAxfkqGJMAuvBCPlgtEjO/exec';
+        // Use a URL de implantação mais recente que você me forneceu:
+        const urlScript = 'https://script.google.com/macros/s/AKfycbycqdQmcdYiW9twxdvIWA76__Dy3YzxmcQjOXK4AAhCVyfIplNQ3qNX4E_J8MOYDmiI/exec';
 
         const productForm = document.getElementById('productForm');
         const messageDiv = document.getElementById('message');
