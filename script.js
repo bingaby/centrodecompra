@@ -47,20 +47,22 @@ function doGet(e) {
       nome: row[0] || '',
       descricao: row[1] || '',
       categoria: row[2] || 'desconhecida',
-      preco: parseFloat(row[3]) || 0,
-      imagem: row[4] || '',
-      link: row[5] || '',
-      createdAt: row[6] ? new Date(row[6]).toISOString() : new Date().toISOString()
+      loja: row[3] || 'desconhecida',
+      preco: parseFloat(row[4]) || 0,
+      imagem: row[5] || '',
+      link: row[6] || '',
+      createdAt: row[7] ? new Date(row[7]).toISOString() : new Date().toISOString()
     }));
 
     // 5. Filtra os produtos
     const filteredProducts = products.filter(product => {
       const matchesCategory = category === 'todas' || product.categoria.toLowerCase() === category.toLowerCase();
-      const matchesStore = store === 'todas' || (product.loja && product.loja.toLowerCase() === store.toLowerCase());
+      const matchesStore = store === 'todas' || product.loja.toLowerCase() === store.toLowerCase();
       const matchesQuery = !query || 
         product.nome.toLowerCase().includes(query) || 
-        product.descricao.toLowerCase().includes(query) ||
-        product.categoria.toLowerCase().includes(query);
+        product.descricao.toLowerCase().includes(query) || 
+        product.categoria.toLowerCase().includes(query) ||
+        product.loja.toLowerCase().includes(query);
       return matchesCategory && matchesStore && matchesQuery;
     });
 
@@ -143,7 +145,16 @@ function doPost(e) {
         .setHeaders(headers);
     }
 
-    // 6. Acesso à planilha e aba
+    // 6. Validação da categoria
+    const categoriasValidas = ['eletronicos', 'moda', 'fitness', 'casa', 'beleza', 'esportes', 'livros', 'infantil', 'celulares', 'eletrodomesticos', 'pet', 'jardinagem', 'automotivo', 'gastronomia', 'games'];
+    if (!categoriasValidas.includes(data.categoria.toLowerCase())) {
+      return ContentService
+        .createTextOutput(JSON.stringify({ status: 'error', message: 'Categoria inválida! Escolha uma categoria válida.' }))
+        .setMimeType(ContentService.MimeType.JSON)
+        .setHeaders(headers);
+    }
+
+    // 7. Acesso à planilha e aba
     const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
     const sheet = spreadsheet.getSheetByName(SHEET_NAME);
     if (!sheet) {
@@ -153,19 +164,19 @@ function doPost(e) {
         .setHeaders(headers);
     }
 
-    // 7. Insere a linha com os dados do produto
+    // 8. Insere a linha com os dados do produto
     sheet.appendRow([
       data.nome.trim(),
       data.descricao.trim(),
       data.categoria.trim(),
-      data.loja.trim(), // Adiciona o campo loja
+      data.loja.trim(),
       preco.toFixed(2),
       data.imagem.trim(),
       data.link.trim(),
       new Date().toLocaleString("pt-BR", { timeZone: 'America/Sao_Paulo' })
     ]);
 
-    // 8. Resposta de sucesso
+    // 9. Resposta de sucesso
     return ContentService
       .createTextOutput(JSON.stringify({ status: 'success', message: 'Produto cadastrado com sucesso!' }))
       .setMimeType(ContentService.MimeType.JSON)
