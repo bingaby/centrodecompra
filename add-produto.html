@@ -29,31 +29,14 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/logos/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/logos/favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/logos/apple-touch-icon.png">
-  <style>
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      border: 0;
-    }
-    .feedback { margin-top: 10px; font-weight: bold; }
-    .feedback.success { color: green; }
-    .feedback.error { color: red; }
-    .feedback.info { color: blue; }
-    .loading-spinner { display: flex; align-items: center; gap: 8px; }
-  </style>
 </head>
 <body>
   <header class="site-header" role="banner">
     <div class="logo-container">
       <picture>
         <source srcset="/logos/logoscentrodecompras.webp" type="image/webp">
-        <img src="/logos/logoscentrodecompras.jpeg" alt="Logotipo do Centro de Compras" id="site-logo-img" width="150" height="50">
-      </picture>
+        <img src="/logos/logoscentrodecompras.png" alt="Logotipo do Centro de Compras" id="site-logo-img" width="150" height="50">
+      </div>
     </div>
     <div class="header-text">
       <h1>Centro de Compras - Administração</h1>
@@ -71,7 +54,7 @@
   <main role="main" aria-label="Conteúdo principal">
     <section class="cadastro">
       <h2>Cadastro de Produtos</h2>
-      <form id="form-produto" aria-describedby="feedback">
+      <form id="form-produto" aria-describedby="form-data">
         <div class="form-group">
           <label for="nome">Nome do Produto:</label>
           <input type="text" id="nome" required aria-required="true" placeholder="Digite o nome do produto">
@@ -79,7 +62,7 @@
         
         <div class="form-group">
           <label for="descricao">Descrição:</label>
-          <textarea id="descricao" required aria-required="true" placeholder="Descreva o produto"></textarea>
+          <textarea id="textInput" required aria-required="true" placeholder="Descreva o produto"></textarea>
         </div>
         
         <div class="form-group">
@@ -105,6 +88,19 @@
         </div>
         
         <div class="form-group">
+          <label for="loja">Loja:</label>
+          <select id="loja" required aria-required="true">
+            <option value="">Selecione uma loja</option>
+            <option value="mercadolivre">Mercado Livre</option>
+            <option value="amazon">Amazon</option>
+            <option value="magalu">Magazine Luiza</option>
+            <option value="shein">Shein</option>
+            <option value="shopee">Shopee</option>
+            <option value="alibaba">Alibaba</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
           <label for="preco">Preço (R$):</label>
           <input type="number" id="preco" step="0.01" min="0" required aria-required="true" placeholder="Ex.: 99.90">
         </div>
@@ -112,7 +108,7 @@
         <div class="form-group">
           <label for="imagem">Imagem:</label>
           <input type="file" id="imagem" accept="image/*" required aria-required="true">
-          <img id="preview" style="display: none; max-width: 200px; margin-top: 10px;" alt="Pré-visualização da imagem do produto">
+          <img id="preview" alt="Pré-visualização da imagem do produto">
           <div class="loading-spinner" id="image-upload-spinner" style="display: none;">
             <i class="fas fa-spinner fa-spin" aria-hidden="true"></i>
             <span class="sr-only">Enviando imagem...</span>
@@ -126,23 +122,23 @@
         
         <button type="submit" id="submit-button" aria-label="Cadastrar produto">Cadastrar Produto</button>
       </form>
-      <div id="feedback" class="feedback" aria-live="polite"></div>
+      <div id="feedback" class="error-message" aria-live="polite"></div>
     </section>
   </main>
 
   <footer role="contentinfo">
-    <p>🔧 Todos os direitos reservados <strong>Grupo Centro de Compra "CdC"</strong> © <span id="year"></span></p>
+    <p>🔧 Todos os direitos reservados <strong>Grupo Centro de Compras "CdC"</strong> © <span id="year"></span></p>
   </footer>
 
   <script type="module" nonce="secure123">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.3/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyDryJc0Y7JV_Os5DZdEDts5XaFUEtJ7wDk",
-      authDomain: "centrodecompra-5fa91.firebaseapp.com",
-      projectId: "centrodecompra-5fa91",
-      storageBucket: "centrodecompra-5fa91.firebasestorage.app",
+      apiKey: "AIzaSyDryJc0Y7JV_Os5JaFUEtJ7wDk",
+      authDomain: "centro-de-compra-5fa91.firebaseapp.com",
+      projectId: "centro-de-compra-5fa91",
+      storageBucket: "centro-de-compra-5fa91.firebasestorage.app",
       messagingSenderId: "276696026262",
       appId: "1:276696026262:web:979a68c0796ea1d17346b7",
       measurementId: "G-PM11NQL61N"
@@ -151,7 +147,7 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    // Verificar autenticação
+    // Verifica se usuário está autenticado
     onAuthStateChanged(auth, (user) => {
       if (!user) {
         window.location.href = '/login.html?redirect=/add-produto.html';
@@ -165,7 +161,7 @@
 
       const cloudName = 'centrodecompra';
       const unsignedUploadPreset = 'ml_default';
-      const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbzxU2q5ApfKg0FawUDSfLFskikcggALJWWS0zSfYAA/exec';
+      const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbzxU2q5ApfQk/0FawUDSfLFskikcggALJWWS0zSfYAA/exec';
 
       const form = document.getElementById('form-produto');
       const imagemInput = document.getElementById('imagem');
@@ -180,27 +176,26 @@
       imagemInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (!file) {
-          feedback.textContent = 'Nenhuma imagem selecionada.';
-          feedback.className = 'feedback error';
+          feedback.textContent = 'Por favor, escolha uma imagem.';
+          feedback.className = 'error message';
           return;
         }
 
-        // Validação do tamanho da imagem (máximo 5MB)
+        // Validação de tamanho (máximo 5MB)
         if (file.size > 5 * 1024 * 1024) {
           feedback.textContent = 'A imagem deve ter no máximo 5MB.';
-          feedback.className = 'feedback error';
+          feedback.className = 'error message';
           return;
         }
 
-        // Validação do tipo de imagem
         if (!file.type.startsWith('image/')) {
           feedback.textContent = 'Por favor, selecione um arquivo de imagem válido.';
-          feedback.className = 'feedback error';
+          feedback.className = 'error message';
           return;
         }
 
-        feedback.textContent = '';
-        feedback.className = 'feedback';
+        feedback.textContent = 'Imagem sendo carregada...';
+        feedback.className = 'error message';
         preview.style.display = 'none';
         submitButton.disabled = true;
         imageUploadSpinner.style.display = 'flex';
@@ -209,27 +204,30 @@
         const formData = new FormData();
         formData.append('file', file);
         formData.append('upload_preset', unsignedUploadPreset);
-        formData.append('folder', 'centro-de-compras/produtos'); // Organização no Cloudinary
-        formData.append('tags', 'produto,centrodecompras'); // Tags para melhor organização
+        formData.append('folder', 'centro-de-compra/produtos');
+        formData.append('tags', 'produto,centrodecompras');
+        formData.append('transformation', 'q_auto,f_webp,w_400');
 
         try {
-          const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+          const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
             method: 'POST',
             body: formData
           });
 
-          if (!res.ok) throw new Error('Erro ao enviar imagem para o Cloudinary');
+          if (!res.ok) throw new Error(`Erro ${res.status}: Falha ao enviar imagem`);
+
+          }
 
           const data = await res.json();
           imagemUrl = data.secure_url;
           preview.src = imagemUrl;
           preview.style.display = 'block';
           feedback.textContent = 'Imagem carregada com sucesso!';
-          feedback.className = 'feedback success';
+          feedback.className = 'success message';
         } catch (err) {
           imagemUrl = '';
-          feedback.textContent = 'Erro ao enviar imagem! Verifique sua conexão ou tente novamente.';
-          feedback.className = 'feedback error';
+          feedback.textContent = `Erro ao enviar imagem: ${err.message}. Tente novamente.';
+          feedback.className = 'error message';
           console.error('Erro no upload:', err);
         } finally {
           imageUploadSpinner.style.display = 'none';
@@ -242,47 +240,53 @@
         e.preventDefault();
 
         if (isUploadingImage) {
-          feedback.textContent = 'Aguarde o envio da imagem antes de cadastrar o produto.';
-          feedback.className = 'feedback info';
+          feedback.textContent = 'Aguarde o upload da imagem antes de enviar o produto.';
+          feedback.className = 'error message';
           return;
         }
 
         if (!imagemUrl) {
           feedback.textContent = 'Por favor, selecione e aguarde o upload da imagem.';
-          feedback.className = 'feedback error';
+          feedback.className = 'error message';
           return;
         }
 
         const nome = document.getElementById('nome').value.trim();
         const descricao = document.getElementById('descricao').value.trim();
         const categoria = document.getElementById('categoria').value;
+        const loja = document.getElementById('loja').value;
         const preco = parseFloat(document.getElementById('preco').value);
         const link = document.getElementById('link').value.trim();
 
         // Validação avançada
         if (!nome || nome.length < 3) {
           feedback.textContent = 'O nome do produto deve ter pelo menos 3 caracteres.';
-          feedback.className = 'feedback error';
+          feedback.className = 'error message';
           return;
         }
         if (!descricao || descricao.length < 10) {
           feedback.textContent = 'A descrição deve ter pelo menos 10 caracteres.';
-          feedback.className = 'feedback error';
+          feedback.className = 'error message';
           return;
         }
         if (!categoria) {
           feedback.textContent = 'Selecione uma categoria válida.';
-          feedback.className = 'feedback error';
+          feedback.className = 'error message';
+          return;
+        }
+        if (!loja) {
+          feedback.textContent = 'Selecione uma loja válida.';
+          feedback.className = 'error message';
           return;
         }
         if (isNaN(preco) || preco <= 0) {
           feedback.textContent = 'O preço deve ser um número positivo.';
-          feedback.className = 'feedback error';
+          feedback.className = 'error message';
           return;
         }
         if (!link || !/^(https?:\/\/[^\s$.?#].[^\s]*)$/.test(link)) {
           feedback.textContent = 'Insira um link válido começando com http ou https.';
-          feedback.className = 'feedback error';
+          feedback.className = 'error message';
           return;
         }
 
@@ -290,15 +294,16 @@
           nome,
           descricao,
           categoria,
+          loja,
           preco,
           imagem: imagemUrl,
           link,
-          createdAt: new Date().toISOString() // Adiciona timestamp
+          createdAt: new Date().toISOString()
         };
 
         submitButton.disabled = true;
         feedback.textContent = 'Cadastrando produto...';
-        feedback.className = 'feedback info';
+        feedback.className = 'info message';
 
         try {
           const response = await fetch(appsScriptUrl, {
@@ -313,18 +318,18 @@
 
           if (result.status === 'success') {
             feedback.textContent = 'Produto cadastrado com sucesso!';
-            feedback.className = 'feedback success';
+            feedback.className = 'success message';
             form.reset();
             preview.src = '';
             preview.style.display = 'none';
             imagemUrl = '';
           } else {
             feedback.textContent = `Erro ao cadastrar: ${result.message || 'Erro desconhecido'}`;
-            feedback.className = 'feedback error';
+            feedback.className = 'error message';
           }
         } catch (err) {
           feedback.textContent = 'Erro de conexão com o servidor. Tente novamente.';
-          feedback.className = 'feedback error';
+          feedback.className = 'error message';
           console.error('Erro:', err);
         } finally {
           submitButton.disabled = false;
