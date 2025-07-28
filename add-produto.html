@@ -1,59 +1,223 @@
-<script>
-  const cloudName = 'centrodecompra'; // seu cloud name
-  const unsignedUploadPreset = 'ml_default'; // seu upload preset real
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-adsense-account" content="ca-pub-4531749081462125">
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://www.gstatic.com;
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com;
+    img-src 'self' data: https://*.googleusercontent.com https://firebasestorage.googleapis.com;
+    font-src 'self' https://fonts.gstatic.com;
+    connect-src 'self' https://api.cloudinary.com https://script.google.com https://script.googleusercontent.com;
+  ">
+  <title>Centro de Compras - Administração</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="/style.css" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+  <link rel="icon" type="image/x-icon" href="/logos/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/logos/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/logos/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/logos/apple-touch-icon.png">
+</head>
+<body>
+  <header class="site-header">
+    <div class="logo-container">
+      <img src="/logos/logoscentrodecompras.jpeg" alt="Centro de Compras" id="site-logo-img" width="150" height="50">
+    </div>
+    <div class="header-text">
+      <h1>Centro de Compra - Administração</h1>
+      <p>Gerencie os produtos do portal</p>
+    </div>
+  </header>
 
-  const form = document.getElementById('form-produto');
-  const imagemInput = document.getElementById('imagem');
-  const preview = document.getElementById('preview');
-  let imagemUrl = "";
+  <nav>
+    <a href="/index.html">Voltar para Promoções</a>
+    <a href="/cupom.html">Cupom de Desconto</a>
+    <a href="/sobre.html">Sobre</a>
+    <a href="/contato.html">Administração</a>
+  </nav>
 
-  imagemInput.addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  <main>
+    <section class="cadastro">
+      <h2>Cadastro de Produtos</h2>
+      <form id="form-produto">
+        <div class="form-group">
+          <label for="nome">Nome do Produto:</label>
+          <input type="text" id="nome" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="descricao">Descrição:</label>
+          <textarea id="descricao" required></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="categoria">Categoria:</label>
+          <select id="categoria" required>
+            <option value="eletronicos">Eletrônicos</option>
+            <option value="moda">Moda</option>
+            <option value="fitness">Fitness</option>
+            <option value="casa">Casa</option>
+            <option value="beleza">Beleza</option>
+            <option value="esportes">Esportes</option>
+            <option value="livros">Livros</option>
+            <option value="infantil">Infantil</option>
+            <option value="celulares">Celulares</option>
+            <option value="eletrodomesticos">Eletrodomésticos</option>
+            <option value="pet">Pet</option>
+            <option value="jardinagem">Jardinagem</option>
+            <option value="automotivo">Automotivo</option>
+            <option value="gastronomia">Gastronomia</option>
+            <option value="games">Games</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="preco">Preço (R$):</label>
+          <input type="number" id="preco" step="0.01" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="imagem">Imagem:</label>
+          <input type="file" id="imagem" accept="image/*" required>
+          <img id="preview" style="display: none; max-width: 200px;" alt="Pré-visualização da imagem do produto">
+        </div>
+        
+        <div class="form-group">
+          <label for="link">Link do Produto:</label>
+          <input type="url" id="link" placeholder="https://www.exemplo.com" required>
+        </div>
+        
+        <button type="submit">Cadastrar Produto</button>
+      </form>
+      <div id="feedback" class="feedback"></div>
+    </section>
+  </main>
 
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('upload_preset', unsignedUploadPreset);
+  <footer>
+    <p>🔧 Todos os direitos reservados <strong>Grupo Centro de Compra "CdC"</strong> © <span id="year"></span></p>
+  </footer>
 
-    try {
-      const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-        method: 'POST',
-        body: formData
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Verifica o token de acesso
+      const urlParams = new URLSearchParams(window.location.search);
+      const tempToken = urlParams.get('tempToken');
+      if (tempToken !== 'triple-click-access') {
+        alert('Acesso não autorizado! Redirecionando para a página inicial.');
+        window.location.href = '/index.html';
+        return;
+      }
+
+      // Define o ano no footer
+      document.getElementById('year').textContent = new Date().getFullYear();
+
+      // JavaScript do formulário
+      const cloudName = 'centrodecompra';
+      const unsignedUploadPreset = 'ml_default';
+      const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbz7uNcWDWh0ojLXDeVfFHbv9_DSAee5LCcUr1Qitopz/exec';
+
+      const form = document.getElementById('form-produto');
+      const imagemInput = document.getElementById('imagem');
+      const preview = document.getElementById('preview');
+      const feedback = document.getElementById('feedback');
+      let imagemUrl = '';
+
+      imagemInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', unsignedUploadPreset);
+
+        try {
+          const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+            method: 'POST',
+            body: formData
+          });
+
+          if (!res.ok) throw new Error('Erro ao enviar imagem para o Cloudinary');
+
+          const data = await res.json();
+          imagemUrl = data.secure_url;
+          preview.src = imagemUrl;
+          preview.style.display = 'block';
+          feedback.textContent = 'Imagem carregada com sucesso!';
+          feedback.style.color = 'green';
+        } catch (err) {
+          feedback.textContent = 'Erro ao enviar imagem!';
+          feedback.style.color = 'red';
+          console.error(err);
+        }
       });
 
-      const data = await res.json();
-      imagemUrl = data.secure_url;
-      preview.src = imagemUrl;
-      preview.style.display = 'block';
-      console.log('Imagem enviada:', imagemUrl);
-    } catch (err) {
-      alert('Erro ao enviar imagem!');
-      console.error(err);
-    }
-  });
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
+        if (!imagemUrl) {
+          feedback.textContent = 'Aguarde o envio da imagem!';
+          feedback.style.color = 'red';
+          return;
+        }
 
-    if (!imagemUrl) {
-      alert('Aguarde o envio da imagem!');
-      return;
-    }
+        const produto = {
+          nome: document.getElementById('nome').value,
+          descricao: document.getElementById('descricao').value,
+          categoria: document.getElementById('categoria').value,
+          preco: parseFloat(document.getElementById('preco').value),
+          imagem: imagemUrl,
+          link: document.getElementById('link').value
+        };
 
-    const produto = {
-      nome: document.getElementById('nome').value,
-      descricao: document.getElementById('descricao').value,
-      categoria: document.getElementById('categoria').value,
-      preco: parseFloat(document.getElementById('preco').value),
-      imagem: imagemUrl
-    };
+        // Validação no frontend
+        if (!produto.nome || !produto.descricao || !produto.categoria || isNaN(produto.preco) || !produto.link) {
+          feedback.textContent = 'Preencha todos os campos corretamente!';
+          feedback.style.color = 'red';
+          return;
+        }
 
-    console.log('Produto cadastrado:', produto);
-    alert('Produto cadastrado com sucesso! Veja no console.');
+        // Validação de URL no frontend
+        const urlPattern = /^(https?:\/\/[^\s$.?#].[^\s]*)$/;
+        if (!urlPattern.test(produto.link)) {
+          feedback.textContent = 'Insira um link válido (ex.: https://www.exemplo.com)!';
+          feedback.style.color = 'red';
+          return;
+        }
 
-    form.reset();
-    preview.src = '';
-    preview.style.display = 'none';
-    imagemUrl = '';
-  });
-</script>
+        try {
+          const response = await fetch(appsScriptUrl, {
+            method: 'POST',
+            body: JSON.stringify(produto),
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+
+          const result = await response.json();
+
+          if (result.status === 'success') {
+            feedback.textContent = 'Produto cadastrado com sucesso!';
+            feedback.style.color = 'green';
+            form.reset();
+            preview.src = '';
+            preview.style.display = 'none';
+            imagemUrl = '';
+          } else {
+            feedback.textContent = result.message;
+            feedback.style.color = 'red';
+          }
+        } catch (err) {
+          feedback.textContent = 'Erro ao cadastrar produto!';
+          feedback.style.color = 'red';
+          console.error(err);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
