@@ -84,27 +84,27 @@
             <span>Todas</span>
           </div>
           <div class="loja" data-loja="mercadolivre">
-            <img src="/logos/mercadolivre.png" alt="Mercado Livre">
+            <img src="/logos/mercadolivre.png" alt="Mercado Livre" onerror="this.src='/logos/fallback.png'">
             <span class="mercadolivre">Mercado Livre</span>
           </div>
           <div class="loja" data-loja="amazon">
-            <img src="/logos/amazon.png" alt="Amazon">
+            <img src="/logos/amazon.png" alt="Amazon" onerror="this.src='/logos/fallback.png'">
             <span class="amazon">Amazon</span>
           </div>
           <div class="loja" data-loja="magalu">
-            <img src="/logos/magalu.png" alt="Magazine Luiza">
+            <img src="/logos/magalu.png" alt="Magazine Luiza" onerror="this.src='/logos/fallback.png'">
             <span class="magalu">Magazine Luiza</span>
           </div>
           <div class="loja" data-loja="shein">
-            <img src="/logos/shein.png" alt="Shein">
+            <img src="/logos/shein.png" alt="Shein" onerror="this.src='/logos/fallback.png'">
             <span class="shein">Shein</span>
           </div>
           <div class="loja" data-loja="shopee">
-            <img src="/logos/shopee.png" alt="Shopee">
+            <img src="/logos/shopee.png" alt="Shopee" onerror="this.src='/logos/fallback.png'">
             <span class="shopee">Shopee</span>
           </div>
           <div class="loja" data-loja="alibaba">
-            <img src="/logos/alibaba.png" alt="Alibaba">
+            <img src="/logos/alibaba.png" alt="Alibaba" onerror="this.src='/logos/fallback.png'">
             <span class="alibaba">Alibaba</span>
           </div>
         </div>
@@ -129,7 +129,7 @@
   </div>
 
   <div class="robo-assistente" role="button" aria-label="Assistente virtual">
-    <img src="/logos/robo-assistente.png" alt="Robô Assistente" class="robo-imagem">
+    <img src="/logos/robo-assistente.png" alt="Robô Assistente" class="robo-imagem" onerror="this.src='/logos/fallback.png'">
     <span class="robo-texto">Como posso ajudar?</span>
   </div>
 
@@ -160,7 +160,7 @@
           if (!response.ok) throw new Error(`Erro ${response.status}: Falha ao buscar produtos`);
 
           const data = await response.json();
-          if (data.success && data.products.length > 0) {
+          if (data.success && Array.isArray(data.products) && data.products.length > 0) {
             renderProducts(data.products);
             feedback.textContent = `Encontrados ${data.products.length} produtos.`;
             feedback.className = 'busca-feedback success';
@@ -170,7 +170,7 @@
             feedback.className = 'busca-feedback error';
           }
         } catch (error) {
-          errorMessage.textContent = 'Erro ao carregar produtos. Tente novamente.';
+          errorMessage.textContent = `Erro ao carregar produtos: ${error.message}. Tente novamente.`;
           errorMessage.style.display = 'block';
           feedback.className = 'busca-feedback error';
           console.error('Erro na API:', error);
@@ -182,18 +182,11 @@
       const renderProducts = (products) => {
         const grid = document.getElementById('grid-produtos');
         grid.innerHTML = products.map(product => `
-          <div class="produto-card" data-categoria="${product.categoria}" data-loja="${product.loja || 'desconhecida'}">
-            <div class="carrossel">
-              <div class="carrossel-imagens">
-                <img src="${product.imagem}?q_auto,f_webp,w_400" alt="${product.nome}" loading="lazy">
-              </div>
-              <button class="carrossel-prev" aria-label="Imagem anterior">◄</button>
-              <button class="carrossel-next" aria-label="Próxima imagem">▶</button>
-              <div class="carrossel-dots"><span class="carrossel-dot ativo"></span></div>
-            </div>
+          <div class="produto-card" data-categoria="${product.categoria || 'desconhecida'}" data-loja="${product.loja || 'desconhecida'}">
+            <img src="${product.imagem}?q_auto,f_webp,w_400" alt="${product.nome}" loading="lazy" onerror="this.src='/logos/fallback.png'">
             <span>${product.nome}</span>
             <span class="descricao">${product.descricao}</span>
-            <span>R$ ${product.preco.toFixed(2)}</span>
+            <span>R$ ${Number(product.preco).toFixed(2)}</span>
             <button class="ver-na-loja ${product.loja || 'desconhecida'}" onclick="window.open('${product.link}', '_blank')">Ver na Loja</button>
             <button class="favoritar" aria-label="Favoritar produto"><i class="fas fa-heart"></i></button>
           </div>
