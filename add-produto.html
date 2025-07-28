@@ -35,8 +35,8 @@
     <div class="logo-container">
       <picture>
         <source srcset="/logos/logoscentrodecompras.webp" type="image/webp">
-        <img src="/logos/logoscentrodecompras.png" alt="Logotipo do Centro de Compras" id="site-logo-img" width="150" height="50">
-      </div>
+        <img src="/logos/logoscentrodecompras.jpeg" alt="Logotipo do Centro de Compras" id="site-logo-img" width="150" height="50">
+      </picture>
     </div>
     <div class="header-text">
       <h1>Centro de Compras - Administração</h1>
@@ -54,7 +54,7 @@
   <main role="main" aria-label="Conteúdo principal">
     <section class="cadastro">
       <h2>Cadastro de Produtos</h2>
-      <form id="form-produto" aria-describedby="form-data">
+      <form id="form-produto" aria-describedby="feedback">
         <div class="form-group">
           <label for="nome">Nome do Produto:</label>
           <input type="text" id="nome" required aria-required="true" placeholder="Digite o nome do produto">
@@ -62,7 +62,7 @@
         
         <div class="form-group">
           <label for="descricao">Descrição:</label>
-          <textarea id="textInput" required aria-required="true" placeholder="Descreva o produto"></textarea>
+          <textarea id="descricao" required aria-required="true" placeholder="Descreva o produto"></textarea>
         </div>
         
         <div class="form-group">
@@ -108,7 +108,7 @@
         <div class="form-group">
           <label for="imagem">Imagem:</label>
           <input type="file" id="imagem" accept="image/*" required aria-required="true">
-          <img id="preview" alt="Pré-visualização da imagem do produto">
+          <img id="preview" alt="Pré-visualização da imagem do produto" style="display: none;">
           <div class="loading-spinner" id="image-upload-spinner" style="display: none;">
             <i class="fas fa-spinner fa-spin" aria-hidden="true"></i>
             <span class="sr-only">Enviando imagem...</span>
@@ -122,23 +122,23 @@
         
         <button type="submit" id="submit-button" aria-label="Cadastrar produto">Cadastrar Produto</button>
       </form>
-      <div id="feedback" class="error-message" aria-live="polite"></div>
+      <div id="feedback" class="feedback" aria-live="polite"></div>
     </section>
   </main>
 
   <footer role="contentinfo">
-    <p>🔧 Todos os direitos reservados <strong>Grupo Centro de Compras "CdC"</strong> © <span id="year"></span></p>
+    <p>🔧 Todos os direitos reservados <strong>Grupo Centro de Compra "CdC"</strong> © <span id="year"></span></p>
   </footer>
 
   <script type="module" nonce="secure123">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.3/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyDryJc0Y7JV_Os5JaFUEtJ7wDk",
-      authDomain: "centro-de-compra-5fa91.firebaseapp.com",
-      projectId: "centro-de-compra-5fa91",
-      storageBucket: "centro-de-compra-5fa91.firebasestorage.app",
+      apiKey: "AIzaSyDryJc0Y7JV_Os5DZdEDts5XaFUEtJ7wDk",
+      authDomain: "centrodecompra-5fa91.firebaseapp.com",
+      projectId: "centrodecompra-5fa91",
+      storageBucket: "centrodecompra-5fa91.firebasestorage.app",
       messagingSenderId: "276696026262",
       appId: "1:276696026262:web:979a68c0796ea1d17346b7",
       measurementId: "G-PM11NQL61N"
@@ -147,7 +147,6 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    // Verifica se usuário está autenticado
     onAuthStateChanged(auth, (user) => {
       if (!user) {
         window.location.href = '/login.html?redirect=/add-produto.html';
@@ -156,12 +155,11 @@
   </script>
   <script nonce="secure123">
     document.addEventListener('DOMContentLoaded', () => {
-      // Atualiza o ano no rodapé
       document.getElementById('year').textContent = new Date().getFullYear();
 
       const cloudName = 'centrodecompra';
       const unsignedUploadPreset = 'ml_default';
-      const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbzxU2q5ApfQk/0FawUDSfLFskikcggALJWWS0zSfYAA/exec';
+      const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbzxU2q5ApfKg0FawUDSfLFskikcggALJWWS0zSfYAA/exec';
 
       const form = document.getElementById('form-produto');
       const imagemInput = document.getElementById('imagem');
@@ -176,26 +174,25 @@
       imagemInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (!file) {
-          feedback.textContent = 'Por favor, escolha uma imagem.';
-          feedback.className = 'error message';
+          feedback.textContent = 'Nenhuma imagem selecionada.';
+          feedback.className = 'feedback error';
           return;
         }
 
-        // Validação de tamanho (máximo 5MB)
         if (file.size > 5 * 1024 * 1024) {
           feedback.textContent = 'A imagem deve ter no máximo 5MB.';
-          feedback.className = 'error message';
+          feedback.className = 'feedback error';
           return;
         }
 
         if (!file.type.startsWith('image/')) {
           feedback.textContent = 'Por favor, selecione um arquivo de imagem válido.';
-          feedback.className = 'error message';
+          feedback.className = 'feedback error';
           return;
         }
 
-        feedback.textContent = 'Imagem sendo carregada...';
-        feedback.className = 'error message';
+        feedback.textContent = 'Enviando imagem...';
+        feedback.className = 'feedback info';
         preview.style.display = 'none';
         submitButton.disabled = true;
         imageUploadSpinner.style.display = 'flex';
@@ -204,18 +201,19 @@
         const formData = new FormData();
         formData.append('file', file);
         formData.append('upload_preset', unsignedUploadPreset);
-        formData.append('folder', 'centro-de-compra/produtos');
+        formData.append('folder', 'centro-de-compras/produtos');
         formData.append('tags', 'produto,centrodecompras');
         formData.append('transformation', 'q_auto,f_webp,w_400');
 
         try {
-          const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+          const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
             method: 'POST',
             body: formData
           });
 
-          if (!res.ok) throw new Error(`Erro ${res.status}: Falha ao enviar imagem`);
-
+          if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(`Erro ${res.status}: ${errorData.error.message || 'Falha ao enviar imagem'}`);
           }
 
           const data = await res.json();
@@ -223,11 +221,11 @@
           preview.src = imagemUrl;
           preview.style.display = 'block';
           feedback.textContent = 'Imagem carregada com sucesso!';
-          feedback.className = 'success message';
+          feedback.className = 'feedback success';
         } catch (err) {
           imagemUrl = '';
-          feedback.textContent = `Erro ao enviar imagem: ${err.message}. Tente novamente.';
-          feedback.className = 'error message';
+          feedback.textContent = `Erro ao enviar imagem: ${err.message}. Tente novamente.`;
+          feedback.className = 'feedback error';
           console.error('Erro no upload:', err);
         } finally {
           imageUploadSpinner.style.display = 'none';
@@ -240,14 +238,14 @@
         e.preventDefault();
 
         if (isUploadingImage) {
-          feedback.textContent = 'Aguarde o upload da imagem antes de enviar o produto.';
-          feedback.className = 'error message';
+          feedback.textContent = 'Aguarde o envio da imagem antes de cadastrar o produto.';
+          feedback.className = 'feedback info';
           return;
         }
 
         if (!imagemUrl) {
           feedback.textContent = 'Por favor, selecione e aguarde o upload da imagem.';
-          feedback.className = 'error message';
+          feedback.className = 'feedback error';
           return;
         }
 
@@ -258,35 +256,34 @@
         const preco = parseFloat(document.getElementById('preco').value);
         const link = document.getElementById('link').value.trim();
 
-        // Validação avançada
         if (!nome || nome.length < 3) {
           feedback.textContent = 'O nome do produto deve ter pelo menos 3 caracteres.';
-          feedback.className = 'error message';
+          feedback.className = 'feedback error';
           return;
         }
         if (!descricao || descricao.length < 10) {
           feedback.textContent = 'A descrição deve ter pelo menos 10 caracteres.';
-          feedback.className = 'error message';
+          feedback.className = 'feedback error';
           return;
         }
         if (!categoria) {
           feedback.textContent = 'Selecione uma categoria válida.';
-          feedback.className = 'error message';
+          feedback.className = 'feedback error';
           return;
         }
         if (!loja) {
           feedback.textContent = 'Selecione uma loja válida.';
-          feedback.className = 'error message';
+          feedback.className = 'feedback error';
           return;
         }
         if (isNaN(preco) || preco <= 0) {
           feedback.textContent = 'O preço deve ser um número positivo.';
-          feedback.className = 'error message';
+          feedback.className = 'feedback error';
           return;
         }
         if (!link || !/^(https?:\/\/[^\s$.?#].[^\s]*)$/.test(link)) {
           feedback.textContent = 'Insira um link válido começando com http ou https.';
-          feedback.className = 'error message';
+          feedback.className = 'feedback error';
           return;
         }
 
@@ -303,33 +300,31 @@
 
         submitButton.disabled = true;
         feedback.textContent = 'Cadastrando produto...';
-        feedback.className = 'info message';
+        feedback.className = 'feedback info';
 
         try {
           const response = await fetch(appsScriptUrl, {
             method: 'POST',
             body: JSON.stringify(produto),
-            headers: {
-              'Content-Type': 'application/json'
-            }
+            headers: { 'Content-Type': 'application/json' }
           });
 
           const result = await response.json();
 
           if (result.status === 'success') {
             feedback.textContent = 'Produto cadastrado com sucesso!';
-            feedback.className = 'success message';
+            feedback.className = 'feedback success';
             form.reset();
             preview.src = '';
             preview.style.display = 'none';
             imagemUrl = '';
           } else {
             feedback.textContent = `Erro ao cadastrar: ${result.message || 'Erro desconhecido'}`;
-            feedback.className = 'error message';
+            feedback.className = 'feedback error';
           }
         } catch (err) {
-          feedback.textContent = 'Erro de conexão com o servidor. Tente novamente.';
-          feedback.className = 'error message';
+          feedback.textContent = `Erro de conexão com o servidor: ${err.message}. Tente novamente.`;
+          feedback.className = 'feedback error';
           console.error('Erro:', err);
         } finally {
           submitButton.disabled = false;
