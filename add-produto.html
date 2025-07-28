@@ -1,174 +1,59 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://script.google.com https://script.googleusercontent.com https://cors-anywhere.herokuapp.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://script.google.com;">
-    <title>Adicionar Produto</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f4;
-        }
-        .container {
-            max-width: 600px;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
-        input[type="text"],
-        input[type="number"],
-        input[type="url"],
-        textarea,
-        select {
-            width: calc(100% - 20px);
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        input[type="file"] {
-            margin-bottom: 15px;
-        }
-        button {
-            background-color: #28a745;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            width: 100%;
-        }
-        button:hover {
-            background-color: #218838;
-        }
-        .message {
-            margin-top: 20px;
-            padding: 10px;
-            border-radius: 4px;
-            text-align: center;
-        }
-        .message.success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        .message.error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Adicionar Novo Produto</h1>
-        <form id="productForm">
-            <label for="nome">Nome do Produto:</label>
-            <input type="text" id="nome" name="nome" required>
+<script>
+  const cloudName = 'centrodecompra'; // seu cloud name
+  const unsignedUploadPreset = 'ml_default'; // seu upload preset real
 
-            <label for="descricao">Descrição:</label>
-            <textarea id="descricao" name="descricao" rows="4"></textarea>
+  const form = document.getElementById('form-produto');
+  const imagemInput = document.getElementById('imagem');
+  const preview = document.getElementById('preview');
+  let imagemUrl = "";
 
-            <label for="categoria">Categoria:</label>
-            <input type="text" id="categoria" name="categoria" required>
+  imagemInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-            <label for="loja">Loja:</label>
-            <input type="text" id="loja" name="loja" required>
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', unsignedUploadPreset);
 
-            <label for="imagens">Imagem do Produto:</label>
-            <input type="file" id="imagens" name="imagens" accept="image/*" required>
+    try {
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+        method: 'POST',
+        body: formData
+      });
 
-            <label for="preco">Preço:</label>
-            <input type="number" id="preco" name="preco" step="0.01" required>
+      const data = await res.json();
+      imagemUrl = data.secure_url;
+      preview.src = imagemUrl;
+      preview.style.display = 'block';
+      console.log('Imagem enviada:', imagemUrl);
+    } catch (err) {
+      alert('Erro ao enviar imagem!');
+      console.error(err);
+    }
+  });
 
-            <label for="link">Link do Produto:</label>
-            <input type="url" id="link" name="link" required>
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
 
-            <button type="submit">Adicionar Produto</button>
-        </form>
-        <div id="message" class="message" style="display: none;"></div>
-    </div>
+    if (!imagemUrl) {
+      alert('Aguarde o envio da imagem!');
+      return;
+    }
 
-    <script>
-        // --- URL com proxy CORS e novo DEPLOYMENT_ID ---
-        const DEPLOYMENT_ID = 'AKfycbyFVmPFLfed9asgIXPjHTMuAxfkqGJMAuvBCPlgtEjO';
-const urlScript = 'https://script.google.com/macros/s/' + DEPLOYMENT_ID + '/exec';
-        // Para produção, substitua por: 'https://your-proxy.com/https://script.google.com/macros/s/' + DEPLOYMENT_ID + '/exec'
+    const produto = {
+      nome: document.getElementById('nome').value,
+      descricao: document.getElementById('descricao').value,
+      categoria: document.getElementById('categoria').value,
+      preco: parseFloat(document.getElementById('preco').value),
+      imagem: imagemUrl
+    };
 
-        const productForm = document.getElementById('productForm');
-        const messageDiv = document.getElementById('message');
+    console.log('Produto cadastrado:', produto);
+    alert('Produto cadastrado com sucesso! Veja no console.');
 
-        productForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            messageDiv.style.display = 'none';
-            messageDiv.className = 'message';
-
-            const requiredFields = ['nome', 'categoria', 'loja', 'preco', 'link'];
-            for (const fieldId of requiredFields) {
-                const field = document.getElementById(fieldId);
-                if (!field.value) {
-                    displayMessage('Por favor, preencha todos os campos obrigatórios (exceto descrição, se for opcional).', 'error');
-                    return;
-                }
-            }
-
-            const imageInput = document.getElementById('imagens');
-            if (imageInput.files.length === 0) {
-                displayMessage("O campo 'Imagens' é obrigatório e requer um arquivo válido.", 'error');
-                return;
-            }
-
-            const formData = new FormData(this);
-            console.log('Dados do FormData a serem enviados:');
-            for (let pair of formData.entries()) {
-                console.log(pair[0] + ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]));
-            }
-
-            try {
-                const response = await fetch(urlScript, {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`Erro HTTP! Status: ${response.status} - ${errorText}`);
-                }
-
-                const result = await response.json();
-                console.log('Resposta do Apps Script:', result);
-
-                if (result.status === 'success') {
-                    displayMessage(result.message, 'success');
-                    productForm.reset();
-                } else {
-                    displayMessage('Erro ao adicionar produto: ' + result.message, 'error');
-                }
-            } catch (error) {
-                console.error('Erro de conexão ou sistema:', error);
-                displayMessage('Erro de conexão ou sistema: ' + error.message, 'error');
-            }
-        });
-
-        function displayMessage(msg, type) {
-            messageDiv.textContent = msg;
-            messageDiv.className = 'message ' + type;
-            messageDiv.style.display = 'block';
-        }
-    </script>
-</body>
-</html>
+    form.reset();
+    preview.src = '';
+    preview.style.display = 'none';
+    imagemUrl = '';
+  });
+</script>
