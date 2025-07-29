@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Adicionar Produtos</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
   <style>
     body { 
       font-family: 'Roboto', Arial, sans-serif; 
@@ -14,6 +15,19 @@
     h1 { 
       text-align: center; 
       color: #333; 
+    }
+    .nav-voltar {
+      display: block;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .nav-voltar a {
+      color: #ff6200;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .nav-voltar a:hover {
+      color: #e55a00;
     }
     form { 
       max-width: 500px; 
@@ -127,12 +141,30 @@
     .paginacao button:hover:not(:disabled) { 
       background-color: #e59400; 
     }
+    .loading-spinner {
+      display: none;
+      margin: 20px auto;
+      width: 40px;
+      height: 40px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #ff6200;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
+  <div class="nav-voltar">
+    <a href="index.html">← Voltar para a página inicial</a>
+  </div>
   <h1>Adicionar Produto</h1>
   <form id="form-produto" enctype="multipart/form-data">
     <input type="text" name="nome" placeholder="Nome do produto" required>
+    <input type="text" name="descricao" placeholder="Descrição do produto">
     <select name="categoria" required>
       <option value="" disabled selected>Selecione uma categoria</option>
       <option value="eletronicos">Eletrônicos</option>
@@ -156,185 +188,185 @@
       <option value="alibaba">Alibaba</option>
     </select>
     <input type="url" name="link" placeholder="Link do produto (https://...)" required pattern="https?://.+">
+    <input type="number" name="preco" placeholder="Preço (ex.: 99.90)" step="0.01" min="0" required>
     <input type="file" name="imagens" accept="image/*" multiple>
     <button type="submit">Adicionar</button>
   </form>
+  <div class="loading-spinner" id="loading-spinner"></div>
   <div id="mensagem"></div>
   <div id="erro"></div>
-
   <div class="produto-lista" id="produto-lista"></div>
   <div class="paginacao" id="paginacao"></div>
 
   <script>
-    // Carregar produtos do localStorage
-    let produtos = JSON.parse(localStorage.getItem('produtos')) || [];
+    const VERSION = "1.0.8";
+    const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbzxU2q5ApfKg0FawUDSfLFskikcggALJWWS0zSfYAA/exec';
+    let produtos = [];
     let paginaAtual = 1;
     const itensPorPagina = 20;
+    let totalProdutos = 0;
 
-    // Exibir produtos ao carregar a página
-    exibirProdutos();
-
-    // Função para redimensionar imagem
-    async function resizeImage(file, maxWidth, maxHeight) {
-      return new Promise((resolve, reject) => {
-        if (file.size > 2 * 1024 * 1024) {
-          reject(new Error('Imagem muito grande. Máximo 2 MB.'));
-        }
-
-        const img = new Image();
-        img.src = URL.createObjectURL(file);
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          let width = img.width;
-          let height = img.height;
-
-          if (width > height) {
-            if (width > maxWidth) {
-              height = Math.round((height * maxWidth) / width);
-              width = maxWidth;
-            }
-          } else {
-            if (height > maxHeight) {
-              width = Math.round((width * maxHeight) / height);
-              height = maxHeight;
-            }
-          }
-
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
-
-          canvas.toBlob(blob => {
-            resolve(blob);
-          }, 'image/jpeg', 0.8);
-        };
-        img.onerror = reject;
-      });
-    }
-
-    // Adicionando um produto
-    document.getElementById('form-produto').addEventListener('submit', async e => {
-      e.preventDefault();
-
+    async function carregarProdutos(page = 1) {
+      const listaProdutos = document.getElementById('produto-lista');
+      const paginacao = document.getElementById('paginacao');
       const mensagem = document.getElementById('mensagem');
       const erro = document.getElementById('erro');
+      const loadingSpinner = document.getElementById('loading-spinner');
 
-      const nome = e.target.querySelector('input[name="nome"]').value;
-      const categoria = e.target.querySelector('select[name="categoria"]').value;
-      const loja = e.target.querySelector('select[name="loja"]').value;
-      const link = e.target.querySelector('input[name="link"]').value;
-      const imagens = e.target.querySelector('input[name="imagens"]').files;
+      loadingSpinner.style.display = 'block';
+      listaProdutos.innerHTML = '';
+      mensagem.textContent = '';
+      erro.textContent = '';
 
-      if (!nome || !categoria || !loja || !link) {
-        erro.textContent = 'Todos os campos são obrigatórios!';
-        mensagem.textContent = '';
-        return;
+      try {
+        const url = new URL(appsScriptUrl);
+        url.searchParams.append('page', page);
+        url.searchParams.append('limit', itensPorPagina);
+        const response = await fetch(url, { method: 'GET' });
+        if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
+        const data = await response.json();
+
+        if (!data.success) throw new Error(data.message || 'Erro ao carregar produtos');
+
+        produtos = data.products || [];
+        totalProdutos = data.total || 0;
+
+        if (produtos.length === 0) {
+          listaProdutos.innerHTML = '<p>Nenhum produto adicionado ainda.</p>';
+          paginacao.innerHTML = '';
+          loadingSpinner.style.display = 'none';
+          return;
+        }
+
+        produtos.forEach((produto, index) => {
+          const globalIndex = (page - 1) * itensPorPagina + index;
+          const divProduto = document.createElement('div');
+          divProduto.classList.add('produto-item');
+          divProduto.innerHTML = `
+            <div class="produto-info">
+              <strong title="${produto.nome}">${produto.nome}</strong>
+              <span>C: ${produto.categoria} | L: ${produto.loja}</span>
+              <a href="${produto.link}" target="_blank" title="${produto.link}">Link</a>
+            </div>
+            <div>
+              ${produto.imagens && produto.imagens[0] ? `<img src="${produto.imagens[0]}" alt="Imagem do produto">` : ''}
+              <button data-id="${produto._id}" class="btn-excluir">Excluir</button>
+            </div>
+          `;
+          listaProdutos.appendChild(divProduto);
+        });
+
+        const totalPaginas = Math.ceil(totalProdutos / itensPorPagina);
+        paginacao.innerHTML = `
+          <button class="btn-pagina" data-pagina="${paginaAtual - 1}" ${paginaAtual === 1 ? 'disabled' : ''}>Anterior</button>
+          <span>Página ${paginaAtual} de ${totalPaginas}</span>
+          <button class="btn-pagina" data-pagina="${paginaAtual + 1}" ${paginaAtual === totalPaginas ? 'disabled' : ''}>Próximo</button>
+        `;
+      } catch (error) {
+        erro.textContent = 'Erro ao carregar produtos: ' + error.message;
+        listaProdutos.innerHTML = '<p>Erro ao carregar produtos.</p>';
+        paginacao.innerHTML = '';
       }
-      if (imagens.length === 0) {
-        erro.textContent = 'Pelo menos uma imagem deve ser escolhida!';
-        mensagem.textContent = '';
-        return;
-      }
+      loadingSpinner.style.display = 'none';
+    }
+
+    async function adicionarProduto(e) {
+      e.preventDefault();
+      const mensagem = document.getElementById('mensagem');
+      const erro = document.getElementById('erro');
+      const loadingSpinner = document.getElementById('loading-spinner');
+      const form = e.target;
+
+      mensagem.textContent = '';
+      erro.textContent = '';
+      loadingSpinner.style.display = 'block';
+
+      const formData = new FormData(form);
+      const imagens = formData.getAll('imagens');
       if (imagens.length > 3) {
         erro.textContent = 'Máximo de 3 imagens por produto!';
-        mensagem.textContent = '';
+        loadingSpinner.style.display = 'none';
+        return;
+      }
+      if (imagens.length === 0 || imagens[0].size === 0) {
+        erro.textContent = 'Pelo menos uma imagem deve ser escolhida!';
+        loadingSpinner.style.display = 'none';
         return;
       }
 
       try {
-        const imagensArray = await Promise.all(
-          Array.from(imagens).map(async file => {
-            const resizedBlob = await resizeImage(file, 300, 300);
-            return new Promise((resolve, reject) => {
-              const reader = new FileReader();
-              reader.onload = () => resolve(reader.result);
-              reader.onerror = reject;
-              reader.readAsDataURL(resizedBlob);
-            });
-          })
-        );
+        const response = await fetch(appsScriptUrl, {
+          method: 'POST',
+          body: formData
+        });
+        const data = await response.json();
 
-        const novoProduto = { nome, categoria, loja, link, imagens: imagensArray };
-        produtos.push(novoProduto);
+        if (!data.success) throw new Error(data.message || 'Erro ao adicionar produto');
 
-        localStorage.setItem('produtos', JSON.stringify(produtos));
-
-        paginaAtual = Math.ceil(produtos.length / itensPorPagina);
-        exibirProdutos();
-
-        mensagem.textContent = 'Produto adicionado com sucesso!';
-        erro.textContent = '';
-        e.target.reset();
+        mensagem.textContent = data.message || 'Produto adicionado com sucesso!';
+        form.reset();
+        paginaAtual = 1;
+        await carregarProdutos(paginaAtual);
       } catch (error) {
-        erro.textContent = error.message || 'Erro ao processar as imagens. Tente novamente.';
-        mensagem.textContent = '';
+        erro.textContent = error.message || 'Erro ao adicionar produto. Tente novamente.';
       }
-    });
+      loadingSpinner.style.display = 'none';
+    }
 
-    // Exibindo os produtos
-    function exibirProdutos() {
-      const listaProdutos = document.getElementById('produto-lista');
-      const paginacao = document.getElementById('paginacao');
-      listaProdutos.innerHTML = '';
+    async function excluirProduto(productId) {
+      const mensagem = document.getElementById('mensagem');
+      const erro = document.getElementById('erro');
+      const loadingSpinner = document.getElementById('loading-spinner');
 
-      if (produtos.length === 0) {
-        listaProdutos.innerHTML = '<p>Nenhum produto adicionado ainda.</p>';
-        paginacao.innerHTML = '';
-        return;
+      mensagem.textContent = '';
+      erro.textContent = '';
+      loadingSpinner.style.display = 'block';
+
+      try {
+        const url = new URL(appsScriptUrl);
+        url.searchParams.append('id', productId);
+        const response = await fetch(url, { method: 'DELETE' });
+        const data = await response.json();
+
+        if (!data.success) throw new Error(data.message || 'Erro ao excluir produto');
+
+        mensagem.textContent = data.message || 'Produto excluído com sucesso!';
+        const totalPaginas = Math.ceil((totalProdutos - 1) / itensPorPagina);
+        if (paginaAtual > totalPaginas && totalPaginas > 0) {
+          paginaAtual = totalPaginas;
+        }
+        await carregarProdutos(paginaAtual);
+      } catch (error) {
+        erro.textContent = error.message || 'Erro ao excluir produto. Tente novamente.';
       }
+      loadingSpinner.style.display = 'none';
+    }
 
-      const inicio = (paginaAtual - 1) * itensPorPagina;
-      const fim = inicio + itensPorPagina;
-      const produtosPaginados = produtos.slice(inicio, fim);
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log(`Iniciando add-produto.html v${VERSION}`);
+      carregarProdutos(paginaAtual);
 
-      produtosPaginados.forEach((produto, index) => {
-        const globalIndex = inicio + index;
-        const divProduto = document.createElement('div');
-        divProduto.classList.add('produto-item');
+      document.getElementById('form-produto').addEventListener('submit', adicionarProduto);
 
-        divProduto.innerHTML = `
-          <div class="produto-info">
-            <strong title="${produto.nome}">${produto.nome}</strong>
-            <span>C: ${produto.categoria} | L: ${produto.loja}</span>
-            <a href="${produto.link}" target="_blank" title="${produto.link}">Link</a>
-          </div>
-          <div>
-            ${produto.imagens[0] ? `<img src="${produto.imagens[0]}" alt="Imagem do produto">` : ''}
-            <button onclick="removerProduto(${globalIndex})">Excluir</button>
-          </div>
-        `;
-        listaProdutos.appendChild(divProduto);
+      document.getElementById('produto-lista').addEventListener('click', (e) => {
+        if (e.target.classList.contains('btn-excluir')) {
+          const productId = e.target.dataset.id;
+          if (confirm('Tem certeza que deseja excluir este produto?')) {
+            excluirProduto(productId);
+          }
+        }
       });
 
-      // Paginação
-      const totalPaginas = Math.ceil(produtos.length / itensPorPagina);
-      paginacao.innerHTML = `
-        <button onclick="mudarPagina(${paginaAtual - 1})" ${paginaAtual === 1 ? 'disabled' : ''}>Anterior</button>
-        <span>Página ${paginaAtual} de ${totalPaginas}</span>
-        <button onclick="mudarPagina(${paginaAtual + 1})" ${paginaAtual === totalPaginas ? 'disabled' : ''}>Próximo</button>
-      `;
-    }
-
-    // Mudar página
-    function mudarPagina(novaPagina) {
-      const totalPaginas = Math.ceil(produtos.length / itensPorPagina);
-      if (novaPagina >= 1 && novaPagina <= totalPaginas) {
-        paginaAtual = novaPagina;
-        exibirProdutos();
-      }
-    }
-
-    // Remover um produto
-    function removerProduto(index) {
-      produtos.splice(index, 1);
-      localStorage.setItem('produtos', JSON.stringify(produtos));
-      const totalPaginas = Math.ceil(produtos.length / itensPorPagina);
-      if (paginaAtual > totalPaginas) {
-        paginaAtual = totalPaginas || 1;
-      }
-      exibirProdutos();
-    }
+      document.getElementById('paginacao').addEventListener('click', (e) => {
+        if (e.target.classList.contains('btn-pagina')) {
+          const novaPagina = parseInt(e.target.dataset.pagina);
+          if (novaPagina >= 1 && novaPagina <= Math.ceil(totalProdutos / itensPorPagina)) {
+            paginaAtual = novaPagina;
+            carregarProdutos(paginaAtual);
+          }
+        }
+      });
+    });
   </script>
 </body>
 </html>
