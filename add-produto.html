@@ -1,400 +1,408 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Adicionar Produtos</title>
-  <link rel="icon" type="image/x-icon" href="logos/centrodecompras.jpg">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/style.css">
-  <style>
-    body { 
-      font-family: 'Roboto', Arial, sans-serif; 
-      padding: 20px; 
-      background-color: #f5f5f5; 
-    }
-    h1 { 
-      text-align: center; 
-      color: #333; 
-    }
-    .nav-voltar {
-      display: block;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .nav-voltar a {
-      color: #ff6200;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    .nav-voltar a:hover {
-      color: #e55a00;
-    }
-    form { 
-      max-width: 500px; 
-      margin: auto; 
-      display: flex; 
-      flex-direction: column; 
-      gap: 10px; 
-      background: white; 
-      padding: 20px; 
-      border-radius: 8px; 
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
-    }
-    input, select, button { 
-      padding: 10px; 
-      border: 1px solid #ddd; 
-      border-radius: 4px; 
-      font-size: 16px; 
-    }
-    button { 
-      background-color: #ff6200; 
-      color: white; 
-      border: none; 
-      cursor: pointer; 
-      font-weight: bold; 
-    }
-    button:hover { 
-      background-color: #e55a00; 
-    }
-    #mensagem { 
-      margin-top: 10px; 
-      color: green; 
-      text-align: center; 
-    }
-    #erro { 
-      margin-top: 10px; 
-      color: red; 
-      text-align: center; 
-    }
-    .produto-lista { 
-      margin-top: 20px; 
-      max-width: 500px; 
-      margin: auto; 
-      max-height: 500px; 
-      overflow-y: auto; 
-      padding: 10px; 
-      background: white; 
-      border-radius: 8px; 
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
-    }
-    .produto-item { 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center; 
-      padding: 8px; 
-      background: #f9f9f9; 
-      border-radius: 4px; 
-      margin-bottom: 5px; 
-      font-size: 14px; 
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); 
-    }
-    .produto-item button { 
-      background-color: #d32f2f; 
-      color: white; 
-      border: none; 
-      cursor: pointer; 
-      padding: 4px 8px; 
-      border-radius: 4px; 
-      font-size: 12px; 
-    }
-    .produto-item button:hover { 
-      background-color: #b71c1c; 
-    }
-    .produto-item img { 
-      max-width: 30px; 
-      max-height: 30px; 
-      margin-left: 8px; 
-      border-radius: 4px; 
-      object-fit: contain; 
-    }
-    .produto-info { 
-      flex: 1; 
-      overflow: hidden; 
-      text-overflow: ellipsis; 
-      white-space: nowrap; 
-    }
-    .produto-info strong { 
-      font-size: 14px; 
-    }
-    .produto-info span, .produto-info a { 
-      font-size: 12px; 
-      color: #666; 
-    }
-    .paginacao { 
-      margin-top: 10px; 
-      text-align: center; 
-    }
-    .paginacao button { 
-      background-color: #FFA500; 
-      color: white; 
-      border: none; 
-      padding: 8px 12px; 
-      margin: 0 5px; 
-      border-radius: 4px; 
-      cursor: pointer; 
-      font-size: 14px; 
-    }
-    .paginacao button:disabled { 
-      background-color: #ccc; 
-      cursor: not-allowed; 
-    }
-    .paginacao button:hover:not(:disabled) { 
-      background-color: #e59400; 
-    }
-    .loading-spinner {
-      display: none;
-      margin: 20px auto;
-      width: 40px;
-      height: 40px;
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #ff6200;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Adicionar Produtos</title>
+    <link rel="icon" type="image/x-icon" href="logos/centrodecompras.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        body { 
+            font-family: 'Roboto', Arial, sans-serif; 
+            padding: 20px; 
+            background-color: #f5f5f5; 
+        }
+        h1 { 
+            text-align: center; 
+            color: #333; 
+        }
+        .nav-voltar {
+            display: block;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .nav-voltar a {
+            color: #ff6200;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .nav-voltar a:hover {
+            color: #e55a00;
+        }
+        form { 
+            max-width: 500px; 
+            margin: auto; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 10px; 
+            background: white; 
+            padding: 20px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+        }
+        input, select, button { 
+            padding: 10px; 
+            border: 1px solid #ddd; 
+            border-radius: 4px; 
+            font-size: 16px; 
+        }
+        button { 
+            background-color: #ff6200; 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+            font-weight: bold; 
+        }
+        button:hover { 
+            background-color: #e55a00; 
+        }
+        #mensagem { 
+            margin-top: 10px; 
+            color: green; 
+            text-align: center; 
+        }
+        #erro { 
+            margin-top: 10px; 
+            color: red; 
+            text-align: center; 
+        }
+        .produto-lista { 
+            margin-top: 20px; 
+            max-width: 500px; 
+            margin: auto; 
+            max-height: 500px; 
+            overflow-y: auto; 
+            padding: 10px; 
+            background: white; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+        }
+        .produto-item { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 8px; 
+            background: #f9f9f9; 
+            border-radius: 4px; 
+            margin-bottom: 5px; 
+            font-size: 14px; 
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); 
+        }
+        .produto-item button { 
+            background-color: #d32f2f; 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+            padding: 4px 8px; 
+            border-radius: 4px; 
+            font-size: 12px; 
+        }
+        .produto-item button:hover { 
+            background-color: #b71c1c; 
+        }
+        .produto-item img { 
+            max-width: 30px; 
+            max-height: 30px; 
+            margin-left: 8px; 
+            border-radius: 4px; 
+            object-fit: contain; 
+        }
+        .produto-info { 
+            flex: 1; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            white-space: nowrap; 
+        }
+        .produto-info strong { 
+            font-size: 14px; 
+        }
+        .produto-info span, .produto-info a { 
+            font-size: 12px; 
+            color: #666; 
+        }
+        .paginacao { 
+            margin-top: 10px; 
+            text-align: center; 
+        }
+        .paginacao button { 
+            background-color: #FFA500; 
+            color: white; 
+            border: none; 
+            padding: 8px 12px; 
+            margin: 0 5px; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-size: 14px; 
+        }
+        .paginacao button:disabled { 
+            background-color: #ccc; 
+            cursor: not-allowed; 
+        }
+        .paginacao button:hover:not(:disabled) { 
+            background-color: #e59400; 
+        }
+        .loading-spinner {
+            display: none;
+            margin: 20px auto;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #ff6200;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
-  <div class="nav-voltar">
-    <a href="index.html">← Voltar para a página inicial</a>
-  </div>
-  <h1>Adicionar Produto</h1>
-  <form id="form-produto" enctype="multipart/form-data">
-    <input type="text" name="nome" placeholder="Nome do produto" required>
-    <input type="text" name="descricao" placeholder="Descrição do produto">
-    <select name="categoria" required>
-      <option value="" disabled selected>Selecione uma categoria</option>
-      <option value="eletronicos">Eletrônicos</option>
-      <option value="moda">Moda</option>
-      <option value="fitness">Fitness</option>
-      <option value="casa">Casa e Decoração</option>
-      <option value="beleza">Beleza</option>
-      <option value="esportes">Esportes</option>
-      <option value="livros">Livros</option>
-      <option value="infantil">Infantil</option>
-      <option value="Celulares">Celulares</option>
-      <option value="Eletrodomésticos">Eletrodomésticos</option>
-    </select>
-    <select name="loja" required>
-      <option value="" disabled selected>Selecione uma loja</option>
-      <option value="amazon">Amazon</option>
-      <option value="magalu">Magalu</option>
-      <option value="shein">Shein</option>
-      <option value="shopee">Shopee</option>
-      <option value="mercadolivre">Mercado Livre</option>
-      <option value="alibaba">Alibaba</option>
-    </select>
-    <input type="url" name="link" placeholder="Link do produto (https://...)" required pattern="https?://.+">
-    <input type="text" name="preco" placeholder="Preço (ex.: 99.90)" required>
-    <input type="file" name="imagens" accept="image/*" multiple>
-    <button type="submit">Adicionar</button>
-  </form>
-  <div class="loading-spinner" id="loading-spinner"></div>
-  <div id="mensagem"></div>
-  <div id="erro"></div>
-  <div class="produto-lista" id="produto-lista"></div>
-  <div class="paginacao" id="paginacao"></div>
+    <div class="nav-voltar">
+        <a href="index.html">← Voltar para a página inicial</a>
+    </div>
+    <h1>Adicionar Produto</h1>
+    <form id="form-produto" enctype="multipart/form-data">
+        <input type="text" name="nome" placeholder="Nome do produto" required>
+        <input type="text" name="descricao" placeholder="Descrição do produto">
+        <select name="categoria" required>
+            <option value="" disabled selected>Selecione uma categoria</option>
+            <option value="eletronicos">Eletrônicos</option>
+            <option value="moda">Moda</option>
+            <option value="fitness">Fitness</option>
+            <option value="casa">Casa e Decoração</option>
+            <option value="beleza">Beleza</option>
+            <option value="esportes">Esportes</option>
+            <option value="livros">Livros</option>
+            <option value="infantil">Infantil</option>
+            <option value="Celulares">Celulares</option>
+            <option value="Eletrodomésticos">Eletrodomésticos</option>
+        </select>
+        <select name="loja" required>
+            <option value="" disabled selected>Selecione uma loja</option>
+            <option value="amazon">Amazon</option>
+            <option value="magalu">Magalu</option>
+            <option value="shein">Shein</option>
+            <option value="shopee">Shopee</option>
+            <option value="mercadolivre">Mercado Livre</option>
+            <option value="alibaba">Alibaba</option>
+        </select>
+        <input type="url" name="link" placeholder="Link do produto (https://...)" required pattern="https?://.+">
+        <input type="text" name="preco" placeholder="Preço (ex.: 99.90)" required>
+        <input type="file" name="imagens" accept="image/*" multiple>
+        <button type="submit">Adicionar</button>
+    </form>
+    <div class="loading-spinner" id="loading-spinner"></div>
+    <div id="mensagem"></div>
+    <div id="erro"></div>
+    <div class="produto-lista" id="produto-lista"></div>
+    <div class="paginacao" id="paginacao"></div>
 
-  <script>
-    const VERSION = "1.0.10";
-    const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbzlXDRC0qxR4b3ozvpYpdONTgntqxHLHXk_7tcuSL98HNZWgmhMQ_45OitQu_Lla2l0Jg/exec';
-    let produtos = [];
-    let paginaAtual = 1;
-    const itensPorPagina = 20;
-    let totalProdutos = 0;
+    <script>
+        const VERSION = "1.0.10"; // Mantenha a sua versão original, se quiser
+        // *** IMPORTANTE: SUBSTITUA PELA URL DA SUA API NO RENDER! ***
+        const API_BASE_URL = 'https://SUA_API_RENDER_URL'; // Ex: 'https://minha-api-produtos.onrender.com'
+        
+        let produtos = [];
+        let paginaAtual = 1;
+        const itensPorPagina = 20;
+        let totalProdutos = 0;
 
-    async function carregarProdutos(page = 1) {
-      const listaProdutos = document.getElementById('produto-lista');
-      const paginacao = document.getElementById('paginacao');
-      const mensagem = document.getElementById('mensagem');
-      const erro = document.getElementById('erro');
-      const loadingSpinner = document.getElementById('loading-spinner');
+        async function carregarProdutos(page = 1) {
+            const listaProdutos = document.getElementById('produto-lista');
+            const paginacao = document.getElementById('paginacao');
+            const mensagem = document.getElementById('mensagem');
+            const erro = document.getElementById('erro');
+            const loadingSpinner = document.getElementById('loading-spinner');
 
-      loadingSpinner.style.display = 'block';
-      listaProdutos.innerHTML = '';
-      mensagem.textContent = '';
-      erro.textContent = '';
+            loadingSpinner.style.display = 'block';
+            listaProdutos.innerHTML = '';
+            mensagem.textContent = '';
+            erro.textContent = '';
 
-      try {
-        const url = new URL(appsScriptUrl);
-        url.searchParams.append('page', page);
-        url.searchParams.append('limit', itensPorPagina);
-        const response = await fetch(url, { method: 'GET' });
-        if (!response.ok) {
-          if (response.status === 403) {
-            throw new Error('Acesso negado: Verifique se a API está configurada como "Qualquer pessoa, mesmo anônima". Se estiver usando um proxy CORS, desbloqueie o acesso em https://cors-anywhere.herokuapp.com.');
-          }
-          throw new Error(`Erro HTTP: ${response.status}`);
+            try {
+                // Monta a URL para a sua API Node.js
+                const url = new URL(`${API_BASE_URL}/api/produtos`); // Endpoint da sua API para buscar produtos
+                url.searchParams.append('page', page);
+                url.searchParams.append('limit', itensPorPagina);
+                const response = await fetch(url, { method: 'GET' });
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
+                }
+                const data = await response.json();
+
+                // Sua API Node.js DEVE retornar { status: "success", data: [...], total: ... }
+                if (data.status !== 'success') {
+                    throw new Error(data.message || 'Erro ao carregar produtos do servidor');
+                }
+
+                produtos = data.data || [];
+                totalProdutos = data.total || 0;
+
+                if (produtos.length === 0) {
+                    listaProdutos.innerHTML = '<p>Nenhum produto adicionado ainda.</p>';
+                    paginacao.innerHTML = '';
+                    loadingSpinner.style.display = 'none';
+                    return;
+                }
+
+                produtos.forEach((produto, index) => {
+                    const globalIndex = (page - 1) * itensPorPagina + index;
+                    // O campo 'imagens' agora espera um array de URLs da sua API
+                    const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0 ? produto.imagens : [];
+                    const divProduto = document.createElement('div');
+                    divProduto.classList.add('produto-item');
+                    divProduto.innerHTML = `
+                        <div class="produto-info">
+                            <strong title="${produto.nome}">${produto.nome}</strong>
+                            <span>C: ${produto.categoria} | L: ${produto.loja}</span>
+                            <a href="${produto.link}" target="_blank" title="${produto.link}">Link</a>
+                        </div>
+                        <div>
+                            ${imagens[0] ? `<img src="${imagens[0]}" alt="Imagem do produto">` : ''}
+                            <button data-id="${produto.id}" class="btn-excluir">Excluir</button>
+                        </div>
+                    `;
+                    listaProdutos.appendChild(divProduto);
+                });
+
+                const totalPaginas = Math.ceil(totalProdutos / itensPorPagina);
+                paginacao.innerHTML = `
+                    <button class="btn-pagina" data-pagina="${paginaAtual - 1}" ${paginaAtual === 1 ? 'disabled' : ''}>Anterior</button>
+                    <span>Página ${paginaAtual} de ${totalPaginas}</span>
+                    <button class="btn-pagina" data-pagina="${paginaAtual + 1}" ${paginaAtual === totalPaginas ? 'disabled' : ''}>Próximo</button>
+                `;
+            } catch (error) {
+                console.error('Erro ao carregar produtos:', error);
+                erro.textContent = error.message || 'Erro ao carregar produtos. Verifique sua conexão ou a configuração da API.';
+                listaProdutos.innerHTML = '<p>Erro ao carregar produtos.</p>';
+                paginacao.innerHTML = '';
+            }
+            loadingSpinner.style.display = 'none';
         }
-        const data = await response.json();
 
-        if (data.status !== 'success') throw new Error(data.message || 'Erro ao carregar produtos');
+        async function adicionarProduto(e) {
+            e.preventDefault();
+            const mensagem = document.getElementById('mensagem');
+            const erro = document.getElementById('erro');
+            const loadingSpinner = document.getElementById('loading-spinner');
+            const form = e.target;
 
-        produtos = data.data || [];
-        totalProdutos = data.total || 0;
+            mensagem.textContent = '';
+            erro.textContent = '';
+            loadingSpinner.style.display = 'block';
 
-        if (produtos.length === 0) {
-          listaProdutos.innerHTML = '<p>Nenhum produto adicionado ainda.</p>';
-          paginacao.innerHTML = '';
-          loadingSpinner.style.display = 'none';
-          return;
+            const formData = new FormData(form);
+            const imagensInput = document.querySelector('input[name="imagens"]');
+            const imagensFiles = imagensInput.files;
+
+            if (imagensFiles.length > 3) {
+                erro.textContent = 'Máximo de 3 imagens por produto!';
+                loadingSpinner.style.display = 'none';
+                return;
+            }
+            if (imagensFiles.length === 0) {
+                erro.textContent = 'Pelo menos uma imagem deve ser escolhida!';
+                loadingSpinner.style.display = 'none';
+                return;
+            }
+
+            // Remove o campo 'imagens' original e adiciona os arquivos File diretamente
+            // Isso é o formato que Multer no Node.js espera para upload de arquivos
+            formData.delete('imagens'); 
+            for (let i = 0; i < imagensFiles.length; i++) {
+                formData.append('imagens', imagensFiles[i]);
+            }
+            
+            try {
+                // Endpoint para adicionar produtos na sua API Node.js
+                const response = await fetch(`${API_BASE_URL}/api/produtos`, {
+                    method: 'POST',
+                    body: formData // FormData com os arquivos File
+                });
+                const data = await response.json();
+
+                // Sua API Node.js DEVE retornar { status: "success", message: "..." }
+                if (data.status !== 'success') {
+                    throw new Error(data.message || 'Erro ao adicionar produto no servidor');
+                }
+
+                mensagem.textContent = data.message || 'Produto adicionado com sucesso!';
+                form.reset();
+                // Recarrega a lista para mostrar o novo produto, voltando para a primeira página
+                paginaAtual = 1; 
+                await carregarProdutos(paginaAtual);
+            } catch (error) {
+                console.error('Erro ao adicionar produto:', error);
+                erro.textContent = error.message || 'Erro ao adicionar produto. Verifique sua conexão ou a configuração da API.';
+            }
+            loadingSpinner.style.display = 'none';
         }
 
-        produtos.forEach((produto, index) => {
-          const globalIndex = (page - 1) * itensPorPagina + index;
-          const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0 ? produto.imagens : [];
-          const divProduto = document.createElement('div');
-          divProduto.classList.add('produto-item');
-          divProduto.innerHTML = `
-            <div class="produto-info">
-              <strong title="${produto.nome}">${produto.nome}</strong>
-              <span>C: ${produto.categoria} | L: ${produto.loja}</span>
-              <a href="${produto.link}" target="_blank" title="${produto.link}">Link</a>
-            </div>
-            <div>
-              ${imagens[0] ? `<img src="${imagens[0]}" alt="Imagem do produto">` : ''}
-              <button data-id="${produto.id}" class="btn-excluir">Excluir</button>
-            </div>
-          `;
-          listaProdutos.appendChild(divProduto);
-        });
+        async function excluirProduto(productId) {
+            const mensagem = document.getElementById('mensagem');
+            const erro = document.getElementById('erro');
+            const loadingSpinner = document.getElementById('loading-spinner');
 
-        const totalPaginas = Math.ceil(totalProdutos / itensPorPagina);
-        paginacao.innerHTML = `
-          <button class="btn-pagina" data-pagina="${paginaAtual - 1}" ${paginaAtual === 1 ? 'disabled' : ''}>Anterior</button>
-          <span>Página ${paginaAtual} de ${totalPaginas}</span>
-          <button class="btn-pagina" data-pagina="${paginaAtual + 1}" ${paginaAtual === totalPaginas ? 'disabled' : ''}>Próximo</button>
-        `;
-      } catch (error) {
-        console.error('Erro ao carregar produtos:', error);
-        erro.textContent = error.message || 'Erro ao carregar produtos. Verifique sua conexão ou a configuração da API.';
-        listaProdutos.innerHTML = '<p>Erro ao carregar produtos.</p>';
-        paginacao.innerHTML = '';
-      }
-      loadingSpinner.style.display = 'none';
-    }
+            mensagem.textContent = '';
+            erro.textContent = '';
+            loadingSpinner.style.display = 'block';
 
-    async function adicionarProduto(e) {
-      e.preventDefault();
-      const mensagem = document.getElementById('mensagem');
-      const erro = document.getElementById('erro');
-      const loadingSpinner = document.getElementById('loading-spinner');
-      const form = e.target;
+            try {
+                // Endpoint para excluir produtos na sua API Node.js
+                const response = await fetch(`${API_BASE_URL}/api/produtos/${productId}`, {
+                    method: 'DELETE'
+                });
+                const data = await response.json();
 
-      mensagem.textContent = '';
-      erro.textContent = '';
-      loadingSpinner.style.display = 'block';
+                // Sua API Node.js DEVE retornar { status: "success", message: "..." }
+                if (data.status !== 'success') {
+                    throw new Error(data.message || 'Erro ao excluir produto do servidor');
+                }
 
-      const formData = new FormData(form);
-      const imagens = formData.getAll('imagens');
-      if (imagens.length > 3) {
-        erro.textContent = 'Máximo de 3 imagens por produto!';
-        loadingSpinner.style.display = 'none';
-        return;
-      }
-      if (imagens.length === 0 || imagens[0].size === 0) {
-        erro.textContent = 'Pelo menos uma imagem deve ser escolhida!';
-        loadingSpinner.style.display = 'none';
-        return;
-      }
-
-      try {
-        const imagePromises = imagens.map(file => {
-          return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-          });
-        });
-        const imageBase64s = await Promise.all(imagePromises);
-        formData.delete('imagens');
-        formData.append('imagens', imageBase64s.join(';'));
-
-        const response = await fetch(appsScriptUrl, {
-          method: 'POST',
-          body: formData
-        });
-        const data = await response.json();
-
-        if (data.status !== 'success') throw new Error(data.message || 'Erro ao adicionar produto');
-
-        mensagem.textContent = data.message || 'Produto adicionado com sucesso!';
-        form.reset();
-        paginaAtual = 1;
-        await carregarProdutos(paginaAtual);
-      } catch (error) {
-        console.error('Erro ao adicionar produto:', error);
-        erro.textContent = error.message || 'Erro ao adicionar produto. Verifique sua conexão ou a configuração da API.';
-      }
-      loadingSpinner.style.display = 'none';
-    }
-
-    async function excluirProduto(productId) {
-      const mensagem = document.getElementById('mensagem');
-      const erro = document.getElementById('erro');
-      const loadingSpinner = document.getElementById('loading-spinner');
-
-      mensagem.textContent = '';
-      erro.textContent = '';
-      loadingSpinner.style.display = 'block';
-
-      try {
-        const url = new URL(appsScriptUrl);
-        url.searchParams.append('id', productId);
-        const response = await fetch(url, { method: 'DELETE' });
-        if (!response.ok) {
-          if (response.status === 403) {
-            throw new Error('Acesso negado: Verifique se a API está configurada como "Qualquer pessoa, mesmo anônima".');
-          }
-          throw new Error(`Erro HTTP: ${response.status}`);
+                mensagem.textContent = data.message || 'Produto excluído com sucesso!';
+                // Ajusta a página atual se o último produto da página foi excluído
+                const totalPaginas = Math.ceil((totalProdutos - 1) / itensPorPagina);
+                if (paginaAtual > totalPaginas && totalPaginas > 0) {
+                    paginaAtual = totalPaginas;
+                } else if (totalPaginas === 0) { // Se não houver mais produtos
+                    paginaAtual = 1;
+                }
+                await carregarProdutos(paginaAtual);
+            } catch (error) {
+                console.error('Erro ao excluir produto:', error);
+                erro.textContent = error.message || 'Erro ao excluir produto. Verifique sua conexão ou a configuração da API.';
+            }
+            loadingSpinner.style.display = 'none';
         }
-        const data = await response.json();
 
-        if (data.status !== 'success') throw new Error(data.message || 'Erro ao excluir produto');
-
-        mensagem.textContent = data.message || 'Produto excluído com sucesso!';
-        const totalPaginas = Math.ceil((totalProdutos - 1) / itensPorPagina);
-        if (paginaAtual > totalPaginas && totalPaginas > 0) {
-          paginaAtual = totalPaginas;
-        }
-        await carregarProdutos(paginaAtual);
-      } catch (error) {
-        console.error('Erro ao excluir produto:', error);
-        erro.textContent = error.message || 'Erro ao excluir produto. Verifique sua conexão ou a configuração da API.';
-      }
-      loadingSpinner.style.display = 'none';
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      console.log(`Iniciando add-produto.html v${VERSION}`);
-      carregarProdutos(paginaAtual);
-
-      document.getElementById('form-produto').addEventListener('submit', adicionarProduto);
-
-      document.getElementById('produto-lista').addEventListener('click', (e) => {
-        if (e.target.classList.contains('btn-excluir')) {
-          const productId = e.target.dataset.id;
-          if (confirm('Tem certeza que deseja excluir este produto?')) {
-            excluirProduto(productId);
-          }
-        }
-      });
-
-      document.getElementById('paginacao').addEventListener('click', (e) => {
-        if (e.target.classList.contains('btn-pagina')) {
-          const novaPagina = parseInt(e.target.dataset.pagina);
-          if (novaPagina >= 1 && novaPagina <= Math.ceil(totalProdutos / itensPorPagina)) {
-            paginaAtual = novaPagina;
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log(`Iniciando add-produto.html v${VERSION}`);
             carregarProdutos(paginaAtual);
-          }
-        }
-      });
-    });
-  </script>
+
+            document.getElementById('form-produto').addEventListener('submit', adicionarProduto);
+
+            document.getElementById('produto-lista').addEventListener('click', (e) => {
+                if (e.target.classList.contains('btn-excluir')) {
+                    const productId = e.target.dataset.id;
+                    if (confirm('Tem certeza que deseja excluir este produto?')) {
+                        excluirProduto(productId);
+                    }
+                }
+            });
+
+            document.getElementById('paginacao').addEventListener('click', (e) => {
+                if (e.target.classList.contains('btn-pagina')) {
+                    const novaPagina = parseInt(e.target.dataset.pagina);
+                    const totalPaginasCalculado = Math.ceil(totalProdutos / itensPorPagina);
+                    if (novaPagina >= 1 && novaPagina <= totalPaginasCalculado) {
+                        paginaAtual = novaPagina;
+                        carregarProdutos(paginaAtual);
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>
