@@ -44,8 +44,8 @@
         .modal-content .carrossel-imagens img {
             width: 100%;
             height: auto;
-            max-width: 800px; /* Limita a resolução para evitar travamentos */
-            max-height: 600px; /* Limita a altura */
+            max-width: 800px;
+            max-height: 600px;
             object-fit: contain;
             flex: 0 0 100%;
             transition: transform 0.3s ease;
@@ -170,6 +170,20 @@
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
         }
+        .loading-spinner {
+            display: none;
+            margin: 20px auto;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #ff6200;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
         @media (max-width: 600px) {
             .grid-produtos {
                 grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -188,7 +202,7 @@
                 font-size: 12px;
             }
             .modal-content .carrossel-imagens img {
-                max-width: 100%; /* Ajusta para telas menores */
+                max-width: 100%;
                 max-height: 400px;
             }
         }
@@ -281,12 +295,14 @@
         </a>
     </div>
     <script>
-        const VERSION = "1.0.6"; // Atualizado para depuração
+        const VERSION = "1.0.7";
+        const appsScriptUrl = 'https://cors-anywhere.herokuapp.com/https://script.google.com/macros/s/AKfycbzZVGqex3LqRtLhrck_wrDzqGEwwwiTnxzOnaw9UZtraVf9XA9SjBCBdknmSgCdy5_fNQ/exec';
         let currentImages = [];
         let currentImageIndex = 0;
         let currentPage = 1;
         const productsPerPage = 12;
         let allProducts = [];
+        let totalProdutos = 0;
 
         document.getElementById("year").textContent = new Date().getFullYear();
 
@@ -320,38 +336,35 @@
             errorMessage.style.display = "none";
 
             try {
-                let produtos = JSON.parse(localStorage.getItem("produtos_cache")) || [];
-                if (!produtos.length) {
-                    const response = await fetch("https://raw.githubusercontent.com/bingaby/centrodecompra/main/produtos.json", { cache: "no-store" });
-                    if (!response.ok) throw new Error(`Erro ao carregar produtos.json: ${response.status}`);
-                    produtos = await response.json();
-                    if (!Array.isArray(produtos)) throw new Error("produtos.json não é uma lista válida");
-                    localStorage.setItem("produtos_cache", JSON.stringify(produtos));
-                }
+                const url = new URL(appsScriptUrl);
+                url.searchParams.append('page', page);
+                url.searchParams.append('limit', productsPerPage);
+                if (categoria !== "todas") url.searchParams.append('categoria', categoria);
+                if (loja !== "todas") url.searchParams.append('loja', loja);
+                if (busca) url.searchParams.append('busca', busca);
 
-                allProducts = produtos.filter(p =>
-                    (categoria === "todas" || p.categoria.toLowerCase() === categoria.toLowerCase()) &&
-                    (loja === "todas" || p.loja.toLowerCase() === loja.toLowerCase()) &&
-                    (!busca || p.nome.toLowerCase().includes(busca.toLowerCase()))
-                );
+                const response = await fetch(url, { method: 'GET' });
+                if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
+                const data = await response.json();
 
-                const start = (page - 1) * productsPerPage;
-                const end = start + productsPerPage;
-                const paginatedProducts = allProducts.slice(start, end);
+                if (data.status !== "success") throw new Error(data.message || 'Erro ao carregar produtos');
 
-                if (paginatedProducts.length === 0 && page === 1) {
+                allProducts = data.data || [];
+                totalProdutos = data.total || 0;
+
+                if (allProducts.length === 0 && page === 1) {
                     mensagemVazia.style.display = "block";
                     gridProdutos.style.display = "none";
                 } else {
                     mensagemVazia.style.display = "none";
                     gridProdutos.style.display = "grid";
-                    paginatedProducts.forEach((produto, index) => {
-                        const globalIndex = start + index;
+                    allProducts.forEach((produto, index) => {
+                        const globalIndex = (page - 1) * productsPerPage + index;
                         const card = document.createElement("div");
                         card.classList.add("produto-card", "visible");
                         card.setAttribute("data-categoria", produto.categoria.toLowerCase());
                         card.setAttribute("data-loja", produto.loja.toLowerCase());
-                        const imagens = produto.imagens && produto.imagens.length > 0 ? produto.imagens : ["imagens/placeholder.jpg"];
+                        const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0 ? produto.imagens : ["imagens/placeholder.jpg"];
                         const carrosselId = `carrossel-${globalIndex}`;
                         card.innerHTML = `
                             <div class="carrossel" id="${carrosselId}">
@@ -375,7 +388,7 @@
                 }
 
                 const loadMoreButton = document.getElementById("load-more");
-                loadMoreButton.style.display = end < allProducts.length ? "block" : "none";
+                loadMoreButton.style.display = (page * productsPerPage) < totalProdutos ? "block" : "none";
             } catch (error) {
                 console.error("Erro ao carregar produtos:", error);
                 errorMessage.textContent = "Erro ao carregar os produtos. Tente novamente mais tarde.";
@@ -431,7 +444,7 @@
             const prevButton = document.getElementById("modalPrev");
             const nextButton = document.getElementById("modalNext");
             if (!modal || !carrosselImagens || !carrosselDots || !modalError || !prevButton || !nextButton) {
-                console.error("Elementos do modal não encontrados:", { modal, carrosselImagens, carrosselDots, modalError, prevButton, nextButton });
+                console.error("Elementos do modal não encontrados");
                 return;
             }
 
@@ -443,7 +456,7 @@
             nextButton.classList.remove("visible");
 
             try {
-                currentImages = allProducts[index]?.imagens && allProducts[index].imagens.length > 0 ? allProducts[index].imagens : ["imagens/placeholder.jpg"];
+                currentImages = Array.isArray(allProducts[index]?.imagens) && allProducts[index].imagens.length > 0 ? allProducts[index].imagens : ["imagens/placeholder.jpg"];
                 console.log("Imagens disponíveis:", currentImages);
 
                 if (!currentImages.length) {
@@ -453,7 +466,6 @@
                     return;
                 }
 
-                // Pré-carregar imagens para evitar travamentos
                 const loadPromises = currentImages.map((src, idx) => {
                     return new Promise((resolve, reject) => {
                         const img = new Image();
@@ -608,7 +620,6 @@
                 });
             }
 
-            // Desativar MetaMask temporariamente para evitar interferências
             if (window.ethereum) {
                 console.log("MetaMask detectado, desativando temporariamente");
                 window.ethereum = null;
