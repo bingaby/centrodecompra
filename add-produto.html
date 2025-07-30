@@ -188,7 +188,7 @@
       <option value="alibaba">Alibaba</option>
     </select>
     <input type="url" name="link" placeholder="Link do produto (https://...)" required pattern="https?://.+">
-    <input type="number" name="preco" placeholder="Preço (ex.: 99.90)" step="0.01" min="0" required>
+    <input type="text" name="preco" placeholder="Preço (ex.: 99.90)" required>
     <input type="file" name="imagens" accept="image/*" multiple>
     <button type="submit">Adicionar</button>
   </form>
@@ -199,8 +199,8 @@
   <div class="paginacao" id="paginacao"></div>
 
   <script>
-    const VERSION = "1.0.8";
-    const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbzZVGqex3LqRtLhrck_wrDzqGEwwwiTnxzOnaw9UZtraVf9XA9SjBCBdknmSgCdy5_fNQ/exec';
+    const VERSION = "1.0.9";
+    const appsScriptUrl = 'https://cors-anywhere.herokuapp.com/https://script.google.com/macros/s/AKfycbzZVGqex3LqRtLhrck_wrDzqGEwwwiTnxzOnaw9UZtraVf9XA9SjBCBdknmSgCdy5_fNQ/exec';
     let produtos = [];
     let paginaAtual = 1;
     const itensPorPagina = 20;
@@ -226,9 +226,9 @@
         if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
         const data = await response.json();
 
-        if (!data.success) throw new Error(data.message || 'Erro ao carregar produtos');
+        if (data.status !== 'success') throw new Error(data.message || 'Erro ao carregar produtos');
 
-        produtos = data.products || [];
+        produtos = data.data || [];
         totalProdutos = data.total || 0;
 
         if (produtos.length === 0) {
@@ -240,6 +240,7 @@
 
         produtos.forEach((produto, index) => {
           const globalIndex = (page - 1) * itensPorPagina + index;
+          const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0 ? produto.imagens : [];
           const divProduto = document.createElement('div');
           divProduto.classList.add('produto-item');
           divProduto.innerHTML = `
@@ -249,8 +250,8 @@
               <a href="${produto.link}" target="_blank" title="${produto.link}">Link</a>
             </div>
             <div>
-              ${produto.imagens && produto.imagens[0] ? `<img src="${produto.imagens[0]}" alt="Imagem do produto">` : ''}
-              <button data-id="${produto._id}" class="btn-excluir">Excluir</button>
+              ${imagens[0] ? `<img src="${imagens[0]}" alt="Imagem do produto">` : ''}
+              <button data-id="${produto.id}" class="btn-excluir">Excluir</button>
             </div>
           `;
           listaProdutos.appendChild(divProduto);
@@ -295,13 +296,26 @@
       }
 
       try {
+        // Converter imagens para base64
+        const imagePromises = imagens.map(file => {
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          });
+        });
+        const imageBase64s = await Promise.all(imagePromises);
+        formData.delete('imagens');
+        formData.append('imagens', imageBase64s.join(';'));
+
         const response = await fetch(appsScriptUrl, {
           method: 'POST',
           body: formData
         });
         const data = await response.json();
 
-        if (!data.success) throw new Error(data.message || 'Erro ao adicionar produto');
+        if (data.status !== 'success') throw new Error(data.message || 'Erro ao adicionar produto');
 
         mensagem.textContent = data.message || 'Produto adicionado com sucesso!';
         form.reset();
@@ -328,7 +342,7 @@
         const response = await fetch(url, { method: 'DELETE' });
         const data = await response.json();
 
-        if (!data.success) throw new Error(data.message || 'Erro ao excluir produto');
+        if (data.status !== 'success') throw new Error(data.message || 'Erro ao excluir produto');
 
         mensagem.textContent = data.message || 'Produto excluído com sucesso!';
         const totalPaginas = Math.ceil((totalProdutos - 1) / itensPorPagina);
