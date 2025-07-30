@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Adicionar Produtos</title>
+  <link rel="icon" type="image/x-icon" href="logos/centrodecompras.jpg">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/style.css">
   <style>
@@ -199,8 +200,8 @@
   <div class="paginacao" id="paginacao"></div>
 
   <script>
-    const VERSION = "1.0.9";
-    const appsScriptUrl = 'https://cors-anywhere.herokuapp.com/https://script.google.com/macros/s/AKfycbzZVGqex3LqRtLhrck_wrDzqGEwwwiTnxzOnaw9UZtraVf9XA9SjBCBdknmSgCdy5_fNQ/exec';
+    const VERSION = "1.0.10";
+    const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbzeHrOouOAGHiUaqKz3A2h_RVnzAJTujBnyDFuS31L6Sjp3-gHuJZg3Bt7vA09XH2yw_Q/exec';
     let produtos = [];
     let paginaAtual = 1;
     const itensPorPagina = 20;
@@ -223,7 +224,12 @@
         url.searchParams.append('page', page);
         url.searchParams.append('limit', itensPorPagina);
         const response = await fetch(url, { method: 'GET' });
-        if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
+        if (!response.ok) {
+          if (response.status === 403) {
+            throw new Error('Acesso negado: Verifique se a API está configurada como "Qualquer pessoa, mesmo anônima". Se estiver usando um proxy CORS, desbloqueie o acesso em https://cors-anywhere.herokuapp.com.');
+          }
+          throw new Error(`Erro HTTP: ${response.status}`);
+        }
         const data = await response.json();
 
         if (data.status !== 'success') throw new Error(data.message || 'Erro ao carregar produtos');
@@ -264,7 +270,8 @@
           <button class="btn-pagina" data-pagina="${paginaAtual + 1}" ${paginaAtual === totalPaginas ? 'disabled' : ''}>Próximo</button>
         `;
       } catch (error) {
-        erro.textContent = 'Erro ao carregar produtos: ' + error.message;
+        console.error('Erro ao carregar produtos:', error);
+        erro.textContent = error.message || 'Erro ao carregar produtos. Verifique sua conexão ou a configuração da API.';
         listaProdutos.innerHTML = '<p>Erro ao carregar produtos.</p>';
         paginacao.innerHTML = '';
       }
@@ -296,7 +303,6 @@
       }
 
       try {
-        // Converter imagens para base64
         const imagePromises = imagens.map(file => {
           return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -322,7 +328,8 @@
         paginaAtual = 1;
         await carregarProdutos(paginaAtual);
       } catch (error) {
-        erro.textContent = error.message || 'Erro ao adicionar produto. Tente novamente.';
+        console.error('Erro ao adicionar produto:', error);
+        erro.textContent = error.message || 'Erro ao adicionar produto. Verifique sua conexão ou a configuração da API.';
       }
       loadingSpinner.style.display = 'none';
     }
@@ -340,6 +347,12 @@
         const url = new URL(appsScriptUrl);
         url.searchParams.append('id', productId);
         const response = await fetch(url, { method: 'DELETE' });
+        if (!response.ok) {
+          if (response.status === 403) {
+            throw new Error('Acesso negado: Verifique se a API está configurada como "Qualquer pessoa, mesmo anônima".');
+          }
+          throw new Error(`Erro HTTP: ${response.status}`);
+        }
         const data = await response.json();
 
         if (data.status !== 'success') throw new Error(data.message || 'Erro ao excluir produto');
@@ -351,7 +364,8 @@
         }
         await carregarProdutos(paginaAtual);
       } catch (error) {
-        erro.textContent = error.message || 'Erro ao excluir produto. Tente novamente.';
+        console.error('Erro ao excluir produto:', error);
+        erro.textContent = error.message || 'Erro ao excluir produto. Verifique sua conexão ou a configuração da API.';
       }
       loadingSpinner.style.display = 'none';
     }
