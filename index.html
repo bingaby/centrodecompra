@@ -13,6 +13,7 @@
     <meta name="twitter:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliados seguros e atualizados!">
     <meta name="twitter:image" content="logos/centrodecompras.jpg">
     <title>Centro de Compras - Ofertas do Dia</title>
+    <link rel="icon" type="image/x-icon" href="logos/centrodecompras.jpg">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
@@ -295,8 +296,8 @@
         </a>
     </div>
     <script>
-        const VERSION = "1.0.7";
-        const appsScriptUrl = 'https://cors-anywhere.herokuapp.com/https://script.google.com/macros/s/AKfycbzZVGqex3LqRtLhrck_wrDzqGEwwwiTnxzOnaw9UZtraVf9XA9SjBCBdknmSgCdy5_fNQ/exec';
+        const VERSION = "1.0.8";
+        const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbzeHrOouOAGHiUaqKz3A2h_RVnzAJTujBnyDFuS31L6Sjp3-gHuJZg3Bt7vA09XH2yw_Q/exec';
         let currentImages = [];
         let currentImageIndex = 0;
         let currentPage = 1;
@@ -344,7 +345,12 @@
                 if (busca) url.searchParams.append('busca', busca);
 
                 const response = await fetch(url, { method: 'GET' });
-                if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
+                if (!response.ok) {
+                    if (response.status === 403) {
+                        throw new Error('Acesso negado: Verifique se a API está configurada como "Qualquer pessoa, mesmo anônima".');
+                    }
+                    throw new Error(`Erro HTTP: ${response.status}`);
+                }
                 const data = await response.json();
 
                 if (data.status !== "success") throw new Error(data.message || 'Erro ao carregar produtos');
@@ -391,7 +397,7 @@
                 loadMoreButton.style.display = (page * productsPerPage) < totalProdutos ? "block" : "none";
             } catch (error) {
                 console.error("Erro ao carregar produtos:", error);
-                errorMessage.textContent = "Erro ao carregar os produtos. Tente novamente mais tarde.";
+                errorMessage.textContent = error.message || "Erro ao carregar os produtos. Tente novamente mais tarde.";
                 errorMessage.style.display = "block";
                 mensagemVazia.style.display = "none";
                 gridProdutos.style.display = "none";
@@ -507,7 +513,7 @@
                 console.log("Modal aberto com sucesso, total de imagens:", currentImages.length);
             } catch (error) {
                 console.error("Erro ao abrir modal:", error);
-                modalError.textContent = "Erro ao carregar as imagens. Algumas imagens podem estar corrompidas ou indisponíveis.";
+                modalError.textContent = error.message || "Erro ao carregar as imagens. Algumas imagens podem estar corrompidas ou indisponíveis.";
                 modalError.style.display = "block";
                 modal.style.display = "flex";
             }
