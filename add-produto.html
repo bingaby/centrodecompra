@@ -6,7 +6,6 @@
     <title>Adicionar Produtos</title>
     <link rel="icon" type="image/x-icon" href="logos/centrodecompras.jpg">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/style.css">
     <style>
         body { 
             font-family: 'Roboto', Arial, sans-serif; 
@@ -189,8 +188,8 @@
             <option value="alibaba">Alibaba</option>
         </select>
         <input type="url" name="link" placeholder="Link do produto (https://...)" required pattern="https?://.+">
-        <input type="text" name="preco" placeholder="Preço (ex.: 99.90)" required>
-        <input type="file" name="imagens" accept="image/*" multiple>
+        <input type="number" name="preco" placeholder="Preço (ex.: 99.90)" step="0.01" required>
+        <input type="file" name="imagens" accept="image/*" multiple required>
         <button type="submit">Adicionar</button>
     </form>
     <div class="loading-spinner" id="loading-spinner"></div>
@@ -200,14 +199,12 @@
     <div class="paginacao" id="paginacao"></div>
 
     <script>
-        const VERSION = "1.0.10"; // Mantenha a sua versão original, se quiser
-        // *** IMPORTANTE: SUBSTITUA PELA URL DA SUA API NO RENDER! ***
-        const API_BASE_URL = 'https://minha-api-produtos.onrender.com'; // Ex: 'https://minha-api-produtos.onrender.com'
+        const VERSION = "1.0.10";
+        const API_BASE_URL = 'https://minha-api-produtos.onrender.com'; // Substitua pelo URL da sua API
         
         let produtos = [];
         let paginaAtual = 1;
         const itensPorPagina = 20;
-        let totalProdutos = 0;
 
         async function carregarProdutos(page = 1) {
             const listaProdutos = document.getElementById('produto-lista');
@@ -222,23 +219,21 @@
             erro.textContent = '';
 
             try {
-                // Monta a URL para a sua API Node.js
-                const url = new URL(`${API_BASE_URL}/api/produtos`); // Endpoint da sua API para buscar produtos
+                const url = new URL(`${API_BASE_URL}/api/produtos`);
                 url.searchParams.append('page', page);
                 url.searchParams.append('limit', itensPorPagina);
                 const response = await fetch(url, { method: 'GET' });
                 if (!response.ok) {
-                    throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
+                    throw new Error(`Erro HTTP: ${response.status}`);
                 }
                 const data = await response.json();
 
-                // Sua API Node.js DEVE retornar { status: "success", data: [...], total: ... }
                 if (data.status !== 'success') {
-                    throw new Error(data.message || 'Erro ao carregar produtos do servidor');
+                    throw new Error(data.message || 'Erro ao carregar produtos');
                 }
 
                 produtos = data.data || [];
-                totalProdutos = data.total || 0;
+                const totalProdutos = data.total || 0;
 
                 if (produtos.length === 0) {
                     listaProdutos.innerHTML = '<p>Nenhum produto adicionado ainda.</p>';
@@ -249,7 +244,6 @@
 
                 produtos.forEach((produto, index) => {
                     const globalIndex = (page - 1) * itensPorPagina + index;
-                    // O campo 'imagens' agora espera um array de URLs da sua API
                     const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0 ? produto.imagens : [];
                     const divProduto = document.createElement('div');
                     divProduto.classList.add('produto-item');
@@ -275,7 +269,7 @@
                 `;
             } catch (error) {
                 console.error('Erro ao carregar produtos:', error);
-                erro.textContent = error.message || 'Erro ao carregar produtos. Verifique sua conexão ou a configuração da API.';
+                erro.textContent = error.message || 'Erro ao carregar produtos';
                 listaProdutos.innerHTML = '<p>Erro ao carregar produtos.</p>';
                 paginacao.innerHTML = '';
             }
@@ -308,34 +302,24 @@
                 return;
             }
 
-            // Remove o campo 'imagens' original e adiciona os arquivos File diretamente
-            // Isso é o formato que Multer no Node.js espera para upload de arquivos
-            formData.delete('imagens'); 
-            for (let i = 0; i < imagensFiles.length; i++) {
-                formData.append('imagens', imagensFiles[i]);
-            }
-            
             try {
-                // Endpoint para adicionar produtos na sua API Node.js
                 const response = await fetch(`${API_BASE_URL}/api/produtos`, {
                     method: 'POST',
-                    body: formData // FormData com os arquivos File
+                    body: formData
                 });
                 const data = await response.json();
 
-                // Sua API Node.js DEVE retornar { status: "success", message: "..." }
                 if (data.status !== 'success') {
-                    throw new Error(data.message || 'Erro ao adicionar produto no servidor');
+                    throw new Error(data.message || 'Erro ao adicionar produto');
                 }
 
                 mensagem.textContent = data.message || 'Produto adicionado com sucesso!';
                 form.reset();
-                // Recarrega a lista para mostrar o novo produto, voltando para a primeira página
-                paginaAtual = 1; 
+                paginaAtual = 1;
                 await carregarProdutos(paginaAtual);
             } catch (error) {
                 console.error('Erro ao adicionar produto:', error);
-                erro.textContent = error.message || 'Erro ao adicionar produto. Verifique sua conexão ou a configuração da API.';
+                erro.textContent = error.message || 'Erro ao adicionar produto';
             }
             loadingSpinner.style.display = 'none';
         }
@@ -350,29 +334,26 @@
             loadingSpinner.style.display = 'block';
 
             try {
-                // Endpoint para excluir produtos na sua API Node.js
                 const response = await fetch(`${API_BASE_URL}/api/produtos/${productId}`, {
                     method: 'DELETE'
                 });
                 const data = await response.json();
 
-                // Sua API Node.js DEVE retornar { status: "success", message: "..." }
                 if (data.status !== 'success') {
-                    throw new Error(data.message || 'Erro ao excluir produto do servidor');
+                    throw new Error(data.message || 'Erro ao excluir produto');
                 }
 
                 mensagem.textContent = data.message || 'Produto excluído com sucesso!';
-                // Ajusta a página atual se o último produto da página foi excluído
-                const totalPaginas = Math.ceil((totalProdutos - 1) / itensPorPagina);
+                const totalPaginas = Math.ceil((produtos.length - 1) / itensPorPagina);
                 if (paginaAtual > totalPaginas && totalPaginas > 0) {
                     paginaAtual = totalPaginas;
-                } else if (totalPaginas === 0) { // Se não houver mais produtos
+                } else if (totalPaginas === 0) {
                     paginaAtual = 1;
                 }
                 await carregarProdutos(paginaAtual);
             } catch (error) {
                 console.error('Erro ao excluir produto:', error);
-                erro.textContent = error.message || 'Erro ao excluir produto. Verifique sua conexão ou a configuração da API.';
+                erro.textContent = error.message || 'Erro ao excluir produto';
             }
             loadingSpinner.style.display = 'none';
         }
@@ -395,7 +376,7 @@
             document.getElementById('paginacao').addEventListener('click', (e) => {
                 if (e.target.classList.contains('btn-pagina')) {
                     const novaPagina = parseInt(e.target.dataset.pagina);
-                    const totalPaginasCalculado = Math.ceil(totalProdutos / itensPorPagina);
+                    const totalPaginasCalculado = Math.ceil(produtos.length / itensPorPagina);
                     if (novaPagina >= 1 && novaPagina <= totalPaginasCalculado) {
                         paginaAtual = novaPagina;
                         carregarProdutos(paginaAtual);
