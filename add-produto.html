@@ -1,389 +1,79 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Adicionar Produtos</title>
-    <link rel="icon" type="image/x-icon" href="logos/centrodecompras.jpg">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        body { 
-            font-family: 'Roboto', Arial, sans-serif; 
-            padding: 20px; 
-            background-color: #f5f5f5; 
-        }
-        h1 { 
-            text-align: center; 
-            color: #333; 
-        }
-        .nav-voltar {
-            display: block;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .nav-voltar a {
-            color: #ff6200;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .nav-voltar a:hover {
-            color: #e55a00;
-        }
-        form { 
-            max-width: 500px; 
-            margin: auto; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 10px; 
-            background: white; 
-            padding: 20px; 
-            border-radius: 8px; 
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
-        }
-        input, select, button { 
-            padding: 10px; 
-            border: 1px solid #ddd; 
-            border-radius: 4px; 
-            font-size: 16px; 
-        }
-        button { 
-            background-color: #ff6200; 
-            color: white; 
-            border: none; 
-            cursor: pointer; 
-            font-weight: bold; 
-        }
-        button:hover { 
-            background-color: #e55a00; 
-        }
-        #mensagem { 
-            margin-top: 10px; 
-            color: green; 
-            text-align: center; 
-        }
-        #erro { 
-            margin-top: 10px; 
-            color: red; 
-            text-align: center; 
-        }
-        .produto-lista { 
-            margin-top: 20px; 
-            max-width: 500px; 
-            margin: auto; 
-            max-height: 500px; 
-            overflow-y: auto; 
-            padding: 10px; 
-            background: white; 
-            border-radius: 8px; 
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
-        }
-        .produto-item { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: 8px; 
-            background: #f9f9f9; 
-            border-radius: 4px; 
-            margin-bottom: 5px; 
-            font-size: 14px; 
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); 
-        }
-        .produto-item button { 
-            background-color: #d32f2f; 
-            color: white; 
-            border: none; 
-            cursor: pointer; 
-            padding: 4px 8px; 
-            border-radius: 4px; 
-            font-size: 12px; 
-        }
-        .produto-item button:hover { 
-            background-color: #b71c1c; 
-        }
-        .produto-item img { 
-            max-width: 30px; 
-            max-height: 30px; 
-            margin-left: 8px; 
-            border-radius: 4px; 
-            object-fit: contain; 
-        }
-        .produto-info { 
-            flex: 1; 
-            overflow: hidden; 
-            text-overflow: ellipsis; 
-            white-space: nowrap; 
-        }
-        .produto-info strong { 
-            font-size: 14px; 
-        }
-        .produto-info span, .produto-info a { 
-            font-size: 12px; 
-            color: #666; 
-        }
-        .paginacao { 
-            margin-top: 10px; 
-            text-align: center; 
-        }
-        .paginacao button { 
-            background-color: #FFA500; 
-            color: white; 
-            border: none; 
-            padding: 8px 12px; 
-            margin: 0 5px; 
-            border-radius: 4px; 
-            cursor: pointer; 
-            font-size: 14px; 
-        }
-        .paginacao button:disabled { 
-            background-color: #ccc; 
-            cursor: not-allowed; 
-        }
-        .paginacao button:hover:not(:disabled) { 
-            background-color: #e59400; 
-        }
-        .loading-spinner {
-            display: none;
-            margin: 20px auto;
-            width: 40px;
-            height: 40px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #ff6200;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adicionar Produto - Centro de Compras</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="nav-voltar">
-        <a href="index.html">← Voltar para a página inicial</a>
-    </div>
-    <h1>Adicionar Produto</h1>
-    <form id="form-produto" enctype="multipart/form-data">
-        <input type="text" name="nome" placeholder="Nome do produto" required>
-        <input type="text" name="descricao" placeholder="Descrição do produto">
-        <select name="categoria" required>
-            <option value="" disabled selected>Selecione uma categoria</option>
-            <option value="eletronicos">Eletrônicos</option>
-            <option value="moda">Moda</option>
-            <option value="fitness">Fitness</option>
-            <option value="casa">Casa e Decoração</option>
-            <option value="beleza">Beleza</option>
-            <option value="esportes">Esportes</option>
-            <option value="livros">Livros</option>
-            <option value="infantil">Infantil</option>
-            <option value="Celulares">Celulares</option>
-            <option value="Eletrodomésticos">Eletrodomésticos</option>
-        </select>
-        <select name="loja" required>
-            <option value="" disabled selected>Selecione uma loja</option>
-            <option value="amazon">Amazon</option>
-            <option value="magalu">Magalu</option>
-            <option value="shein">Shein</option>
-            <option value="shopee">Shopee</option>
-            <option value="mercadolivre">Mercado Livre</option>
-            <option value="alibaba">Alibaba</option>
-        </select>
-        <input type="url" name="link" placeholder="Link do produto (https://...)" required pattern="https?://.+">
-        <input type="number" name="preco" placeholder="Preço (ex.: 99.90)" step="0.01" required>
-        <input type="file" name="imagens" accept="image/*" multiple required>
-        <button type="submit">Adicionar</button>
+  <header>
+    <img src="logos/centrodecompras.jpg" alt="Centro de Compras" loading="lazy" id="site-logo">
+    <h1>Adicionar Novo Produto</h1>
+  </header>
+  <div class="container">
+    <form id="form-produto">
+      <label for="nome">Nome:</label>
+      <input type="text" id="nome" name="nome" required>
+      <label for="descricao">Descrição:</label>
+      <textarea id="descricao" name="descricao"></textarea>
+      <label for="preco">Preço:</label>
+      <input type="number" id="preco" name="preco" step="0.01" required>
+      <label for="imagens">Imagens:</label>
+      <input type="file" id="imagens" name="imagens" accept="image/*" multiple required>
+      <label for="categoria">Categoria:</label>
+      <select id="categoria" name="categoria" required>
+        <option value="Eletrônicos">Eletrônicos</option>
+        <option value="Roupas">Roupas</option>
+        <option value="Casa">Casa</option>
+      </select>
+      <label for="loja">Loja:</label>
+      <select id="loja" name="loja" required>
+        <option value="Amazon">Amazon</option>
+        <option value="Mercado Livre">Mercado Livre</option>
+        <option value="Shopee">Shopee</option>
+      </select>
+      <label for="link">Link do Produto:</label>
+      <input type="url" id="link" name="link" required>
+      <button type="submit">Adicionar Produto</button>
     </form>
-    <div class="loading-spinner" id="loading-spinner"></div>
-    <div id="mensagem"></div>
-    <div id="erro"></div>
-    <div class="produto-lista" id="produto-lista"></div>
-    <div class="paginacao" id="paginacao"></div>
+    <p id="mensagem"></p>
+  </div>
 
-    <script>
-        const VERSION = "1.0.10";
-        const API_BASE_URL = 'https://minha-api-produtos.onrender.com'; // Substitua pelo URL da sua API
-        
-        let produtos = [];
-        let paginaAtual = 1;
-        const itensPorPagina = 20;
+  <script>
+    const API_BASE_URL = 'https://minha-api-produtos.onrender.com';
 
-        async function carregarProdutos(page = 1) {
-            const listaProdutos = document.getElementById('produto-lista');
-            const paginacao = document.getElementById('paginacao');
-            const mensagem = document.getElementById('mensagem');
-            const erro = document.getElementById('erro');
-            const loadingSpinner = document.getElementById('loading-spinner');
+    document.addEventListener('DOMContentLoaded', () => {
+      // Manipulador de erro para imagens
+      document.querySelectorAll('img').forEach(img => {
+        img.onerror = () => {
+          img.src = 'imagens/placeholder.jpg';
+        };
+      });
 
-            loadingSpinner.style.display = 'block';
-            listaProdutos.innerHTML = '';
-            mensagem.textContent = '';
-            erro.textContent = '';
-
-            try {
-                const url = new URL(`${API_BASE_URL}/api/produtos`);
-                url.searchParams.append('page', page);
-                url.searchParams.append('limit', itensPorPagina);
-                const response = await fetch(url, { method: 'GET' });
-                if (!response.ok) {
-                    throw new Error(`Erro HTTP: ${response.status}`);
-                }
-                const data = await response.json();
-
-                if (data.status !== 'success') {
-                    throw new Error(data.message || 'Erro ao carregar produtos');
-                }
-
-                produtos = data.data || [];
-                const totalProdutos = data.total || 0;
-
-                if (produtos.length === 0) {
-                    listaProdutos.innerHTML = '<p>Nenhum produto adicionado ainda.</p>';
-                    paginacao.innerHTML = '';
-                    loadingSpinner.style.display = 'none';
-                    return;
-                }
-
-                produtos.forEach((produto, index) => {
-                    const globalIndex = (page - 1) * itensPorPagina + index;
-                    const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0 ? produto.imagens : [];
-                    const divProduto = document.createElement('div');
-                    divProduto.classList.add('produto-item');
-                    divProduto.innerHTML = `
-                        <div class="produto-info">
-                            <strong title="${produto.nome}">${produto.nome}</strong>
-                            <span>C: ${produto.categoria} | L: ${produto.loja}</span>
-                            <a href="${produto.link}" target="_blank" title="${produto.link}">Link</a>
-                        </div>
-                        <div>
-                            ${imagens[0] ? `<img src="${imagens[0]}" alt="Imagem do produto">` : ''}
-                            <button data-id="${produto.id}" class="btn-excluir">Excluir</button>
-                        </div>
-                    `;
-                    listaProdutos.appendChild(divProduto);
-                });
-
-                const totalPaginas = Math.ceil(totalProdutos / itensPorPagina);
-                paginacao.innerHTML = `
-                    <button class="btn-pagina" data-pagina="${paginaAtual - 1}" ${paginaAtual === 1 ? 'disabled' : ''}>Anterior</button>
-                    <span>Página ${paginaAtual} de ${totalPaginas}</span>
-                    <button class="btn-pagina" data-pagina="${paginaAtual + 1}" ${paginaAtual === totalPaginas ? 'disabled' : ''}>Próximo</button>
-                `;
-            } catch (error) {
-                console.error('Erro ao carregar produtos:', error);
-                erro.textContent = error.message || 'Erro ao carregar produtos';
-                listaProdutos.innerHTML = '<p>Erro ao carregar produtos.</p>';
-                paginacao.innerHTML = '';
-            }
-            loadingSpinner.style.display = 'none';
+      // Formulário de adição de produto
+      const form = document.getElementById('form-produto');
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(form);
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/produtos`, {
+            method: 'POST',
+            body: formData
+          });
+          const result = await response.json();
+          if (response.ok) {
+            document.getElementById('mensagem').textContent = result.message || 'Produto adicionado com sucesso';
+            form.reset();
+          } else {
+            document.getElementById('mensagem').textContent = result.message || 'Erro ao adicionar produto';
+          }
+        } catch (error) {
+          console.error('Erro ao adicionar produto:', error);
+          document.getElementById('mensagem').textContent = 'Erro ao conectar com a API';
         }
-
-        async function adicionarProduto(e) {
-            e.preventDefault();
-            const mensagem = document.getElementById('mensagem');
-            const erro = document.getElementById('erro');
-            const loadingSpinner = document.getElementById('loading-spinner');
-            const form = e.target;
-
-            mensagem.textContent = '';
-            erro.textContent = '';
-            loadingSpinner.style.display = 'block';
-
-            const formData = new FormData(form);
-            const imagensInput = document.querySelector('input[name="imagens"]');
-            const imagensFiles = imagensInput.files;
-
-            if (imagensFiles.length > 3) {
-                erro.textContent = 'Máximo de 3 imagens por produto!';
-                loadingSpinner.style.display = 'none';
-                return;
-            }
-            if (imagensFiles.length === 0) {
-                erro.textContent = 'Pelo menos uma imagem deve ser escolhida!';
-                loadingSpinner.style.display = 'none';
-                return;
-            }
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/api/produtos`, {
-                    method: 'POST',
-                    body: formData
-                });
-                const data = await response.json();
-
-                if (data.status !== 'success') {
-                    throw new Error(data.message || 'Erro ao adicionar produto');
-                }
-
-                mensagem.textContent = data.message || 'Produto adicionado com sucesso!';
-                form.reset();
-                paginaAtual = 1;
-                await carregarProdutos(paginaAtual);
-            } catch (error) {
-                console.error('Erro ao adicionar produto:', error);
-                erro.textContent = error.message || 'Erro ao adicionar produto';
-            }
-            loadingSpinner.style.display = 'none';
-        }
-
-        async function excluirProduto(productId) {
-            const mensagem = document.getElementById('mensagem');
-            const erro = document.getElementById('erro');
-            const loadingSpinner = document.getElementById('loading-spinner');
-
-            mensagem.textContent = '';
-            erro.textContent = '';
-            loadingSpinner.style.display = 'block';
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/api/produtos/${productId}`, {
-                    method: 'DELETE'
-                });
-                const data = await response.json();
-
-                if (data.status !== 'success') {
-                    throw new Error(data.message || 'Erro ao excluir produto');
-                }
-
-                mensagem.textContent = data.message || 'Produto excluído com sucesso!';
-                const totalPaginas = Math.ceil((produtos.length - 1) / itensPorPagina);
-                if (paginaAtual > totalPaginas && totalPaginas > 0) {
-                    paginaAtual = totalPaginas;
-                } else if (totalPaginas === 0) {
-                    paginaAtual = 1;
-                }
-                await carregarProdutos(paginaAtual);
-            } catch (error) {
-                console.error('Erro ao excluir produto:', error);
-                erro.textContent = error.message || 'Erro ao excluir produto';
-            }
-            loadingSpinner.style.display = 'none';
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log(`Iniciando add-produto.html v${VERSION}`);
-            carregarProdutos(paginaAtual);
-
-            document.getElementById('form-produto').addEventListener('submit', adicionarProduto);
-
-            document.getElementById('produto-lista').addEventListener('click', (e) => {
-                if (e.target.classList.contains('btn-excluir')) {
-                    const productId = e.target.dataset.id;
-                    if (confirm('Tem certeza que deseja excluir este produto?')) {
-                        excluirProduto(productId);
-                    }
-                }
-            });
-
-            document.getElementById('paginacao').addEventListener('click', (e) => {
-                if (e.target.classList.contains('btn-pagina')) {
-                    const novaPagina = parseInt(e.target.dataset.pagina);
-                    const totalPaginasCalculado = Math.ceil(produtos.length / itensPorPagina);
-                    if (novaPagina >= 1 && novaPagina <= totalPaginasCalculado) {
-                        paginaAtual = novaPagina;
-                        carregarProdutos(paginaAtual);
-                    }
-                }
-            });
-        });
-    </script>
+      });
+    });
+  </script>
 </body>
 </html>
