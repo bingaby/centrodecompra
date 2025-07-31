@@ -11,8 +11,8 @@
     <img src="logos/centrodecompras.jpg" alt="Centro de Compras" loading="lazy" id="site-logo">
     <h1>Centro de Compras</h1>
     <div class="social-links">
-      <a href="https://www.instagram.com" target="_blank"><img src="logos/instagram.png" alt="Ícone do Instagram" loading="lazy"></a>
-      <a href="https://www.x.com" target="_blank"><img src="logos/x.png" alt="Ícone do X" loading="lazy"></a>
+      <a href="https://www.instagram.com" target="_blank"><img src="logos/instagram.png" alt="Instagram" loading="lazy"></a>
+      <a href="https://www.x.com" target="_blank"><img src="logos/x.png" alt="X" loading="lazy"></a>
     </div>
   </header>
   <div class="container">
@@ -50,7 +50,8 @@
       // Manipulador de erro para imagens
       document.querySelectorAll('img').forEach(img => {
         img.onerror = () => {
-          img.src = 'imagens/placeholder.jpg';
+          console.log(`Erro ao carregar imagem: ${img.src}`);
+          img.src = '/imagens/placeholder.jpg';
         };
       });
 
@@ -58,21 +59,22 @@
       const logo = document.getElementById("site-logo");
       if (!logo) {
         console.error("Elemento com ID 'site-logo' não encontrado");
+      } else {
+        let clickCount = 0, clickTimeout = null;
+        logo.addEventListener("click", (e) => {
+          console.log("Clique no logo:", clickCount + 1);
+          e.stopPropagation();
+          clickCount++;
+          if (clickCount === 1) {
+            clickTimeout = setTimeout(() => { clickCount = 0; }, 1000);
+          } else if (clickCount === 3) {
+            console.log("Tentando redirecionar para add-produtos.html");
+            clearTimeout(clickTimeout);
+            window.location.href = "/add-produtos.html";
+            clickCount = 0;
+          }
+        });
       }
-      let clickCount = 0, clickTimeout = null;
-      logo.addEventListener("click", (e) => {
-        console.log("Clique no logo:", clickCount + 1);
-        e.stopPropagation();
-        clickCount++;
-        if (clickCount === 1) {
-          clickTimeout = setTimeout(() => { clickCount = 0; }, 1000);
-        } else if (clickCount === 3) {
-          console.log("Redirecionando para add-produtos.html");
-          clearTimeout(clickTimeout);
-          window.location.href = "add-produtos.html";
-          clickCount = 0;
-        }
-      });
 
       // Carregar produtos
       async function carregarProdutos(page = 1) {
@@ -126,7 +128,7 @@
       }
 
       // Eventos Socket.IO
-      socket.on('novoProduto', (produto) => {
+      socket.on('novoProduto', () => {
         carregarProdutos();
       });
       socket.on('produtoExcluido', () => {
