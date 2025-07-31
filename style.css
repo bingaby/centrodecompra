@@ -20,7 +20,7 @@ header {
   justify-content: space-between;
 }
 
-header img#site-logo {
+header img {
   width: 100px;
   cursor: pointer;
 }
