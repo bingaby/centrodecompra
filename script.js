@@ -1,4 +1,5 @@
 const API_BASE_URL = 'https://minha-api-produtos.onrender.com';
+const socket = io(API_BASE_URL);
 let currentPage = 1;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -165,6 +166,11 @@ document.addEventListener('DOMContentLoaded', () => {
       dot.classList.toggle('ativa', index === currentImageIndex);
     });
   }
+
+  // Eventos Socket.IO
+  socket.on('novoProduto', () => carregarProdutos(currentPage));
+  socket.on('produtoAtualizado', () => carregarProdutos(currentPage));
+  socket.on('produtoExcluido', () => carregarProdutos(currentPage));
 
   // Carregar produtos iniciais
   carregarProdutos();
