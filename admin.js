@@ -1,150 +1,80 @@
-import { collection, addDoc, getDocs, updateDoc, deleteDoc, doc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
-import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adicionar Produto - Centro de Compras</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <img src="logos/centrodecompras.jpg" alt="Centro de Compras" loading="lazy">
+    <h1>Adicionar Novo Produto</h1>
+  </header>
+  <div class="container">
+    <form id="form-produto">
+      <label for="nome">Nome:</label>
+      <input type="text" id="nome" name="nome" required>
+      <label for="descricao">Descrição:</label>
+      <textarea id="descricao" name="descricao"></textarea>
+      <label for="preco">Preço:</label>
+      <input type="number" id="preco" name="preco" step="0.01" required>
+      <label for="imagens">Imagens:</label>
+      <input type="file" id="imagens" name="imagens" accept="image/*" multiple required>
+      <label for="categoria">Categoria:</label>
+      <select id="categoria" name="categoria" required>
+        <option value="Eletrônicos">Eletrônicos</option>
+        <option value="Roupas">Roupas</option>
+        <option value="Casa">Casa</option>
+      </select>
+      <label for="loja">Loja:</label>
+      <select id="loja" name="loja" required>
+        <option value="Amazon">Amazon</option>
+        <option value="Mercado Livre">Mercado Livre</option>
+        <option value="Shopee">Shopee</option>
+      </select>
+      <label for="link">Link do Produto:</label>
+      <input type="url" id="link" name="link" required>
+      <button type="submit">Adicionar Produto</button>
+    </form>
+    <p id="mensagem"></p>
+  </div>
 
-const form = document.getElementById('produto-form');
-const submitBtn = document.getElementById('submit-btn');
-const cancelBtn = document.getElementById('cancel-btn');
-const spinner = document.getElementById('spinner');
-const message = document.getElementById('message');
-const productList = document.getElementById('products');
-const imagePreview = document.getElementById('imagePreview');
+  <script>
+    const API_BASE_URL = 'https://minha-api-produtos.onrender.com';
 
-// Função para exibir mensagens
-const showMessage = (text, isError = false) => {
-  message.textContent = text;
-  message.className = isError ? 'error' : 'success';
-  setTimeout(() => { message.textContent = ''; message.className = ''; }, 5000);
-};
+    document.addEventListener('DOMContentLoaded', () => {
+      // Manipulador de erro para imagens
+      document.querySelectorAll('img').forEach(img => {
+        img.onerror = () => {
+          console.log(`Erro ao carregar imagem: ${img.src}`);
+          img.src = '/imagens/placeholder.jpg';
+        };
+      });
 
-// Função para listar produtos
-const listProducts = async () => {
-  productList.innerHTML = '';
-  try {
-    const querySnapshot = await getDocs(collection(window.firebaseDb, 'produtos'));
-    querySnapshot.forEach((doc) => {
-      const produto = doc.data();
-      // Filtrar "produtos pequenos" (exemplo: categoria 'infantil' ou 'beleza')
-      if (['infantil', 'beleza'].includes(produto.categoria)) { // Ajuste conforme critério de "produtos pequenos"
-        const productItem = document.createElement('div');
-        productItem.className = 'product-item';
-        productItem.innerHTML = `
-          <div class="product-details">
-            <strong>${produto.nome}</strong><br>
-            Categoria: ${produto.categoria}<br>
-            Preço: R$${produto.preco.toFixed(2)}<br>
-            Loja: ${produto.loja}<br>
-            ${produto.imagens && produto.imagens.length > 0 ? `<img src="${produto.imagens[0]}" alt="${produto.nome}">` : ''}
-          </div>
-          <div class="product-actions">
-            <button onclick="editProduct('${doc.id}')">Editar</button>
-            <button onclick="deleteProduct('${doc.id}')">Excluir</button>
-          </div>
-        `;
-        productList.appendChild(productItem);
-      }
+      // Formulário de adição de produto
+      const form = document.getElementById('form-produto');
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(form);
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/produtos`, {
+            method: 'POST',
+            body: formData
+          });
+          const result = await response.json();
+          if (response.ok) {
+            document.getElementById('mensagem').textContent = result.message || 'Produto adicionado com sucesso';
+            form.reset();
+          } else {
+            document.getElementById('mensagem').textContent = result.message || 'Erro ao adicionar produto';
+          }
+        } catch (error) {
+          console.error('Erro ao adicionar produto:', error);
+          document.getElementById('mensagem').textContent = 'Erro ao conectar com a API';
+        }
+      });
     });
-  } catch (error) {
-    showMessage('Erro ao carregar produtos: ' + error.message, true);
-  }
-};
-
-// Função para editar produto
-window.editProduct = async (id) => {
-  try {
-    const docRef = doc(window.firebaseDb, 'produtos', id);
-    const docSnap = await getDocs(collection(window.firebaseDb, 'produtos'));
-    const produto = docSnap.docs.find(d => d.id === id).data();
-    
-    // Preencher formulário
-    document.getElementById('produto-id').value = id;
-    document.getElementById('nome').value = produto.nome;
-    document.getElementById('descricao').value = produto.descricao;
-    document.getElementById('categoria').value = produto.categoria;
-    document.getElementById('loja').value = produto.loja;
-    document.getElementById('link').value = produto.link;
-    document.getElementById('preco').value = produto.preco;
-    
-    // Mostrar imagens existentes
-    imagePreview.innerHTML = produto.imagens ? produto.imagens.map(img => `<img src="${img}" alt="Preview">`).join('') : '';
-    
-    // Alterar botão para "Atualizar"
-    submitBtn.textContent = 'Atualizar Produto';
-    cancelBtn.style.display = 'inline-block';
-  } catch (error) {
-    showMessage('Erro ao carregar produto para edição: ' + error.message, true);
-  }
-};
-
-// Função para excluir produto
-window.deleteProduct = async (id) => {
-  if (!confirm('Tem certeza que deseja excluir este produto?')) return;
-  spinner.style.display = 'block';
-  try {
-    await deleteDoc(doc(window.firebaseDb, 'produtos', id));
-    showMessage('Produto excluído com sucesso!');
-    listProducts();
-  } catch (error) {
-    showMessage('Erro ao excluir produto: ' + error.message, true);
-  } finally {
-    spinner.style.display = 'none';
-  }
-};
-
-// Função para limpar formulário
-const resetForm = () => {
-  form.reset();
-  document.getElementById('produto-id').value = '';
-  imagePreview.innerHTML = '';
-  submitBtn.textContent = 'Cadastrar Produto';
-  cancelBtn.style.display = 'none';
-};
-
-// Manipular envio do formulário (cadastrar ou atualizar)
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  spinner.style.display = 'block';
-  
-  const produtoId = document.getElementById('produto-id').value;
-  const produto = {
-    nome: form.nome.value,
-    descricao: form.descricao.value,
-    categoria: form.categoria.value,
-    loja: form.loja.value,
-    link: form.link.value,
-    preco: parseFloat(form.preco.value),
-    imagens: [], // Adicione lógica para upload de imagens
-    criadoEm: new Date()
-  };
-
-  try {
-    if (produtoId) {
-      // Atualizar produto
-      await updateDoc(doc(window.firebaseDb, 'produtos', produtoId), produto);
-      showMessage('Produto atualizado com sucesso!');
-    } else {
-      // Cadastrar novo produto
-      await addDoc(collection(window.firebaseDb, 'produtos'), produto);
-      showMessage('Produto cadastrado com sucesso!');
-    }
-    resetForm();
-    listProducts();
-  } catch (error) {
-    showMessage('Erro ao salvar produto: ' + error.message, true);
-  } finally {
-    spinner.style.display = 'none';
-  }
-});
-
-// Cancelar edição
-cancelBtn.addEventListener('click', resetForm);
-
-// Verificar autenticação
-onAuthStateChanged(window.firebaseAuth, (user) => {
-  if (user) {
-    // Usuário logado, carregar produtos
-    listProducts();
-  } else {
-    // Redirecionar para login
-    window.location.href = '/login.html';
-  }
-});
+  </script>
+</body>
+</html>
