@@ -12,7 +12,7 @@ body {
 
 .container {
   display: flex;
-  max-width: 1600px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
   gap: 20px;
@@ -440,67 +440,6 @@ footer {
   font-weight: 700;
 }
 
-/* Media queries */
-@media (max-width: 1400px) {
-  .container {
-    max-width: 1200px;
-  }
-  .grid-produtos {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  }
-}
-
-@media (max-width: 1024px) {
-  .container {
-    max-width: 100%;
-  }
-  .grid-produtos {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  }
-}
-
-@media (max-width: 768px) {
-  .container {
-    flex-direction: column;
-  }
-  .sidebar {
-    width: 100%;
-    position: static;
-  }
-  .sidebar ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-  .categoria-item {
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-  }
-  .grid-lojas {
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  }
-  .grid-produtos {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  }
-  .robo-imagem {
-    width: 40px;
-    height: 40px;
-  }
-  .robo-texto {
-    font-size: 0.8em;
-  }
-  .credibilidade-nota {
-    padding: 10px;
-    font-size: 12px;
-  }
-}
-
-@media (max-width: 480px) {
-  .grid-produtos {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  }
-}
-
 /* Estilos para admin-xyz-123.html */
 header {
   background-color: #2E8B57;
@@ -523,11 +462,15 @@ header a:hover {
   text-decoration: underline;
 }
 
-main .container {
-  max-width: 800px;
+.admin-container {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
-#produto-form {
+.form-section {
+  flex: 1;
+  max-width: 400px;
   background-color: #f9f9f9;
   padding: 20px;
   border-radius: 5px;
@@ -549,23 +492,24 @@ main .container {
 #produto-form textarea,
 #produto-form select {
   width: 100%;
-  padding: 10px;
+  padding: 8px;
   margin-bottom: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
 
 #produto-form textarea {
-  height: 100px;
+  height: 80px;
 }
 
 #produto-form button {
   background-color: #FFA500;
   color: white;
-  padding: 10px 20px;
+  padding: 8px 16px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  margin-right: 10px;
 }
 
 #produto-form button:hover {
@@ -581,4 +525,115 @@ main .container {
 #feedback {
   margin-top: 10px;
   font-weight: bold;
+}
+
+.lista-produtos {
+  flex: 2;
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 5px;
+  border: 1px solid #e0e0e0;
+}
+
+.produto-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.produto-item img {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+}
+
+.produto-item span {
+  flex: 1;
+}
+
+.produto-item button {
+  background-color: #FFA500;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.produto-item button:hover {
+  background-color: #e69500;
+}
+
+.produto-item button:last-child {
+  background-color: #dc3545;
+}
+
+.produto-item button:last-child:hover {
+  background-color: #c82333;
+}
+
+/* Media queries */
+@media (max-width: 1400px) {
+  .container {
+    max-width: 1000px;
+  }
+  .grid-produtos {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+}
+
+@media (max-width: 1024px) {
+  .container {
+    max-width: 100%;
+  }
+  .grid-produtos {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .container, .admin-container {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    position: static;
+  }
+  .sidebar ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .categoria-item {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+  }
+  .grid-lojas {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  }
+  .grid-produtos {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+  .form-section, .lista-produtos {
+    max-width: 100%;
+  }
+  .robo-imagem {
+    width: 40px;
+    height: 40px;
+  }
+  .robo-texto {
+    font-size: 0.8em;
+  }
+  .credibilidade-nota {
+    padding: 10px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .grid-produtos {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
 }
