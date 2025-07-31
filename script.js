@@ -1,207 +1,171 @@
-// ID da planilha fornecida
-const SPREADSHEET_ID = '1cQOP4Tpu-9lq1aG6FPNFTmO4C1E1WixGKlMXx_ybzR0';
-const SHEET_NAME = 'Produtos'; // Nome da aba na planilha
+const API_BASE_URL = 'https://minha-api-produtos.onrender.com';
+let currentPage = 1;
 
-/**
- * Função principal para lidar com requisições GET.
- * Retorna produtos filtrados com base nos parâmetros de categoria, loja e busca.
- * @param {Object} e - O objeto de evento que contém os parâmetros da requisição.
- * @returns {GoogleAppsScript.Content.TextOutput} Resposta JSON com os produtos.
- */
-function doGet(e) {
-  const headers = {
-    "Access-Control-Allow-Origin": "https://www.centrodecompra.com.br",
-    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Access-Control-Max-Age": "3600"
+document.addEventListener('DOMContentLoaded', () => {
+  // Manipulador de erro para imagens
+  document.querySelectorAll('img').forEach(img => {
+    img.onerror = () => {
+      console.log(`Erro ao carregar imagem: ${img.src}`);
+      img.src = '/imagens/placeholder.jpg';
+    };
+  });
+
+  // Clique triplo no logo
+  const logo = document.getElementById('site-logo');
+  if (!logo) {
+    console.error("Elemento com ID 'site-logo' não encontrado");
+  } else {
+    let clickCount = 0, clickTimeout = null;
+    logo.addEventListener('click', (e) => {
+      console.log('Clique no logo:', clickCount + 1);
+      e.stopPropagation();
+      clickCount++;
+      if (clickCount === 1) {
+        clickTimeout = setTimeout(() => { clickCount = 0; }, 1000);
+      } else if (clickCount === 3) {
+        console.log('Tentando redirecionar para admin-xyz-123.html');
+        clearTimeout(clickTimeout);
+        window.location.href = '/admin-xyz-123.html';
+        clickCount = 0;
+      }
+    });
+  }
+
+  // Atualizar ano no footer
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Carregar produtos
+  async function carregarProdutos(page = 1) {
+    const categoria = document.querySelector('.categoria-item.ativa')?.dataset.categoria || 'todas';
+    const loja = document.querySelector('.loja.ativa, .loja-todas.ativa')?.dataset.loja || 'todas';
+    const busca = document.getElementById('busca').value;
+    const url = `${API_BASE_URL}/api/produtos?page=${page}&limit=12` +
+                `${categoria !== 'todas' ? `&categoria=${categoria}` : ''}` +
+                `${loja !== 'todas' ? `&loja=${loja}` : ''}` +
+                `${busca ? `&busca=${encodeURIComponent(busca)}` : ''}`;
+
+    const spinner = document.getElementById('loading-spinner');
+    const gridProdutos = document.getElementById('grid-produtos');
+    const mensagemVazia = document.getElementById('mensagem-vazia');
+    const errorMessage = document.getElementById('error-message');
+
+    spinner.style.display = 'block';
+    gridProdutos.innerHTML = '';
+    mensagemVazia.style.display = 'none';
+    errorMessage.style.display = 'none';
+
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Erro HTTP: ${response.status}`);
+      }
+      const { data, total } = await response.json();
+
+      if (data.length === 0) {
+        mensagemVazia.style.display = 'block';
+      } else {
+        data.forEach(produto => {
+          const div = document.createElement('div');
+          div.className = 'produto-card';
+          div.innerHTML = `
+            <img src="${produto.imagens[0]}" alt="${produto.nome}" loading="lazy">
+            <span>${produto.nome}</span>
+            <span class="descricao">${produto.descricao || 'Sem descrição'}</span>
+            <span class="preco">R$ ${parseFloat(produto.preco).toFixed(2)}</span>
+            <a href="${produto.link}" target="_blank" class="ver-na-loja">Ver na Loja</a>
+          `;
+          div.addEventListener('click', () => openModal(produto.imagens));
+          gridProdutos.appendChild(div);
+        });
+      }
+
+      // Paginação
+      const totalPages = Math.ceil(total / 12);
+      document.getElementById('page-info').textContent = `Página ${page}`;
+      document.getElementById('prev-page').disabled = page === 1;
+      document.getElementById('next-page').disabled = page === totalPages;
+      document.getElementById('prev-page').onclick = () => carregarProdutos(page - 1);
+      document.getElementById('next-page').onclick = () => carregarProdutos(page + 1);
+      currentPage = page;
+    } catch (error) {
+      console.error('Erro ao carregar produtos:', error);
+      errorMessage.textContent = 'Erro ao carregar produtos';
+      errorMessage.style.display = 'block';
+    } finally {
+      spinner.style.display = 'none';
+    }
+  }
+
+  // Filtrar por categoria
+  window.filtrarPorCategoria = function(categoria) {
+    document.querySelectorAll('.categoria-item').forEach(item => {
+      item.classList.toggle('ativa', item.dataset.categoria === categoria);
+    });
+    carregarProdutos(1);
   };
 
-  try {
-    // 1. Acesso à planilha e aba
-    const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
-    const sheet = spreadsheet.getSheetByName(SHEET_NAME);
-    if (!sheet) {
-      return ContentService
-        .createTextOutput(JSON.stringify({ status: 'error', message: `Aba '${SHEET_NAME}' não encontrada na planilha.` }))
-        .setMimeType(ContentService.MimeType.JSON)
-        .setHeaders(headers);
-    }
-
-    // 2. Obtém os parâmetros da requisição
-    const params = e.parameter;
-    const category = params.category || 'todas';
-    const store = params.store || 'todas';
-    const query = params.query ? params.query.toLowerCase().trim() : '';
-
-    // 3. Obtém todos os dados da planilha
-    const data = sheet.getDataRange().getValues();
-    if (data.length <= 1) { // Apenas cabeçalho ou vazio
-      return ContentService
-        .createTextOutput(JSON.stringify({ success: true, products: [] }))
-        .setMimeType(ContentService.MimeType.JSON)
-        .setHeaders(headers);
-    }
-
-    // 4. Mapeia os dados para objetos de produto
-    const products = data.slice(1).map(row => ({
-      nome: row[0] || '',
-      descricao: row[1] || '',
-      categoria: row[2] || 'desconhecida',
-      loja: row[3] || 'desconhecida',
-      preco: parseFloat(row[4]) || 0,
-      imagem: row[5] || '',
-      link: row[6] || '',
-      createdAt: row[7] ? new Date(row[7]).toISOString() : new Date().toISOString()
-    }));
-
-    // 5. Filtra os produtos
-    const filteredProducts = products.filter(product => {
-      const matchesCategory = category === 'todas' || product.categoria.toLowerCase() === category.toLowerCase();
-      const matchesStore = store === 'todas' || product.loja.toLowerCase() === store.toLowerCase();
-      const matchesQuery = !query || 
-        product.nome.toLowerCase().includes(query) || 
-        product.descricao.toLowerCase().includes(query) || 
-        product.categoria.toLowerCase().includes(query) ||
-        product.loja.toLowerCase().includes(query);
-      return matchesCategory && matchesStore && matchesQuery;
+  // Filtrar por loja
+  window.filtrarPorLoja = function(loja) {
+    document.querySelectorAll('.loja, .loja-todas').forEach(item => {
+      item.classList.toggle('ativa', item.dataset.loja === loja);
     });
-
-    // 6. Resposta de sucesso
-    return ContentService
-      .createTextOutput(JSON.stringify({ success: true, products: filteredProducts }))
-      .setMimeType(ContentService.MimeType.JSON)
-      .setHeaders(headers);
-
-  } catch (error) {
-    return ContentService
-      .createTextOutput(JSON.stringify({ status: 'error', message: 'Erro ao buscar produtos: ' + error.message }))
-      .setMimeType(ContentService.MimeType.JSON)
-      .setHeaders(headers);
-  }
-}
-
-/**
- * Função principal para lidar com requisições POST.
- * Recebe dados de produtos e os insere na planilha Google.
- * @param {Object} e - O objeto de evento que contém os dados da requisição.
- * @returns {GoogleAppsScript.Content.TextOutput} Resposta JSON indicando o status da operação.
- */
-function doPost(e) {
-  const headers = {
-    "Access-Control-Allow-Origin": "https://www.centrodecompra.com.br",
-    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Access-Control-Max-Age": "3600"
+    carregarProdutos(1);
   };
 
-  try {
-    // 1. Validação inicial dos dados da requisição
-    if (!e || !e.postData || !e.postData.contents) {
-      return ContentService
-        .createTextOutput(JSON.stringify({ status: 'error', message: 'Dados ausentes ou formato inválido na requisição.' }))
-        .setMimeType(ContentService.MimeType.JSON)
-        .setHeaders(headers);
-    }
+  // Busca
+  document.getElementById('busca').addEventListener('input', () => {
+    carregarProdutos(1);
+  });
 
-    const data = JSON.parse(e.postData.contents);
+  // Modal e carrossel
+  let currentImageIndex = 0;
+  window.openModal = function(images) {
+    const modal = document.getElementById('imageModal');
+    const carrosselImagens = document.getElementById('modalCarrosselImagens');
+    const carrosselDots = document.getElementById('modalCarrosselDots');
+    
+    carrosselImagens.innerHTML = '';
+    carrosselDots.innerHTML = '';
+    images.forEach((img, index) => {
+      const imgElement = document.createElement('img');
+      imgElement.src = img;
+      imgElement.className = 'modal-image';
+      imgElement.style.display = index === 0 ? 'block' : 'none';
+      carrosselImagens.appendChild(imgElement);
 
-    // 2. Validação dos campos obrigatórios
-    const camposObrigatorios = ['nome', 'descricao', 'categoria', 'loja', 'preco', 'imagem', 'link'];
-    const faltando = camposObrigatorios.filter(campo => 
-      !data.hasOwnProperty(campo) || (typeof data[campo] === 'string' && data[campo].trim() === '')
-    );
-
-    if (faltando.length > 0) {
-      return ContentService
-        .createTextOutput(JSON.stringify({ status: 'error', message: 'Campos obrigatórios faltando ou vazios: ' + faltando.join(', ') }))
-        .setMimeType(ContentService.MimeType.JSON)
-        .setHeaders(headers);
-    }
-
-    // 3. Validação do preço
-    const preco = parseFloat(data.preco);
-    if (isNaN(preco) || preco < 0) {
-      return ContentService
-        .createTextOutput(JSON.stringify({ status: 'error', message: 'Preço inválido! Deve ser um número positivo.' }))
-        .setMimeType(ContentService.MimeType.JSON)
-        .setHeaders(headers);
-    }
-
-    // 4. Validação da URL do link
-    const urlPattern = /^(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/[a-zA-Z0-9]+\.[^\s]{2,}|[a-zA-Z0-9]+\.[^\s]{2,})$/i;
-    if (!urlPattern.test(data.link.trim())) {
-      return ContentService
-        .createTextOutput(JSON.stringify({ status: 'error', message: 'Link inválido! Por favor, insira uma URL válida (ex: https://www.exemplo.com).' }))
-        .setMimeType(ContentService.MimeType.JSON)
-        .setHeaders(headers);
-    }
-
-    // 5. Validação da loja
-    const lojasValidas = ['mercadolivre', 'amazon', 'magalu', 'shein', 'shopee', 'alibaba'];
-    if (!lojasValidas.includes(data.loja.toLowerCase())) {
-      return ContentService
-        .createTextOutput(JSON.stringify({ status: 'error', message: 'Loja inválida! Escolha uma loja válida.' }))
-        .setMimeType(ContentService.MimeType.JSON)
-        .setHeaders(headers);
-    }
-
-    // 6. Validação da categoria
-    const categoriasValidas = ['eletronicos', 'moda', 'fitness', 'casa', 'beleza', 'esportes', 'livros', 'infantil', 'celulares', 'eletrodomesticos', 'pet', 'jardinagem', 'automotivo', 'gastronomia', 'games'];
-    if (!categoriasValidas.includes(data.categoria.toLowerCase())) {
-      return ContentService
-        .createTextOutput(JSON.stringify({ status: 'error', message: 'Categoria inválida! Escolha uma categoria válida.' }))
-        .setMimeType(ContentService.MimeType.JSON)
-        .setHeaders(headers);
-    }
-
-    // 7. Acesso à planilha e aba
-    const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
-    const sheet = spreadsheet.getSheetByName(SHEET_NAME);
-    if (!sheet) {
-      return ContentService
-        .createTextOutput(JSON.stringify({ status: 'error', message: `Aba '${SHEET_NAME}' não encontrada na planilha.` }))
-        .setMimeType(ContentService.MimeType.JSON)
-        .setHeaders(headers);
-    }
-
-    // 8. Insere a linha com os dados do produto
-    sheet.appendRow([
-      data.nome.trim(),
-      data.descricao.trim(),
-      data.categoria.trim(),
-      data.loja.trim(),
-      preco.toFixed(2),
-      data.imagem.trim(),
-      data.link.trim(),
-      new Date().toLocaleString("pt-BR", { timeZone: 'America/Sao_Paulo' })
-    ]);
-
-    // 9. Resposta de sucesso
-    return ContentService
-      .createTextOutput(JSON.stringify({ status: 'success', message: 'Produto cadastrado com sucesso!' }))
-      .setMimeType(ContentService.MimeType.JSON)
-      .setHeaders(headers);
-
-  } catch (error) {
-    return ContentService
-      .createTextOutput(JSON.stringify({ status: 'error', message: 'Erro interno ao cadastrar produto: ' + error.message }))
-      .setMimeType(ContentService.MimeType.JSON)
-      .setHeaders(headers);
-  }
-}
-
-/**
- * Função para lidar com requisições OPTIONS (preflight CORS).
- * @returns {GoogleAppsScript.Content.TextOutput} Resposta vazia com cabeçalhos CORS.
- */
-function doOptions() {
-  return ContentService
-    .createTextOutput("")
-    .setMimeType(ContentService.MimeType.JSON)
-    .setHeaders({
-      "Access-Control-Allow-Origin": "https://www.centrodecompra.com.br",
-      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-      "Access-Control-Max-Age": "3600"
+      const dot = document.createElement('div');
+      dot.className = 'carrossel-dot';
+      dot.classList.toggle('ativa', index === 0);
+      dot.onclick = () => {
+        currentImageIndex = index;
+        updateCarrossel();
+      };
+      carrosselDots.appendChild(dot);
     });
-}
+
+    modal.style.display = 'flex';
+    currentImageIndex = 0;
+  };
+
+  window.closeModal = function() {
+    document.getElementById('imageModal').style.display = 'none';
+  };
+
+  window.moveModalCarrossel = function(direction) {
+    const images = document.querySelectorAll('.modal-image');
+    currentImageIndex = (currentImageIndex + direction + images.length) % images.length;
+    updateCarrossel();
+  };
+
+  function updateCarrossel() {
+    document.querySelectorAll('.modal-image').forEach((img, index) => {
+      img.style.display = index === currentImageIndex ? 'block' : 'none';
+    });
+    document.querySelectorAll('.carrossel-dot').forEach((dot, index) => {
+      dot.classList.toggle('ativa', index === currentImageIndex);
+    });
+  }
+
+  // Carregar produtos iniciais
+  carregarProdutos();
+});
