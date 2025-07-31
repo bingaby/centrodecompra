@@ -5,139 +5,134 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Centro de Compras</title>
   <link rel="stylesheet" href="/style.css">
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <body>
-  <header>
-    <img src="/logos/centrodecompras.jpg" alt="Centro de Compras" loading="lazy" id="site-logo">
-    <h1>Centro de Compras</h1>
-    <div class="social-links">
-      <a href="https://www.instagram.com" target="_blank"><img src="/logos/instagram.png" alt="Instagram" loading="lazy"></a>
-      <a href="https://www.x.com" target="_blank"><img src="/logos/x.png" alt="X" loading="lazy"></a>
+  <header class="site-header">
+    <div class="logo-container">
+      <img src="/logos/centrodecompras.jpg" alt="Centro de Compras" loading="lazy" id="site-logo">
+    </div>
+    <div class="header-text">
+      <h1>Centro de Compras</h1>
+      <p>As melhores ofertas em um só lugar!</p>
     </div>
   </header>
+  <nav>
+    <a href="/">Início</a>
+    <a href="/sobre">Sobre</a>
+    <a href="/contato">Contato</a>
+  </nav>
   <div class="container">
-    <aside class="sidebar-categorias">
-      <h2>Categorias</h2>
-      <select id="filtro-categoria">
-        <option value="todas">Todas</option>
-        <option value="Eletrônicos">Eletrônicos</option>
-        <option value="Roupas">Roupas</option>
-        <option value="Casa">Casa</option>
-      </select>
-      <h2>Lojas</h2>
-      <select id="filtro-loja">
-        <option value="todas">Todas</option>
-        <option value="Amazon">Amazon</option>
-        <option value="Mercado Livre">Mercado Livre</option>
-        <option value="Shopee">Shopee</option>
-      </select>
-      <h2>Busca</h2>
-      <input type="text" id="busca" placeholder="Digite o nome do produto">
-      <button onclick="carregarProdutos()">Filtrar</button>
+    <aside class="sidebar">
+      <h3>Categorias</h3>
+      <ul>
+        <li class="categoria-item ativa" data-categoria="todas" onclick="filtrarPorCategoria('todas')"><i class="fas fa-list mr-2"></i>Todas</li>
+        <li class="categoria-item" data-categoria="eletronicos" onclick="filtrarPorCategoria('eletronicos')"><i class="fas fa-laptop mr-2"></i>Eletrônicos</li>
+        <li class="categoria-item" data-categoria="moda" onclick="filtrarPorCategoria('moda')"><i class="fas fa-tshirt mr-2"></i>Moda</li>
+        <li class="categoria-item" data-categoria="fitness" onclick="filtrarPorCategoria('fitness')"><i class="fas fa-dumbbell mr-2"></i>Fitness</li>
+        <li class="categoria-item" data-categoria="casa" onclick="filtrarPorCategoria('casa')"><i class="fas fa-home mr-2"></i>Casa</li>
+        <li class="categoria-item" data-categoria="beleza" onclick="filtrarPorCategoria('beleza')"><i class="fas fa-magic mr-2"></i>Beleza</li>
+        <li class="categoria-item" data-categoria="esportes" onclick="filtrarPorCategoria('esportes')"><i class="fas fa-futbol mr-2"></i>Esportes</li>
+        <li class="categoria-item" data-categoria="livros" onclick="filtrarPorCategoria('livros')"><i class="fas fa-book mr-2"></i>Livros</li>
+        <li class="categoria-item" data-categoria="infantil" onclick="filtrarPorCategoria('infantil')"><i class="fas fa-baby mr-2"></i>Infantil</li>
+        <li class="categoria-item" data-categoria="celulares" onclick="filtrarPorCategoria('celulares')"><i class="fas fa-mobile-alt mr-2"></i>Celulares</li>
+        <li class="categoria-item" data-categoria="eletrodomesticos" onclick="filtrarPorCategoria('eletrodomesticos')"><i class="fas fa-blender mr-2"></i>Eletrodomésticos</li>
+        <li class="categoria-item" data-categoria="pet" onclick="filtrarPorCategoria('pet')"><i class="fas fa-paw mr-2"></i>Pet</li>
+        <li class="categoria-item" data-categoria="jardinagem" onclick="filtrarPorCategoria('jardinagem')"><i class="fas fa-leaf mr-2"></i>Jardinagem</li>
+        <li class="categoria-item" data-categoria="automotivo" onclick="filtrarPorCategoria('automotivo')"><i class="fas fa-car mr-2"></i>Automotivo</li>
+        <li class="categoria-item" data-categoria="gastronomia" onclick="filtrarPorCategoria('gastronomia')"><i class="fas fa-utensils mr-2"></i>Gastronomia</li>
+        <li class="categoria-item" data-categoria="games" onclick="filtrarPorCategoria('games')"><i class="fas fa-gamepad mr-2"></i>Games</li>
+      </ul>
     </aside>
     <main>
-      <div class="grid-produtos" id="grid-produtos"></div>
-      <div id="paginacao"></div>
+      <section>
+        <h2>🛍️ Ofertas do Dia</h2>
+        <ins class="adsbygoogle"
+             style="display:inline-block;width:728px;height:90px"
+             data-ad-client="ca-pub-4531749081462125"
+             data-ad-slot="5690664546"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+        <div class="lojas-parceiras">
+          <h3>🌟 Lojas Parceiras</h3>
+          <div class="grid-lojas">
+            <div class="loja-todas ativa" onclick="filtrarPorLoja('todas')"><span>Todas as Lojas</span></div>
+            <div class="loja" data-loja="amazon" onclick="filtrarPorLoja('amazon')">
+              <img src="/logos/amazon.png" alt="Amazon" loading="lazy" width="100" height="40"><span>Amazon</span>
+            </div>
+            <div class="loja" data-loja="magalu" onclick="filtrarPorLoja('magalu')">
+              <img src="/logos/magalu.png" alt="Magalu" loading="lazy" width="100" height="40"><span>Magalu</span>
+            </div>
+            <div class="loja" data-loja="shein" onclick="filtrarPorLoja('shein')">
+              <img src="/logos/shein.png" alt="Shein" loading="lazy" width="100" height="40"><span>Shein</span>
+            </div>
+            <div class="loja" data-loja="shopee" onclick="filtrarPorLoja('shopee')">
+              <img src="/logos/shopee.png" alt="Shopee" loading="lazy" width="100" height="40"><span>Shopee</span>
+            </div>
+            <div class="loja" data-loja="mercadolivre" onclick="filtrarPorLoja('mercadolivre')">
+              <img src="/logos/mercadolivre.jpg" alt="Mercado Livre" loading="lazy" width="100" height="40"><span>Mercado Livre</span>
+            </div>
+            <div class="loja" data-loja="alibaba" onclick="filtrarPorLoja('alibaba')">
+              <img src="/logos/alibaba.png" alt="Alibaba" loading="lazy" width="100" height="40"><span>Alibaba</span>
+            </div>
+          </div>
+        </div>
+        <input type="text" id="busca" placeholder="Busque por produtos..." class="barra-busca">
+        <div id="busca-feedback" class="busca-feedback"></div>
+        <div class="loading-spinner" id="loading-spinner"></div>
+        <div class="grid-produtos" id="grid-produtos"></div>
+        <p class="mensagem-vazia" id="mensagem-vazia" style="display: none;">Nenhum produto encontrado.</p>
+        <p class="error-message" id="error-message" style="display: none;"></p>
+        <div class="paginacao" id="paginacao">
+          <button id="prev-page" disabled>Anterior</button>
+          <span id="page-info">Página 1</span>
+          <button id="next-page">Próxima</button>
+        </div>
+      </section>
+      <div class="social-links">
+        <a href="https://www.tiktok.com/@cdc.centraldecompras" target="_blank" rel="noopener noreferrer">
+          <div class="icon"><img src="/logos/tiktok.png" alt="TikTok" loading="lazy" width="40" height="40"></div>
+          <span>TikTok</span>
+        </a>
+        <a href="https://www.instagram.com/cdccentrodecompras/" target="_blank" rel="noopener noreferrer">
+          <div class="icon"><img src="/logos/Instagram.png" alt="Instagram" loading="lazy" width="40" height="40"></div>
+          <span>Instagram</span>
+        </a>
+        <a href="https://x.com/ComprasCdc" target="_blank" rel="noopener noreferrer">
+          <div class="icon"><img src="/logos/X.png" alt="X" loading="lazy" width="40" height="40"></div>
+          <span>X</span>
+        </a>
+        <a href="https://www.youtube.com/channel/UCaKHlI-hWqwdAXS6Xsv3ZzA" target="_blank" rel="noopener noreferrer">
+          <div class="icon"><img src="/logos/youtube.png" alt="YouTube" loading="lazy" width="40" height="40"></div>
+          <span>YouTube</span>
+        </a>
+      </div>
+      <a href="https://api.whatsapp.com/send?phone=5521975179737" class="whatsapp" target="_blank" rel="noopener noreferrer">📲 WhatsApp</a>
+      <a href="https://t.me/centraldecomprascdc" class="telegram" target="_blank" rel="noopener noreferrer">📢 Telegram</a>
     </main>
   </div>
-
-  <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
-  <script>
-    const API_BASE_URL = 'https://minha-api-produtos.onrender.com';
-    const socket = io(API_BASE_URL);
-
-    document.addEventListener('DOMContentLoaded', () => {
-      // Manipulador de erro para imagens
-      document.querySelectorAll('img').forEach(img => {
-        img.onerror = () => {
-          console.log(`Erro ao carregar imagem: ${img.src}`);
-          img.src = '/imagens/placeholder.jpg';
-        };
-      });
-
-      // Evento de clique triplo no logo
-      const logo = document.getElementById("site-logo");
-      if (!logo) {
-        console.error("Elemento com ID 'site-logo' não encontrado");
-      } else {
-        let clickCount = 0, clickTimeout = null;
-        logo.addEventListener("click", (e) => {
-          console.log("Clique no logo:", clickCount + 1);
-          e.stopPropagation();
-          clickCount++;
-          if (clickCount === 1) {
-            clickTimeout = setTimeout(() => { clickCount = 0; }, 1000);
-          } else if (clickCount === 3) {
-            console.log("Tentando redirecionar para add-produtos.html");
-            clearTimeout(clickTimeout);
-            window.location.href = "/add-produtos.html";
-            clickCount = 0;
-          }
-        });
-      }
-
-      // Carregar produtos
-      async function carregarProdutos(page = 1) {
-        const categoria = document.getElementById('filtro-categoria').value;
-        const loja = document.getElementById('filtro-loja').value;
-        const busca = document.getElementById('busca').value;
-        const url = `${API_BASE_URL}/api/produtos?page=${page}&limit=12` +
-                    `${categoria !== 'todas' ? `&categoria=${categoria}` : ''}` +
-                    `${loja !== 'todas' ? `&loja=${loja}` : ''}` +
-                    `${busca ? `&busca=${encodeURIComponent(busca)}` : ''}`;
-
-        try {
-          const response = await fetch(url);
-          if (!response.ok) {
-            throw new Error(`Erro HTTP: ${response.status}`);
-          }
-          const { data, total } = await response.json();
-          const gridProdutos = document.getElementById('grid-produtos');
-          gridProdutos.innerHTML = '';
-
-          data.forEach(produto => {
-            const div = document.createElement('div');
-            div.className = 'produto';
-            div.innerHTML = `
-              <img src="${produto.imagens[0]}" alt="${produto.nome}" loading="lazy">
-              <h3>${produto.nome}</h3>
-              <p>${produto.descricao || 'Sem descrição'}</p>
-              <p>R$ ${parseFloat(produto.preco).toFixed(2)}</p>
-              <p>Categoria: ${produto.categoria}</p>
-              <p>Loja: ${produto.loja}</p>
-              <a href="${produto.link}" target="_blank">Ver Produto</a>
-            `;
-            gridProdutos.appendChild(div);
-          });
-
-          // Paginação
-          const totalPages = Math.ceil(total / 12);
-          const paginacao = document.getElementById('paginacao');
-          paginacao.innerHTML = '';
-          for (let i = 1; i <= totalPages; i++) {
-            const button = document.createElement('button');
-            button.textContent = i;
-            button.onclick = () => carregarProdutos(i);
-            if (i === page) button.disabled = true;
-            paginacao.appendChild(button);
-          }
-        } catch (error) {
-          console.error('Erro ao carregar produtos:', error);
-          document.getElementById('grid-produtos').innerHTML = '<p>Erro ao carregar produtos</p>';
-        }
-      }
-
-      // Eventos Socket.IO
-      socket.on('novoProduto', () => {
-        carregarProdutos();
-      });
-      socket.on('produtoExcluido', () => {
-        carregarProdutos();
-      });
-
-      // Carregar produtos iniciais
-      carregarProdutos();
-    });
-  </script>
+  <div class="modal" id="imageModal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-content">
+      <div class="carrossel-imagens" id="modalCarrosselImagens"></div>
+      <button class="carrossel-prev" onclick="moveModalCarrossel(-1)">◄</button>
+      <button class="carrossel-next" onclick="moveModalCarrossel(1)">▶</button>
+      <div class="carrossel-dots" id="modalCarrosselDots"></div>
+    </div>
+  </div>
+  <footer>
+    <p>🔧 Todos os direitos reservados <strong>Grupo Centro de Compra "CdC"</strong> © <span id="year"></span></p>
+    <div class="credibilidade-nota">
+      <p><strong>Sobre credibilidade:</strong> É importante notar que esse site é apenas um portal de descontos e afiliado, não uma loja direta. Ele redireciona para plataformas terceiras. Verifique sempre se o cupom é válido diretamente na loja original, pois promoções podem expirar ou não se aplicar a certos produtos.</p>
+    </div>
+  </footer>
+  <div class="robo-assistente">
+    <a href="https://api.whatsapp.com/send?phone=5521975179737" target="_blank" rel="noopener noreferrer">
+      <img src="/imagens/robo.jpg" alt="Robô Assistente" class="robo-imagem" loading="lazy" width="60" height="60">
+      <div class="robo-texto">Posso ajudar?</div>
+    </a>
+  </div>
+  <script defer src="/script.js"></script>
 </body>
 </html>
