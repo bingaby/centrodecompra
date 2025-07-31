@@ -1,5 +1,4 @@
 const API_BASE_URL = 'https://minha-api-produtos.onrender.com';
-const socket = io(API_BASE_URL);
 let currentPage = 1;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -13,13 +12,12 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   });
 
-  // Clique triplo no logo
+  // Clique triplo no logo (restaurado do script funcional)
   const logo = document.getElementById('site-logo');
   if (!logo) {
-    console.error("Elemento com ID 'site-logo' não encontrado no DOM. Verifique o index.html.");
+    console.error("Elemento com ID 'site-logo' não encontrado");
   } else {
     let clickCount = 0, clickTimeout = null;
-    logo.style.pointerEvents = 'auto';
     logo.addEventListener('click', (e) => {
       console.log('Clique no logo:', clickCount + 1);
       e.stopPropagation();
@@ -32,12 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
       } else if (clickCount === 3) {
         console.log('Tentando redirecionar para admin-xyz-123.html');
         clearTimeout(clickTimeout);
-        try {
-          window.location.href = '/admin-xyz-123.html';
-        } catch (error) {
-          console.error('Erro ao redirecionar para admin-xyz-123.html:', error);
-          alert('Erro ao acessar a página de administração. Veja o console para detalhes.');
-        }
+        window.location.href = '/admin-xyz-123.html';
         clickCount = 0;
       }
     });
@@ -51,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.warn("Elemento com ID 'year' não encontrado");
   }
 
-  // Carregar produtos
+  // Carregar produtos (com preço interativo)
   async function carregarProdutos(page = 1) {
     console.log('Iniciando carregarProdutos, página:', page);
     const categoria = document.querySelector('.categoria-item.ativa')?.dataset.categoria || 'todas';
@@ -228,20 +221,6 @@ document.addEventListener('DOMContentLoaded', () => {
       dot.classList.toggle('ativa', index === currentImageIndex);
     });
   }
-
-  // Eventos Socket.IO
-  socket.on('novoProduto', () => {
-    console.log('Evento Socket.IO: novoProduto recebido');
-    carregarProdutos(currentPage);
-  });
-  socket.on('produtoAtualizado', () => {
-    console.log('Evento Socket.IO: produtoAtualizado recebido');
-    carregarProdutos(currentPage);
-  });
-  socket.on('produtoExcluido', () => {
-    console.log('Evento Socket.IO: produtoExcluido recebido');
-    carregarProdutos(currentPage);
-  });
 
   // Carregar produtos iniciais
   console.log('Chamando carregarProdutos inicial');
