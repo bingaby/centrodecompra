@@ -12,34 +12,19 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Clique triplo no logo
-  const logo = document.getElementById('site-logo');
-  if (!logo) {
-    console.error("Elemento com ID 'site-logo' não encontrado no DOM. Verifique o index.html.");
-  } else {
-    let clickCount = 0, clickTimeout = null;
-    logo.style.pointerEvents = 'auto'; // Garante que o elemento receba cliques
-    logo.addEventListener('click', (e) => {
-      console.log('Clique no logo:', clickCount + 1);
-      e.stopPropagation();
-      clickCount++;
-      if (clickCount === 1) {
-        clickTimeout = setTimeout(() => { 
-          console.log('Timeout do clique triplo atingido, reiniciando contador');
-          clickCount = 0; 
-        }, 1000);
-      } else if (clickCount === 3) {
-        console.log('Tentando redirecionar para admin-xyz-123.html');
-        clearTimeout(clickTimeout);
-        try {
-          window.location.href = '/admin-xyz-123.html';
-        } catch (error) {
-          console.error('Erro ao redirecionar para admin-xyz-123.html:', error);
-          alert('Erro ao acessar a página de administração. Veja o console para detalhes.');
-        }
-        clickCount = 0;
-      }
-    });
-  }
+   const logo = document.getElementById("site-logo");
+        let clickCount = 0, clickTimeout = null;
+        logo.addEventListener("click", (e) => {
+            e.stopPropagation();
+            clickCount++;
+            if (clickCount === 1) {
+                clickTimeout = setTimeout(() => { clickCount = 0; }, 500);
+            } else if (clickCount === 3) {
+                clearTimeout(clickTimeout);
+                window.location.href = "admin-xyz-123.html";
+                clickCount = 0;
+            }
+        });
 
   // Atualizar ano no footer
   const yearElement = document.getElementById('year');
