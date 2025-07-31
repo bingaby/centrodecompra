@@ -11,13 +11,13 @@ body {
   color: #333;
 }
 
-/* Container */
-.container {
+/* Main Container */
+.main-container {
   display: flex;
-  max-width: 1200px;
-  margin: 0 auto;
+  width: 100%;
   padding: 20px;
   gap: 20px;
+  min-height: 100vh; /* Garante altura suficiente para o sticky funcionar */
 }
 
 /* Header */
@@ -70,8 +70,10 @@ nav a:hover {
   background-color: #f9f9f9;
   padding: 20px;
   border-radius: 5px;
-  position: sticky;
-  top: 20px;
+  position: fixed; /* Fixa a sidebar no lado esquerdo */
+  top: 140px; /* Ajustado para após o header e nav (aproximado, ajuste conforme necessário) */
+  left: 20px;
+  height: calc(100vh - 160px); /* Altura ajustada para caber na tela */
 }
 
 .sidebar h3 {
@@ -81,6 +83,8 @@ nav a:hover {
 
 .sidebar ul {
   list-style: none;
+  max-height: calc(100% - 40px); /* Limita a altura da lista de categorias */
+  overflow-y: auto; /* Adiciona rolagem interna para muitas categorias */
 }
 
 .categoria-item {
@@ -110,7 +114,9 @@ main {
 }
 
 section {
+  flex: 1;
   padding: 20px;
+  margin-left: 240px; /* Espaço para a sidebar fixa (200px + 20px padding + 20px gap) */
   border: 1px solid #e0e0e0;
   border-radius: 5px;
 }
@@ -217,23 +223,7 @@ h2 {
   color: #666;
 }
 
-.preco {
-  font-weight: bold;
-  color: #FFA500;
-}
-
-.preco-clique {
-  font-weight: bold;
-  color: #007bff;
-  cursor: pointer;
-  text-decoration: underline;
-}
-
-.preco-clique:hover {
-  color: #0056b3;
-}
-
-.ver-na-loja {
+.preco-clique, .ver-na-loja {
   display: inline-block;
   padding: 8px 16px;
   background-color: #FFA500;
@@ -243,7 +233,7 @@ h2 {
   margin-top: 10px;
 }
 
-.ver-na-loja:hover {
+.preco-clique:hover, .ver-na-loja:hover {
   background-color: #e69500;
 }
 
@@ -600,8 +590,8 @@ header a:hover {
 
 /* Media Queries */
 @media (max-width: 1400px) {
-  .container {
-    max-width: 1000px;
+  .main-container {
+    padding: 15px;
   }
   .grid-produtos {
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -609,8 +599,8 @@ header a:hover {
 }
 
 @media (max-width: 1024px) {
-  .container {
-    max-width: 100%;
+  .main-container {
+    padding: 10px;
   }
   .grid-produtos {
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -618,21 +608,29 @@ header a:hover {
 }
 
 @media (max-width: 768px) {
-  .container, .admin-container {
+  .main-container, .admin-container {
     flex-direction: column;
+    padding: 10px;
   }
   .sidebar {
+    position: static; /* Remove fixação em telas menores */
     width: 100%;
-    position: static;
+    height: auto;
+    margin-bottom: 20px;
   }
   .sidebar ul {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
+    max-height: none; /* Remove limite de altura em telas menores */
+    overflow-y: visible; /* Remove rolagem interna */
   }
   .categoria-item {
     padding: 8px 12px;
     border: 1px solid #ddd;
+  }
+  section {
+    margin-left: 0; /* Remove margem para evitar deslocamento */
   }
   .grid-lojas {
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
