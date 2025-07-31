@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   });
 
-  // Clique triplo no logo (restaurado do script funcional)
+  // Clique triplo no logo
   const logo = document.getElementById('site-logo');
   if (!logo) {
     console.error("Elemento com ID 'site-logo' não encontrado");
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.warn("Elemento com ID 'year' não encontrado");
   }
 
-  // Carregar produtos (com preço interativo)
+  // Carregar produtos
   async function carregarProdutos(page = 1) {
     console.log('Iniciando carregarProdutos, página:', page);
     const categoria = document.querySelector('.categoria-item.ativa')?.dataset.categoria || 'todas';
@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <img src="${produto.imagens[0]}" alt="${produto.nome}" loading="lazy">
             <span>${produto.nome}</span>
             <span class="descricao">${produto.descricao || 'Sem descrição'}</span>
-            <span class="preco-clique" data-preco="R$ ${parseFloat(produto.preco).toFixed(2)}">Clique aqui para ver o preço</span>
+            <a href="${produto.link}" target="_blank" class="preco-clique">Clique aqui para ver o preço</a>
             <a href="${produto.link}" target="_blank" class="ver-na-loja">Ver na Loja</a>
           `;
           // Evento para abrir modal ao clicar no card (excluindo preço e link)
@@ -100,15 +100,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!e.target.classList.contains('preco-clique') && !e.target.classList.contains('ver-na-loja')) {
               openModal(produto.imagens);
             }
-          });
-          // Evento para revelar o preço
-          const precoClique = div.querySelector('.preco-clique');
-          precoClique.addEventListener('click', (e) => {
-            e.stopPropagation(); // Evita abrir o modal
-            console.log('Preço clicado:', produto.nome);
-            precoClique.textContent = precoClique.dataset.preco;
-            precoClique.classList.remove('preco-clique');
-            precoClique.classList.add('preco');
           });
           gridProdutos.appendChild(div);
         });
