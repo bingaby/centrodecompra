@@ -14,26 +14,40 @@ document.addEventListener('DOMContentLoaded', () => {
   // Clique triplo no logo
   const logo = document.getElementById('site-logo');
   if (!logo) {
-    console.error("Elemento com ID 'site-logo' não encontrado");
+    console.error("Elemento com ID 'site-logo' não encontrado no DOM");
   } else {
-    let clickCount = 0, clickTimeout = null;
+    let clickCount = 0;
+    let clickTimeout = null;
     logo.addEventListener('click', (e) => {
-      console.log('Clique no logo:', clickCount + 1);
+      e.preventDefault();
       e.stopPropagation();
       clickCount++;
+      console.log(`Clique no logo: ${clickCount}`);
       if (clickCount === 1) {
-        clickTimeout = setTimeout(() => { clickCount = 0; }, 1000);
+        clickTimeout = setTimeout(() => {
+          console.log('Timeout do clique triplo atingido, reiniciando contador');
+          clickCount = 0;
+        }, 1000);
       } else if (clickCount === 3) {
-        console.log('Tentando redirecionar para admin-xyz-123.html');
+        console.log('Clique triplo detectado, redirecionando para /admin-xyz-123.html');
         clearTimeout(clickTimeout);
-        window.location.href = '/admin-xyz-123.html';
+        try {
+          window.location.href = '/admin-xyz-123.html';
+        } catch (error) {
+          console.error('Erro ao redirecionar para admin-xyz-123.html:', error);
+        }
         clickCount = 0;
       }
     });
   }
 
   // Atualizar ano no footer
-  document.getElementById('year').textContent = new Date().getFullYear();
+  const yearElement = document.getElementById('year');
+  if (yearElement) {
+    yearElement.textContent = new Date().getFullYear();
+  } else {
+    console.warn("Elemento com ID 'year' não encontrado");
+  }
 
   // Carregar produtos
   async function carregarProdutos(page = 1) {
@@ -49,6 +63,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const gridProdutos = document.getElementById('grid-produtos');
     const mensagemVazia = document.getElementById('mensagem-vazia');
     const errorMessage = document.getElementById('error-message');
+
+    if (!spinner || !gridProdutos || !mensagemVazia || !errorMessage) {
+      console.error('Elementos de interface não encontrados:', { spinner, gridProdutos, mensagemVazia, errorMessage });
+      return;
+    }
 
     spinner.style.display = 'block';
     gridProdutos.innerHTML = '';
@@ -114,9 +133,14 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // Busca
-  document.getElementById('busca').addEventListener('input', () => {
-    carregarProdutos(1);
-  });
+  const buscaInput = document.getElementById('busca');
+  if (buscaInput) {
+    buscaInput.addEventListener('input', () => {
+      carregarProdutos(1);
+    });
+  } else {
+    console.warn("Elemento com ID 'busca' não encontrado");
+  }
 
   // Modal e carrossel
   let currentImageIndex = 0;
@@ -125,6 +149,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const carrosselImagens = document.getElementById('modalCarrosselImagens');
     const carrosselDots = document.getElementById('modalCarrosselDots');
     
+    if (!modal || !carrosselImagens || !carrosselDots) {
+      console.error('Elementos do modal não encontrados:', { modal, carrosselImagens, carrosselDots });
+      return;
+    }
+
     carrosselImagens.innerHTML = '';
     carrosselDots.innerHTML = '';
     images.forEach((img, index) => {
@@ -149,7 +178,12 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   window.closeModal = function() {
-    document.getElementById('imageModal').style.display = 'none';
+    const modal = document.getElementById('imageModal');
+    if (modal) {
+      modal.style.display = 'none';
+    } else {
+      console.error("Elemento com ID 'imageModal' não encontrado");
+    }
   };
 
   window.moveModalCarrossel = function(direction) {
@@ -168,9 +202,18 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Eventos Socket.IO
-  socket.on('novoProduto', () => carregarProdutos(currentPage));
-  socket.on('produtoAtualizado', () => carregarProdutos(currentPage));
-  socket.on('produtoExcluido', () => carregarProdutos(currentPage));
+  socket.on('novoProduto', () => {
+    console.log('Evento Socket.IO: novoProduto recebido');
+    carregarProdutos(currentPage);
+  });
+  socket.on('produtoAtualizado', () => {
+    console.log('Evento Socket.IO: produtoAtualizado recebido');
+    carregarProdutos(currentPage);
+  });
+  socket.on('produtoExcluido', () => {
+    console.log('Evento Socket.IO: produtoExcluido recebido');
+    carregarProdutos(currentPage);
+  });
 
   // Carregar produtos iniciais
   carregarProdutos();
