@@ -14,31 +14,57 @@ document.addEventListener('DOMContentLoaded', () => {
   // Clique triplo no logo
   const logo = document.getElementById('site-logo');
   if (!logo) {
-    console.error("Elemento com ID 'site-logo' não encontrado no DOM");
+    console.error("Elemento com ID 'site-logo' não encontrado no DOM. Verifique o index.html.");
   } else {
     let clickCount = 0;
     let clickTimeout = null;
+    logo.style.pointerEvents = 'auto'; // Garante que o elemento receba cliques
     logo.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
       clickCount++;
-      console.log(`Clique no logo: ${clickCount}`);
+      console.log(`Clique no logo detectado: ${clickCount}/3`);
       if (clickCount === 1) {
         clickTimeout = setTimeout(() => {
           console.log('Timeout do clique triplo atingido, reiniciando contador');
           clickCount = 0;
         }, 1000);
       } else if (clickCount === 3) {
-        console.log('Clique triplo detectado, redirecionando para /admin-xyz-123.html');
+        console.log('Clique triplo detectado, tentando redirecionar para /admin-xyz-123.html');
         clearTimeout(clickTimeout);
         try {
-          window.location.href = '/admin-xyz-123.html';
+          // Verificar se a página existe antes de redirecionar
+          fetch('/admin-xyz-123.html', { method: 'HEAD' })
+            .then(response => {
+              if (response.ok) {
+                console.log('Página admin-xyz-123.html encontrada, redirecionando...');
+                window.location.href = '/admin-xyz-123.html';
+              } else {
+                console.error('Página admin-xyz-123.html não encontrada no servidor (status: ' + response.status + ')');
+                alert('Erro: Página de administração não encontrada. Verifique o servidor.');
+              }
+            })
+            .catch(error => {
+              console.error('Erro ao verificar admin-xyz-123.html:', error);
+              alert('Erro ao acessar a página de administração.');
+            });
         } catch (error) {
           console.error('Erro ao redirecionar para admin-xyz-123.html:', error);
+          alert('Erro ao redirecionar. Veja o console para detalhes.');
         }
         clickCount = 0;
       }
     });
+
+    // Fallback: Clique duplo (opcional, descomente se desejar testar)
+    /*
+    logo.addEventListener('dblclick', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('Clique duplo detectado como fallback, redirecionando para /admin-xyz-123.html');
+      window.location.href = '/admin-xyz-123.html';
+    });
+    */
   }
 
   // Atualizar ano no footer
