@@ -1,233 +1,118 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Administração - Centro de Compras</title>
-  <link rel="stylesheet" href="/style.css" />
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-    crossorigin="anonymous"
-  />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adicionar Produto - Centro de Compras</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <body>
   <header>
-    <h1>Administração de Produtos</h1>
+    <h1>Adicionar Novo Produto</h1>
     <a href="/">Voltar ao Início</a>
   </header>
   <main>
-    <div class="container admin-container">
-      <section class="form-section">
-        <h2>Adicionar/Editar Produto</h2>
-        <form id="produto-form" enctype="multipart/form-data">
-          <input type="hidden" id="produto-id" name="id" />
-          <label for="nome">Nome:</label>
-          <input type="text" id="nome" name="nome" required />
-          <label for="descricao">Descrição:</label>
-          <textarea id="descricao" name="descricao"></textarea>
-          <label for="preco">Preço:</label>
-          <input type="number" id="preco" name="preco" step="0.01" required />
-          <label for="imagens">Imagens:</label>
-          <input type="file" id="imagens" name="imagens" accept="image/*" multiple />
-          <div id="imagens-preview"></div>
-          <label for="categoria">Categoria:</label>
-          <select id="categoria" name="categoria" required>
-            <option value="eletronicos">Eletrônicos</option>
-            <option value="moda">Moda</option>
-            <option value="fitness">Fitness</option>
-            <option value="casa">Casa</option>
-            <option value="beleza">Beleza</option>
-            <option value="esportes">Esportes</option>
-            <option value="livros">Livros</option>
-            <option value="infantil">Infantil</option>
-            <option value="celulares">Celulares</option>
-            <option value="eletrodomesticos">Eletrodomésticos</option>
-            <option value="pet">Pet</option>
-            <option value="jardinagem">Jardinagem</option>
-            <option value="automotivo">Automotivo</option>
-            <option value="gastronomia">Gastronomia</option>
-            <option value="games">Games</option>
-          </select>
-          <label for="loja">Loja:</label>
-          <select id="loja" name="loja" required>
-            <option value="amazon">Amazon</option>
-            <option value="magalu">Magalu</option>
-            <option value="shein">Shein</option>
-            <option value="shopee">Shopee</option>
-            <option value="mercadolivre">Mercado Livre</option>
-            <option value="alibaba">Alibaba</option>
-          </select>
-          <label for="link">Link do Produto:</label>
-          <input type="url" id="link" name="link" required />
-          <button type="submit">Salvar Produto</button>
-          <button type="button" id="cancelar-edicao" style="display: none;">Cancelar Edição</button>
-          <p id="feedback"></p>
-        </form>
-      </section>
-      <section class="lista-produtos">
-        <h2>Lista de Produtos</h2>
-        <div id="produtos-lista"></div>
-      </section>
+    <div class="container">
+      <form id="produto-form">
+        <h2>Adicionar Produto</h2>
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" name="nome" required>
+        <label for="descricao">Descrição:</label>
+        <textarea id="descricao" name="descricao"></textarea>
+        <label for="preco">Preço:</label>
+        <input type="number" id="preco" name="preco" step="0.01" required>
+        <label for="imagens">Imagens:</label>
+        <input type="file" id="imagens" name="imagens" accept="image/*" multiple required>
+        <div id="imagens-preview"></div>
+        <label for="categoria">Categoria:</label>
+        <select id="categoria" name="categoria" required>
+          <option value="eletronicos">Eletrônicos</option>
+          <option value="moda">Moda</option>
+          <option value="fitness">Fitness</option>
+          <option value="casa">Casa</option>
+          <option value="beleza">Beleza</option>
+          <option value="esportes">Esportes</option>
+          <option value="livros">Livros</option>
+          <option value="infantil">Infantil</option>
+          <option value="celulares">Celulares</option>
+          <option value="eletrodomesticos">Eletrodomésticos</option>
+          <option value="pet">Pet</option>
+          <option value="jardinagem">Jardinagem</option>
+          <option value="automotivo">Automotivo</option>
+          <option value="gastronomia">Gastronomia</option>
+          <option value="games">Games</option>
+        </select>
+        <label for="loja">Loja:</label>
+        <select id="loja" name="loja" required>
+          <option value="amazon">Amazon</option>
+          <option value="magalu">Magalu</option>
+          <option value="shein">Shein</option>
+          <option value="shopee">Shopee</option>
+          <option value="mercadolivre">Mercado Livre</option>
+          <option value="alibaba">Alibaba</option>
+        </select>
+        <label for="link">Link do Produto:</label>
+        <input type="url" id="link" name="link" required>
+        <button type="submit">Adicionar Produto</button>
+        <p id="feedback"></p>
+      </form>
     </div>
   </main>
-
   <script>
     const API_BASE_URL = 'https://minha-api-produtos.onrender.com';
 
     document.addEventListener('DOMContentLoaded', () => {
+      // Manipulador de erro para imagens
+      document.querySelectorAll('img').forEach(img => {
+        img.onerror = () => {
+          console.log(`Erro ao carregar imagem: ${img.src}`);
+          img.src = '/imagens/placeholder.jpg';
+        };
+      });
+
+      // Pré-visualização de imagens
       const imagensInput = document.getElementById('imagens');
       const imagensPreview = document.getElementById('imagens-preview');
-
-      // Preview das imagens selecionadas no input
       imagensInput.addEventListener('change', () => {
         imagensPreview.innerHTML = '';
         Array.from(imagensInput.files).forEach(file => {
           const img = document.createElement('img');
           img.src = URL.createObjectURL(file);
-          img.style.width = '80px';
-          img.style.height = '80px';
+          img.style.width = '100px';
+          img.style.height = '100px';
           img.style.objectFit = 'contain';
-          img.style.margin = '5px';
           imagensPreview.appendChild(img);
         });
       });
 
-      // Função para carregar lista de produtos
-      async function carregarProdutos() {
-        const produtosLista = document.getElementById('produtos-lista');
-        produtosLista.innerHTML = '<p>Carregando...</p>';
-        try {
-          const response = await fetch(`${API_BASE_URL}/api/produtos`);
-          if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
-          const { data } = await response.json();
-
-          produtosLista.innerHTML = '';
-          if (data.length === 0) {
-            produtosLista.innerHTML = '<p>Nenhum produto encontrado.</p>';
-            return;
-          }
-
-          data.forEach(produto => {
-            const div = document.createElement('div');
-            div.className = 'produto-item';
-            div.innerHTML = `
-              <img src="${produto.imagens[0] || '/imagens/placeholder.jpg'}" alt="${produto.nome}" style="width: 50px; height: 50px; object-fit: contain;">
-              <span>${produto.nome} - R$ ${parseFloat(produto.preco).toFixed(2)}</span>
-              <button onclick="editarProduto(${produto.id})">Editar</button>
-              <button onclick="excluirProduto(${produto.id})">Excluir</button>
-            `;
-            produtosLista.appendChild(div);
-          });
-        } catch (error) {
-          console.error('Erro ao carregar produtos:', error);
-          produtosLista.innerHTML = '<p>Erro ao carregar produtos.</p>';
-        }
-      }
-
-      // Editar produto
-      window.editarProduto = async function(id) {
-        try {
-          const response = await fetch(`${API_BASE_URL}/api/produtos/${id}`);
-          if (!response.ok) throw new Error('Produto não encontrado');
-          const { data: produto } = await response.json();
-
-          document.getElementById('produto-id').value = produto.id;
-          document.getElementById('nome').value = produto.nome;
-          document.getElementById('descricao').value = produto.descricao || '';
-          document.getElementById('preco').value = produto.preco;
-          document.getElementById('categoria').value = produto.categoria;
-          document.getElementById('loja').value = produto.loja;
-          document.getElementById('link').value = produto.link;
-
-          // Mostrar imagens atuais
-          imagensPreview.innerHTML = produto.imagens.map(img => 
-            `<img src="${img}" style="width: 80px; height: 80px; object-fit: contain; margin: 5px;">`
-          ).join('');
-
-          document.getElementById('cancelar-edicao').style.display = 'inline-block';
-          document.querySelector('#produto-form button[type="submit"]').textContent = 'Atualizar Produto';
-        } catch (error) {
-          console.error('Erro ao carregar produto para edição:', error);
-          const feedback = document.getElementById('feedback');
-          feedback.textContent = 'Erro ao carregar produto';
-          feedback.style.color = 'red';
-        }
-      };
-
-      // Excluir produto
-      window.excluirProduto = async function(id) {
-        if (!confirm('Tem certeza que deseja excluir este produto?')) return;
-        try {
-          const response = await fetch(`${API_BASE_URL}/api/produtos/${id}`, { method: 'DELETE' });
-          const result = await response.json();
-          const feedback = document.getElementById('feedback');
-          if (response.ok) {
-            feedback.textContent = result.message || 'Produto excluído com sucesso';
-            feedback.style.color = 'green';
-            carregarProdutos();
-          } else {
-            feedback.textContent = result.message || 'Erro ao excluir produto';
-            feedback.style.color = 'red';
-          }
-        } catch (error) {
-          console.error('Erro ao excluir produto:', error);
-          const feedback = document.getElementById('feedback');
-          feedback.textContent = 'Erro ao conectar com a API';
-          feedback.style.color = 'red';
-        }
-      };
-
-      // Cancelar edição
-      document.getElementById('cancelar-edicao').addEventListener('click', () => {
-        document.getElementById('produto-form').reset();
-        imagensPreview.innerHTML = '';
-        document.getElementById('produto-id').value = '';
-        document.getElementById('cancelar-edicao').style.display = 'none';
-        document.querySelector('#produto-form button[type="submit"]').textContent = 'Salvar Produto';
-      });
-
-      // Submissão do formulário (Adicionar ou Atualizar)
+      // Formulário de adição de produto
       const form = document.getElementById('produto-form');
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
-
-        const id = document.getElementById('produto-id').value;
-        const url = id ? `${API_BASE_URL}/api/produtos/${id}` : `${API_BASE_URL}/api/produtos`;
-        const method = id ? 'PUT' : 'POST';
-
         const formData = new FormData(form);
-
         try {
-          const response = await fetch(url, { method, body: formData });
+          const response = await fetch(`${API_BASE_URL}/api/produtos`, {
+            method: 'POST',
+            body: formData
+          });
           const result = await response.json();
           const feedback = document.getElementById('feedback');
-
           if (response.ok) {
-            feedback.textContent = result.message || (id ? 'Produto atualizado com sucesso' : 'Produto adicionado com sucesso');
+            feedback.textContent = result.message || 'Produto adicionado com sucesso';
             feedback.style.color = 'green';
-
             form.reset();
             imagensPreview.innerHTML = '';
-            document.getElementById('produto-id').value = '';
-            document.getElementById('cancelar-edicao').style.display = 'none';
-            document.querySelector('#produto-form button[type="submit"]').textContent = 'Salvar Produto';
-
-            carregarProdutos();
           } else {
-            feedback.textContent = result.message || 'Erro ao salvar produto';
+            feedback.textContent = result.message || 'Erro ao adicionar produto';
             feedback.style.color = 'red';
           }
         } catch (error) {
-          console.error('Erro ao salvar produto:', error);
-          const feedback = document.getElementById('feedback');
-          feedback.textContent = 'Erro ao conectar com a API';
-          feedback.style.color = 'red';
+          console.error('Erro ao adicionar produto:', error);
+          document.getElementById('feedback').textContent = 'Erro ao conectar com a API';
+          document.getElementById('feedback').style.color = 'red';
         }
       });
-
-      // Carrega lista inicial de produtos
-      carregarProdutos();
     });
   </script>
 </body>
