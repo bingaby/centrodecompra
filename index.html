@@ -296,9 +296,8 @@
         </a>
     </div>
     <script>
-        const VERSION = "1.0.8"; // Mantenha a sua versão original, se quiser
-        // *** IMPORTANTE: SUBSTITUA PELA URL DA SUA API NO RENDER! ***
-        const API_BASE_URL = 'https://minha-api-produtos.onrender.com'; // Ex: 'https://minha-api-produtos.onrender.com'
+        const VERSION = "1.0.9";
+        const API_BASE_URL = 'https://minha-api-produtos.onrender.com'; // Substitua pelo URL da sua API
         
         let currentImages = [];
         let currentImageIndex = 0;
@@ -318,7 +317,7 @@
                 clickTimeout = setTimeout(() => { clickCount = 0; }, 500);
             } else if (clickCount === 3) {
                 clearTimeout(clickTimeout);
-                window.location.href = "add-produtos.html"; // Correção para o nome do arquivo
+                window.location.href = "add-produtos.html";
                 clickCount = 0;
             }
         });
@@ -328,8 +327,11 @@
             const mensagemVazia = document.getElementById("mensagem-vazia");
             const errorMessage = document.getElementById("error-message");
             const loadingSpinner = document.getElementById("loading-spinner");
+
             if (!gridProdutos || !mensagemVazia || !errorMessage || !loadingSpinner) {
                 console.error("Elementos DOM não encontrados");
+                errorMessage.textContent = "Erro interno: Elementos da página não encontrados!";
+                errorMessage.style.display = "block";
                 return;
             }
 
@@ -339,8 +341,7 @@
             errorMessage.style.display = "none";
 
             try {
-                // Monta a URL para a sua API Node.js
-                const url = new URL(`${API_BASE_URL}/api/produtos`); // Endpoint da sua API para buscar produtos
+                const url = new URL(`${API_BASE_URL}/api/produtos`);
                 url.searchParams.append('page', page);
                 url.searchParams.append('limit', productsPerPage);
                 if (categoria !== "todas") url.searchParams.append('categoria', categoria);
@@ -349,14 +350,12 @@
 
                 const response = await fetch(url, { method: 'GET' });
                 if (!response.ok) {
-                    // Erros de rede ou HTTP (4xx, 5xx)
-                    throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
+                    throw new Error(`Erro HTTP: ${response.status}`);
                 }
                 const data = await response.json();
 
-                // Sua API Node.js DEVE retornar { status: "success", data: [...], total: ... }
-                if (data.status !== "success") {
-                    throw new Error(data.message || 'Erro ao carregar produtos do servidor');
+                if (data.status !== 'success') {
+                    throw new Error(data.message || 'Erro ao carregar produtos');
                 }
 
                 allProducts = data.data || [];
@@ -374,13 +373,12 @@
                         card.classList.add("produto-card", "visible");
                         card.setAttribute("data-categoria", produto.categoria.toLowerCase());
                         card.setAttribute("data-loja", produto.loja.toLowerCase());
-                        // O campo 'imagens' agora espera um array de URLs da sua API
                         const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0 ? produto.imagens : ["imagens/placeholder.jpg"];
                         const carrosselId = `carrossel-${globalIndex}`;
                         card.innerHTML = `
                             <div class="carrossel" id="${carrosselId}">
                                 <div class="carrossel-imagens">
-                                    ${imagens.map((img, idx) => `<img src="${img}" alt="${produto.nome}" loading="lazy" onclick="openModal(${globalIndex}, ${idx})">`).join("")}
+                                    ${imagens.map((img, idx) => `<img src="${img}" alt="${produto.nome}" loading="lazy" onerror="this.src='imagens/placeholder.jpg'" onclick="openModal(${globalIndex}, ${idx})">`).join("")}
                                 </div>
                                 ${imagens.length > 1 ? `
                                     <button class="carrossel-prev" onclick="moveCarrossel('${carrosselId}', -1)" aria-label="Imagem anterior">◄</button>
@@ -392,7 +390,7 @@
                             </div>
                             <span>${produto.nome}</span>
                             <span class="descricao">Loja: ${produto.loja}</span>
-                            <a href="${produto.link}" target="_blank" class="tarja-preco" aria-label="Clique para ver o preço de ${produto.nome} na loja">Clique para ver o preço</a>
+                            <a href="${produto.link}" target="_blank" class="tarja-preco" aria-label="Ver oferta de ${produto.nome} na loja">Ver Oferta</a>
                         `;
                         gridProdutos.appendChild(card);
                     });
@@ -402,7 +400,7 @@
                 loadMoreButton.style.display = (page * productsPerPage) < totalProdutos ? "block" : "none";
             } catch (error) {
                 console.error("Erro ao carregar produtos:", error);
-                errorMessage.textContent = error.message || "Erro ao carregar os produtos. Verifique sua conexão e se a API está online.";
+                errorMessage.textContent = error.message || "Erro ao carregar os produtos";
                 errorMessage.style.display = "block";
                 mensagemVazia.style.display = "none";
                 gridProdutos.style.display = "none";
@@ -420,10 +418,7 @@
 
         function moveCarrossel(id, direction) {
             const carrossel = document.getElementById(id);
-            if (!carrossel) {
-                console.error("Carrossel não encontrado:", id);
-                return;
-            }
+            if (!carrossel) return;
             const imagens = carrossel.querySelector(".carrossel-imagens");
             const dots = carrossel.querySelectorAll(".carrossel-dot");
             let index = parseInt(imagens.dataset.index || 0);
@@ -436,10 +431,7 @@
 
         function setCarrosselImage(id, index) {
             const carrossel = document.getElementById(id);
-            if (!carrossel) {
-                console.error("Carrossel não encontrado:", id);
-                return;
-            }
+            if (!carrossel) return;
             const imagens = carrossel.querySelector(".carrossel-imagens");
             const dots = carrossel.querySelectorAll(".carrossel-dot");
             imagens.style.transform = `translateX(-${index * 100}%)`;
@@ -454,12 +446,9 @@
             const modalError = document.getElementById("modalError");
             const prevButton = document.getElementById("modalPrev");
             const nextButton = document.getElementById("modalNext");
-            if (!modal || !carrosselImagens || !carrosselDots || !modalError || !prevButton || !nextButton) {
-                console.error("Elementos do modal não encontrados");
-                return;
-            }
 
-            console.log("Abrindo modal para produto:", index, "Imagem inicial:", imageIndex);
+            if (!modal || !carrosselImagens || !carrosselDots || !modalError || !prevButton || !nextButton) return;
+
             modalError.style.display = "none";
             carrosselImagens.innerHTML = "";
             carrosselDots.innerHTML = "";
@@ -468,45 +457,15 @@
 
             try {
                 currentImages = Array.isArray(allProducts[index]?.imagens) && allProducts[index].imagens.length > 0 ? allProducts[index].imagens : ["imagens/placeholder.jpg"];
-                console.log("Imagens disponíveis:", currentImages);
-
                 if (!currentImages.length) {
-                    modalError.textContent = "Nenhuma imagem disponível para este produto.";
+                    modalError.textContent = "Nenhuma imagem disponível";
                     modalError.style.display = "block";
                     modal.style.display = "flex";
                     return;
                 }
 
-                const loadPromises = currentImages.map((src, idx) => {
-                    return new Promise((resolve, reject) => {
-                        const img = new Image();
-                        img.src = src;
-                        img.onload = () => {
-                            console.log(`Imagem ${idx + 1} carregada: ${src}`);
-                            resolve();
-                        };
-                        img.onerror = () => {
-                            console.error(`Erro ao carregar imagem ${idx + 1}: ${src}`);
-                            reject(`Imagem ${idx + 1} falhou`);
-                        };
-                    });
-                });
-
-                await Promise.allSettled(loadPromises).then(results => {
-                    const failed = results.filter(r => r.status === "rejected");
-                    if (failed.length > 0) {
-                        console.warn("Algumas imagens falharam:", failed);
-                        currentImages = currentImages.filter((_, i) => results[i].status === "fulfilled");
-                        if (!currentImages.length) {
-                            throw new Error("Nenhuma imagem carregada com sucesso");
-                        }
-                    }
-                });
-
                 currentImageIndex = Math.max(0, Math.min(imageIndex, currentImages.length - 1));
-                console.log("Índice inicial ajustado:", currentImageIndex);
-
-                carrosselImagens.innerHTML = currentImages.map((img, idx) => `<img src="${img}" alt="Imagem ${idx + 1}" loading="lazy" onerror="this.style.display='none'; console.error('Erro ao renderizar imagem ${idx + 1}: ${img}')">`).join("");
+                carrosselImagens.innerHTML = currentImages.map((img, idx) => `<img src="${img}" alt="Imagem ${idx + 1}" loading="lazy" onerror="this.src='imagens/placeholder.jpg'">`).join("");
                 carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
 
                 carrosselDots.innerHTML = currentImages.map((_, i) => `<span class="carrossel-dot ${i === currentImageIndex ? "ativo" : ""}" onclick="setModalCarrosselImage(${i})" aria-label="Selecionar imagem ${i + 1}"></span>`).join("");
@@ -515,10 +474,9 @@
                 nextButton.classList.toggle("visible", currentImages.length > 1);
 
                 modal.style.display = "flex";
-                console.log("Modal aberto com sucesso, total de imagens:", currentImages.length);
             } catch (error) {
                 console.error("Erro ao abrir modal:", error);
-                modalError.textContent = error.message || "Erro ao carregar as imagens. Algumas imagens podem estar corrompidas ou indisponíveis.";
+                modalError.textContent = "Erro ao carregar as imagens";
                 modalError.style.display = "block";
                 modal.style.display = "flex";
             }
@@ -527,24 +485,10 @@
         function moveModalCarrossel(direction) {
             const carrosselImagens = document.getElementById("modalCarrosselImagens");
             const carrosselDots = document.getElementById("modalCarrosselDots")?.children;
-            if (!carrosselImagens || !carrosselDots) {
-                console.error("Elementos do carrossel modal não encontrados");
-                return;
-            }
-            if (!currentImages.length) {
-                console.warn("Nenhuma imagem para navegar");
-                return;
-            }
+            if (!carrosselImagens || !carrosselDots) return;
 
-            console.log("Navegando carrossel, direção:", direction, "Índice atual:", currentImageIndex);
             const total = currentImages.length;
             currentImageIndex = (currentImageIndex + direction + total) % total;
-            if (currentImageIndex < 0 || currentImageIndex >= total) {
-                console.warn("Índice inválido, ajustando:", currentImageIndex);
-                currentImageIndex = Math.max(0, Math.min(currentImageIndex, total - 1));
-            }
-
-            console.log("Novo índice:", currentImageIndex);
             carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
             Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle("ativo", i === currentImageIndex));
         }
@@ -552,16 +496,8 @@
         function setModalCarrosselImage(index) {
             const carrosselImagens = document.getElementById("modalCarrosselImagens");
             const carrosselDots = document.getElementById("modalCarrosselDots")?.children;
-            if (!carrosselImagens || !carrosselDots) {
-                console.error("Elementos do carrossel modal não encontrados");
-                return;
-            }
-            if (index < 0 || index >= currentImages.length) {
-                console.warn("Índice inválido para setModalCarrosselImage:", index);
-                return;
-            }
+            if (!carrosselImagens || !carrosselDots) return;
 
-            console.log("Definindo imagem do carrossel:", index);
             currentImageIndex = index;
             carrosselImagens.style.transform = `translateX(-${index * 100}%)`;
             Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle("ativo", i === index));
@@ -570,15 +506,11 @@
         function closeModal() {
             const modal = document.getElementById("imageModal");
             const modalError = document.getElementById("modalError");
-            if (!modal || !modalError) {
-                console.error("Elementos do modal não encontrados");
-                return;
-            }
+            if (!modal || !modalError) return;
             modal.style.display = "none";
             modalError.style.display = "none";
             currentImages = [];
             currentImageIndex = 0;
-            console.log("Modal fechado");
         }
 
         function filtrarPorCategoria(categoria) {
@@ -599,15 +531,6 @@
 
         document.addEventListener("DOMContentLoaded", () => {
             console.log(`Iniciando index.html v${VERSION}`);
-            const criticalElements = ["grid-produtos", "mensagem-vazia", "error-message", "loading-spinner", "imageModal", "modalCarrosselImagens", "modalCarrosselDots", "modalError"];
-            const missingElements = criticalElements.filter(id => !document.getElementById(id));
-            if (missingElements.length > 0) {
-                console.error("Elementos DOM críticos não encontrados:", missingElements);
-                const errorMessage = document.getElementById("error-message");
-                if (errorMessage) errorMessage.textContent = "Erro interno: Elementos da página não encontrados!";
-                return;
-            }
-
             carregarProdutos();
 
             const buscaInput = document.getElementById("busca");
@@ -620,7 +543,7 @@
                         const categoria = document.querySelector(".categoria-item.ativa")?.dataset.categoria || "todas";
                         const loja = document.querySelector(".loja.ativa, .loja-todas.ativa")?.dataset.loja || "todas";
                         carregarProdutos(categoria, loja, buscaInput.value, currentPage);
-                    }, 300); // Debounce para não disparar muitas requisições
+                    }, 300);
                 });
             }
         });
