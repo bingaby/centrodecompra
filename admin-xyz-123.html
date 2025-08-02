@@ -1,154 +1,221 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8" />
-    <title>Adicionar Produtos</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto; }
-        form { display: flex; flex-direction: column; gap: 10px; }
-        input, select, button { padding: 10px; font-size: 16px; }
-        .produto-lista { margin-top: 30px; }
-        .produto-item { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; }
-        .produto-item img { max-width: 100px; max-height: 100px; margin-right: 10px; }
-        .imagens-wrapper { display: flex; gap: 5px; margin-top: 10px; }
-        h1 { text-align: center; color: #333; }
-        .produto-item button { margin-top: 10px; background-color: #dc3545; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 5px; }
-        .produto-item button:hover { background-color: #c82333; }
-        a { color: #007bff; text-decoration: none; }
-        a:hover { text-decoration: underline; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administração - Centro de Compras</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <body>
-    <h1>Adicionar Produto</h1>
-    <form id="form-produto" enctype="multipart/form-data">
-        <input type="text" name="nome" placeholder="Nome do produto" required />
-        <select name="categoria" required>
-            <option value="" disabled selected>Selecione uma categoria</option>
+  <header>
+    <h1>Administração de Produtos</h1>
+    <a href="/">Voltar ao Início</a>
+  </header>
+  <main>
+    <div class="container admin-container">
+      <section class="form-section">
+        <h2>Adicionar/Editar Produto</h2>
+        <form id="produto-form">
+          <input type="hidden" id="produto-id" name="id">
+          <label for="nome">Nome:</label>
+          <input type="text" id="nome" name="nome" required>
+          <label for="descricao">Descrição:</label>
+          <textarea id="descricao" name="descricao"></textarea>
+          <label for="preco">Preço:</label>
+          <input type="number" id="preco" name="preco" step="0.01" required>
+          <label for="imagens">Imagens:</label>
+          <input type="file" id="imagens" name="imagens" accept="image/*" multiple>
+          <div id="imagens-preview"></div>
+          <label for="categoria">Categoria:</label>
+          <select id="categoria" name="categoria" required>
             <option value="eletronicos">Eletrônicos</option>
             <option value="moda">Moda</option>
             <option value="fitness">Fitness</option>
-            <option value="casa">Casa e Decoração</option>
+            <option value="casa">Casa</option>
             <option value="beleza">Beleza</option>
             <option value="esportes">Esportes</option>
             <option value="livros">Livros</option>
             <option value="infantil">Infantil</option>
             <option value="celulares">Celulares</option>
             <option value="eletrodomesticos">Eletrodomésticos</option>
-        </select>
-        <select name="loja" required>
-            <option value="" disabled selected>Selecione uma loja</option>
+            <option value="pet">Pet</option>
+            <option value="jardinagem">Jardinagem</option>
+            <option value="automotivo">Automotivo</option>
+            <option value="gastronomia">Gastronomia</option>
+            <option value="games">Games</option>
+          </select>
+          <label for="loja">Loja:</label>
+          <select id="loja" name="loja" required>
             <option value="amazon">Amazon</option>
             <option value="magalu">Magalu</option>
             <option value="shein">Shein</option>
             <option value="shopee">Shopee</option>
             <option value="mercadolivre">Mercado Livre</option>
             <option value="alibaba">Alibaba</option>
-        </select>
-        <input type="url" name="link" placeholder="Link do produto (https://...)" required />
-        <input type="file" name="imagens" accept="image/*" multiple required />
-        <button type="submit">Adicionar</button>
-    </form>
+          </select>
+          <label for="link">Link do Produto:</label>
+          <input type="url" id="link" name="link" required>
+          <button type="submit">Salvar Produto</button>
+          <button type="button" id="cancelar-edicao" style="display: none;">Cancelar Edição</button>
+          <p id="feedback"></p>
+        </form>
+      </section>
+      <section class="lista-produtos">
+        <h2>Lista de Produtos</h2>
+        <div id="produtos-lista"></div>
+      </section>
+    </div>
+  </main>
+  <script>
+    const API_BASE_URL = 'https://minha-api-produtos.onrender.com';
 
-    <div id="mensagem" style="color: green; margin-top: 10px;"></div>
-    <div id="erro" style="color: red; margin-top: 10px;"></div>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Manipulador de erro para imagens
+      document.querySelectorAll('img').forEach(img => {
+        img.onerror = () => {
+          console.log(`Erro ao carregar imagem: ${img.src}`);
+          img.src = '/imagens/placeholder.jpg';
+        };
+      });
 
-    <div class="produto-lista" id="produto-lista"></div>
-
-    <script>
-        const form = document.getElementById('form-produto');
-        const mensagem = document.getElementById('mensagem');
-        const erro = document.getElementById('erro');
-        const produtoLista = document.getElementById('produto-lista');
-
-        // Função para listar produtos
-        async function listarProdutos() {
-            produtoLista.innerHTML = 'Carregando...';
-            try {
-                const res = await fetch('/api/produtos');
-                const produtos = await res.json();
-                
-                // A API retorna um objeto { data: [...], total: ... }
-                const produtosData = produtos.data;
-
-                if (produtosData.length === 0) {
-                    produtoLista.innerHTML = '<p>Nenhum produto cadastrado.</p>';
-                    return;
-                }
-
-                produtoLista.innerHTML = '';
-                produtosData.forEach(produto => {
-                    const div = document.createElement('div');
-                    div.className = 'produto-item';
-
-                    // Correção: o campo 'imagens' do banco de dados é uma string JSON, então precisa ser "parseado"
-                    const imagensArray = JSON.parse(produto.imagens);
-                    const imagensHtml = imagensArray.map(url => `<img src="${url}" alt="Imagem do produto" />`).join('');
-
-                    div.innerHTML = `
-                        <strong>${produto.nome}</strong> <br/>
-                        Categoria: ${produto.categoria} | Loja: ${produto.loja} <br/>
-                        <a href="${produto.link}" target="_blank">Link do produto</a> <br/>
-                        <div class="imagens-wrapper">${imagensHtml}</div>
-                        <button onclick="excluirProduto(${produto.id})">Excluir</button>
-                    `;
-                    produtoLista.appendChild(div);
-                });
-            } catch (e) {
-                console.error("Erro ao carregar produtos:", e);
-                produtoLista.innerHTML = 'Erro ao carregar produtos.';
-            }
-        }
-
-        // Excluir produto
-        async function excluirProduto(id) {
-            if (!confirm('Confirma exclusão do produto?')) return;
-            try {
-                const res = await fetch(`/api/produtos/${id}`, { method: 'DELETE' });
-                const result = await res.json();
-                if (!res.ok) {
-                    erro.textContent = result.error || 'Erro ao excluir produto.';
-                    return;
-                }
-                mensagem.textContent = 'Produto excluído com sucesso.';
-                erro.textContent = '';
-                listarProdutos();
-            } catch (e) {
-                console.error("Erro na exclusão:", e);
-                erro.textContent = 'Erro ao excluir produto.';
-                mensagem.textContent = '';
-            }
-        }
-
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            mensagem.textContent = '';
-            erro.textContent = '';
-
-            const formData = new FormData(form);
-
-            try {
-                const res = await fetch('/api/produtos', {
-                    method: 'POST',
-                    body: formData
-                });
-                const data = await res.json();
-
-                if (!res.ok) {
-                    erro.textContent = data.error || 'Erro ao adicionar produto.';
-                    return;
-                }
-
-                mensagem.textContent = 'Produto adicionado com sucesso!';
-                form.reset();
-                listarProdutos();
-            } catch (e) {
-                console.error("Erro no envio:", e);
-                erro.textContent = 'Erro ao enviar dados.';
-            }
+      // Pré-visualização de imagens
+      const imagensInput = document.getElementById('imagens');
+      const imagensPreview = document.getElementById('imagens-preview');
+      imagensInput.addEventListener('change', () => {
+        imagensPreview.innerHTML = '';
+        Array.from(imagensInput.files).forEach(file => {
+          const img = document.createElement('img');
+          img.src = URL.createObjectURL(file);
+          img.style.width = '80px';
+          img.style.height = '80px';
+          img.style.objectFit = 'contain';
+          img.style.margin = '5px';
+          imagensPreview.appendChild(img);
         });
+      });
 
-        // Carregar lista ao iniciar
-        listarProdutos();
-    </script>
+      // Carregar lista de produtos
+      async function carregarProdutos() {
+        const produtosLista = document.getElementById('produtos-lista');
+        produtosLista.innerHTML = '<p>Carregando...</p>';
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/produtos`);
+          if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
+          const { data } = await response.json();
+          produtosLista.innerHTML = '';
+          if (data.length === 0) {
+            produtosLista.innerHTML = '<p>Nenhum produto encontrado.</p>';
+            return;
+          }
+          data.forEach(produto => {
+            const div = document.createElement('div');
+            div.className = 'produto-item';
+            div.innerHTML = `
+              <img src="${produto.imagens[0] || '/imagens/placeholder.jpg'}" alt="${produto.nome}" style="width: 50px; height: 50px; object-fit: contain;">
+              <span>${produto.nome} - R$ ${parseFloat(produto.preco).toFixed(2)}</span>
+              <button onclick="editarProduto(${produto.id})">Editar</button>
+              <button onclick="excluirProduto(${produto.id})">Excluir</button>
+            `;
+            produtosLista.appendChild(div);
+          });
+        } catch (error) {
+          console.error('Erro ao carregar produtos:', error);
+          produtosLista.innerHTML = '<p>Erro ao carregar produtos.</p>';
+        }
+      }
+
+      // Editar produto
+      window.editarProduto = async function(id) {
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/produtos?id=${id}`);
+          const { data } = await response.json();
+          const produto = data.find(p => p.id === id);
+          if (!produto) throw new Error('Produto não encontrado');
+          
+          document.getElementById('produto-id').value = produto.id;
+          document.getElementById('nome').value = produto.nome;
+          document.getElementById('descricao').value = produto.descricao || '';
+          document.getElementById('preco').value = produto.preco;
+          document.getElementById('categoria').value = produto.categoria;
+          document.getElementById('loja').value = produto.loja;
+          document.getElementById('link').value = produto.link;
+          document.getElementById('imagens-preview').innerHTML = produto.imagens.map(img => `<img src="${img}" style="width: 80px; height: 80px; object-fit: contain; margin: 5px;">`).join('');
+          document.getElementById('cancelar-edicao').style.display = 'inline-block';
+          document.querySelector('#produto-form button[type="submit"]').textContent = 'Atualizar Produto';
+        } catch (error) {
+          console.error('Erro ao carregar produto para edição:', error);
+          document.getElementById('feedback').textContent = 'Erro ao carregar produto';
+          document.getElementById('feedback').style.color = 'red';
+        }
+      };
+
+      // Excluir produto
+      window.excluirProduto = async function(id) {
+        if (!confirm('Tem certeza que deseja excluir este produto?')) return;
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/produtos/${id}`, { method: 'DELETE' });
+          const result = await response.json();
+          if (response.ok) {
+            document.getElementById('feedback').textContent = result.message || 'Produto excluído com sucesso';
+            document.getElementById('feedback').style.color = 'green';
+            carregarProdutos();
+          } else {
+            document.getElementById('feedback').textContent = result.message || 'Erro ao excluir produto';
+            document.getElementById('feedback').style.color = 'red';
+          }
+        } catch (error) {
+          console.error('Erro ao excluir produto:', error);
+          document.getElementById('feedback').textContent = 'Erro ao conectar com a API';
+          document.getElementById('feedback').style.color = 'red';
+        }
+      };
+
+      // Cancelar edição
+      document.getElementById('cancelar-edicao').addEventListener('click', () => {
+        document.getElementById('produto-form').reset();
+        document.getElementById('imagens-preview').innerHTML = '';
+        document.getElementById('produto-id').value = '';
+        document.getElementById('cancelar-edicao').style.display = 'none';
+        document.querySelector('#produto-form button[type="submit"]').textContent = 'Adicionar Produto';
+      });
+
+      // Formulário de adição/atualização de produto
+      const form = document.getElementById('produto-form');
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(form);
+        const id = document.getElementById('produto-id').value;
+        const url = id ? `${API_BASE_URL}/api/produtos/${id}` : `${API_BASE_URL}/api/produtos`;
+        const method = id ? 'PUT' : 'POST';
+
+        try {
+          const response = await fetch(url, { method, body: formData });
+          const result = await response.json();
+          const feedback = document.getElementById('feedback');
+          if (response.ok) {
+            feedback.textContent = result.message || id ? 'Produto atualizado com sucesso' : 'Produto adicionado com sucesso';
+            feedback.style.color = 'green';
+            form.reset();
+            document.getElementById('imagens-preview').innerHTML = '';
+            document.getElementById('produto-id').value = '';
+            document.getElementById('cancelar-edicao').style.display = 'none';
+            document.querySelector('#produto-form button[type="submit"]').textContent = 'Adicionar Produto';
+            carregarProdutos();
+          } else {
+            feedback.textContent = result.message || 'Erro ao salvar produto';
+            feedback.style.color = 'red';
+          }
+        } catch (error) {
+          console.error('Erro ao salvar produto:', error);
+          document.getElementById('feedback').textContent = 'Erro ao conectar com a API';
+          document.getElementById('feedback').style.color = 'red';
+        }
+      });
+
+      // Carregar produtos iniciais
+      carregarProdutos();
+    });
+  </script>
 </body>
 </html>
