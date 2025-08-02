@@ -1,33 +1,378 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <title>Teste Socket.IO Cliente</title>
-  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Ofertas com descontos reais nas principais lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliado seguros e atualizados.">
+    <meta property="og:title" content="Centro de Compras - Ofertas e Descontos">
+    <meta property="og:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliados seguros e atualizados!">
+    <meta property="og:image" content="logos/centrodecompras.jpg">
+    <meta property="og:url" content="https://centrodecompra.com.br/">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Centro de Compras - Ofertas e Descontos">
+    <meta name="twitter:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliados seguros e atualizados!">
+    <meta name="twitter:image" content="logos/centrodecompras.jpg">
+    <title>Centro de Compras - Ofertas do Dia</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilos do Carrossel e Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { position: relative; max-width: 90%; max-height: 90%; width: auto; height: auto; }
+        .modal-content .carrossel-imagens { display: flex; overflow: hidden; width: 100%; height: 100%; }
+        .modal-content .carrossel-imagens img { width: 100%; height: auto; max-width: 800px; max-height: 600px; object-fit: contain; flex: 0 0 100%; transition: transform 0.3s ease; }
+        .modal-close { position: absolute; top: 10px; right: 10px; background: #ff6200; color: #fff; border: none; padding: 8px 12px; border-radius: 50%; cursor: pointer; font-size: 16px; }
+        .carrossel-prev, .carrossel-next { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0, 0, 0, 0.5); color: #fff; border: none; padding: 10px; cursor: pointer; font-size: 18px; border-radius: 4px; display: none; }
+        .carrossel-prev.visible, .carrossel-next.visible { display: block; }
+        .carrossel-prev { left: 10px; }
+        .carrossel-next { right: 10px; }
+        .carrossel-dots { position: absolute; bottom: 10px; width: 100%; text-align: center; }
+        .carrossel-dot { display: inline-block; width: 10px; height: 10px; background: #ccc; border-radius: 50%; margin: 0 5px; cursor: pointer; }
+        .carrossel-dot.ativo { background: #ff6200; }
+        .modal-error { color: red; text-align: center; margin-top: 10px; font-size: 14px; }
+        .error-message { color: red; text-align: center; margin-top: 10px; }
+        .tarja-preco { display: inline-block; background: #ff6200; color: white; padding: 6px 10px; margin: 8px 0; border-radius: 4px; text-decoration: none; font-weight: bold; font-size: 12px; }
+        .tarja-preco:hover { background: #e55a00; }
+        #load-more { display: none; margin: 20px auto; padding: 10px 20px; background: #ff6200; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        #load-more:hover { background: #e55a00; }
+        .produto-card { transition: transform 0.2s; background: white; border-radius: 8px; padding: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-height: 300px; }
+        .produto-card:hover { transform: translateY(-5px); }
+        .produto-card span { font-size: 14px; display: block; margin: 5px 0; }
+        .carrossel { position: relative; width: 100%; max-height: 150px; overflow: hidden; }
+        .carrossel-imagens { display: flex; width: 100%; height: 100%; }
+        .carrossel-imagens img { width: 100%; height: 150px; object-fit: cover; flex: 0 0 100%; transition: transform 0.3s ease; }
+        .grid-produtos { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        @media (max-width: 600px) {
+            .grid-produtos { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+            .produto-card { max-height: 250px; }
+            .carrossel-imagens img { height: 120px; }
+            .tarja-preco { font-size: 10px; padding: 5px 8px; }
+            .produto-card span { font-size: 12px; }
+            .modal-content .carrossel-imagens img { max-width: 100%; max-height: 400px; }
+        }
+    </style>
 </head>
 <body>
-  <h1>Cliente Socket.IO</h1>
-  <input id="msg" placeholder="Digite mensagem" />
-  <button onclick="enviar()">Enviar</button>
-  <div id="log"></div>
+    <header class="site-header">
+        <div class="logo-container">
+            <a href="#"><img src="logos/centrodecompras.jpg" alt="Centro de Compras" loading="lazy" id="site-logo"></a>
+        </div>
+        <div class="header-text">
+            <h1>Centro de Compras</h1>
+            <p>O maior portal de ofertas do Brasil! Descubra as melhores oportunidades nos maiores sites de venda, com links diretos para sua compra.</p>
+        </div>
+    </header>
+    <nav>
+        <a href="index.html">Promoções</a>
+        <a href="cupom.html">Cupom de desconto</a>
+        <a href="sobre.html">Sobre</a>
+        <a href="contato.html">Contato</a>
+    </nav>
+    <div class="container">
+        <aside class="sidebar-categorias">
+            <h3>Categorias</h3>
+            <ul>
+                <li class="categoria-item ativa" data-categoria="todas" onclick="filtrarPorCategoria('todas')" role="button" aria-label="Filtrar por Todas as Categorias">Todas as Categorias</li>
+                <li class="categoria-item" data-categoria="eletronicos" onclick="filtrarPorCategoria('eletronicos')" role="button" aria-label="Filtrar por Eletrônicos">Eletrônicos</li>
+                <li class="categoria-item" data-categoria="moda" onclick="filtrarPorCategoria('moda')" role="button" aria-label="Filtrar por Moda">Moda</li>
+                <li class="categoria-item" data-categoria="fitness" onclick="filtrarPorCategoria('fitness')" role="button" aria-label="Filtrar por Fitness">Fitness</li>
+                <li class="categoria-item" data-categoria="casa" onclick="filtrarPorCategoria('casa')" role="button" aria-label="Filtrar por Casa e Decoração">Casa e Decoração</li>
+                <li class="categoria-item" data-categoria="beleza" onclick="filtrarPorCategoria('beleza')" role="button" aria-label="Filtrar por Beleza">Beleza</li>
+                <li class="categoria-item" data-categoria="esportes" onclick="filtrarPorCategoria('esportes')" role="button" aria-label="Filtrar por Esportes">Esportes</li>
+                <li class="categoria-item" data-categoria="livros" onclick="filtrarPorCategoria('livros')" role="button" aria-label="Filtrar por Livros">Livros</li>
+                <li class="categoria-item" data-categoria="infantil" onclick="filtrarPorCategoria('infantil')" role="button" aria-label="Filtrar por Infantil">Infantil</li>
+                <li class="categoria-item" data-categoria="Celulares" onclick="filtrarPorCategoria('Celulares')" role="button" aria-label="Filtrar por Celulares">Celulares</li>
+                <li class="categoria-item" data-categoria="Eletrodomésticos" onclick="filtrarPorCategoria('Eletrodomésticos')" role="button" aria-label="Filtrar por Eletrodomésticos">Eletrodomésticos</li>
+            </ul>
+        </aside>
+        <main>
+            <section id="ofertas-section" aria-live="polite">
+                <h2 id="ofertas-titulo">🛍️ Ofertas do Dia</h2>
+                <div class="lojas-parceiras">
+                    <h3>🌟 Lojas Parceiras</h3>
+                    <div class="grid-lojas">
+                        <div class="loja-todas ativa" data-loja="todas" onclick="filtrarPorLoja('todas')" role="button" aria-label="Filtrar por Todas as Lojas"><span>Todas as Lojas</span></div>
+                        <div class="loja" data-loja="amazon" onclick="filtrarPorLoja('amazon')" role="button" aria-label="Filtrar por Amazon"><img src="logos/amazon.png" alt="Logo da Amazon" loading="lazy"></div>
+                        <div class="loja" data-loja="magalu" onclick="filtrarPorLoja('magalu')" role="button" aria-label="Filtrar por Magalu"><img src="logos/magalu.png" alt="Logo da Magalu" loading="lazy"></div>
+                        <div class="loja" data-loja="shein" onclick="filtrarPorLoja('shein')" role="button" aria-label="Filtrar por Shein"><img src="logos/shein.png" alt="Logo da Shein" loading="lazy"></div>
+                        <div class="loja" data-loja="shopee" onclick="filtrarPorLoja('shopee')" role="button" aria-label="Filtrar por Shopee"><img src="logos/shopee.png" alt="Logo da Shopee" loading="lazy"></div>
+                        <div class="loja" data-loja="mercadolivre" onclick="filtrarPorLoja('mercadolivre')" role="button" aria-label="Filtrar por Mercado Livre"><img src="logos/mercadolivre.jpg" alt="Logo do Mercado Livre" loading="lazy"></div>
+                        <div class="loja" data-loja="alibaba" onclick="filtrarPorLoja('alibaba')" role="button" aria-label="Filtrar por Alibaba"><img src="logos/alibaba.png" alt="Logo da Alibaba" loading="lazy"></div>
+                    </div>
+                </div>
+                <input type="text" id="busca" placeholder="Busque por produtos..." class="barra-busca" aria-label="Buscar produtos" aria-describedby="busca-instrucao">
+                <span id="busca-instrucao" style="display: none;">Digite o nome do produto para filtrar os resultados.</span>
+                <div id="busca-feedback" class="busca-feedback"></div>
+                <div class="loading-spinner" id="loading-spinner"></div>
+                <div class="grid-produtos" id="grid-produtos"></div>
+                <button id="load-more" onclick="carregarMaisProdutos()">Carregar Mais</button>
+                <p class="mensagem-vazia" id="mensagem-vazia" aria-live="polite">Nenhum produto encontrado.</p>
+                <p class="error-message" id="error-message" style="display: none;" aria-live="assertive"></p>
+            </section>
+            <a class="whatsapp" href="https://wa.me/5521975179737" target="_blank">📲 Atendimento via WhatsApp</a>
+            <a class="telegram" href="https://t.me/boost/centraldecomprascdc" target="_blank">📢 Canal no Telegram</a>
+            <div class="social-links">
+                <a href="https://www.tiktok.com/@cdc.centraldecompas?_t=ZM-8vYQlF9u1dH&_r=1" target="_blank"><div class="icon"><img src="logos/tiktok.png" alt="Ícone do TikTok" loading="lazy"></div><span>TikTok</span></a>
+                <a href="https://www.instagram.com/cdccentrodecompras/?utm_source=qr&r=nametag" target="_blank"><div class="icon"><img src="logos/instagram.png" alt="Ícone do Instagram" loading="lazy"></div><span>Instagram</span></a>
+                <a href="https://x.com/ComprasCdc" target="_blank"><div class="icon"><img src="logos/x.png" alt="Ícone do X" loading="lazy"></div><span>X</span></a>
+                <a href="https://www.youtube.com/channel/UCaKHlI-hWqwdAXS6Xsv3ZzA" target="_blank"><div class="icon"><img src="logos/youtube.png" alt="Ícone do YouTube" loading="lazy"></div><span>YouTube</span></a>
+            </div>
+        </main>
+    </div>
+    <div class="modal" id="imageModal">
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <div class="modal-content" id="modalCarrossel">
+            <div class="carrossel-imagens" id="modalCarrosselImagens"></div>
+            <button class="carrossel-prev" id="modalPrev" onclick="moveModalCarrossel(-1)" aria-label="Imagem anterior">◄</button>
+            <button class="carrossel-next" id="modalNext" onclick="moveModalCarrossel(1)" aria-label="Próxima imagem">►</button>
+            <div class="carrossel-dots" id="modalCarrosselDots"></div>
+            <p class="modal-error" id="modalError" style="display: none; color: red; text-align: center;">Erro ao carregar imagens.</p>
+        </div>
+    </div>
+    <footer>
+        <p>🔧 Todos os direitos reservados <strong>Grupo Centro de Compra "CdC"</strong> © <span id="year"></span></p>
+    </footer>
+    <div class="robo-assistente">
+        <a href="https://wa.me/5521975179737" target="_blank">
+            <img src="imagens/robo.jpg" alt="Robô Assistente" class="robo-imagem">
+            <div class="robo-texto">Posso ajudar?</div>
+        </a>
+    </div>
 
-  <script>
-    const socket = io('http://localhost:3000');
+    <script>
+        const VERSION = "2.0.0"; 
+        let currentImages = [];
+        let currentImageIndex = 0;
+        let currentPage = 1;
+        const productsPerPage = 12;
+        let allProducts = [];
 
-    socket.on('connect', () => {
-      document.getElementById('log').innerHTML += `<p>Conectado: ${socket.id}</p>`;
-    });
+        document.getElementById("year").textContent = new Date().getFullYear();
 
-    socket.on('resposta', msg => {
-      document.getElementById('log').innerHTML += `<p>Servidor: ${msg}</p>`;
-    });
+        const logo = document.getElementById("site-logo");
+        let clickCount = 0, clickTimeout = null;
+        logo.addEventListener("click", (e) => {
+            e.stopPropagation();
+            clickCount++;
+            if (clickCount === 1) {
+                clickTimeout = setTimeout(() => { clickCount = 0; }, 500);
+            } else if (clickCount === 3) {
+                clearTimeout(clickTimeout);
+                window.location.href = "admin-xyz-123.html";
+                clickCount = 0;
+            }
+        });
 
-    function enviar() {
-      const msg = document.getElementById('msg').value;
-      socket.emit('mensagem', msg);
-      document.getElementById('log').innerHTML += `<p>Você: ${msg}</p>`;
-      document.getElementById('msg').value = '';
-    }
-  </script>
+        async function carregarProdutos(categoria = "todas", loja = "todas", busca = "", page = 1) {
+            const gridProdutos = document.getElementById("grid-produtos");
+            const mensagemVazia = document.getElementById("mensagem-vazia");
+            const errorMessage = document.getElementById("error-message");
+            const loadingSpinner = document.getElementById("loading-spinner");
+
+            if (!gridProdutos || !mensagemVazia || !errorMessage || !loadingSpinner) {
+                console.error("Erro fatal: Elementos DOM críticos não encontrados.");
+                return;
+            }
+
+            loadingSpinner.style.display = "block";
+            if (page === 1) {
+                gridProdutos.innerHTML = "";
+            }
+            mensagemVazia.style.display = "none";
+            errorMessage.style.display = "none";
+
+            try {
+                const url = `/api/produtos?page=${page}&limit=${productsPerPage}` +
+                            `${categoria !== 'todas' ? `&categoria=${categoria}` : ''}` +
+                            `${loja !== 'todas' ? `&loja=${loja}` : ''}` +
+                            `${busca ? `&busca=${encodeURIComponent(busca)}` : ''}`;
+
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`Erro na API: ${response.status} - ${response.statusText}`);
+                }
+                const { data, total } = await response.json();
+                
+                if (page === 1) {
+                    allProducts = data;
+                } else {
+                    allProducts.push(...data);
+                }
+
+                if (data.length === 0 && page === 1) {
+                    mensagemVazia.style.display = "block";
+                    gridProdutos.style.display = "none";
+                } else {
+                    gridProdutos.style.display = "grid";
+                    data.forEach(produto => {
+                        const card = document.createElement("div");
+                        card.classList.add("produto-card", "visible");
+                        card.setAttribute("data-categoria", produto.categoria.toLowerCase());
+                        card.setAttribute("data-loja", produto.loja.toLowerCase());
+                        
+                        const imagens = produto.imagens && produto.imagens.length > 0 ? JSON.parse(produto.imagens) : ["imagens/placeholder.jpg"];
+                        
+                        const carrosselId = `carrossel-${produto.id}`;
+                        
+                        card.innerHTML = `
+                            <div class="carrossel" id="${carrosselId}">
+                                <div class="carrossel-imagens">
+                                    ${imagens.map((img, idx) => `<img src="${img}" alt="${produto.nome}" loading="lazy" onclick="openModal('${produto.id}', ${idx})">`).join("")}
+                                </div>
+                                ${imagens.length > 1 ? `
+                                    <button class="carrossel-prev" onclick="moveCarrossel('${carrosselId}', -1)" aria-label="Imagem anterior">◄</button>
+                                    <button class="carrossel-next" onclick="moveCarrossel('${carrosselId}', 1)" aria-label="Próxima imagem">►</button>
+                                    <div class="carrossel-dots">
+                                        ${imagens.map((_, idx) => `<span class="carrossel-dot ${idx === 0 ? "ativo" : ""}" onclick="setCarrosselImage('${carrosselId}', ${idx})" aria-label="Selecionar imagem ${idx + 1}"></span>`).join("")}
+                                    </div>
+                                ` : ""}
+                            </div>
+                            <h4>${produto.nome}</h4>
+                            <p class="descricao">${produto.descricao || 'Sem descrição'}</p>
+                            <a href="${produto.link}" target="_blank" class="ver-na-loja" aria-label="Clique para ver o preço de ${produto.nome} na loja">Ver na Loja</a>
+                        `;
+                        gridProdutos.appendChild(card);
+                    });
+                }
+
+                const loadMoreButton = document.getElementById("load-more");
+                loadMoreButton.style.display = (currentPage * productsPerPage) < total ? "block" : "none";
+            } catch (error) {
+                console.error("Erro ao carregar produtos:", error);
+                errorMessage.textContent = `Erro ao carregar os produtos. Detalhes: ${error.message}`;
+                errorMessage.style.display = "block";
+                mensagemVazia.style.display = "none";
+                gridProdutos.style.display = "none";
+            }
+            loadingSpinner.style.display = "none";
+        }
+        
+        function carregarMaisProdutos() {
+            currentPage++;
+            const busca = document.getElementById("busca").value;
+            const categoria = document.querySelector(".categoria-item.ativa")?.dataset.categoria || "todas";
+            const loja = document.querySelector(".loja.ativa, .loja-todas.ativa")?.dataset.loja || "todas";
+            carregarProdutos(categoria, loja, busca, currentPage);
+        }
+
+        // Funções para os carrosséis menores nos cards
+        function moveCarrossel(id, direction) {
+            const carrossel = document.getElementById(id);
+            if (!carrossel) return;
+            const imagens = carrossel.querySelector(".carrossel-imagens");
+            const dots = carrossel.querySelectorAll(".carrossel-dot");
+            let index = parseInt(imagens.dataset.index || 0);
+            const total = imagens.children.length;
+            index = (index + direction + total) % total;
+            imagens.style.transform = `translateX(-${index * 100}%)`;
+            imagens.dataset.index = index;
+            dots.forEach((dot, i) => dot.classList.toggle("ativo", i === index));
+        }
+
+        function setCarrosselImage(id, index) {
+            const carrossel = document.getElementById(id);
+            if (!carrossel) return;
+            const imagens = carrossel.querySelector(".carrossel-imagens");
+            const dots = carrossel.querySelectorAll(".carrossel-dot");
+            imagens.style.transform = `translateX(-${index * 100}%)`;
+            imagens.dataset.index = index;
+            dots.forEach((dot, i) => dot.classList.toggle("ativo", i === index));
+        }
+
+        // Funções para o modal de imagem
+        async function openModal(id, imageIndex) {
+            const produto = allProducts.find(p => p.id == id);
+            if (!produto) {
+                console.error("Produto não encontrado para o ID:", id);
+                return;
+            }
+
+            const modal = document.getElementById("imageModal");
+            const carrosselImagens = document.getElementById("modalCarrosselImagens");
+            const carrosselDots = document.getElementById("modalCarrosselDots");
+            const prevButton = document.getElementById("modalPrev");
+            const nextButton = document.getElementById("modalNext");
+            
+            modal.style.display = "flex";
+            carrosselImagens.innerHTML = "";
+            carrosselDots.innerHTML = "";
+
+            currentImages = JSON.parse(produto.imagens);
+            currentImageIndex = Math.max(0, Math.min(imageIndex, currentImages.length - 1));
+
+            carrosselImagens.innerHTML = currentImages.map((img, idx) => `<img src="${img}" alt="${produto.nome} - Imagem ${idx + 1}" loading="lazy">`).join("");
+            carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+            
+            if (currentImages.length > 1) {
+                carrosselDots.innerHTML = currentImages.map((_, i) => `<span class="carrossel-dot ${i === currentImageIndex ? "ativo" : ""}" onclick="setModalCarrosselImage(${i})"></span>`).join("");
+                prevButton.classList.add("visible");
+                nextButton.classList.add("visible");
+            } else {
+                prevButton.classList.remove("visible");
+                nextButton.classList.remove("visible");
+            }
+        }
+
+        function moveModalCarrossel(direction) {
+            const carrosselImagens = document.getElementById("modalCarrosselImagens");
+            const carrosselDots = document.getElementById("modalCarrosselDots")?.children;
+            const total = currentImages.length;
+            
+            currentImageIndex = (currentImageIndex + direction + total) % total;
+            
+            carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+            Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle("ativo", i === currentImageIndex));
+        }
+
+        function setModalCarrosselImage(index) {
+            const carrosselImagens = document.getElementById("modalCarrosselImagens");
+            const carrosselDots = document.getElementById("modalCarrosselDots")?.children;
+            
+            currentImageIndex = index;
+            
+            carrosselImagens.style.transform = `translateX(-${index * 100}%)`;
+            Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle("ativo", i === index));
+        }
+
+        function closeModal() {
+            document.getElementById("imageModal").style.display = "none";
+        }
+
+        function filtrarPorCategoria(categoria) {
+            document.querySelectorAll(".categoria-item").forEach(item => item.classList.toggle("ativa", item.dataset.categoria === categoria));
+            currentPage = 1;
+            const busca = document.getElementById("busca").value;
+            const loja = document.querySelector(".loja.ativa, .loja-todas.ativa")?.dataset.loja || "todas";
+            carregarProdutos(categoria, loja, busca, currentPage);
+        }
+
+        function filtrarPorLoja(loja) {
+            document.querySelectorAll(".loja, .loja-todas").forEach(item => item.classList.toggle("ativa", item.dataset.loja === loja));
+            currentPage = 1;
+            const busca = document.getElementById("busca").value;
+            const categoria = document.querySelector(".categoria-item.ativa")?.dataset.categoria || "todas";
+            carregarProdutos(categoria, loja, busca, currentPage);
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            console.log(`Iniciando index.html v${VERSION}`);
+            
+            const buscaInput = document.getElementById("busca");
+            if (buscaInput) {
+                let timeout;
+                buscaInput.addEventListener("input", () => {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => {
+                        currentPage = 1;
+                        const categoria = document.querySelector(".categoria-item.ativa")?.dataset.categoria || "todas";
+                        const loja = document.querySelector(".loja.ativa, .loja-todas.ativa")?.dataset.loja || "todas";
+                        carregarProdutos(categoria, loja, buscaInput.value, currentPage);
+                    }, 500);
+                });
+            }
+
+            carregarProdutos();
+        });
+    </script>
 </body>
 </html>
