@@ -42,6 +42,8 @@
         .carrossel-imagens { display: flex; width: 100%; height: 100%; }
         .carrossel-imagens img { width: 100%; height: 150px; object-fit: cover; flex: 0 0 100%; transition: transform 0.3s ease; }
         .grid-produtos { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .form-section { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .login-section { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         @media (max-width: 600px) {
             .grid-produtos { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
             .produto-card { max-height: 250px; }
@@ -86,6 +88,63 @@
             </ul>
         </aside>
         <main>
+            <section class="login-section" id="login-section">
+                <h2>Login (Admin)</h2>
+                <form id="login-form">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                    <label for="senha">Senha:</label>
+                    <input type="password" id="senha" name="senha" required>
+                    <button type="submit">Entrar</button>
+                    <p id="login-feedback"></p>
+                </form>
+            </section>
+            <section class="form-section" id="admin-form" style="display: none;">
+                <h2>Adicionar Produto (Admin)</h2>
+                <form id="produto-form">
+                    <input type="hidden" id="produto-id" name="id">
+                    <label for="nome">Nome:</label>
+                    <input type="text" id="nome" name="nome" required>
+                    <label for="descricao">Descrição:</label>
+                    <textarea id="descricao" name="descricao"></textarea>
+                    <label for="preco">Preço:</label>
+                    <input type="number" id="preco" name="preco" step="0.01" required>
+                    <label for="imagens">Imagens:</label>
+                    <input type="file" id="imagens" name="imagens" accept="image/*" multiple>
+                    <div id="imagens-preview"></div>
+                    <label for="categoria">Categoria:</label>
+                    <select id="categoria" name="categoria" required>
+                        <option value="eletronicos">Eletrônicos</option>
+                        <option value="moda">Moda</option>
+                        <option value="fitness">Fitness</option>
+                        <option value="casa">Casa</option>
+                        <option value="beleza">Beleza</option>
+                        <option value="esportes">Esportes</option>
+                        <option value="livros">Livros</option>
+                        <option value="infantil">Infantil</option>
+                        <option value="Celulares">Celulares</option>
+                        <option value="Eletrodomésticos">Eletrodomésticos</option>
+                        <option value="pet">Pet</option>
+                        <option value="jardinagem">Jardinagem</option>
+                        <option value="automotivo">Automotivo</option>
+                        <option value="gastronomia">Gastronomia</option>
+                        <option value="games">Games</option>
+                    </select>
+                    <label for="loja">Loja:</label>
+                    <select id="loja" name="loja" required>
+                        <option value="amazon">Amazon</option>
+                        <option value="magalu">Magalu</option>
+                        <option value="shein">Shein</option>
+                        <option value="shopee">Shopee</option>
+                        <option value="mercadolivre">Mercado Livre</option>
+                        <option value="alibaba">Alibaba</option>
+                    </select>
+                    <label for="link">Link do Produto:</label>
+                    <input type="url" id="link" name="link" required>
+                    <button type="submit">Adicionar Produto</button>
+                    <p id="feedback"></p>
+                </form>
+            </section>
             <section id="ofertas-section" aria-live="polite">
                 <h2 id="ofertas-titulo">🛍️ Ofertas do Dia</h2>
                 <div class="lojas-parceiras">
@@ -140,154 +199,273 @@
     </div>
 
     <script>
-     const API_BASE_URL = 'https://minha-api-produtos.onrender.com';
+        const API_BASE_URL = 'https://minha-api-produtos.onrender.com';
+        let currentPage = 1;
+        let currentCategoria = 'todas';
+        let currentLoja = 'todas';
+        let currentBusca = '';
+        let isAdmin = false;
 
-    document.addEventListener('DOMContentLoaded', () => {
-      // Manipulador de erro para imagens
-      document.querySelectorAll('img').forEach(img => {
-        img.onerror = () => {
-          console.log(`Erro ao carregar imagem: ${img.src}`);
-          img.src = '/imagens/placeholder.jpg';
-        };
-      });
+        document.addEventListener('DOMContentLoaded', () => {
+            // Definir ano no footer
+            document.getElementById('year').textContent = new Date().getFullYear();
 
-      // Pré-visualização de imagens
-      const imagensInput = document.getElementById('imagens');
-      const imagensPreview = document.getElementById('imagens-preview');
-      imagensInput.addEventListener('change', () => {
-        imagensPreview.innerHTML = '';
-        Array.from(imagensInput.files).forEach(file => {
-          const img = document.createElement('img');
-          img.src = URL.createObjectURL(file);
-          img.style.width = '80px';
-          img.style.height = '80px';
-          img.style.objectFit = 'contain';
-          img.style.margin = '5px';
-          imagensPreview.appendChild(img);
+            // Manipulador de erro para imagens
+            document.querySelectorAll('img').forEach(img => {
+                img.onerror = () => {
+                    console.log(`Erro ao carregar imagem: ${img.src}`);
+                    img.src = '/imagens/placeholder.jpg';
+                };
+            });
+
+            // Verificar autenticação
+            const token = localStorage.getItem('token');
+            if (token) {
+                fetch(`${API_BASE_URL}/api/verify-token`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.is_admin) {
+                        isAdmin = true;
+                        document.getElementById('admin-form').style.display = 'block';
+                        document.getElementById('login-section').style.display = 'none';
+                    } else {
+                        localStorage.removeItem('token');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao verificar token:', error);
+                    localStorage.removeItem('token');
+                });
+            }
+
+            // Manipular login
+            const loginForm = document.getElementById('login-form');
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('email').value;
+                const senha = document.getElementById('senha').value;
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/login`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, senha })
+                    });
+                    const result = await response.json();
+                    const feedback = document.getElementById('login-feedback');
+                    if (response.ok && result.is_admin) {
+                        localStorage.setItem('token', result.token);
+                        isAdmin = true;
+                        document.getElementById('admin-form').style.display = 'block';
+                        document.getElementById('login-section').style.display = 'none';
+                        feedback.textContent = 'Login realizado com sucesso!';
+                        feedback.style.color = 'green';
+                    } else {
+                        feedback.textContent = result.message || 'Credenciais inválidas';
+                        feedback.style.color = 'red';
+                    }
+                } catch (error) {
+                    console.error('Erro ao fazer login:', error);
+                    document.getElementById('login-feedback').textContent = 'Erro ao conectar com a API';
+                    document.getElementById('login-feedback').style.color = 'red';
+                }
+            });
+
+            // Manipular adição de produto
+            const produtoForm = document.getElementById('produto-form');
+            produtoForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(produtoForm);
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/produtos`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+                        body: formData
+                    });
+                    const result = await response.json();
+                    const feedback = document.getElementById('feedback');
+                    if (response.ok) {
+                        feedback.textContent = result.message || 'Produto adicionado com sucesso';
+                        feedback.style.color = 'green';
+                        produtoForm.reset();
+                        document.getElementById('imagens-preview').innerHTML = '';
+                        carregarProdutos(true);
+                    } else {
+                        feedback.textContent = result.message || 'Erro ao adicionar produto';
+                        feedback.style.color = 'red';
+                    }
+                } catch (error) {
+                    console.error('Erro ao adicionar produto:', error);
+                    document.getElementById('feedback').textContent = 'Erro ao conectar com a API';
+                    document.getElementById('feedback').style.color = 'red';
+                }
+            });
+
+            // Pré-visualização de imagens
+            const imagensInput = document.getElementById('imagens');
+            const imagensPreview = document.getElementById('imagens-preview');
+            imagensInput.addEventListener('change', () => {
+                imagensPreview.innerHTML = '';
+                Array.from(imagensInput.files).forEach(file => {
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(file);
+                    img.style.width = '80px';
+                    img.style.height = '80px';
+                    img.style.objectFit = 'contain';
+                    img.style.margin = '5px';
+                    imagensPreview.appendChild(img);
+                });
+            });
+
+            // Carregar produtos
+            async function carregarProdutos(reset = false) {
+                if (reset) {
+                    currentPage = 1;
+                    document.getElementById('grid-produtos').innerHTML = '';
+                }
+                const gridProdutos = document.getElementById('grid-produtos');
+                const loadingSpinner = document.getElementById('loading-spinner');
+                const mensagemVazia = document.getElementById('mensagem-vazia');
+                const errorMessage = document.getElementById('error-message');
+                const loadMoreButton = document.getElementById('load-more');
+
+                loadingSpinner.style.display = 'block';
+                mensagemVazia.style.display = 'none';
+                errorMessage.style.display = 'none';
+
+                try {
+                    const params = new URLSearchParams({
+                        categoria: currentCategoria,
+                        loja: currentLoja,
+                        busca: currentBusca,
+                        page: currentPage,
+                        limit: 12
+                    });
+                    const response = await fetch(`${API_BASE_URL}/api/produtos?${params}`);
+                    if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
+                    const { data, total } = await response.json();
+
+                    if (data.length === 0 && currentPage === 1) {
+                        mensagemVazia.style.display = 'block';
+                        loadMoreButton.style.display = 'none';
+                    } else {
+                        data.forEach(produto => {
+                            const div = document.createElement('div');
+                            div.className = 'produto-card';
+                            div.innerHTML = `
+                                <div class="carrossel">
+                                    <div class="carrossel-imagens" data-images='${JSON.stringify(produto.imagens)}'>
+                                        <img src="${produto.imagens[0] || '/imagens/placeholder.jpg'}" alt="${produto.nome}">
+                                    </div>
+                                </div>
+                                <span>${produto.nome}</span>
+                                <span>R$ ${parseFloat(produto.preco).toFixed(2)}</span>
+                                <a href="${produto.link}" target="_blank" class="tarja-preco">Comprar na ${produto.loja}</a>
+                            `;
+                            gridProdutos.appendChild(div);
+                        });
+                        loadMoreButton.style.display = data.length < total ? 'block' : 'none';
+                    }
+                } catch (error) {
+                    console.error('Erro ao carregar produtos:', error);
+                    errorMessage.textContent = 'Erro ao carregar produtos';
+                    errorMessage.style.display = 'block';
+                } finally {
+                    loadingSpinner.style.display = 'none';
+                }
+            }
+
+            // Função para carregar mais produtos
+            window.carregarMaisProdutos = () => {
+                currentPage++;
+                carregarProdutos();
+            };
+
+            // Filtrar por categoria
+            window.filtrarPorCategoria = (categoria) => {
+                currentCategoria = categoria;
+                currentPage = 1;
+                document.getElementById('grid-produtos').innerHTML = '';
+                document.querySelectorAll('.categoria-item').forEach(item => {
+                    item.classList.toggle('ativa', item.dataset.categoria === categoria);
+                });
+                carregarProdutos();
+            };
+
+            // Filtrar por loja
+            window.filtrarPorLoja = (loja) => {
+                currentLoja = loja;
+                currentPage = 1;
+                document.getElementById('grid-produtos').innerHTML = '';
+                document.querySelectorAll('.loja, .loja-todas').forEach(item => {
+                    item.classList.toggle('ativa', item.dataset.loja === loja);
+                });
+                carregarProdutos();
+            };
+
+            // Busca por produtos
+            document.getElementById('busca').addEventListener('input', (e) => {
+                currentBusca = e.target.value;
+                currentPage = 1;
+                document.getElementById('grid-produtos').innerHTML = '';
+                carregarProdutos();
+            });
+
+            // Modal de imagens
+            window.openModal = (images) => {
+                const modal = document.getElementById('imageModal');
+                const carrosselImagens = document.getElementById('modalCarrosselImagens');
+                const carrosselDots = document.getElementById('modalCarrosselDots');
+                let currentIndex = 0;
+
+                carrosselImagens.innerHTML = '';
+                carrosselDots.innerHTML = '';
+                images.forEach((imgSrc, index) => {
+                    const img = document.createElement('img');
+                    img.src = imgSrc;
+                    img.onerror = () => {
+                        img.src = '/imagens/placeholder.jpg';
+                    };
+                    carrosselImagens.appendChild(img);
+
+                    const dot = document.createElement('span');
+                    dot.className = 'carrossel-dot';
+                    if (index === 0) dot.className += ' ativo';
+                    dot.onclick = () => moveModalCarrossel(index - currentIndex);
+                    carrosselDots.appendChild(dot);
+                });
+
+                document.getElementById('modalPrev').classList.toggle('visible', images.length > 1);
+                document.getElementById('modalNext').classList.toggle('visible', images.length > 1);
+                modal.style.display = 'flex';
+
+                window.moveModalCarrossel = (step) => {
+                    const totalImages = images.length;
+                    currentIndex = (currentIndex + step + totalImages) % totalImages;
+                    carrosselImagens.style.transform = `translateX(-${currentIndex * 100}%)`;
+                    document.querySelectorAll('.carrossel-dot').forEach((dot, index) => {
+                        dot.classList.toggle('ativo', index === currentIndex);
+                    });
+                };
+            };
+
+            window.closeModal = () => {
+                document.getElementById('imageModal').style.display = 'none';
+            };
+
+            // Adicionar evento de clique para abrir modal
+            document.getElementById('grid-produtos').addEventListener('click', (e) => {
+                const carrossel = e.target.closest('.carrossel-imagens');
+                if (carrossel) {
+                    const images = JSON.parse(carrossel.dataset.images);
+                    openModal(images);
+                }
+            });
+
+            // Carregar produtos iniciais
+            carregarProdutos();
         });
-      });
-
-      // Carregar lista de produtos
-      async function carregarProdutos() {
-        const produtosLista = document.getElementById('produtos-lista');
-        produtosLista.innerHTML = '<p>Carregando...</p>';
-        try {
-          const response = await fetch(`${API_BASE_URL}/api/produtos`);
-          if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
-          const { data } = await response.json();
-          produtosLista.innerHTML = '';
-          if (data.length === 0) {
-            produtosLista.innerHTML = '<p>Nenhum produto encontrado.</p>';
-            return;
-          }
-          data.forEach(produto => {
-            const div = document.createElement('div');
-            div.className = 'produto-item';
-            div.innerHTML = `
-              <img src="${produto.imagens[0] || '/imagens/placeholder.jpg'}" alt="${produto.nome}" style="width: 50px; height: 50px; object-fit: contain;">
-              <span>${produto.nome} - R$ ${parseFloat(produto.preco).toFixed(2)}</span>
-              <button onclick="editarProduto(${produto.id})">Editar</button>
-              <button onclick="excluirProduto(${produto.id})">Excluir</button>
-            `;
-            produtosLista.appendChild(div);
-          });
-        } catch (error) {
-          console.error('Erro ao carregar produtos:', error);
-          produtosLista.innerHTML = '<p>Erro ao carregar produtos.</p>';
-        }
-      }
-
-      // Editar produto
-      window.editarProduto = async function(id) {
-        try {
-          const response = await fetch(`${API_BASE_URL}/api/produtos?id=${id}`);
-          const { data } = await response.json();
-          const produto = data.find(p => p.id === id);
-          if (!produto) throw new Error('Produto não encontrado');
-          
-          document.getElementById('produto-id').value = produto.id;
-          document.getElementById('nome').value = produto.nome;
-          document.getElementById('descricao').value = produto.descricao || '';
-          document.getElementById('preco').value = produto.preco;
-          document.getElementById('categoria').value = produto.categoria;
-          document.getElementById('loja').value = produto.loja;
-          document.getElementById('link').value = produto.link;
-          document.getElementById('imagens-preview').innerHTML = produto.imagens.map(img => `<img src="${img}" style="width: 80px; height: 80px; object-fit: contain; margin: 5px;">`).join('');
-          document.getElementById('cancelar-edicao').style.display = 'inline-block';
-          document.querySelector('#produto-form button[type="submit"]').textContent = 'Atualizar Produto';
-        } catch (error) {
-          console.error('Erro ao carregar produto para edição:', error);
-          document.getElementById('feedback').textContent = 'Erro ao carregar produto';
-          document.getElementById('feedback').style.color = 'red';
-        }
-      };
-
-      // Excluir produto
-      window.excluirProduto = async function(id) {
-        if (!confirm('Tem certeza que deseja excluir este produto?')) return;
-        try {
-          const response = await fetch(`${API_BASE_URL}/api/produtos/${id}`, { method: 'DELETE' });
-          const result = await response.json();
-          if (response.ok) {
-            document.getElementById('feedback').textContent = result.message || 'Produto excluído com sucesso';
-            document.getElementById('feedback').style.color = 'green';
-            carregarProdutos();
-          } else {
-            document.getElementById('feedback').textContent = result.message || 'Erro ao excluir produto';
-            document.getElementById('feedback').style.color = 'red';
-          }
-        } catch (error) {
-          console.error('Erro ao excluir produto:', error);
-          document.getElementById('feedback').textContent = 'Erro ao conectar com a API';
-          document.getElementById('feedback').style.color = 'red';
-        }
-      };
-
-      // Cancelar edição
-      document.getElementById('cancelar-edicao').addEventListener('click', () => {
-        document.getElementById('produto-form').reset();
-        document.getElementById('imagens-preview').innerHTML = '';
-        document.getElementById('produto-id').value = '';
-        document.getElementById('cancelar-edicao').style.display = 'none';
-        document.querySelector('#produto-form button[type="submit"]').textContent = 'Adicionar Produto';
-      });
-
-      // Formulário de adição/atualização de produto
-      const form = document.getElementById('produto-form');
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const formData = new FormData(form);
-        const id = document.getElementById('produto-id').value;
-        const url = id ? `${API_BASE_URL}/api/produtos/${id}` : `${API_BASE_URL}/api/produtos`;
-        const method = id ? 'PUT' : 'POST';
-
-        try {
-          const response = await fetch(url, { method, body: formData });
-          const result = await response.json();
-          const feedback = document.getElementById('feedback');
-          if (response.ok) {
-            feedback.textContent = result.message || id ? 'Produto atualizado com sucesso' : 'Produto adicionado com sucesso';
-            feedback.style.color = 'green';
-            form.reset();
-            document.getElementById('imagens-preview').innerHTML = '';
-            document.getElementById('produto-id').value = '';
-            document.getElementById('cancelar-edicao').style.display = 'none';
-            document.querySelector('#produto-form button[type="submit"]').textContent = 'Adicionar Produto';
-            carregarProdutos();
-          } else {
-            feedback.textContent = result.message || 'Erro ao salvar produto';
-            feedback.style.color = 'red';
-          }
-        } catch (error) {
-          console.error('Erro ao salvar produto:', error);
-          document.getElementById('feedback').textContent = 'Erro ao conectar com a API';
-          document.getElementById('feedback').style.color = 'red';
-        }
-      });
-
-      // Carregar produtos iniciais
-      carregarProdutos();
-    });
-  </script>
+    </script>
 </body>
 </html>
