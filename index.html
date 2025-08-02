@@ -16,7 +16,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Estilos do Carrossel e Modal */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { position: relative; max-width: 90%; max-height: 90%; width: auto; height: auto; }
         .modal-content .carrossel-imagens { display: flex; overflow: hidden; width: 100%; height: 100%; }
@@ -42,8 +41,6 @@
         .carrossel-imagens { display: flex; width: 100%; height: 100%; }
         .carrossel-imagens img { width: 100%; height: 150px; object-fit: cover; flex: 0 0 100%; transition: transform 0.3s ease; }
         .grid-produtos { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-        .form-section { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .login-section { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         @media (max-width: 600px) {
             .grid-produtos { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
             .produto-card { max-height: 250px; }
@@ -88,63 +85,6 @@
             </ul>
         </aside>
         <main>
-            <section class="login-section" id="login-section">
-                <h2>Login (Admin)</h2>
-                <form id="login-form">
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" required>
-                    <label for="senha">Senha:</label>
-                    <input type="password" id="senha" name="senha" required>
-                    <button type="submit">Entrar</button>
-                    <p id="login-feedback"></p>
-                </form>
-            </section>
-            <section class="form-section" id="admin-form" style="display: none;">
-                <h2>Adicionar Produto (Admin)</h2>
-                <form id="produto-form">
-                    <input type="hidden" id="produto-id" name="id">
-                    <label for="nome">Nome:</label>
-                    <input type="text" id="nome" name="nome" required>
-                    <label for="descricao">Descrição:</label>
-                    <textarea id="descricao" name="descricao"></textarea>
-                    <label for="preco">Preço:</label>
-                    <input type="number" id="preco" name="preco" step="0.01" required>
-                    <label for="imagens">Imagens:</label>
-                    <input type="file" id="imagens" name="imagens" accept="image/*" multiple>
-                    <div id="imagens-preview"></div>
-                    <label for="categoria">Categoria:</label>
-                    <select id="categoria" name="categoria" required>
-                        <option value="eletronicos">Eletrônicos</option>
-                        <option value="moda">Moda</option>
-                        <option value="fitness">Fitness</option>
-                        <option value="casa">Casa</option>
-                        <option value="beleza">Beleza</option>
-                        <option value="esportes">Esportes</option>
-                        <option value="livros">Livros</option>
-                        <option value="infantil">Infantil</option>
-                        <option value="Celulares">Celulares</option>
-                        <option value="Eletrodomésticos">Eletrodomésticos</option>
-                        <option value="pet">Pet</option>
-                        <option value="jardinagem">Jardinagem</option>
-                        <option value="automotivo">Automotivo</option>
-                        <option value="gastronomia">Gastronomia</option>
-                        <option value="games">Games</option>
-                    </select>
-                    <label for="loja">Loja:</label>
-                    <select id="loja" name="loja" required>
-                        <option value="amazon">Amazon</option>
-                        <option value="magalu">Magalu</option>
-                        <option value="shein">Shein</option>
-                        <option value="shopee">Shopee</option>
-                        <option value="mercadolivre">Mercado Livre</option>
-                        <option value="alibaba">Alibaba</option>
-                    </select>
-                    <label for="link">Link do Produto:</label>
-                    <input type="url" id="link" name="link" required>
-                    <button type="submit">Adicionar Produto</button>
-                    <p id="feedback"></p>
-                </form>
-            </section>
             <section id="ofertas-section" aria-live="polite">
                 <h2 id="ofertas-titulo">🛍️ Ofertas do Dia</h2>
                 <div class="lojas-parceiras">
@@ -161,7 +101,6 @@
                 </div>
                 <input type="text" id="busca" placeholder="Busque por produtos..." class="barra-busca" aria-label="Buscar produtos" aria-describedby="busca-instrucao">
                 <span id="busca-instrucao" style="display: none;">Digite o nome do produto para filtrar os resultados.</span>
-                <div id="busca-feedback" class="busca-feedback"></div>
                 <div class="loading-spinner" id="loading-spinner"></div>
                 <div class="grid-produtos" id="grid-produtos"></div>
                 <button id="load-more" onclick="carregarMaisProdutos()">Carregar Mais</button>
@@ -204,7 +143,6 @@
         let currentCategoria = 'todas';
         let currentLoja = 'todas';
         let currentBusca = '';
-        let isAdmin = false;
 
         document.addEventListener('DOMContentLoaded', () => {
             // Definir ano no footer
@@ -218,104 +156,20 @@
                 };
             });
 
-            // Verificar autenticação
-            const token = localStorage.getItem('token');
-            if (token) {
-                fetch(`${API_BASE_URL}/api/verify-token`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.is_admin) {
-                        isAdmin = true;
-                        document.getElementById('admin-form').style.display = 'block';
-                        document.getElementById('login-section').style.display = 'none';
-                    } else {
-                        localStorage.removeItem('token');
-                    }
-                })
-                .catch(error => {
-                    console.error('Erro ao verificar token:', error);
-                    localStorage.removeItem('token');
-                });
-            }
-
-            // Manipular login
-            const loginForm = document.getElementById('login-form');
-            loginForm.addEventListener('submit', async (e) => {
+            // Três cliques no logotipo para acessar a página de administração
+            let clickCount = 0;
+            let clickTimeout;
+            document.getElementById('site-logo').addEventListener('click', (e) => {
                 e.preventDefault();
-                const email = document.getElementById('email').value;
-                const senha = document.getElementById('senha').value;
-                try {
-                    const response = await fetch(`${API_BASE_URL}/api/login`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email, senha })
-                    });
-                    const result = await response.json();
-                    const feedback = document.getElementById('login-feedback');
-                    if (response.ok && result.is_admin) {
-                        localStorage.setItem('token', result.token);
-                        isAdmin = true;
-                        document.getElementById('admin-form').style.display = 'block';
-                        document.getElementById('login-section').style.display = 'none';
-                        feedback.textContent = 'Login realizado com sucesso!';
-                        feedback.style.color = 'green';
-                    } else {
-                        feedback.textContent = result.message || 'Credenciais inválidas';
-                        feedback.style.color = 'red';
-                    }
-                } catch (error) {
-                    console.error('Erro ao fazer login:', error);
-                    document.getElementById('login-feedback').textContent = 'Erro ao conectar com a API';
-                    document.getElementById('login-feedback').style.color = 'red';
+                clickCount++;
+                if (clickCount === 3) {
+                    window.location.href = 'admin-xyz-123.html';
+                    clickCount = 0;
                 }
-            });
-
-            // Manipular adição de produto
-            const produtoForm = document.getElementById('produto-form');
-            produtoForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const formData = new FormData(produtoForm);
-                try {
-                    const response = await fetch(`${API_BASE_URL}/api/produtos`, {
-                        method: 'POST',
-                        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
-                        body: formData
-                    });
-                    const result = await response.json();
-                    const feedback = document.getElementById('feedback');
-                    if (response.ok) {
-                        feedback.textContent = result.message || 'Produto adicionado com sucesso';
-                        feedback.style.color = 'green';
-                        produtoForm.reset();
-                        document.getElementById('imagens-preview').innerHTML = '';
-                        carregarProdutos(true);
-                    } else {
-                        feedback.textContent = result.message || 'Erro ao adicionar produto';
-                        feedback.style.color = 'red';
-                    }
-                } catch (error) {
-                    console.error('Erro ao adicionar produto:', error);
-                    document.getElementById('feedback').textContent = 'Erro ao conectar com a API';
-                    document.getElementById('feedback').style.color = 'red';
-                }
-            });
-
-            // Pré-visualização de imagens
-            const imagensInput = document.getElementById('imagens');
-            const imagensPreview = document.getElementById('imagens-preview');
-            imagensInput.addEventListener('change', () => {
-                imagensPreview.innerHTML = '';
-                Array.from(imagensInput.files).forEach(file => {
-                    const img = document.createElement('img');
-                    img.src = URL.createObjectURL(file);
-                    img.style.width = '80px';
-                    img.style.height = '80px';
-                    img.style.objectFit = 'contain';
-                    img.style.margin = '5px';
-                    imagensPreview.appendChild(img);
-                });
+                clearTimeout(clickTimeout);
+                clickTimeout = setTimeout(() => {
+                    clickCount = 0;
+                }, 1000); // Reseta após 1 segundo
             });
 
             // Carregar produtos
