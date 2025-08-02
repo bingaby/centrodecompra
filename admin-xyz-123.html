@@ -8,7 +8,11 @@
   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
   <style>
     .form-section { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-    .login-section { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .produto-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; padding: 10px; background: #f9f9f9; border-radius: 4px; }
+    .produto-item img { width: 50px; height: 50px; object-fit: contain; }
+    .produto-item button { padding: 5px 10px; background: #ff6200; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    .produto-item button:hover { background: #e55a00; }
+    #feedback { margin-top: 10px; text-align: center; }
   </style>
 </head>
 <body>
@@ -18,18 +22,7 @@
   </header>
   <main>
     <div class="container admin-container">
-      <section class="login-section" id="login-section">
-        <h2>Login (Admin)</h2>
-        <form id="login-form">
-          <label for="email">Email:</label>
-          <input type="email" id="email" name="email" required>
-          <label for="senha">Senha:</label>
-          <input type="password" id="senha" name="senha" required>
-          <button type="submit">Entrar</button>
-          <p id="login-feedback"></p>
-        </form>
-      </section>
-      <section class="form-section" id="admin-form" style="display: none;">
+      <section class="form-section">
         <h2>Adicionar/Editar Produto</h2>
         <form id="produto-form">
           <input type="hidden" id="produto-id" name="id">
@@ -84,65 +77,8 @@
   </main>
   <script>
     const API_BASE_URL = 'https://minha-api-produtos.onrender.com';
-    let isAdmin = false;
 
     document.addEventListener('DOMContentLoaded', () => {
-      // Verificar autenticação
-      const token = localStorage.getItem('token');
-      if (token) {
-        fetch(`${API_BASE_URL}/api/verify-token`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.is_admin) {
-            isAdmin = true;
-            document.getElementById('admin-form').style.display = 'block';
-            document.getElementById('login-section').style.display = 'none';
-            carregarProdutos();
-          } else {
-            localStorage.removeItem('token');
-          }
-        })
-        .catch(error => {
-          console.error('Erro ao verificar token:', error);
-          localStorage.removeItem('token');
-        });
-      }
-
-      // Manipular login
-      const loginForm = document.getElementById('login-form');
-      loginForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const email = document.getElementById('email').value;
-        const senha = document.getElementById('senha').value;
-        try {
-          const response = await fetch(`${API_BASE_URL}/api/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, senha })
-          });
-          const result = await response.json();
-          const feedback = document.getElementById('login-feedback');
-          if (response.ok && result.is_admin) {
-            localStorage.setItem('token', result.token);
-            isAdmin = true;
-            document.getElementById('admin-form').style.display = 'block';
-            document.getElementById('login-section').style.display = 'none';
-            feedback.textContent = 'Login realizado com sucesso!';
-            feedback.style.color = 'green';
-            carregarProdutos();
-          } else {
-            feedback.textContent = result.message || 'Credenciais inválidas';
-            feedback.style.color = 'red';
-          }
-        } catch (error) {
-          console.error('Erro ao fazer login:', error);
-          document.getElementById('login-feedback').textContent = 'Erro ao conectar com a API';
-          document.getElementById('login-feedback').style.color = 'red';
-        }
-      });
-
       // Manipulador de erro para imagens
       document.querySelectorAll('img').forEach(img => {
         img.onerror = () => {
@@ -172,9 +108,7 @@
         const produtosLista = document.getElementById('produtos-lista');
         produtosLista.innerHTML = '<p>Carregando...</p>';
         try {
-          const response = await fetch(`${API_BASE_URL}/api/produtos`, {
-            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-          });
+          const response = await fetch(`${API_BASE_URL}/api/produtos`);
           if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
           const { data } = await response.json();
           produtosLista.innerHTML = '';
@@ -186,7 +120,7 @@
             const div = document.createElement('div');
             div.className = 'produto-item';
             div.innerHTML = `
-              <img src="${produto.imagens[0] || '/imagens/placeholder.jpg'}" alt="${produto.nome}" style="width: 50px; height: 50px; object-fit: contain;">
+              <img src="${produto.imagens[0] || '/imagens/placeholder.jpg'}" alt="${produto.nome}">
               <span>${produto.nome} - R$ ${parseFloat(produto.preco).toFixed(2)}</span>
               <button onclick="editarProduto(${produto.id})">Editar</button>
               <button onclick="excluirProduto(${produto.id})">Excluir</button>
@@ -202,9 +136,7 @@
       // Editar produto
       window.editarProduto = async function(id) {
         try {
-          const response = await fetch(`${API_BASE_URL}/api/produtos?id=${id}`, {
-            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-          });
+          const response = await fetch(`${API_BASE_URL}/api/produtos?id=${id}`);
           const { data } = await response.json();
           const produto = data.find(p => p.id === id);
           if (!produto) throw new Error('Produto não encontrado');
@@ -231,8 +163,7 @@
         if (!confirm('Tem certeza que deseja excluir este produto?')) return;
         try {
           const response = await fetch(`${API_BASE_URL}/api/produtos/${id}`, {
-            method: 'DELETE',
-            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            method: 'DELETE'
           });
           const result = await response.json();
           if (response.ok) {
@@ -271,7 +202,6 @@
         try {
           const response = await fetch(url, {
             method,
-            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
             body: formData
           });
           const result = await response.json();
@@ -295,6 +225,9 @@
           document.getElementById('feedback').style.color = 'red';
         }
       });
+
+      // Carregar produtos iniciais
+      carregarProdutos();
     });
   </script>
 </body>
