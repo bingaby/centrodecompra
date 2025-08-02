@@ -1,159 +1,154 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <title>Adicionar Produtos</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 600px;
-      margin: 20px auto;
-    }
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    input, select, button {
-      padding: 10px;
-      font-size: 16px;
-    }
-    .produto-lista {
-      margin-top: 30px;
-    }
-    .produto-item {
-      border: 1px solid #ddd;
-      padding: 10px;
-      margin-bottom: 10px;
-    }
-    .produto-item img {
-      max-width: 100px;
-      max-height: 100px;
-      margin-right: 10px;
-    }
-    .imagens-wrapper {
-      display: flex;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <title>Adicionar Produtos</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto; }
+        form { display: flex; flex-direction: column; gap: 10px; }
+        input, select, button { padding: 10px; font-size: 16px; }
+        .produto-lista { margin-top: 30px; }
+        .produto-item { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; }
+        .produto-item img { max-width: 100px; max-height: 100px; margin-right: 10px; }
+        .imagens-wrapper { display: flex; gap: 5px; margin-top: 10px; }
+        h1 { text-align: center; color: #333; }
+        .produto-item button { margin-top: 10px; background-color: #dc3545; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 5px; }
+        .produto-item button:hover { background-color: #c82333; }
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
 </head>
 <body>
-  <h1>Adicionar Produto</h1>
-  <form id="form-produto" enctype="multipart/form-data">
-    <input type="text" name="nome" placeholder="Nome do produto" required />
-    <select name="categoria" required>
-      <option value="" disabled selected>Selecione uma categoria</option>
-      <option value="eletronicos">Eletrônicos</option>
-      <option value="moda">Moda</option>
-      <option value="fitness">Fitness</option>
-      <option value="casa">Casa e Decoração</option>
-      <option value="beleza">Beleza</option>
-      <option value="esportes">Esportes</option>
-      <option value="livros">Livros</option>
-      <option value="infantil">Infantil</option>
-      <option value="celulares">Celulares</option>
-      <option value="eletrodomesticos">Eletrodomésticos</option>
-    </select>
-    <select name="loja" required>
-      <option value="" disabled selected>Selecione uma loja</option>
-      <option value="amazon">Amazon</option>
-      <option value="magalu">Magalu</option>
-      <option value="shein">Shein</option>
-      <option value="shopee">Shopee</option>
-      <option value="mercadolivre">Mercado Livre</option>
-      <option value="alibaba">Alibaba</option>
-    </select>
-    <input type="url" name="link" placeholder="Link do produto (https://...)" required />
-    <input type="file" name="imagens" accept="image/*" multiple required />
-    <button type="submit">Adicionar</button>
-  </form>
+    <h1>Adicionar Produto</h1>
+    <form id="form-produto" enctype="multipart/form-data">
+        <input type="text" name="nome" placeholder="Nome do produto" required />
+        <select name="categoria" required>
+            <option value="" disabled selected>Selecione uma categoria</option>
+            <option value="eletronicos">Eletrônicos</option>
+            <option value="moda">Moda</option>
+            <option value="fitness">Fitness</option>
+            <option value="casa">Casa e Decoração</option>
+            <option value="beleza">Beleza</option>
+            <option value="esportes">Esportes</option>
+            <option value="livros">Livros</option>
+            <option value="infantil">Infantil</option>
+            <option value="celulares">Celulares</option>
+            <option value="eletrodomesticos">Eletrodomésticos</option>
+        </select>
+        <select name="loja" required>
+            <option value="" disabled selected>Selecione uma loja</option>
+            <option value="amazon">Amazon</option>
+            <option value="magalu">Magalu</option>
+            <option value="shein">Shein</option>
+            <option value="shopee">Shopee</option>
+            <option value="mercadolivre">Mercado Livre</option>
+            <option value="alibaba">Alibaba</option>
+        </select>
+        <input type="url" name="link" placeholder="Link do produto (https://...)" required />
+        <input type="file" name="imagens" accept="image/*" multiple required />
+        <button type="submit">Adicionar</button>
+    </form>
 
-  <div id="mensagem" style="color: green; margin-top: 10px;"></div>
-  <div id="erro" style="color: red; margin-top: 10px;"></div>
+    <div id="mensagem" style="color: green; margin-top: 10px;"></div>
+    <div id="erro" style="color: red; margin-top: 10px;"></div>
 
-  <div class="produto-lista" id="produto-lista"></div>
+    <div class="produto-lista" id="produto-lista"></div>
 
-  <script>
-    const form = document.getElementById('form-produto');
-    const mensagem = document.getElementById('mensagem');
-    const erro = document.getElementById('erro');
-    const produtoLista = document.getElementById('produto-lista');
+    <script>
+        const form = document.getElementById('form-produto');
+        const mensagem = document.getElementById('mensagem');
+        const erro = document.getElementById('erro');
+        const produtoLista = document.getElementById('produto-lista');
 
-    // Função para listar produtos
-    async function listarProdutos() {
-      produtoLista.innerHTML = 'Carregando...';
-      try {
-        const res = await fetch('/api/produtos');
-        const produtos = await res.json();
+        // Função para listar produtos
+        async function listarProdutos() {
+            produtoLista.innerHTML = 'Carregando...';
+            try {
+                const res = await fetch('/api/produtos');
+                const produtos = await res.json();
+                
+                // A API retorna um objeto { data: [...], total: ... }
+                const produtosData = produtos.data;
 
-        if(produtos.length === 0){
-          produtoLista.innerHTML = '<p>Nenhum produto cadastrado.</p>';
-          return;
+                if (produtosData.length === 0) {
+                    produtoLista.innerHTML = '<p>Nenhum produto cadastrado.</p>';
+                    return;
+                }
+
+                produtoLista.innerHTML = '';
+                produtosData.forEach(produto => {
+                    const div = document.createElement('div');
+                    div.className = 'produto-item';
+
+                    // Correção: o campo 'imagens' do banco de dados é uma string JSON, então precisa ser "parseado"
+                    const imagensArray = JSON.parse(produto.imagens);
+                    const imagensHtml = imagensArray.map(url => `<img src="${url}" alt="Imagem do produto" />`).join('');
+
+                    div.innerHTML = `
+                        <strong>${produto.nome}</strong> <br/>
+                        Categoria: ${produto.categoria} | Loja: ${produto.loja} <br/>
+                        <a href="${produto.link}" target="_blank">Link do produto</a> <br/>
+                        <div class="imagens-wrapper">${imagensHtml}</div>
+                        <button onclick="excluirProduto(${produto.id})">Excluir</button>
+                    `;
+                    produtoLista.appendChild(div);
+                });
+            } catch (e) {
+                console.error("Erro ao carregar produtos:", e);
+                produtoLista.innerHTML = 'Erro ao carregar produtos.';
+            }
         }
 
-        produtoLista.innerHTML = '';
-        produtos.forEach(produto => {
-          const div = document.createElement('div');
-          div.className = 'produto-item';
-
-          const imagensHtml = produto.imagens.map(url => `<img src="${url}" alt="Imagem do produto" />`).join('');
-
-          div.innerHTML = `
-            <strong>${produto.nome}</strong> <br/>
-            Categoria: ${produto.categoria} | Loja: ${produto.loja} <br/>
-            <a href="${produto.link}" target="_blank">Link do produto</a> <br/>
-            <div class="imagens-wrapper">${imagensHtml}</div>
-            <button onclick="excluirProduto(${produto.id})">Excluir</button>
-          `;
-          produtoLista.appendChild(div);
-        });
-      } catch(e) {
-        produtoLista.innerHTML = 'Erro ao carregar produtos.';
-      }
-    }
-
-    // Excluir produto
-    async function excluirProduto(id) {
-      if(!confirm('Confirma exclusão do produto?')) return;
-      try {
-        await fetch(`/api/produtos/${id}`, { method: 'DELETE' });
-        mensagem.textContent = 'Produto excluído com sucesso.';
-        erro.textContent = '';
-        listarProdutos();
-      } catch(e) {
-        erro.textContent = 'Erro ao excluir produto.';
-        mensagem.textContent = '';
-      }
-    }
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      mensagem.textContent = '';
-      erro.textContent = '';
-
-      const formData = new FormData(form);
-
-      try {
-        const res = await fetch('/api/produtos', {
-          method: 'POST',
-          body: formData
-        });
-        const data = await res.json();
-
-        if (!res.ok) {
-          erro.textContent = data.error || 'Erro ao adicionar produto.';
-          return;
+        // Excluir produto
+        async function excluirProduto(id) {
+            if (!confirm('Confirma exclusão do produto?')) return;
+            try {
+                const res = await fetch(`/api/produtos/${id}`, { method: 'DELETE' });
+                const result = await res.json();
+                if (!res.ok) {
+                    erro.textContent = result.error || 'Erro ao excluir produto.';
+                    return;
+                }
+                mensagem.textContent = 'Produto excluído com sucesso.';
+                erro.textContent = '';
+                listarProdutos();
+            } catch (e) {
+                console.error("Erro na exclusão:", e);
+                erro.textContent = 'Erro ao excluir produto.';
+                mensagem.textContent = '';
+            }
         }
 
-        mensagem.textContent = 'Produto adicionado com sucesso!';
-        form.reset();
-        listarProdutos();
-      } catch (e) {
-        erro.textContent = 'Erro ao enviar dados.';
-      }
-    });
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            mensagem.textContent = '';
+            erro.textContent = '';
 
-    // Carregar lista ao iniciar
-    listarProdutos();
-  </script>
+            const formData = new FormData(form);
+
+            try {
+                const res = await fetch('/api/produtos', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    erro.textContent = data.error || 'Erro ao adicionar produto.';
+                    return;
+                }
+
+                mensagem.textContent = 'Produto adicionado com sucesso!';
+                form.reset();
+                listarProdutos();
+            } catch (e) {
+                console.error("Erro no envio:", e);
+                erro.textContent = 'Erro ao enviar dados.';
+            }
+        });
+
+        // Carregar lista ao iniciar
+        listarProdutos();
+    </script>
 </body>
 </html>
