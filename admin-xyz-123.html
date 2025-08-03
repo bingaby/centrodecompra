@@ -13,6 +13,55 @@
     .produto-item button { padding: 5px 10px; background: #ff6200; color: white; border: none; border-radius: 4px; cursor: pointer; }
     .produto-item button:hover { background: #e55a00; }
     #feedback { margin-top: 10px; text-align: center; }
+    /* Estilos para o select e botão de envio com base na loja selecionada */
+    #loja, #produto-form button[type="submit"] {
+      transition: background-color 0.2s, color 0.2s;
+      padding: 10px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    #loja.magazineluiza, #produto-form button.magazineluiza {
+      background-color: #0074c1;
+      color: white;
+    }
+    #loja.magazineluiza:hover, #produto-form button.magazineluiza:hover {
+      background-color: #005fa3;
+    }
+    #loja.amazon, #produto-form button.amazon {
+      background-color: #ff9900;
+      color: white;
+    }
+    #loja.amazon:hover, #produto-form button.amazon:hover {
+      background-color: #e68a00;
+    }
+    #loja.shopee, #produto-form button.shopee {
+      background-color: #ee4d2d;
+      color: white;
+    }
+    #loja.shopee:hover, #produto-form button.shopee:hover {
+      background-color: #d8401f;
+    }
+    #loja.shein, #produto-form button.shein {
+      background-color: #ff0000;
+      color: white;
+    }
+    #loja.shein:hover, #produto-form button.shein:hover {
+      background-color: #cc0000;
+    }
+    #loja.alibaba, #produto-form button.alibaba {
+      background-color: #ff6a00;
+      color: white;
+    }
+    #loja.alibaba:hover, #produto-form button.alibaba:hover {
+      background-color: #e65c00;
+    }
+    #loja.mercadolivre, #produto-form button.mercadolivre {
+      background-color: #ffe600;
+      color: #333;
+    }
+    #loja.mercadolivre:hover, #produto-form button.mercadolivre:hover {
+      background-color: #e6cc00;
+    }
   </style>
 </head>
 <body>
@@ -45,8 +94,8 @@
             <option value="esportes">Esportes</option>
             <option value="livros">Livros</option>
             <option value="infantil">Infantil</option>
-            <option value="Celulares">Celulares</option>
-            <option value="Eletrodomésticos">Eletrodomésticos</option>
+            <option value="celulares">Celulares</option>
+            <option value="eletrodomesticos">Eletrodomésticos</option>
             <option value="pet">Pet</option>
             <option value="jardinagem">Jardinagem</option>
             <option value="automotivo">Automotivo</option>
@@ -55,12 +104,12 @@
           </select>
           <label for="loja">Loja:</label>
           <select id="loja" name="loja" required>
-            <option value="amazon">Amazon</option>
-            <option value="magalu">Magalu</option>
-            <option value="shein">Shein</option>
-            <option value="shopee">Shopee</option>
-            <option value="mercadolivre">Mercado Livre</option>
-            <option value="alibaba">Alibaba</option>
+            <option value="magazineluiza.com.br">Magalu</option>
+            <option value="amazon.com.br">Amazon</option>
+            <option value="shopee.com.br">Shopee</option>
+            <option value="br.shein.com">Shein</option>
+            <option value="alibaba.com">Alibaba</option>
+            <option value="mercadolivre.com.br">Mercado Livre</option>
           </select>
           <label for="link">Link do Produto:</label>
           <input type="url" id="link" name="link" required>
@@ -102,6 +151,28 @@
           imagensPreview.appendChild(img);
         });
       });
+
+      // Aplicar cor ao select e botão com base na loja selecionada
+      const lojaSelect = document.getElementById('loja');
+      const submitButton = document.querySelector('#produto-form button[type="submit"]');
+      lojaSelect.addEventListener('change', () => {
+        const lojaValue = lojaSelect.value;
+        const lojaClasses = {
+          'magazineluiza.com.br': 'magazineluiza',
+          'amazon.com.br': 'amazon',
+          'shopee.com.br': 'shopee',
+          'br.shein.com': 'shein',
+          'alibaba.com': 'alibaba',
+          'mercadolivre.com.br': 'mercadolivre'
+        };
+        lojaSelect.className = '';
+        submitButton.className = '';
+        if (lojaClasses[lojaValue]) {
+          lojaSelect.classList.add(lojaClasses[lojaValue]);
+          submitButton.classList.add(lojaClasses[lojaValue]);
+        }
+      });
+      lojaSelect.dispatchEvent(new Event('change')); // Aplicar cor inicial
 
       // Carregar lista de produtos
       async function carregarProdutos() {
@@ -151,6 +222,7 @@
           document.getElementById('imagens-preview').innerHTML = produto.imagens.map(img => `<img src="${img}" style="width: 80px; height: 80px; object-fit: contain; margin: 5px;">`).join('');
           document.getElementById('cancelar-edicao').style.display = 'inline-block';
           document.querySelector('#produto-form button[type="submit"]').textContent = 'Atualizar Produto';
+          lojaSelect.dispatchEvent(new Event('change')); // Atualizar cor ao editar
         } catch (error) {
           console.error('Erro ao carregar produto para edição:', error);
           document.getElementById('feedback').textContent = 'Erro ao carregar produto';
@@ -188,6 +260,7 @@
         document.getElementById('produto-id').value = '';
         document.getElementById('cancelar-edicao').style.display = 'none';
         document.querySelector('#produto-form button[type="submit"]').textContent = 'Adicionar Produto';
+        lojaSelect.dispatchEvent(new Event('change')); // Atualizar cor ao cancelar
       });
 
       // Formulário de adição/atualização de produto
@@ -214,6 +287,7 @@
             document.getElementById('produto-id').value = '';
             document.getElementById('cancelar-edicao').style.display = 'none';
             document.querySelector('#produto-form button[type="submit"]').textContent = 'Adicionar Produto';
+            lojaSelect.dispatchEvent(new Event('change')); // Atualizar cor ao salvar
             carregarProdutos();
           } else {
             feedback.textContent = result.message || 'Erro ao salvar produto';
