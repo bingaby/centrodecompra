@@ -63,12 +63,28 @@
 
         #load-more { display: none; margin: 20px auto; padding: 10px 20px; background: #ff6200; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
         #load-more:hover { background: #e55a00; }
-        .produto-card { transition: transform 0.2s; background: white; border-radius: 8px; padding: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-height: 250px; }
+        
+        /* Corrigido: Usando flexbox para empilhar os elementos verticalmente */
+        .produto-card {
+            transition: transform 0.2s;
+            background: white;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-height: 250px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
         .produto-card:hover { transform: translateY(-5px); }
         .produto-card span { font-size: 14px; display: block; margin: 5px 0; }
+
+        /* Corrigido: Ajustando o tamanho do carrossel e da imagem */
         .carrossel { position: relative; width: 100%; height: 100px; overflow: hidden; }
-        .carrossel-imagens { display: flex; width: 100%; height: 100px; }
-        .carrossel-imagens img { width: 100%; height: 100px; object-fit: contain; flex: 0 0 100%; transition: transform 0.3s ease; }
+        .carrossel-imagens { display: flex; width: 100%; height: 100%; }
+        .carrossel-imagens img { width: 100%; height: 100%; object-fit: contain; flex: 0 0 100%; transition: transform 0.3s ease; }
         
         /* Ajuste do grid para 8 produtos por linha em telas grandes e responsividade */
         .grid-produtos { 
@@ -369,4 +385,3 @@
     </script>
 </body>
 </html>
-
