@@ -518,62 +518,71 @@ footer {
     margin-top: 20px;
 }
 
+/* Estilo para a declaração de afiliado no rodapé */
+.disclaimer-afiliado {
+    font-size: 0.8em;
+    color: #f0f0f0;
+    margin-top: 10px;
+    line-height: 1.4;
+    max-width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 /* --- Cores dos botões de cada loja --- */
-/* As cores foram ajustadas com base nos dados que você forneceu. */
+/* Use um seletor que contenha parte do link para cada loja */
 
 .produto-card a.tarja-preco[href*="magazineluiza.com.br"] {
-    background-color: #0074c1; /* Magalu - Azul oficial */
+    background-color: #0074c1;
 }
 .produto-card a.tarja-preco[href*="magazineluiza.com.br"]:hover {
-    background-color: #005fa3; /* Hover sugerido */
+    background-color: #005fa3;
 }
 
 .produto-card a.tarja-preco[href*="amazon.com.br"] {
-    background-color: #ff9900; /* Amazon - Laranja oficial */
+    background-color: #ff9900;
 }
 .produto-card a.tarja-preco[href*="amazon.com.br"]:hover {
-    background-color: #e68a00; /* Hover sugerido */
+    background-color: #e68a00;
 }
 
 .produto-card a.tarja-preco[href*="shopee.com.br"] {
-    background-color: #ee4d2d; /* Shopee - Laranja Avermelhado oficial */
+    background-color: #ee4d2d;
 }
 .produto-card a.tarja-preco[href*="shopee.com.br"]:hover {
-    background-color: #d8401f; /* Hover sugerido */
+    background-color: #d8401f;
 }
 
 .produto-card a.tarja-preco[href*="br.shein.com"] {
-    background-color: #ff0000; /* Shein - Vermelho para destaque */
+    background-color: #ff0000;
 }
 .produto-card a.tarja-preco[href*="br.shein.com"]:hover {
-    background-color: #cc0000; /* Hover sugerido */
+    background-color: #cc0000;
 }
 
 .produto-card a.tarja-preco[href*="alibaba.com"] {
-    background-color: #ff6a00; /* Alibaba - Laranja oficial */
+    background-color: #ff6a00;
 }
 .produto-card a.tarja-preco[href*="alibaba.com"]:hover {
-    background-color: #e65c00; /* Hover sugerido */
+    background-color: #e65c00;
 }
 
 .produto-card a.tarja-preco[href*="mercadolivre.com.br"] {
-    background-color: #ffe600; /* Mercado Livre - Amarelo oficial */
-    color: #333; /* Texto preto para visibilidade */
+    background-color: #ffe600;
+    color: #333;
 }
 .produto-card a.tarja-preco[href*="mercadolivre.com.br"]:hover {
-    background-color: #e6cc00; /* Hover sugerido */
+    background-color: #e6cc00;
 }
 
 .produto-card a.tarja-preco[href*="kabum.com.br"] {
-    background-color: #2d2a8f; /* Kabum! - Roxo-azulado oficial */
+    background-color: #2d2a8f;
     color: white;
 }
 .produto-card a.tarja-preco[href*="kabum.com.br"]:hover {
-    background-color: #23217b; /* Hover sugerido */
+    background-color: #23217b;
 }
 
-
-/* Outras lojas */
 .produto-card a.tarja-preco[href*="terabyteshop.com.br"] {
     background-color: #c9000c;
     color: white;
