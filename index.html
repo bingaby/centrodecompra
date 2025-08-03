@@ -128,21 +128,6 @@
                 };
             });
 
-            let clickCount = 0;
-            let clickTimeout;
-            document.getElementById('site-logo').addEventListener('click', (e) => {
-                e.preventDefault();
-                clickCount++;
-                if (clickCount === 3) {
-                    window.location.href = 'admin-xyz-123.html';
-                    clickCount = 0;
-                }
-                clearTimeout(clickTimeout);
-                clickTimeout = setTimeout(() => {
-                    clickCount = 0;
-                }, 1000);
-            });
-
             async function carregarProdutos(reset = false) {
                 if (reset) {
                     currentPage = 1;
