@@ -344,9 +344,6 @@ h2 {
     display: block;
 }
 
-.carrossel-prev { left: 10px; }
-.carrossel-next { right: 10px; }
-
 .carrossel-dots {
     position: absolute;
     bottom: 10px;
@@ -522,78 +519,80 @@ footer {
 }
 
 /* Cores específicas para os botões de cada loja */
+/* Use um seletor que contenha parte do link para cada loja */
 .produto-card a.tarja-preco[href*="amazon.com.br"] {
-    background-color: #ff9900;
+    background-color: #ff9900; /* Laranja da Amazon */
 }
 .produto-card a.tarja-preco[href*="magazineluiza.com.br"] {
-    background-color: #0000ff;
+    background-color: #0000ff; /* Azul do Magalu */
 }
 .produto-card a.tarja-preco[href*="br.shein.com"] {
-    background-color: #ff0000;
+    background-color: #ff0000; /* Vermelho da Shein */
 }
 .produto-card a.tarja-preco[href*="shopee.com.br"] {
-    background-color: #ee4d2d;
+    background-color: #ee4d2d; /* Laranja da Shopee */
 }
 .produto-card a.tarja-preco[href*="mercadolivre.com.br"] {
-    background-color: #ffe600;
-    color: #333;
+    background-color: #ffe600; /* Amarelo do Mercado Livre */
+    color: #333; /* Para melhorar a leitura no fundo amarelo */
 }
 .produto-card a.tarja-preco[href*="alibaba.com"] {
-    background-color: #ff6a00;
+    background-color: #ff6a00; /* Laranja da Alibaba */
 }
-.produto-card a.tarja-preco[href*="https://www.kabum.com.br"] {
+
+/* Adicionando mais lojas com suas cores oficiais */
+.produto-card a.tarja-preco[href*="kabum.com.br"] {
     background-color: #a71850;
     color: white;
 }
-.produto-card a.tarja-preco[href*="https://www.terabyteshop.com.br"] {
+.produto-card a.tarja-preco[href*="terabyteshop.com.br"] {
     background-color: #c9000c;
     color: white;
 }
-.produto-card a.tarja-preco[href*="https://www.pichau.com.br"] {
+.produto-card a.tarja-preco[href*="pichau.com.br"] {
     background-color: #0d83b5;
     color: white;
 }
-.produto-card a.tarja-preco[href*="https://www.americanas.com.br"] {
+.produto-card a.tarja-preco[href*="americanas.com.br"] {
     background-color: #e21c32;
     color: white;
 }
-.produto-card a.tarja-preco[href*="https://www.extra.com.br"] {
+.produto-card a.tarja-preco[href*="extra.com.br"] {
     background-color: #00874e;
     color: white;
 }
-.produto-card a.tarja-preco[href*="https://www.casasbahia.com.br"] {
+.produto-card a.tarja-preco[href*="casasbahia.com.br"] {
     background-color: #f7a224;
     color: white;
 }
-.produto-card a.tarja-preco[href*="https://www.nike.com.br"] {
+.produto-card a.tarja-preco[href*="nike.com.br"] {
     background-color: #000000;
     color: white;
 }
-.produto-card a.tarja-preco[href*="https://www.adidas.com.br"] {
+.produto-card a.tarja-preco[href*="adidas.com.br"] {
     background-color: #000000;
     color: white;
 }
-.produto-card a.tarja-preco[href*="https://www.netshoes.com.br"] {
+.produto-card a.tarja-preco[href*="netshoes.com.br"] {
     background-color: #ff6a00;
     color: white;
 }
-.produto-card a.tarja-preco[href*="https://www.centauro.com.br"] {
+.produto-card a.tarja-preco[href*="centauro.com.br"] {
     background-color: #e51d26;
     color: white;
 }
-.produto-card a.tarja-preco[href*="https://www.submarino.com.br"] {
+.produto-card a.tarja-preco[href*="submarino.com.br"] {
     background-color: #0066cc;
     color: white;
 }
-.produto-card a.tarja-preco[href*="https://www.buscape.com.br"] {
+.produto-card a.tarja-preco[href*="buscape.com.br"] {
     background-color: #005a8f;
     color: white;
 }
-.produto-card a.tarja-preco[href*="https://www.zoom.com.br"] {
+.produto-card a.tarja-preco[href*="zoom.com.br"] {
     background-color: #21a300;
     color: white;
 }
-
 
 /* Ajuste a cor de hover para cada loja */
 .produto-card a.tarja-preco[href*="amazon.com.br"]:hover {
@@ -614,46 +613,45 @@ footer {
 .produto-card a.tarja-preco[href*="alibaba.com"]:hover {
     background-color: #d85a00;
 }
-.produto-card a.tarja-preco[href*="https://www.kabum.com.br"]:hover {
+.produto-card a.tarja-preco[href*="kabum.com.br"]:hover {
     background-color: #8c1544;
 }
-.produto-card a.tarja-preco[href*="https://www.terabyteshop.com.br"]:hover {
+.produto-card a.tarja-preco[href*="terabyteshop.com.br"]:hover {
     background-color: #b3000b;
 }
-.produto-card a.tarja-preco[href*="https://www.pichau.com.br"]:hover {
+.produto-card a.tarja-preco[href*="pichau.com.br"]:hover {
     background-color: #0b6e9c;
 }
-.produto-card a.tarja-preco[href*="https://www.americanas.com.br"]:hover {
+.produto-card a.tarja-preco[href*="americanas.com.br"]:hover {
     background-color: #c9192b;
 }
-.produto-card a.tarja-preco[href*="https://www.extra.com.br"]:hover {
+.produto-card a.tarja-preco[href*="extra.com.br"]:hover {
     background-color: #007641;
 }
-.produto-card a.tarja-preco[href*="https://www.casasbahia.com.br"]:hover {
+.produto-card a.tarja-preco[href*="casasbahia.com.br"]:hover {
     background-color: #e2931f;
 }
-.produto-card a.tarja-preco[href*="https://www.nike.com.br"]:hover {
+.produto-card a.tarja-preco[href*="nike.com.br"]:hover {
     background-color: #333333;
 }
-.produto-card a.tarja-preco[href*="https://www.adidas.com.br"]:hover {
+.produto-card a.tarja-preco[href*="adidas.com.br"]:hover {
     background-color: #333333;
 }
-.produto-card a.tarja-preco[href*="https://www.netshoes.com.br"]:hover {
+.produto-card a.tarja-preco[href*="netshoes.com.br"]:hover {
     background-color: #e55a00;
 }
-.produto-card a.tarja-preco[href*="https://www.centauro.com.br"]:hover {
+.produto-card a.tarja-preco[href*="centauro.com.br"]:hover {
     background-color: #cd1a21;
 }
-.produto-card a.tarja-preco[href*="https://www.submarino.com.br"]:hover {
+.produto-card a.tarja-preco[href*="submarino.com.br"]:hover {
     background-color: #0059b3;
 }
-.produto-card a.tarja-preco[href*="https://www.buscape.com.br"]:hover {
+.produto-card a.tarja-preco[href*="buscape.com.br"]:hover {
     background-color: #004d7a;
 }
-.produto-card a.tarja-preco[href*="https://www.zoom.com.br"]:hover {
+.produto-card a.tarja-preco[href*="zoom.com.br"]:hover {
     background-color: #1c8800;
 }
-
 
 /* Media queries */
 @media (max-width: 1400px) {
