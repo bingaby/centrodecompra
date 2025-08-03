@@ -3,292 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https://res.cloudinary.com; script-src 'self' 'unsafe-inline' https://kit.fontawesome.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://minha-api-produtos.onrender.com;">
   <title>Administração - Centro de Compras</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/style.css">
   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
   <style>
-    .form-section {
-      background: white;
-      padding: 25px;
-      border-radius: 12px;
-      margin-bottom: 25px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    .form-section label {
-      font-size: 1.1em;
-      font-weight: 500;
-      margin-bottom: 8px;
-      display: block;
-      color: #333;
-    }
-    .form-section input, .form-section select, .form-section textarea {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 1em;
-      transition: border-color 0.3s ease;
-    }
-    .form-section input:focus, .form-section select:focus, .form-section textarea:focus {
-      border-color: #2E8B57;
-      outline: none;
-    }
-    .form-section input:invalid:not(:placeholder-shown), .form-section select:invalid:not(:placeholder-shown) {
-      border-color: #ff6200;
-    }
-    .form-section textarea {
-      resize: vertical;
-      min-height: 100px;
-    }
-    #imagens-preview {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 15px;
-    }
-    #imagens-preview img {
-      width: 100px;
-      height: 100px;
-      object-fit: contain;
-      border-radius: 8px;
-      border: 1px solid #ddd;
-    }
-    .form-section button[type="submit"], .form-section button[type="button"] {
-      padding: 12px 20px;
-      border: none;
-      border-radius: 8px;
-      font-size: 1em;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-    }
-    .form-section button[type="submit"] {
-      background-color: #2E8B57;
-      color: white;
-    }
-    .form-section button[type="submit"]:hover {
-      background-color: #25794c;
-      transform: scale(1.02);
-    }
-    .form-section button[type="button"] {
-      background-color: #ff6200;
-      color: white;
-      margin-left: 10px;
-    }
-    .form-section button[type="button"]:hover {
-      background-color: #e55a00;
-      transform: scale(1.02);
-    }
-    #feedback {
-      margin-top: 15px;
-      text-align: center;
-      font-size: 1em;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-    #feedback.success::before {
-      content: '\f058';
-      font-family: 'Font Awesome 5 Free';
-      font-weight: 900;
-      color: #2E8B57;
-    }
-    #feedback.error::before {
-      content: '\f06a';
-      font-family: 'Font Awesome 5 Free';
-      font-weight: 900;
-      color: #ff6200;
-    }
-    .lista-produtos {
-      background: white;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    .lista-produtos h2 {
-      font-size: 1.8em;
-      font-weight: 600;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-    .produto-item {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      margin-bottom: 15px;
-      padding: 15px;
-      background: #f9f9f9;
-      border-radius: 8px;
-      transition: box-shadow 0.2s ease;
-    }
-    .produto-item:hover {
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    .produto-item img {
-      width: 60px;
-      height: 60px;
-      object-fit: contain;
-      border-radius: 8px;
-    }
-    .produto-item span {
-      flex: 1;
-      font-size: 1em;
-      font-weight: 500;
-      color: #333;
-    }
-    .produto-item button {
-      padding: 8px 12px;
-      border: none;
-      border-radius: 8px;
-      font-size: 0.9em;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    .produto-item button.editar {
-      background-color: #FFA500;
-      color: white;
-    }
-    .produto-item button.editar:hover {
-      background-color: #e69500;
-    }
-    .produto-item button.excluir {
-      background-color: #ff6200;
-      color: white;
-    }
-    .produto-item button.excluir:hover {
-      background-color: #e55a00;
-    }
-    #loja, #produto-form button[type="submit"] {
-      transition: background-color 0.3s ease, color 0.3s ease;
-    }
-    #loja.magazineluiza, #produto-form button[type="submit"].magazineluiza {
-      background-color: #0074c1;
-      color: white;
-      border-color: #005fa3;
-    }
-    #loja.magazineluiza:hover, #produto-form button[type="submit"].magazineluiza:hover {
-      background-color: #005fa3;
-    }
-    #loja.amazon, #produto-form button[type="submit"].amazon {
-      background-color: #ff9900;
-      color: white;
-      border-color: #e68a00;
-    }
-    #loja.amazon:hover, #produto-form button[type="submit"].amazon:hover {
-      background-color: #e68a00;
-    }
-    #loja.shopee, #produto-form button[type="submit"].shopee {
-      background-color: #ee4d2d;
-      color: white;
-      border-color: #d8401f;
-    }
-    #loja.shopee:hover, #produto-form button[type="submit"].shopee:hover {
-      background-color: #d8401f;
-    }
-    #loja.shein, #produto-form button[type="submit"].shein {
-      background-color: #ff0000;
-      color: white;
-      border-color: #cc0000;
-    }
-    #loja.shein:hover, #produto-form button[type="submit"].shein:hover {
-      background-color: #cc0000;
-    }
-    #loja.alibaba, #produto-form button[type="submit"].alibaba {
-      background-color: #ff6a00;
-      color: white;
-      border-color: #e65c00;
-    }
-    #loja.alibaba:hover, #produto-form button[type="submit"].alibaba:hover {
-      background-color: #e65c00;
-    }
-    #loja.mercadolivre, #produto-form button[type="submit"].mercadolivre {
-      background-color: #ffe600;
-      color: #333;
-      border-color: #e6cc00;
-    }
-    #loja.mercadolivre:hover, #produto-form button[type="submit"].mercadolivre:hover {
-      background-color: #e6cc00;
-    }
-    .modal-confirmacao {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.6);
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
-    }
-    .modal-confirmacao-content {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      text-align: center;
-      max-width: 400px;
-      width: 90%;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
-    .modal-confirmacao-content p {
-      font-size: 1.1em;
-      margin-bottom: 20px;
-      color: #333;
-    }
-    .modal-confirmacao-content button {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 8px;
-      font-size: 1em;
-      font-weight: 600;
-      cursor: pointer;
-      margin: 0 10px;
-    }
-    .modal-confirmacao-content button.confirmar {
-      background-color: #2E8B57;
-      color: white;
-    }
-    .modal-confirmacao-content button.confirmar:hover {
-      background-color: #25794c;
-    }
-    .modal-confirmacao-content button.cancelar {
-      background-color: #ff6200;
-      color: white;
-    }
-    .modal-confirmacao-content button.cancelar:hover {
-      background-color: #e55a00;
-    }
+    .form-section { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .produto-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; padding: 10px; background: #f9f9f9; border-radius: 4px; }
+    .produto-item img { width: 50px; height: 50px; object-fit: contain; }
+    .produto-item button { padding: 5px 10px; background: #ff6200; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    .produto-item button:hover { background: #e55a00; }
+    #feedback { margin-top: 10px; text-align: center; }
   </style>
 </head>
 <body>
   <header>
-    <h1 style="font-size: 2.5em; font-weight: 700; text-align: center; margin: 20px 0; letter-spacing: 0.02em;">Administração de Produtos</h1>
-    <a href="/" style="display: block; text-align: center; font-size: 1.1em; color: #2E8B57; text-decoration: none; margin-bottom: 20px;">Voltar ao Início</a>
+    <h1>Administração de Produtos</h1>
+    <a href="/">Voltar ao Início</a>
   </header>
   <main>
     <div class="container admin-container">
       <section class="form-section">
-        <h2 style="font-size: 1.8em; font-weight: 600; margin-bottom: 20px;">Adicionar/Editar Produto</h2>
+        <h2>Adicionar/Editar Produto</h2>
         <form id="produto-form">
           <input type="hidden" id="produto-id" name="id">
-          <label for="nome">Nome do Produto:</label>
-          <input type="text" id="nome" name="nome" required placeholder="Digite o nome do produto">
+          <label for="nome">Nome:</label>
+          <input type="text" id="nome" name="nome" required>
           <label for="descricao">Descrição:</label>
-          <textarea id="descricao" name="descricao" placeholder="Descreva o produto (opcional)"></textarea>
-          <label for="preco">Preço (R$):</label>
-          <input type="number" id="preco" name="preco" step="0.01" required placeholder="Ex.: 99.90">
-          <label for="imagens">Imagens do Produto:</label>
+          <textarea id="descricao" name="descricao"></textarea>
+          <label for="preco">Preço:</label>
+          <input type="number" id="preco" name="preco" step="0.01" required>
+          <label for="imagens">Imagens:</label>
           <input type="file" id="imagens" name="imagens" accept="image/*" multiple>
           <div id="imagens-preview"></div>
           <label for="categoria">Categoria:</label>
           <select id="categoria" name="categoria" required>
-            <option value="" disabled selected>Selecione uma categoria</option>
             <option value="eletronicos">Eletrônicos</option>
             <option value="moda">Moda</option>
             <option value="fitness">Fitness</option>
@@ -297,8 +45,8 @@
             <option value="esportes">Esportes</option>
             <option value="livros">Livros</option>
             <option value="infantil">Infantil</option>
-            <option value="celulares">Celulares</option>
-            <option value="eletrodomesticos">Eletrodomésticos</option>
+            <option value="Celulares">Celulares</option>
+            <option value="Eletrodomésticos">Eletrodomésticos</option>
             <option value="pet">Pet</option>
             <option value="jardinagem">Jardinagem</option>
             <option value="automotivo">Automotivo</option>
@@ -307,34 +55,24 @@
           </select>
           <label for="loja">Loja:</label>
           <select id="loja" name="loja" required>
-            <option value="" disabled selected>Selecione uma loja</option>
-            <option value="magazineluiza.com.br">Magalu</option>
-            <option value="amazon.com.br">Amazon</option>
-            <option value="shopee.com.br">Shopee</option>
-            <option value="br.shein.com">Shein</option>
-            <option value="alibaba.com">Alibaba</option>
-            <option value="mercadolivre.com.br">Mercado Livre</option>
+            <option value="amazon">Amazon</option>
+            <option value="magalu">Magalu</option>
+            <option value="shein">Shein</option>
+            <option value="shopee">Shopee</option>
+            <option value="mercadolivre">Mercado Livre</option>
+            <option value="alibaba">Alibaba</option>
           </select>
           <label for="link">Link do Produto:</label>
-          <input type="url" id="link" name="link" required placeholder="https://exemplo.com/produto">
-          <div style="display: flex; gap: 10px;">
-            <button type="submit" id="submit-btn"><i class="fas fa-save"></i> Salvar Produto</button>
-            <button type="button" id="cancelar-edicao" style="display: none;"><i class="fas fa-times"></i> Cancelar Edição</button>
-          </div>
+          <input type="url" id="link" name="link" required>
+          <button type="submit">Salvar Produto</button>
+          <button type="button" id="cancelar-edicao" style="display: none;">Cancelar Edição</button>
           <p id="feedback"></p>
         </form>
       </section>
       <section class="lista-produtos">
-        <h2 style="font-size: 1.8em; font-weight: 600; margin-bottom: 20px;">Lista de Produtos</h2>
+        <h2>Lista de Produtos</h2>
         <div id="produtos-lista"></div>
       </section>
-    </div>
-    <div class="modal-confirmacao" id="modal-confirmacao">
-      <div class="modal-confirmacao-content">
-        <p>Tem certeza que deseja excluir este produto?</p>
-        <button class="confirmar" id="confirmar-exclusao">Confirmar</button>
-        <button class="cancelar" onclick="fecharModalConfirmacao()">Cancelar</button>
-      </div>
     </div>
   </main>
   <script>
@@ -357,41 +95,18 @@
         Array.from(imagensInput.files).forEach(file => {
           const img = document.createElement('img');
           img.src = URL.createObjectURL(file);
-          img.style.width = '100px';
-          img.style.height = '100px';
+          img.style.width = '80px';
+          img.style.height = '80px';
           img.style.objectFit = 'contain';
           img.style.margin = '5px';
-          img.style.borderRadius = '8px';
           imagensPreview.appendChild(img);
         });
       });
 
-      // Aplicar cor ao select e botão com base na loja selecionada
-      const lojaSelect = document.getElementById('loja');
-      const submitButton = document.getElementById('submit-btn');
-      lojaSelect.addEventListener('change', () => {
-        const lojaValue = lojaSelect.value;
-        const lojaClasses = {
-          'magazineluiza.com.br': 'magazineluiza',
-          'amazon.com.br': 'amazon',
-          'shopee.com.br': 'shopee',
-          'br.shein.com': 'shein',
-          'alibaba.com': 'alibaba',
-          'mercadolivre.com.br': 'mercadolivre'
-        };
-        lojaSelect.className = '';
-        submitButton.className = '';
-        if (lojaClasses[lojaValue]) {
-          lojaSelect.classList.add(lojaClasses[lojaValue]);
-          submitButton.classList.add(lojaClasses[lojaValue]);
-        }
-      });
-      lojaSelect.dispatchEvent(new Event('change')); // Aplicar cor inicial
-
       // Carregar lista de produtos
       async function carregarProdutos() {
         const produtosLista = document.getElementById('produtos-lista');
-        produtosLista.innerHTML = '<p><i class="fas fa-spinner fa-spin"></i> Carregando...</p>';
+        produtosLista.innerHTML = '<p>Carregando...</p>';
         try {
           const response = await fetch(`${API_BASE_URL}/api/produtos`);
           if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
@@ -407,8 +122,8 @@
             div.innerHTML = `
               <img src="${produto.imagens[0] || '/imagens/placeholder.jpg'}" alt="${produto.nome}">
               <span>${produto.nome} - R$ ${parseFloat(produto.preco).toFixed(2)}</span>
-              <button class="editar" onclick="editarProduto(${produto.id})"><i class="fas fa-edit"></i> Editar</button>
-              <button class="excluir" onclick="mostrarModalConfirmacao(${produto.id})"><i class="fas fa-trash"></i> Excluir</button>
+              <button onclick="editarProduto(${produto.id})">Editar</button>
+              <button onclick="excluirProduto(${produto.id})">Excluir</button>
             `;
             produtosLista.appendChild(div);
           });
@@ -433,55 +148,38 @@
           document.getElementById('categoria').value = produto.categoria;
           document.getElementById('loja').value = produto.loja;
           document.getElementById('link').value = produto.link;
-          document.getElementById('imagens-preview').innerHTML = produto.imagens.map(img => `<img src="${img}" style="width: 100px; height: 100px; object-fit: contain; margin: 5px; border-radius: 8px;">`).join('');
+          document.getElementById('imagens-preview').innerHTML = produto.imagens.map(img => `<img src="${img}" style="width: 80px; height: 80px; object-fit: contain; margin: 5px;">`).join('');
           document.getElementById('cancelar-edicao').style.display = 'inline-block';
-          document.getElementById('submit-btn').innerHTML = '<i class="fas fa-save"></i> Atualizar Produto';
-          lojaSelect.dispatchEvent(new Event('change')); // Atualizar cor
+          document.querySelector('#produto-form button[type="submit"]').textContent = 'Atualizar Produto';
         } catch (error) {
           console.error('Erro ao carregar produto para edição:', error);
-          const feedback = document.getElementById('feedback');
-          feedback.textContent = 'Erro ao carregar produto';
-          feedback.className = 'error';
+          document.getElementById('feedback').textContent = 'Erro ao carregar produto';
+          document.getElementById('feedback').style.color = 'red';
         }
-      };
-
-      // Modal de confirmação para exclusão
-      let produtoIdParaExcluir = null;
-      window.mostrarModalConfirmacao = function(id) {
-        produtoIdParaExcluir = id;
-        document.getElementById('modal-confirmacao').style.display = 'flex';
-      };
-      window.fecharModalConfirmacao = function() {
-        produtoIdParaExcluir = null;
-        document.getElementById('modal-confirmacao').style.display = 'none';
       };
 
       // Excluir produto
-      document.getElementById('confirmar-exclusao').addEventListener('click', async () => {
-        if (!produtoIdParaExcluir) return;
+      window.excluirProduto = async function(id) {
+        if (!confirm('Tem certeza que deseja excluir este produto?')) return;
         try {
-          const response = await fetch(`${API_BASE_URL}/api/produtos/${produtoIdParaExcluir}`, {
+          const response = await fetch(`${API_BASE_URL}/api/produtos/${id}`, {
             method: 'DELETE'
           });
           const result = await response.json();
-          const feedback = document.getElementById('feedback');
           if (response.ok) {
-            feedback.textContent = result.message || 'Produto excluído com sucesso';
-            feedback.className = 'success';
+            document.getElementById('feedback').textContent = result.message || 'Produto excluído com sucesso';
+            document.getElementById('feedback').style.color = 'green';
             carregarProdutos();
           } else {
-            feedback.textContent = result.message || 'Erro ao excluir produto';
-            feedback.className = 'error';
+            document.getElementById('feedback').textContent = result.message || 'Erro ao excluir produto';
+            document.getElementById('feedback').style.color = 'red';
           }
-          fecharModalConfirmacao();
         } catch (error) {
           console.error('Erro ao excluir produto:', error);
-          const feedback = document.getElementById('feedback');
-          feedback.textContent = 'Erro ao conectar com a API';
-          feedback.className = 'error';
-          fecharModalConfirmacao();
+          document.getElementById('feedback').textContent = 'Erro ao conectar com a API';
+          document.getElementById('feedback').style.color = 'red';
         }
-      });
+      };
 
       // Cancelar edição
       document.getElementById('cancelar-edicao').addEventListener('click', () => {
@@ -489,20 +187,13 @@
         document.getElementById('imagens-preview').innerHTML = '';
         document.getElementById('produto-id').value = '';
         document.getElementById('cancelar-edicao').style.display = 'none';
-        document.getElementById('submit-btn').innerHTML = '<i class="fas fa-save"></i> Salvar Produto';
-        lojaSelect.dispatchEvent(new Event('change')); // Atualizar cor
-        document.getElementById('feedback').textContent = '';
-        document.getElementById('feedback').className = '';
+        document.querySelector('#produto-form button[type="submit"]').textContent = 'Adicionar Produto';
       });
 
       // Formulário de adição/atualização de produto
       const form = document.getElementById('produto-form');
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const submitButton = document.getElementById('submit-btn');
-        submitButton.disabled = true;
-        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
-        
         const formData = new FormData(form);
         const id = document.getElementById('produto-id').value;
         const url = id ? `${API_BASE_URL}/api/produtos/${id}` : `${API_BASE_URL}/api/produtos`;
@@ -517,26 +208,21 @@
           const feedback = document.getElementById('feedback');
           if (response.ok) {
             feedback.textContent = result.message || id ? 'Produto atualizado com sucesso' : 'Produto adicionado com sucesso';
-            feedback.className = 'success';
+            feedback.style.color = 'green';
             form.reset();
             document.getElementById('imagens-preview').innerHTML = '';
             document.getElementById('produto-id').value = '';
             document.getElementById('cancelar-edicao').style.display = 'none';
-            document.getElementById('submit-btn').innerHTML = '<i class="fas fa-save"></i> Salvar Produto';
-            lojaSelect.dispatchEvent(new Event('change')); // Atualizar cor
+            document.querySelector('#produto-form button[type="submit"]').textContent = 'Adicionar Produto';
             carregarProdutos();
           } else {
             feedback.textContent = result.message || 'Erro ao salvar produto';
-            feedback.className = 'error';
+            feedback.style.color = 'red';
           }
         } catch (error) {
           console.error('Erro ao salvar produto:', error);
-          const feedback = document.getElementById('feedback');
-          feedback.textContent = 'Erro ao conectar com a API';
-          feedback.className = 'error';
-        } finally {
-          submitButton.disabled = false;
-          submitButton.innerHTML = id ? '<i class="fas fa-save"></i> Atualizar Produto' : '<i class="fas fa-save"></i> Salvar Produto';
+          document.getElementById('feedback').textContent = 'Erro ao conectar com a API';
+          document.getElementById('feedback').style.color = 'red';
         }
       });
 
