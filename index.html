@@ -324,10 +324,17 @@
             });
 
             // Conectar ao Socket.IO
-            const socket = io('https://minha-api-produtos.onrender.com');
+            const socket = io('https://minha-api-produtos.onrender.com', {
+                transports: ['websocket', 'polling'],
+                withCredentials: true
+            });
 
             socket.on('connect', () => {
                 console.log('Conectado ao Socket.IO');
+            });
+
+            socket.on('connect_error', (error) => {
+                console.error('Erro na conexão Socket.IO:', error);
             });
 
             socket.on('novoProduto', (produto) => {
@@ -375,8 +382,17 @@
                         page: currentPage,
                         limit: 12
                     });
-                    const response = await fetch(`${API_BASE_URL}/api/produtos?${params}`);
-                    if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
+                    const url = `${API_BASE_URL}/api/produtos?${params}`;
+                    console.log('URL da requisição:', url); // Log para depuração
+                    const response = await fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    if (!response.ok) {
+                        throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
+                    }
                     const { data, total } = await response.json();
 
                     produtos = reset ? data : [...produtos, ...data];
@@ -390,7 +406,7 @@
                     }
                 } catch (error) {
                     console.error('Erro ao carregar produtos:', error);
-                    errorMessage.textContent = 'Erro ao carregar produtos';
+                    errorMessage.textContent = `Erro ao carregar produtos: ${error.message}`;
                     errorMessage.style.display = 'block';
                 } finally {
                     loadingSpinner.style.display = 'none';
