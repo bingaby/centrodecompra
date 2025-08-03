@@ -30,8 +30,37 @@
         .carrossel-dot.ativo { background: #ff6200; }
         .modal-error { color: red; text-align: center; margin-top: 10px; font-size: 14px; }
         .error-message { color: red; text-align: center; margin-top: 10px; }
-        .tarja-preco { display: inline-block; background: #ff6200; color: white; padding: 6px 10px; margin: 8px 0; border-radius: 4px; text-decoration: none; font-weight: bold; font-size: 12px; }
-        .tarja-preco:hover { background: #e55a00; }
+
+        /* Estilos do botão de compra */
+        .tarja-preco {
+            display: inline-block;
+            background: #ff6200; /* Cor padrão */
+            color: white;
+            padding: 6px 10px;
+            margin: 8px 0;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 12px;
+            transition: background 0.2s ease;
+        }
+
+        /* Classes de cores específicas para cada loja */
+        .tarja-amazon { background-color: #ff9900; }
+        .tarja-magalu { background-color: #ff0092; }
+        .tarja-shein { background-color: #2b785d; }
+        .tarja-shopee { background-color: #ee4d2d; }
+        .tarja-mercadolivre { background-color: #ffe600; color: #000; }
+        .tarja-alibaba { background-color: #ff6a00; }
+
+        /* Estilos de hover para as cores das lojas */
+        .tarja-amazon:hover { background-color: #e58a00; }
+        .tarja-magalu:hover { background-color: #e00080; }
+        .tarja-shein:hover { background-color: #22644c; }
+        .tarja-shopee:hover { background-color: #d84126; }
+        .tarja-mercadolivre:hover { background-color: #e0d000; }
+        .tarja-alibaba:hover { background-color: #e55a00; }
+        
         #load-more { display: none; margin: 20px auto; padding: 10px 20px; background: #ff6200; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
         #load-more:hover { background: #e55a00; }
         .produto-card { transition: transform 0.2s; background: white; border-radius: 8px; padding: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-height: 300px; }
@@ -207,6 +236,10 @@
                         data.forEach(produto => {
                             const div = document.createElement('div');
                             div.className = 'produto-card';
+                            
+                            // Mapear o nome da loja para a classe CSS correta
+                            const lojaClass = `tarja-${produto.loja.toLowerCase().replace(/\s/g, '')}`;
+
                             div.innerHTML = `
                                 <div class="carrossel">
                                     <div class="carrossel-imagens" data-images='${JSON.stringify(produto.imagens)}'>
@@ -214,8 +247,7 @@
                                     </div>
                                 </div>
                                 <span>${produto.nome}</span>
-                                <span>R$ ${parseFloat(produto.preco).toFixed(2)}</span>
-                                <a href="${produto.link}" target="_blank" class="tarja-preco">Comprar na ${produto.loja}</a>
+                                <a href="${produto.link}" target="_blank" class="tarja-preco ${lojaClass}">Clique aqui para ver o preço</a>
                             `;
                             gridProdutos.appendChild(div);
                         });
