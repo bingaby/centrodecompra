@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Roboto', sans-serif;
-    background-color: #f0f2f5; /* Um fundo mais suave */
+    background-color: #f0f2f5;
     color: #333;
 }
 
@@ -63,8 +63,8 @@ nav a:hover {
 }
 
 /* Sidebar */
-.sidebar {
-    width: 250px; /* Aumentei a largura da sidebar */
+.sidebar-categorias {
+    width: 250px;
     background-color: #fff;
     padding: 20px;
     border-radius: 8px;
@@ -74,7 +74,7 @@ nav a:hover {
     height: fit-content;
 }
 
-.sidebar h3 {
+.sidebar-categorias h3 {
     font-size: 1.2em;
     margin-bottom: 15px;
     color: #333;
@@ -85,7 +85,7 @@ nav a:hover {
 }
 
 .categoria-item {
-    padding: 12px 15px; /* Aumentei o padding */
+    padding: 12px 15px;
     cursor: pointer;
     border-radius: 6px;
     transition: background-color 0.2s, color 0.2s;
@@ -245,6 +245,14 @@ h2 {
     font-weight: 700;
     color: #ff6200;
     margin: 10px 0;
+    text-decoration: none;
+    transition: color 0.2s;
+    text-align: center;
+}
+
+.produto-card .produto-preco:hover {
+    color: #e55a00;
+    text-decoration: underline;
 }
 
 .tarja-preco {
@@ -513,169 +521,139 @@ footer {
     margin-top: 20px;
 }
 
-.credibilidade-nota {
-    background-color: #28a745;
-    color: #fff;
-    padding: 15px;
-    text-align: center;
-    font-size: 14px;
-    margin: 0;
-    border-top: 1px solid #218838;
-    border-bottom: 1px solid #218838;
+/* Cores específicas para os botões de cada loja */
+.produto-card a.tarja-preco[href*="amazon.com.br"] {
+    background-color: #ff9900;
 }
-
-.credibilidade-nota p {
-    margin: 0;
-    line-height: 1.5;
+.produto-card a.tarja-preco[href*="magazineluiza.com.br"] {
+    background-color: #0000ff;
 }
-
-.credibilidade-nota strong {
-    font-weight: 700;
+.produto-card a.tarja-preco[href*="br.shein.com"] {
+    background-color: #ff0000;
 }
-
-/* Estilos para admin-xyz-123.html */
-header {
-    background-color: #2E8B57;
+.produto-card a.tarja-preco[href*="shopee.com.br"] {
+    background-color: #ee4d2d;
+}
+.produto-card a.tarja-preco[href*="mercadolivre.com.br"] {
+    background-color: #ffe600;
+    color: #333;
+}
+.produto-card a.tarja-preco[href*="alibaba.com"] {
+    background-color: #ff6a00;
+}
+.produto-card a.tarja-preco[href*="https://www.kabum.com.br"] {
+    background-color: #a71850;
     color: white;
-    padding: 20px;
-    text-align: center;
 }
-
-header h1 {
-    font-size: 2em;
-}
-
-header a {
-    color: #FFA500;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-header a:hover {
-    text-decoration: underline;
-}
-
-.admin-container {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-    padding: 20px;
-}
-
-.form-section {
-    flex: 1;
-    max-width: 400px;
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 5px;
-    border: 1px solid #e0e0e0;
-}
-
-#produto-form h2 {
-    font-size: 1.5em;
-    margin-bottom: 20px;
-    text-align: left;
-}
-
-#produto-form label {
-    display: block;
-    margin: 10px 0 5px;
-    font-weight: bold;
-}
-
-#produto-form input,
-#produto-form textarea,
-#produto-form select {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-#produto-form textarea {
-    height: 80px;
-}
-
-#produto-form button {
-    background-color: #FFA500;
+.produto-card a.tarja-preco[href*="https://www.terabyteshop.com.br"] {
+    background-color: #c9000c;
     color: white;
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-right: 10px;
-    transition: background-color 0.2s;
 }
-
-#produto-form button:hover {
-    background-color: #e69500;
-}
-
-#imagens-preview {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-#feedback {
-    margin-top: 15px;
-    font-weight: bold;
-}
-
-.lista-produtos {
-    flex: 2;
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 5px;
-    border: 1px solid #e0e0e0;
-}
-
-.produto-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px;
-    border-bottom: 1px solid #e0e0e0;
-}
-
-.produto-item:last-child {
-    border-bottom: none;
-}
-
-.produto-item img {
-    width: 50px;
-    height: 50px;
-    object-fit: contain;
-    border-radius: 4px;
-}
-
-.produto-item span {
-    flex: 1;
-}
-
-.produto-item button {
-    background-color: #FFA500;
+.produto-card a.tarja-preco[href*="https://www.pichau.com.br"] {
+    background-color: #0d83b5;
     color: white;
-    padding: 5px 10px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s;
+}
+.produto-card a.tarja-preco[href*="https://www.americanas.com.br"] {
+    background-color: #e21c32;
+    color: white;
+}
+.produto-card a.tarja-preco[href*="https://www.extra.com.br"] {
+    background-color: #00874e;
+    color: white;
+}
+.produto-card a.tarja-preco[href*="https://www.casasbahia.com.br"] {
+    background-color: #f7a224;
+    color: white;
+}
+.produto-card a.tarja-preco[href*="https://www.nike.com.br"] {
+    background-color: #000000;
+    color: white;
+}
+.produto-card a.tarja-preco[href*="https://www.adidas.com.br"] {
+    background-color: #000000;
+    color: white;
+}
+.produto-card a.tarja-preco[href*="https://www.netshoes.com.br"] {
+    background-color: #ff6a00;
+    color: white;
+}
+.produto-card a.tarja-preco[href*="https://www.centauro.com.br"] {
+    background-color: #e51d26;
+    color: white;
+}
+.produto-card a.tarja-preco[href*="https://www.submarino.com.br"] {
+    background-color: #0066cc;
+    color: white;
+}
+.produto-card a.tarja-preco[href*="https://www.buscape.com.br"] {
+    background-color: #005a8f;
+    color: white;
+}
+.produto-card a.tarja-preco[href*="https://www.zoom.com.br"] {
+    background-color: #21a300;
+    color: white;
 }
 
-.produto-item button:hover {
-    background-color: #e69500;
+
+/* Ajuste a cor de hover para cada loja */
+.produto-card a.tarja-preco[href*="amazon.com.br"]:hover {
+    background-color: #cc7a00;
+}
+.produto-card a.tarja-preco[href*="magazineluiza.com.br"]:hover {
+    background-color: #0000cc;
+}
+.produto-card a.tarja-preco[href*="br.shein.com"]:hover {
+    background-color: #cc0000;
+}
+.produto-card a.tarja-preco[href*="shopee.com.br"]:hover {
+    background-color: #d84529;
+}
+.produto-card a.tarja-preco[href*="mercadolivre.com.br"]:hover {
+    background-color: #e6cc00;
+}
+.produto-card a.tarja-preco[href*="alibaba.com"]:hover {
+    background-color: #d85a00;
+}
+.produto-card a.tarja-preco[href*="https://www.kabum.com.br"]:hover {
+    background-color: #8c1544;
+}
+.produto-card a.tarja-preco[href*="https://www.terabyteshop.com.br"]:hover {
+    background-color: #b3000b;
+}
+.produto-card a.tarja-preco[href*="https://www.pichau.com.br"]:hover {
+    background-color: #0b6e9c;
+}
+.produto-card a.tarja-preco[href*="https://www.americanas.com.br"]:hover {
+    background-color: #c9192b;
+}
+.produto-card a.tarja-preco[href*="https://www.extra.com.br"]:hover {
+    background-color: #007641;
+}
+.produto-card a.tarja-preco[href*="https://www.casasbahia.com.br"]:hover {
+    background-color: #e2931f;
+}
+.produto-card a.tarja-preco[href*="https://www.nike.com.br"]:hover {
+    background-color: #333333;
+}
+.produto-card a.tarja-preco[href*="https://www.adidas.com.br"]:hover {
+    background-color: #333333;
+}
+.produto-card a.tarja-preco[href*="https://www.netshoes.com.br"]:hover {
+    background-color: #e55a00;
+}
+.produto-card a.tarja-preco[href*="https://www.centauro.com.br"]:hover {
+    background-color: #cd1a21;
+}
+.produto-card a.tarja-preco[href*="https://www.submarino.com.br"]:hover {
+    background-color: #0059b3;
+}
+.produto-card a.tarja-preco[href*="https://www.buscape.com.br"]:hover {
+    background-color: #004d7a;
+}
+.produto-card a.tarja-preco[href*="https://www.zoom.com.br"]:hover {
+    background-color: #1c8800;
 }
 
-.produto-item button:last-child {
-    background-color: #dc3545;
-}
-
-.produto-item button:last-child:hover {
-    background-color: #c82333;
-}
 
 /* Media queries */
 @media (max-width: 1400px) {
