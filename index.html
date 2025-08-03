@@ -115,10 +115,8 @@
         let currentBusca = '';
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Definir ano no footer
             document.getElementById('year').textContent = new Date().getFullYear();
 
-            // Manipulador de erro para imagens
             document.querySelectorAll('img').forEach(img => {
                 img.onerror = () => {
                     console.log(`Erro ao carregar imagem: ${img.src}`);
@@ -126,7 +124,6 @@
                 };
             });
 
-            // Três cliques no logotipo para acessar a página de administração
             let clickCount = 0;
             let clickTimeout;
             document.getElementById('site-logo').addEventListener('click', (e) => {
@@ -139,10 +136,9 @@
                 clearTimeout(clickTimeout);
                 clickTimeout = setTimeout(() => {
                     clickCount = 0;
-                }, 1000); // Reseta após 1 segundo
+                }, 1000);
             });
 
-            // Carregar produtos
             async function carregarProdutos(reset = false) {
                 if (reset) {
                     currentPage = 1;
@@ -184,9 +180,11 @@
                                     </div>
                                 </div>
                                 <span class="produto-nome">${produto.nome}</span>
-                                <span class="produto-preco">R$ ${parseFloat(produto.preco).toFixed(2)}</span>
-                                <a href="${produto.link}" target="_blank" class="tarja-preco">
-                                    Clique aqui e vá para o link de afiliado
+                                <a href="${produto.link}" target="_blank" class="produto-preco">
+                                    Clique aqui para ver o valor
+                                </a>
+                                <a href="${produto.link}" target="_blank" class="tarja-preco" data-loja-nome="${produto.loja}">
+                                    Comprar na ${produto.loja}
                                 </a>
                             `;
                             gridProdutos.appendChild(div);
@@ -202,13 +200,11 @@
                 }
             }
 
-            // Função para carregar mais produtos
             window.carregarMaisProdutos = () => {
                 currentPage++;
                 carregarProdutos();
             };
 
-            // Filtrar por categoria
             window.filtrarPorCategoria = (categoria) => {
                 currentCategoria = categoria;
                 currentPage = 1;
@@ -219,7 +215,6 @@
                 carregarProdutos();
             };
 
-            // Filtrar por loja
             window.filtrarPorLoja = (loja) => {
                 currentLoja = loja;
                 currentPage = 1;
@@ -230,7 +225,6 @@
                 carregarProdutos();
             };
 
-            // Busca por produtos
             document.getElementById('busca').addEventListener('input', (e) => {
                 currentBusca = e.target.value;
                 currentPage = 1;
@@ -238,7 +232,6 @@
                 carregarProdutos();
             });
 
-            // Modal de imagens
             window.openModal = (images) => {
                 const modal = document.getElementById('imageModal');
                 const carrosselImagens = document.getElementById('modalCarrosselImagens');
@@ -280,7 +273,6 @@
                 document.getElementById('imageModal').style.display = 'none';
             };
 
-            // Adicionar evento de clique para abrir modal
             document.getElementById('grid-produtos').addEventListener('click', (e) => {
                 const carrossel = e.target.closest('.carrossel-imagens');
                 if (carrossel) {
@@ -289,7 +281,6 @@
                 }
             });
 
-            // Carregar produtos iniciais
             carregarProdutos();
         });
     </script>
