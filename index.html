@@ -36,22 +36,22 @@
         <aside class="sidebar-categorias">
             <h3>Categorias</h3>
             <ul>
-               <li class="categoria-item ativa" data-categoria="todas" onclick="filtrarPorCategoria('todas')" role="button" aria-label="Filtrar por Todas as Categorias">Todas as Categorias</li>
-    <li class="categoria-item" data-categoria="eletronicos" onclick="filtrarPorCategoria('eletronicos')" role="button" aria-label="Filtrar por Eletrônicos">Eletrônicos</li>
-    <li class="categoria-item" data-categoria="moda" onclick="filtrarPorCategoria('moda')" role="button" aria-label="Filtrar por Moda">Moda</li>
-    <li class="categoria-item" data-categoria="fitness" onclick="filtrarPorCategoria('fitness')" role="button" aria-label="Filtrar por Fitness">Fitness</li>
-    <li class="categoria-item" data-categoria="casa" onclick="filtrarPorCategoria('casa')" role="button" aria-label="Filtrar por Casa e Decoração">Casa e Decoração</li>
-    <li class="categoria-item" data-categoria="beleza" onclick="filtrarPorCategoria('beleza')" role="button" aria-label="Filtrar por Beleza">Beleza</li>
-    <li class="categoria-item" data-categoria="esportes" onclick="filtrarPorCategoria('esportes')" role="button" aria-label="Filtrar por Esportes">Esportes</li>
-    <li class="categoria-item" data-categoria="livros" onclick="filtrarPorCategoria('livros')" role="button" aria-label="Filtrar por Livros">Livros</li>
-    <li class="categoria-item" data-categoria="infantil" onclick="filtrarPorCategoria('infantil')" role="button" aria-label="Filtrar por Infantil">Infantil</li>
-    <li class="categoria-item" data-categoria="celulares" onclick="filtrarPorCategoria('celulares')" role="button" aria-label="Filtrar por Celulares">Celulares</li>
-    <li class="categoria-item" data-categoria="eletrodomesticos" onclick="filtrarPorCategoria('eletrodomesticos')" role="button" aria-label="Filtrar por Eletrodomésticos">Eletrodomésticos</li>
-    <li class="categoria-item" data-categoria="pet" onclick="filtrarPorCategoria('pet')" role="button" aria-label="Filtrar por Pet">Pet</li>
-    <li class="categoria-item" data-categoria="jardinagem" onclick="filtrarPorCategoria('jardinagem')" role="button" aria-label="Filtrar por Jardinagem">Jardinagem</li>
-    <li class="categoria-item" data-categoria="automotivo" onclick="filtrarPorCategoria('automotivo')" role="button" aria-label="Filtrar por Automotivo">Automotivo</li>
-    <li class="categoria-item" data-categoria="gastronomia" onclick="filtrarPorCategoria('gastronomia')" role="button" aria-label="Filtrar por Gastronomia">Gastronomia</li>
-    <li class="categoria-item" data-categoria="games" onclick="filtrarPorCategoria('games')" role="button" aria-label="Filtrar por Games">Games</li>
+                <li class="categoria-item ativa" data-categoria="todas" onclick="filtrarPorCategoria('todas')" role="button" aria-label="Filtrar por Todas as Categorias">Todas as Categorias</li>
+                <li class="categoria-item" data-categoria="eletronicos" onclick="filtrarPorCategoria('eletronicos')" role="button" aria-label="Filtrar por Eletrônicos">Eletrônicos</li>
+                <li class="categoria-item" data-categoria="moda" onclick="filtrarPorCategoria('moda')" role="button" aria-label="Filtrar por Moda">Moda</li>
+                <li class="categoria-item" data-categoria="fitness" onclick="filtrarPorCategoria('fitness')" role="button" aria-label="Filtrar por Fitness">Fitness</li>
+                <li class="categoria-item" data-categoria="casa" onclick="filtrarPorCategoria('casa')" role="button" aria-label="Filtrar por Casa e Decoração">Casa e Decoração</li>
+                <li class="categoria-item" data-categoria="beleza" onclick="filtrarPorCategoria('beleza')" role="button" aria-label="Filtrar por Beleza">Beleza</li>
+                <li class="categoria-item" data-categoria="esportes" onclick="filtrarPorCategoria('esportes')" role="button" aria-label="Filtrar por Esportes">Esportes</li>
+                <li class="categoria-item" data-categoria="livros" onclick="filtrarPorCategoria('livros')" role="button" aria-label="Filtrar por Livros">Livros</li>
+                <li class="categoria-item" data-categoria="infantil" onclick="filtrarPorCategoria('infantil')" role="button" aria-label="Filtrar por Infantil">Infantil</li>
+                <li class="categoria-item" data-categoria="celulares" onclick="filtrarPorCategoria('celulares')" role="button" aria-label="Filtrar por Celulares">Celulares</li>
+                <li class="categoria-item" data-categoria="eletrodomesticos" onclick="filtrarPorCategoria('eletrodomesticos')" role="button" aria-label="Filtrar por Eletrodomésticos">Eletrodomésticos</li>
+                <li class="categoria-item" data-categoria="pet" onclick="filtrarPorCategoria('pet')" role="button" aria-label="Filtrar por Pet">Pet</li>
+                <li class="categoria-item" data-categoria="jardinagem" onclick="filtrarPorCategoria('jardinagem')" role="button" aria-label="Filtrar por Jardinagem">Jardinagem</li>
+                <li class="categoria-item" data-categoria="automotivo" onclick="filtrarPorCategoria('automotivo')" role="button" aria-label="Filtrar por Automotivo">Automotivo</li>
+                <li class="categoria-item" data-categoria="gastronomia" onclick="filtrarPorCategoria('gastronomia')" role="button" aria-label="Filtrar por Gastronomia">Gastronomia</li>
+                <li class="categoria-item" data-categoria="games" onclick="filtrarPorCategoria('games')" role="button" aria-label="Filtrar por Games">Games</li>
             </ul>
         </aside>
         <main>
@@ -110,13 +110,22 @@
             <div class="robo-texto">Posso ajudar?</div>
         </a>
     </div>
-
     <script>
         const API_BASE_URL = 'https://minha-api-produtos.onrender.com';
         let currentPage = 1;
         let currentCategoria = 'todas';
         let currentLoja = 'todas';
         let currentBusca = '';
+
+        // Mapeamento de domínios para valores simplificados
+        const lojaMapping = {
+          'magazineluiza.com.br': 'magalu',
+          'amazon.com.br': 'amazon',
+          'shopee.com.br': 'shopee',
+          'br.shein.com': 'shein',
+          'alibaba.com': 'alibaba',
+          'mercadolivre.com.br': 'mercadolivre'
+        };
 
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('year').textContent = new Date().getFullYear();
@@ -126,6 +135,21 @@
                     console.log(`Erro ao carregar imagem: ${img.src}`);
                     img.src = '/imagens/placeholder.jpg';
                 };
+            });
+
+            let clickCount = 0;
+            let clickTimeout;
+            document.getElementById('site-logo').addEventListener('click', (e) => {
+                e.preventDefault();
+                clickCount++;
+                if (clickCount === 3) {
+                    window.location.href = 'admin-xyz-123.html';
+                    clickCount = 0;
+                }
+                clearTimeout(clickTimeout);
+                clickTimeout = setTimeout(() => {
+                    clickCount = 0;
+                }, 1000);
             });
 
             async function carregarProdutos(reset = false) {
@@ -144,9 +168,11 @@
                 errorMessage.style.display = 'none';
 
                 try {
+                    // Converter valor simplificado para domínio, se necessário
+                    const lojaParam = Object.keys(lojaMapping).find(key => lojaMapping[key] === currentLoja) || currentLoja;
                     const params = new URLSearchParams({
                         categoria: currentCategoria,
-                        loja: currentLoja,
+                        loja: lojaParam,
                         busca: currentBusca,
                         page: currentPage,
                         limit: 12
@@ -160,6 +186,7 @@
                         loadMoreButton.style.display = 'none';
                     } else {
                         data.forEach(produto => {
+                            const lojaDisplay = lojaMapping[produto.loja] || produto.loja;
                             const div = document.createElement('div');
                             div.className = 'produto-card';
                             div.innerHTML = `
@@ -173,7 +200,7 @@
                                     Clique aqui para ver o valor
                                 </a>
                                 <a href="${produto.link}" target="_blank" class="tarja-preco">
-                                    Comprar na ${produto.loja}
+                                    Comprar na ${lojaDisplay}
                                 </a>
                             `;
                             gridProdutos.appendChild(div);
