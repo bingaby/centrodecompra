@@ -249,7 +249,7 @@
                         loja: currentLoja,
                         busca: currentBusca,
                         page: currentPage,
-                        limit: 24
+                        limit: 20
                     });
                     const response = await fetch(`${API_BASE_URL}/api/produtos?${params}`);
                     if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
@@ -384,3 +384,4 @@
     </script>
 </body>
 </html>
+
