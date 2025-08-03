@@ -200,16 +200,7 @@
         let currentBusca = '';
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Definir ano no footer
             document.getElementById('year').textContent = new Date().getFullYear();
-
-            // Manipulador de erro para imagens
-            document.querySelectorAll('img').forEach(img => {
-                img.onerror = () => {
-                    console.error(`Erro ao carregar imagem: ${img.src}`);
-                    img.src = 'https://via.placeholder.com/150';
-                };
-            });
 
             // Três cliques no logotipo para acessar a página de administração
             let clickCount = 0;
@@ -224,10 +215,9 @@
                 clearTimeout(clickTimeout);
                 clickTimeout = setTimeout(() => {
                     clickCount = 0;
-                }, 1000); // Reseta após 1 segundo
+                }, 1000);
             });
 
-            // Carregar produtos
             async function carregarProdutos(reset = false) {
                 if (reset) {
                     currentPage = 1;
@@ -249,7 +239,7 @@
                         loja: currentLoja,
                         busca: currentBusca,
                         page: currentPage,
-                        limit: 12
+                        limit: 24
                     });
                     const response = await fetch(`${API_BASE_URL}/api/produtos?${params}`);
                     if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
@@ -264,14 +254,12 @@
                             div.className = 'produto-card';
                             
                             const lojaClass = `tarja-${produto.loja.toLowerCase().replace(/\s/g, '')}`;
-                            const imageUrl = produto.imagens[0] || 'https://via.placeholder.com/150';
-                            if (!produto.imagens || produto.imagens.length === 0) {
-                                console.warn(`Produto "${produto.nome}" não possui imagens. Usando placeholder.`);
-                            }
+                            const placeholderUrl = 'https://via.placeholder.com/150';
+                            const imageUrl = produto.imagens && produto.imagens.length > 0 ? produto.imagens[0] : placeholderUrl;
 
                             div.innerHTML = `
                                 <div class="carrossel">
-                                    <div class="carrossel-imagens" data-images='${JSON.stringify(produto.imagens)}'>
+                                    <div class="carrossel-imagens" data-images='${JSON.stringify(produto.imagens || [placeholderUrl])}'>
                                         <img src="${imageUrl}" alt="${produto.nome}">
                                     </div>
                                 </div>
@@ -279,6 +267,13 @@
                                 <a href="${produto.link}" target="_blank" class="tarja-preco ${lojaClass}">Clique aqui para ver o preço</a>
                             `;
                             gridProdutos.appendChild(div);
+
+                            // Adiciona o manipulador de erro à imagem recém-criada
+                            const newImg = div.querySelector('img');
+                            newImg.onerror = () => {
+                                console.error(`Erro ao carregar imagem: ${newImg.src}`);
+                                newImg.src = placeholderUrl;
+                            };
                         });
                         loadMoreButton.style.display = data.length < total ? 'block' : 'none';
                     }
@@ -291,13 +286,11 @@
                 }
             }
 
-            // Função para carregar mais produtos
             window.carregarMaisProdutos = () => {
                 currentPage++;
                 carregarProdutos();
             };
 
-            // Filtrar por categoria
             window.filtrarPorCategoria = (categoria) => {
                 currentCategoria = categoria;
                 currentPage = 1;
@@ -308,7 +301,6 @@
                 carregarProdutos();
             };
 
-            // Filtrar por loja
             window.filtrarPorLoja = (loja) => {
                 currentLoja = loja;
                 currentPage = 1;
@@ -319,7 +311,6 @@
                 carregarProdutos();
             };
 
-            // Busca por produtos
             document.getElementById('busca').addEventListener('input', (e) => {
                 currentBusca = e.target.value;
                 currentPage = 1;
@@ -327,7 +318,6 @@
                 carregarProdutos();
             });
 
-            // Modal de imagens
             window.openModal = (images) => {
                 const modal = document.getElementById('imageModal');
                 const carrosselImagens = document.getElementById('modalCarrosselImagens');
@@ -336,11 +326,14 @@
 
                 carrosselImagens.innerHTML = '';
                 carrosselDots.innerHTML = '';
-                images.forEach((imgSrc, index) => {
+                const placeholderUrl = 'https://via.placeholder.com/150';
+                const finalImages = images && images.length > 0 ? images : [placeholderUrl];
+
+                finalImages.forEach((imgSrc, index) => {
                     const img = document.createElement('img');
                     img.src = imgSrc;
                     img.onerror = () => {
-                        img.src = 'https://via.placeholder.com/150';
+                        img.src = placeholderUrl;
                     };
                     carrosselImagens.appendChild(img);
 
@@ -351,12 +344,12 @@
                     carrosselDots.appendChild(dot);
                 });
 
-                document.getElementById('modalPrev').classList.toggle('visible', images.length > 1);
-                document.getElementById('modalNext').classList.toggle('visible', images.length > 1);
+                document.getElementById('modalPrev').classList.toggle('visible', finalImages.length > 1);
+                document.getElementById('modalNext').classList.toggle('visible', finalImages.length > 1);
                 modal.style.display = 'flex';
 
                 window.moveModalCarrossel = (step) => {
-                    const totalImages = images.length;
+                    const totalImages = finalImages.length;
                     currentIndex = (currentIndex + step + totalImages) % totalImages;
                     carrosselImagens.style.transform = `translateX(-${currentIndex * 100}%)`;
                     document.querySelectorAll('.carrossel-dot').forEach((dot, index) => {
@@ -369,7 +362,6 @@
                 document.getElementById('imageModal').style.display = 'none';
             };
 
-            // Adicionar evento de clique para abrir modal
             document.getElementById('grid-produtos').addEventListener('click', (e) => {
                 const carrossel = e.target.closest('.carrossel-imagens');
                 if (carrossel) {
@@ -378,11 +370,8 @@
                 }
             });
 
-            // Carregar produtos iniciais
             carregarProdutos();
         });
     </script>
 </body>
 </html>
-
-
