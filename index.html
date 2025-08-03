@@ -16,104 +16,25 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
-        /* CSS corrigido e otimizado */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content {
-            position: relative;
-            max-width: 90%;
-            max-height: 90%;
-            width: auto;
-            height: auto;
-        }
-        .modal-content .carrossel-imagens {
-            display: flex;
-            overflow: hidden;
-            width: 100%;
-            height: 100%;
-        }
-        .modal-content .carrossel-imagens img {
-            width: 100%;
-            height: auto;
-            max-width: 800px;
-            max-height: 600px;
-            object-fit: contain;
-            flex: 0 0 100%;
-            transition: transform 0.3s ease;
-        }
-        .modal-close {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #ff6200;
-            color: #fff;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        .carrossel-prev,
-        .carrossel-next {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(0, 0, 0, 0.5);
-            color: #fff;
-            border: none;
-            padding: 10px;
-            cursor: pointer;
-            font-size: 18px;
-            border-radius: 4px;
-            display: none;
-        }
-        .carrossel-prev.visible,
-        .carrossel-next.visible {
-            display: block;
-        }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { position: relative; max-width: 90%; max-height: 90%; width: auto; height: auto; }
+        .modal-content .carrossel-imagens { display: flex; overflow: hidden; width: 100%; height: 100%; }
+        .modal-content .carrossel-imagens img { width: 100%; height: auto; max-width: 800px; max-height: 600px; object-fit: contain; flex: 0 0 100%; transition: transform 0.3s ease; }
+        .modal-close { position: absolute; top: 10px; right: 10px; background: #ff6200; color: #fff; border: none; padding: 8px 12px; border-radius: 50%; cursor: pointer; font-size: 16px; }
+        .carrossel-prev, .carrossel-next { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0, 0, 0, 0.5); color: #fff; border: none; padding: 10px; cursor: pointer; font-size: 18px; border-radius: 4px; display: none; }
+        .carrossel-prev.visible, .carrossel-next.visible { display: block; }
         .carrossel-prev { left: 10px; }
         .carrossel-next { right: 10px; }
-        .carrossel-dots {
-            position: absolute;
-            bottom: 10px;
-            width: 100%;
-            text-align: center;
-        }
-        .carrossel-dot {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            background: #ccc;
-            border-radius: 50%;
-            margin: 0 5px;
-            cursor: pointer;
-        }
+        .carrossel-dots { position: absolute; bottom: 10px; width: 100%; text-align: center; }
+        .carrossel-dot { display: inline-block; width: 10px; height: 10px; background: #ccc; border-radius: 50%; margin: 0 5px; cursor: pointer; }
         .carrossel-dot.ativo { background: #ff6200; }
-        .modal-error {
-            color: red;
-            text-align: center;
-            margin-top: 10px;
-            font-size: 14px;
-        }
-        .error-message {
-            color: red;
-            text-align: center;
-            margin-top: 10px;
-        }
+        .modal-error { color: red; text-align: center; margin-top: 10px; font-size: 14px; }
+        .error-message { color: red; text-align: center; margin-top: 10px; }
+
         /* Estilos do botão de compra */
         .tarja-preco {
             display: inline-block;
-            background: #ff6200;
+            background: #ff6200; /* Cor padrão */
             color: white;
             padding: 6px 10px;
             margin: 8px 0;
@@ -123,6 +44,7 @@
             font-size: 12px;
             transition: background 0.2s ease;
         }
+
         /* Classes de cores específicas para cada loja */
         .tarja-amazon { background-color: #ff9900; }
         .tarja-magalu { background-color: #ff0092; }
@@ -130,6 +52,7 @@
         .tarja-shopee { background-color: #ee4d2d; }
         .tarja-mercadolivre { background-color: #ffe600; color: #000; }
         .tarja-alibaba { background-color: #ff6a00; }
+
         /* Estilos de hover para as cores das lojas */
         .tarja-amazon:hover { background-color: #e58a00; }
         .tarja-magalu:hover { background-color: #e00080; }
@@ -137,68 +60,19 @@
         .tarja-shopee:hover { background-color: #d84126; }
         .tarja-mercadolivre:hover { background-color: #e0d000; }
         .tarja-alibaba:hover { background-color: #e55a00; }
-        #load-more {
-            display: none;
-            margin: 20px auto;
-            padding: 10px 20px;
-            background: #ff6200;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
+
+        #load-more { display: none; margin: 20px auto; padding: 10px 20px; background: #ff6200; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
         #load-more:hover { background: #e55a00; }
-        
-        /* Corrigido: Usando flexbox para empilhar os elementos verticalmente */
-        .produto-card {
-            transition: transform 0.2s;
-            background: white;
-            border-radius: 8px;
-            padding: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            max-height: 250px;
-            /* Flexbox para empilhar os itens */
-            display: flex;
-            flex-direction: column;
-            align-items: center; /* Centraliza o conteúdo horizontalmente */
-            text-align: center;
-        }
+        .produto-card { transition: transform 0.2s; background: white; border-radius: 8px; padding: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-height: 250px; }
         .produto-card:hover { transform: translateY(-5px); }
-        .produto-card span {
-            font-size: 14px;
-            display: block;
-            margin: 5px 0;
-            /* Garantir que o nome do produto e a descrição não quebrem a linha de forma indesejada */
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            width: 100%;
-        }
-        
-        /* Corrigido: Ajustando o tamanho do carrossel e da imagem */
-        .carrossel {
-            position: relative;
-            width: 100%;
-            height: 100px;
-            overflow: hidden;
-        }
-        .carrossel-imagens {
-            display: flex;
-            width: 100%;
-            height: 100%;
-        }
-        .carrossel-imagens img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            flex: 0 0 100%;
-            transition: transform 0.3s ease;
-        }
+        .produto-card span { font-size: 14px; display: block; margin: 5px 0; }
+        .carrossel { position: relative; width: 100%; height: 100px; overflow: hidden; }
+        .carrossel-imagens { display: flex; width: 100%; height: 100px; }
+        .carrossel-imagens img { width: 100%; height: 100px; object-fit: contain; flex: 0 0 100%; transition: transform 0.3s ease; }
         
         /* Ajuste do grid para 8 produtos por linha em telas grandes e responsividade */
-        .grid-produtos {
-            display: grid;
+        .grid-produtos { 
+            display: grid; 
             grid-gap: 10px;
         }
         @media (min-width: 1200px) {
@@ -223,11 +97,6 @@
             font-size: 12px;
             color: #777;
             margin: 20px 0;
-        }
-        .descricao {
-            font-size: 12px;
-            color: #666;
-            margin-top: 0;
         }
     </style>
 </head>
@@ -318,299 +187,184 @@
     </div>
 
     <script>
-        const VERSION = "1.0.6";
-        let currentImages = [];
-        let currentImageIndex = 0;
+        const API_BASE_URL = 'https://minha-api-produtos.onrender.com';
         let currentPage = 1;
-        const productsPerPage = 24; // Aumentei o número de produtos por página para 24
-        let allProducts = [];
         let currentCategoria = 'todas';
         let currentLoja = 'todas';
         let currentBusca = '';
 
-        document.getElementById("year").textContent = new Date().getFullYear();
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('year').textContent = new Date().getFullYear();
 
-        const logo = document.getElementById("site-logo");
-        let clickCount = 0, clickTimeout = null;
-        logo.addEventListener("click", (e) => {
-            e.stopPropagation();
-            clickCount++;
-            if (clickCount === 1) {
-                clickTimeout = setTimeout(() => { clickCount = 0; }, 500);
-            } else if (clickCount === 3) {
+            let clickCount = 0;
+            let clickTimeout;
+            document.getElementById('site-logo').addEventListener('click', (e) => {
+                e.preventDefault();
+                clickCount++;
+                if (clickCount === 3) {
+                    window.location.href = 'admin-xyz-123.html';
+                    clickCount = 0;
+                }
                 clearTimeout(clickTimeout);
-                window.location.href = "admin-xyz-123.html";
-                clickCount = 0;
-            }
-        });
+                clickTimeout = setTimeout(() => {
+                    clickCount = 0;
+                }, 1000);
+            });
 
-        async function carregarProdutos(reset = false) {
-            const gridProdutos = document.getElementById("grid-produtos");
-            const mensagemVazia = document.getElementById("mensagem-vazia");
-            const errorMessage = document.getElementById("error-message");
-            const loadingSpinner = document.getElementById("loading-spinner");
-            const loadMoreButton = document.getElementById("load-more");
-
-            if (!gridProdutos || !mensagemVazia || !errorMessage || !loadingSpinner || !loadMoreButton) {
-                console.error("Elementos DOM críticos não encontrados");
-                return;
-            }
-
-            if (reset) {
-                currentPage = 1;
-                gridProdutos.innerHTML = "";
-            }
-
-            loadingSpinner.style.display = "block";
-            mensagemVazia.style.display = "none";
-            errorMessage.style.display = "none";
-
-            try {
-                let produtos = JSON.parse(localStorage.getItem("produtos_cache")) || [];
-                if (!produtos.length) {
-                    const response = await fetch("https://raw.githubusercontent.com/bingaby/centrodecompra/main/produtos.json", { cache: "no-store" });
-                    if (!response.ok) throw new Error(`Erro ao carregar produtos.json: ${response.status}`);
-                    produtos = await response.json();
-                    if (!Array.isArray(produtos)) throw new Error("produtos.json não é uma lista válida");
-                    localStorage.setItem("produtos_cache", JSON.stringify(produtos));
+            async function carregarProdutos(reset = false) {
+                if (reset) {
+                    currentPage = 1;
+                    document.getElementById('grid-produtos').innerHTML = '';
                 }
+                const gridProdutos = document.getElementById('grid-produtos');
+                const loadingSpinner = document.getElementById('loading-spinner');
+                const mensagemVazia = document.getElementById('mensagem-vazia');
+                const errorMessage = document.getElementById('error-message');
+                const loadMoreButton = document.getElementById('load-more');
 
-                allProducts = produtos.filter(p =>
-                    (currentCategoria === "todas" || p.categoria.toLowerCase() === currentCategoria.toLowerCase()) &&
-                    (currentLoja === "todas" || p.loja.toLowerCase() === currentLoja.toLowerCase()) &&
-                    (!currentBusca || p.nome.toLowerCase().includes(currentBusca.toLowerCase()))
-                );
+                loadingSpinner.style.display = 'block';
+                mensagemVazia.style.display = 'none';
+                errorMessage.style.display = 'none';
 
-                const start = (currentPage - 1) * productsPerPage;
-                const end = start + productsPerPage;
-                const paginatedProducts = allProducts.slice(start, end);
-
-                if (paginatedProducts.length === 0 && currentPage === 1) {
-                    mensagemVazia.style.display = "block";
-                    gridProdutos.style.display = "none";
-                    loadMoreButton.style.display = "none";
-                } else {
-                    mensagemVazia.style.display = "none";
-                    gridProdutos.style.display = "grid";
-                    paginatedProducts.forEach((produto, index) => {
-                        const globalIndex = start + index;
-                        const card = document.createElement("div");
-                        card.classList.add("produto-card", "visible");
-                        card.setAttribute("data-categoria", produto.categoria.toLowerCase());
-                        card.setAttribute("data-loja", produto.loja.toLowerCase());
-                        const imagens = produto.imagens && produto.imagens.length > 0 ? produto.imagens : ["imagens/placeholder.jpg"];
-                        const carrosselId = `carrossel-${globalIndex}`;
-                        
-                        const lojaClass = `tarja-${produto.loja.toLowerCase().replace(/\s/g, '')}`;
-
-                        card.innerHTML = `
-                            <div class="carrossel" id="${carrosselId}">
-                                <div class="carrossel-imagens">
-                                    ${imagens.map((img, idx) => `<img src="${img}" alt="${produto.nome}" loading="lazy" onclick="openModal(${globalIndex}, ${idx})">`).join("")}
-                                </div>
-                                ${imagens.length > 1 ? `
-                                    <button class="carrossel-prev" onclick="event.stopPropagation(); moveCarrossel('${carrosselId}', -1)" aria-label="Imagem anterior">◄</button>
-                                    <button class="carrossel-next" onclick="event.stopPropagation(); moveCarrossel('${carrosselId}', 1)" aria-label="Próxima imagem">►</button>
-                                    <div class="carrossel-dots">
-                                        ${imagens.map((_, idx) => `<span class="carrossel-dot ${idx === 0 ? "ativo" : ""}" onclick="event.stopPropagation(); setCarrosselImage('${carrosselId}', ${idx})" aria-label="Selecionar imagem ${idx + 1}"></span>`).join("")}
-                                    </div>
-                                ` : ""}
-                            </div>
-                            <span>${produto.nome}</span>
-                            <span class="descricao">Loja: ${produto.loja}</span>
-                            <a href="${produto.link}" target="_blank" class="tarja-preco ${lojaClass}" aria-label="Clique para ver o preço de ${produto.nome} na loja">Comprar na ${produto.loja}</a>
-                        `;
-                        gridProdutos.appendChild(card);
+                try {
+                    const params = new URLSearchParams({
+                        categoria: currentCategoria,
+                        loja: currentLoja,
+                        busca: currentBusca,
+                        page: currentPage,
+                        limit: 24
                     });
-                    loadMoreButton.style.display = end < allProducts.length ? "block" : "none";
-                }
-            } catch (error) {
-                console.error("Erro ao carregar produtos:", error);
-                errorMessage.textContent = "Erro ao carregar os produtos. Tente novamente mais tarde.";
-                errorMessage.style.display = "block";
-                mensagemVazia.style.display = "none";
-                gridProdutos.style.display = "none";
-            } finally {
-                loadingSpinner.style.display = "none";
-            }
-        }
+                    const response = await fetch(`${API_BASE_URL}/api/produtos?${params}`);
+                    if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
+                    const { data, total } = await response.json();
 
-        function carregarMaisProdutos() {
-            currentPage++;
-            carregarProdutos();
-        }
+                    if (data.length === 0 && currentPage === 1) {
+                        mensagemVazia.style.display = 'block';
+                        loadMoreButton.style.display = 'none';
+                    } else {
+                        data.forEach(produto => {
+                            const div = document.createElement('div');
+                            div.className = 'produto-card';
+                            
+                            const lojaClass = `tarja-${produto.loja.toLowerCase().replace(/\s/g, '')}`;
+                            const placeholderUrl = 'https://via.placeholder.com/150';
+                            const imageUrl = produto.imagens && produto.imagens.length > 0 ? produto.imagens[0] : placeholderUrl;
 
-        function filtrarPorCategoria(categoria) {
-            currentCategoria = categoria;
-            document.querySelectorAll(".categoria-item").forEach(item => item.classList.toggle("ativa", item.dataset.categoria === categoria));
-            carregarProdutos(true);
-        }
+                            const cardHTML = `
+                                <div class="carrossel">
+                                    <div class="carrossel-imagens" data-images='${JSON.stringify(produto.imagens || [placeholderUrl])}'>
+                                        <img src="${imageUrl}" alt="${produto.nome}">
+                                    </div>
+                                </div>
+                                <span>${produto.nome}</span>
+                                <a href="${produto.link}" target="_blank" class="tarja-preco ${lojaClass}">Comprar na ${produto.loja}</a>
+                            `;
 
-        function filtrarPorLoja(loja) {
-            currentLoja = loja;
-            document.querySelectorAll(".loja, .loja-todas").forEach(item => item.classList.toggle("ativa", item.dataset.loja === loja));
-            carregarProdutos(true);
-        }
+                            div.innerHTML = cardHTML;
+                            gridProdutos.appendChild(div);
 
-        function moveCarrossel(id, direction) {
-            const carrossel = document.getElementById(id);
-            if (!carrossel) {
-                console.error("Carrossel não encontrado:", id);
-                return;
-            }
-            const imagens = carrossel.querySelector(".carrossel-imagens");
-            const dots = carrossel.querySelectorAll(".carrossel-dot");
-            let index = parseInt(imagens.dataset.index || 0);
-            const total = imagens.children.length;
-            index = (index + direction + total) % total;
-            imagens.style.transform = `translateX(-${index * 100}%)`;
-            imagens.dataset.index = index;
-            dots.forEach((dot, i) => dot.classList.toggle("ativo", i === index));
-        }
-
-        function setCarrosselImage(id, index) {
-            const carrossel = document.getElementById(id);
-            if (!carrossel) {
-                console.error("Carrossel não encontrado:", id);
-                return;
-            }
-            const imagens = carrossel.querySelector(".carrossel-imagens");
-            const dots = carrossel.querySelectorAll(".carrossel-dot");
-            imagens.style.transform = `translateX(-${index * 100}%)`;
-            imagens.dataset.index = index;
-            dots.forEach((dot, i) => dot.classList.toggle("ativo", i === index));
-        }
-        
-        async function openModal(index, imageIndex) {
-            const modal = document.getElementById("imageModal");
-            const carrosselImagens = document.getElementById("modalCarrosselImagens");
-            const carrosselDots = document.getElementById("modalCarrosselDots");
-            const modalError = document.getElementById("modalError");
-            const prevButton = document.getElementById("modalPrev");
-            const nextButton = document.getElementById("modalNext");
-            if (!modal || !carrosselImagens || !carrosselDots || !modalError || !prevButton || !nextButton) {
-                console.error("Elementos do modal não encontrados");
-                return;
-            }
-
-            modalError.style.display = "none";
-            carrosselImagens.innerHTML = "";
-            carrosselDots.innerHTML = "";
-            prevButton.classList.remove("visible");
-            nextButton.classList.remove("visible");
-
-            try {
-                currentImages = allProducts[index]?.imagens && allProducts[index].imagens.length > 0 ? allProducts[index].imagens : ["imagens/placeholder.jpg"];
-
-                if (!currentImages.length) {
-                    modalError.textContent = "Nenhuma imagem disponível para este produto.";
-                    modalError.style.display = "block";
-                    modal.style.display = "flex";
-                    return;
-                }
-
-                currentImageIndex = Math.max(0, Math.min(imageIndex, currentImages.length - 1));
-
-                carrosselImagens.innerHTML = currentImages.map((img, idx) => `<img src="${img}" alt="Imagem ${idx + 1}" loading="lazy" onerror="this.style.display='none'; console.error('Erro ao renderizar imagem ${idx + 1}: ${img}')">`).join("");
-                carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
-
-                carrosselDots.innerHTML = currentImages.map((_, i) => `<span class="carrossel-dot ${i === currentImageIndex ? "ativo" : ""}" onclick="setModalCarrosselImage(${i})" aria-label="Selecionar imagem ${i + 1}"></span>`).join("");
-
-                prevButton.classList.toggle("visible", currentImages.length > 1);
-                nextButton.classList.toggle("visible", currentImages.length > 1);
-
-                modal.style.display = "flex";
-            } catch (error) {
-                console.error("Erro ao abrir modal:", error);
-                modalError.textContent = "Erro ao carregar as imagens. Tente novamente mais tarde.";
-                modalError.style.display = "block";
-                modal.style.display = "flex";
-            }
-        }
-
-        function moveModalCarrossel(direction) {
-            const carrosselImagens = document.getElementById("modalCarrosselImagens");
-            const carrosselDots = document.getElementById("modalCarrosselDots")?.children;
-            if (!carrosselImagens || !carrosselDots || !currentImages.length) {
-                console.warn("Nenhuma imagem para navegar");
-                return;
-            }
-
-            const total = currentImages.length;
-            currentImageIndex = (currentImageIndex + direction + total) % total;
-
-            carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
-            Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle("ativo", i === currentImageIndex));
-        }
-
-        function setModalCarrosselImage(index) {
-            const carrosselImagens = document.getElementById("modalCarrosselImagens");
-            const carrosselDots = document.getElementById("modalCarrosselDots")?.children;
-            if (!carrosselImagens || !carrosselDots || index < 0 || index >= currentImages.length) {
-                console.warn("Índice inválido para setModalCarrosselImage:", index);
-                return;
-            }
-
-            currentImageIndex = index;
-            carrosselImagens.style.transform = `translateX(-${index * 100}%)`;
-            Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle("ativo", i === index));
-        }
-
-        function closeModal() {
-            const modal = document.getElementById("imageModal");
-            const modalError = document.getElementById("modalError");
-            if (!modal || !modalError) {
-                console.error("Elementos do modal não encontrados");
-                return;
-            }
-            modal.style.display = "none";
-            modalError.style.display = "none";
-            currentImages = [];
-            currentImageIndex = 0;
-        }
-
-        document.addEventListener("DOMContentLoaded", () => {
-            const criticalElements = ["grid-produtos", "mensagem-vazia", "error-message", "loading-spinner", "imageModal", "modalCarrosselImagens", "modalCarrosselDots", "modalError"];
-            const missingElements = criticalElements.filter(id => !document.getElementById(id));
-            if (missingElements.length > 0) {
-                console.error("Elementos DOM críticos não encontrados:", missingElements);
-                const errorMessage = document.getElementById("error-message");
-                if (errorMessage) errorMessage.textContent = "Erro interno: Elementos da página não encontrados!";
-                return;
-            }
-
-            carregarProdutos();
-
-            const buscaInput = document.getElementById("busca");
-            if (buscaInput) {
-                let timeout;
-                buscaInput.addEventListener("input", () => {
-                    clearTimeout(timeout);
-                    timeout = setTimeout(() => {
-                        currentBusca = buscaInput.value;
-                        carregarProdutos(true);
-                    }, 500);
-                });
-            }
-
-            const imageModal = document.getElementById("imageModal");
-            if (imageModal) {
-                imageModal.addEventListener("click", (e) => {
-                    if (e.target === imageModal) {
-                        closeModal();
+                            const newImg = div.querySelector('img');
+                            newImg.onerror = () => {
+                                console.error(`Erro ao carregar imagem: ${newImg.src}`);
+                                newImg.src = placeholderUrl;
+                            };
+                        });
+                        loadMoreButton.style.display = data.length < total ? 'block' : 'none';
                     }
-                });
+                } catch (error) {
+                    console.error('Erro ao carregar produtos:', error);
+                    errorMessage.textContent = 'Erro ao carregar produtos';
+                    errorMessage.style.display = 'block';
+                } finally {
+                    loadingSpinner.style.display = 'none';
+                }
             }
 
-            window.filtrarPorCategoria = filtrarPorCategoria;
-            window.filtrarPorLoja = filtrarPorLoja;
-            window.carregarMaisProdutos = carregarMaisProdutos;
-            window.moveCarrossel = moveCarrossel;
-            window.setCarrosselImage = setCarrosselImage;
-            window.openModal = openModal;
-            window.closeModal = closeModal;
-            window.moveModalCarrossel = moveModalCarrossel;
-            window.setModalCarrosselImage = setModalCarrosselImage;
+            window.carregarMaisProdutos = () => {
+                currentPage++;
+                carregarProdutos();
+            };
+
+            window.filtrarPorCategoria = (categoria) => {
+                currentCategoria = categoria;
+                currentPage = 1;
+                document.getElementById('grid-produtos').innerHTML = '';
+                document.querySelectorAll('.categoria-item').forEach(item => {
+                    item.classList.toggle('ativa', item.dataset.categoria === categoria);
+                });
+                carregarProdutos();
+            };
+
+            window.filtrarPorLoja = (loja) => {
+                currentLoja = loja;
+                currentPage = 1;
+                document.getElementById('grid-produtos').innerHTML = '';
+                document.querySelectorAll('.loja, .loja-todas').forEach(item => {
+                    item.classList.toggle('ativa', item.dataset.loja === loja);
+                });
+                carregarProdutos();
+            };
+
+            document.getElementById('busca').addEventListener('input', (e) => {
+                currentBusca = e.target.value;
+                currentPage = 1;
+                document.getElementById('grid-produtos').innerHTML = '';
+                carregarProdutos();
+            });
+
+            window.openModal = (images) => {
+                const modal = document.getElementById('imageModal');
+                const carrosselImagens = document.getElementById('modalCarrosselImagens');
+                const carrosselDots = document.getElementById('modalCarrosselDots');
+                let currentIndex = 0;
+
+                carrosselImagens.innerHTML = '';
+                carrosselDots.innerHTML = '';
+                const placeholderUrl = 'https://via.placeholder.com/150';
+                const finalImages = images && images.length > 0 ? images : [placeholderUrl];
+
+                finalImages.forEach((imgSrc, index) => {
+                    const img = document.createElement('img');
+                    img.src = imgSrc;
+                    img.onerror = () => {
+                        img.src = placeholderUrl;
+                    };
+                    carrosselImagens.appendChild(img);
+
+                    const dot = document.createElement('span');
+                    dot.className = 'carrossel-dot';
+                    if (index === 0) dot.className += ' ativo';
+                    dot.onclick = () => moveModalCarrossel(index - currentIndex);
+                    carrosselDots.appendChild(dot);
+                });
+
+                document.getElementById('modalPrev').classList.toggle('visible', finalImages.length > 1);
+                document.getElementById('modalNext').classList.toggle('visible', finalImages.length > 1);
+                modal.style.display = 'flex';
+
+                window.moveModalCarrossel = (step) => {
+                    const totalImages = finalImages.length;
+                    currentIndex = (currentIndex + step + totalImages) % totalImages;
+                    carrosselImagens.style.transform = `translateX(-${currentIndex * 100}%)`;
+                    document.querySelectorAll('.carrossel-dot').forEach((dot, index) => {
+                        dot.classList.toggle('ativo', index === currentIndex);
+                    });
+                };
+            };
+
+            window.closeModal = () => {
+                document.getElementById('imageModal').style.display = 'none';
+            };
+
+            document.getElementById('grid-produtos').addEventListener('click', (e) => {
+                const carrossel = e.target.closest('.carrossel-imagens');
+                if (carrossel) {
+                    const images = JSON.parse(carrossel.dataset.images);
+                    openModal(images);
+                }
+            });
+
+            carregarProdutos();
         });
     </script>
 </body>
