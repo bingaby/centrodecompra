@@ -63,12 +63,12 @@
         
         #load-more { display: none; margin: 20px auto; padding: 10px 20px; background: #ff6200; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
         #load-more:hover { background: #e55a00; }
-        .produto-card { transition: transform 0.2s; background: white; border-radius: 8px; padding: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-height: 250px; } /* Altura ajustada */
+        .produto-card { transition: transform 0.2s; background: white; border-radius: 8px; padding: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-height: 250px; }
         .produto-card:hover { transform: translateY(-5px); }
         .produto-card span { font-size: 14px; display: block; margin: 5px 0; }
-        .carrossel { position: relative; width: 100%; max-height: 100px; overflow: hidden; } /* Altura da imagem ajustada */
+        .carrossel { position: relative; width: 100%; max-height: 100px; overflow: hidden; }
         .carrossel-imagens { display: flex; width: 100%; height: 100%; }
-        .carrossel-imagens img { width: 100%; height: 100px; object-fit: contain; flex: 0 0 100%; transition: transform 0.3s ease; } /* Altura da imagem ajustada */
+        .carrossel-imagens img { width: 100%; height: 100px; object-fit: contain; flex: 0 0 100%; transition: transform 0.3s ease; }
         
         /* Ajuste do grid para 8 produtos por linha em telas grandes e responsividade */
         .grid-produtos { 
@@ -91,6 +91,12 @@
             }
             .produto-card { max-height: 200px; }
             .carrossel-imagens img { height: 80px; }
+        }
+        .aviso-afiliado {
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+            margin: 20px 0;
         }
     </style>
 </head>
@@ -123,8 +129,11 @@
                 <li class="categoria-item" data-categoria="esportes" onclick="filtrarPorCategoria('esportes')" role="button" aria-label="Filtrar por Esportes">Esportes</li>
                 <li class="categoria-item" data-categoria="livros" onclick="filtrarPorCategoria('livros')" role="button" aria-label="Filtrar por Livros">Livros</li>
                 <li class="categoria-item" data-categoria="infantil" onclick="filtrarPorCategoria('infantil')" role="button" aria-label="Filtrar por Infantil">Infantil</li>
-                <li class="categoria-item" data-categoria="Celulares" onclick="filtrarPorCategoria('Celulares')" role="button" aria-label="Filtrar por Celulares">Celulares</li>
-                <li class="categoria-item" data-categoria="Eletrodomésticos" onclick="filtrarPorCategoria('Eletrodomésticos')" role="button" aria-label="Filtrar por Eletrodomésticos">Eletrodomésticos</li>
+                <li class="categoria-item" data-categoria="celulares" onclick="filtrarPorCategoria('Celulares')" role="button" aria-label="Filtrar por Celulares">Celulares</li>
+                <li class="categoria-item" data-categoria="eletrodomesticos" onclick="filtrarPorCategoria('Eletrodomésticos')" role="button" aria-label="Filtrar por Eletrodomésticos">Eletrodomésticos</li>
+                <li class="categoria-item" data-categoria="pet" onclick="filtrarPorCategoria('pet')" role="button" aria-label="Filtrar por Produtos para Pet">Pet</li>
+                <li class="categoria-item" data-categoria="jardinagem" onclick="filtrarPorCategoria('jardinagem')" role="button" aria-label="Filtrar por Jardinagem">Jardinagem</li>
+                <li class="categoria-item" data-categoria="automovel" onclick="filtrarPorCategoria('automovel')" role="button" aria-label="Filtrar por Automóvel">Automóvel</li>
             </ul>
         </aside>
         <main>
@@ -160,6 +169,9 @@
             </div>
         </main>
     </div>
+    <div class="aviso-afiliado">
+        Este site participa de programas de afiliados e pode receber comissões pelas compras feitas através dos links.
+    </div>
     <div class="modal" id="imageModal">
         <button class="modal-close" onclick="closeModal()">✕</button>
         <div class="modal-content" id="modalCarrossel">
@@ -194,8 +206,8 @@
             // Manipulador de erro para imagens
             document.querySelectorAll('img').forEach(img => {
                 img.onerror = () => {
-                    console.log(`Erro ao carregar imagem: ${img.src}`);
-                    img.src = '/imagens/placeholder.jpg';
+                    console.error(`Erro ao carregar imagem: ${img.src}`);
+                    img.src = 'https://via.placeholder.com/150';
                 };
             });
 
@@ -237,7 +249,7 @@
                         loja: currentLoja,
                         busca: currentBusca,
                         page: currentPage,
-                        limit: 24 // AQUI: Alterado de 12 para 24
+                        limit: 24
                     });
                     const response = await fetch(`${API_BASE_URL}/api/produtos?${params}`);
                     if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
@@ -251,13 +263,16 @@
                             const div = document.createElement('div');
                             div.className = 'produto-card';
                             
-                            // Mapear o nome da loja para a classe CSS correta
                             const lojaClass = `tarja-${produto.loja.toLowerCase().replace(/\s/g, '')}`;
+                            const imageUrl = produto.imagens[0] || 'https://via.placeholder.com/150';
+                            if (!produto.imagens || produto.imagens.length === 0) {
+                                console.warn(`Produto "${produto.nome}" não possui imagens. Usando placeholder.`);
+                            }
 
                             div.innerHTML = `
                                 <div class="carrossel">
                                     <div class="carrossel-imagens" data-images='${JSON.stringify(produto.imagens)}'>
-                                        <img src="${produto.imagens[0] || '/imagens/placeholder.jpg'}" alt="${produto.nome}">
+                                        <img src="${imageUrl}" alt="${produto.nome}">
                                     </div>
                                 </div>
                                 <span>${produto.nome}</span>
@@ -325,7 +340,7 @@
                     const img = document.createElement('img');
                     img.src = imgSrc;
                     img.onerror = () => {
-                        img.src = '/imagens/placeholder.jpg';
+                        img.src = 'https://via.placeholder.com/150';
                     };
                     carrosselImagens.appendChild(img);
 
