@@ -1,6 +1,6 @@
 const API_BASE_URL = 'https://minha-api-produtos.onrender.com';
 let currentPage = 1;
-let allProducts = []; // Armazenar todos os produtos carregados para o carrossel do modal
+let allProducts = [];
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOMContentLoaded disparado, iniciando script.js');
@@ -43,6 +43,24 @@ document.addEventListener('DOMContentLoaded', () => {
         yearElement.textContent = new Date().getFullYear();
     } else {
         console.warn("Elemento com ID 'year' não encontrado");
+    }
+
+    // Função para detectar gestos de deslizar
+    function addSwipeSupport(element, moveCallback) {
+        let touchStartX = 0;
+        let touchEndX = 0;
+        element.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        element.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            const deltaX = touchEndX - touchStartX;
+            if (deltaX > 50) {
+                moveCallback(-1); // Deslizar para a direita
+            } else if (deltaX < -50) {
+                moveCallback(1); // Deslizar para a esquerda
+            }
+        });
     }
 
     // Carregar produtos
@@ -101,7 +119,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     card.setAttribute('data-categoria', produto.categoria.toLowerCase());
                     card.setAttribute('data-loja', produto.loja.toLowerCase());
                     
-                    // Converte a string JSON de imagens para um array com tratamento de erro
                     let imagens = [];
                     try {
                         imagens = produto.imagens ? JSON.parse(produto.imagens) : ['https://via.placeholder.com/150'];
@@ -131,6 +148,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         <a href="${produto.link}" target="_blank" class="tarja-preco ${lojaClass}" aria-label="Comprar ${produto.nome} na ${produto.loja}">Comprar na ${produto.loja}</a>
                     `;
                     gridProdutos.appendChild(card);
+
+                    // Adicionar suporte a deslizar no carrossel do card
+                    if (imagens.length > 1) {
+                        const carrosselImagens = card.querySelector('.carrossel-imagens');
+                        addSwipeSupport(carrosselImagens, (direction) => moveCarrossel(carrosselId, direction));
+                    }
                 });
             }
             
@@ -210,6 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
             carrosselDots.innerHTML = currentModalImages.map((_, i) => `<span class="carrossel-dot ${i === currentImageIndex ? "ativo" : ""}" onclick="setModalCarrosselImage(${i})"></span>`).join("");
             prevButton.classList.add("visible");
             nextButton.classList.add("visible");
+            addSwipeSupport(carrosselImagens, (direction) => moveModalCarrossel(direction));
         } else {
             prevButton.classList.remove("visible");
             nextButton.classList.remove("visible");
