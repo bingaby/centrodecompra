@@ -1,4 +1,5 @@
 const API_BASE_URL = 'https://minha-api-produtos.onrender.com';
+const socket = io(API_BASE_URL, { transports: ['websocket'] });
 let currentPage = 1;
 let allProducts = [];
 
@@ -9,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('img').forEach(img => {
         img.onerror = () => {
             console.log(`Erro ao carregar imagem: ${img.src}`);
-            img.src = '/imagens/placeholder.jpg';
+            img.src = 'https://via.placeholder.com/150'; // Fallback externo
         };
     });
 
@@ -119,14 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     card.setAttribute('data-categoria', produto.categoria.toLowerCase());
                     card.setAttribute('data-loja', produto.loja.toLowerCase());
                     
-                    let imagens = [];
-                    try {
-                        imagens = produto.imagens ? JSON.parse(produto.imagens) : ['/imagens/placeholder.jpg'];
-                    } catch (e) {
-                        console.error(`Erro ao parsear imagens para o produto ${produto.nome}:`, e);
-                        imagens = ['/imagens/placeholder.jpg'];
-                    }
-                    
+                    const imagens = produto.imagens || ['https://via.placeholder.com/150'];
                     const carrosselId = `carrossel-${produto.id}`;
                     const lojaClass = `tarja-${produto.loja.toLowerCase().replace(/\s/g, '')}`;
                     
@@ -227,12 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
         carrosselImagens.innerHTML = "";
         carrosselDots.innerHTML = "";
         
-        try {
-            currentModalImages = produto.imagens ? JSON.parse(produto.imagens) : ['/imagens/placeholder.jpg'];
-        } catch (e) {
-            console.error(`Erro ao parsear imagens para o modal do produto ${produto.nome}:`, e);
-            currentModalImages = ['/imagens/placeholder.jpg'];
-        }
+        currentModalImages = produto.imagens || ['https://via.placeholder.com/150'];
         currentImageIndex = Math.max(0, Math.min(imageIndex, currentModalImages.length - 1));
         
         carrosselImagens.innerHTML = currentModalImages.map((img, idx) => `<img src="${img}" alt="${produto.nome} - Imagem ${idx + 1}" loading="lazy">`).join("");
@@ -304,6 +293,22 @@ document.addEventListener('DOMContentLoaded', () => {
         currentPage++;
         carregarProdutos(currentPage, true);
     }
+
+    // Socket.IO para atualizações em tempo real
+    socket.on('novoProduto', (produto) => {
+        console.log('Novo produto adicionado:', produto);
+        carregarProdutos(1);
+    });
+
+    socket.on('produtoAtualizado', (produto) => {
+        console.log('Produto atualizado:', produto);
+        carregarProdutos(currentPage, true);
+    });
+
+    socket.on('produtoExcluido', ({ id }) => {
+        console.log('Produto excluído:', id);
+        carregarProdutos(currentPage, true);
+    });
 
     // Carregar produtos iniciais
     console.log('Chamando carregarProdutos inicial');
