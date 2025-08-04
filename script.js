@@ -13,12 +13,14 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     });
 
-    // Clique triplo no logo
+    // Clique triplo e toque longo no logo
     const logo = document.getElementById('site-logo');
     if (!logo) {
         console.error("Elemento com ID 'site-logo' não encontrado");
     } else {
         let clickCount = 0, clickTimeout = null;
+        let touchStartTime = 0;
+
         logo.addEventListener('click', (e) => {
             console.log('Clique no logo:', clickCount + 1);
             e.stopPropagation();
@@ -35,7 +37,50 @@ document.addEventListener('DOMContentLoaded', () => {
                 clickCount = 0;
             }
         });
+
+        logo.addEventListener('touchstart', (e) => {
+            touchStartTime = Date.now();
+        });
+        logo.addEventListener('touchend', (e) => {
+            const touchDuration = Date.now() - touchStartTime;
+            if (touchDuration > 1000) {
+                console.log('Toque longo detectado, redirecionando para admin-xyz-123.html');
+                window.location.href = '/admin-xyz-123.html';
+            }
+        });
     }
+
+    // Manipulador para o menu hamburger
+    const hamburgerMenu = document.querySelector('.hamburger-menu');
+    const sidebar = document.querySelector('.sidebar-categorias');
+    if (hamburgerMenu && sidebar) {
+        hamburgerMenu.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!sidebar.contains(e.target) && !hamburgerMenu.contains(e.target)) {
+                sidebar.classList.remove('active');
+            }
+        });
+    }
+
+    // Manipulador para a barra de navegação inferior
+    const bottomNavLinks = document.querySelectorAll('.bottom-nav a');
+    bottomNavLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            bottomNavLinks.forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+            if (link.textContent.includes('Categorias')) {
+                sidebar.classList.toggle('active');
+            } else if (link.textContent.includes('Contato')) {
+                window.location.href = '#contato';
+            } else {
+                window.location.href = '#';
+            }
+        });
+    });
 
     // Atualizar ano no footer
     const yearElement = document.getElementById('year');
@@ -149,7 +194,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                     gridProdutos.appendChild(card);
 
-                    // Adicionar suporte a deslizar no carrossel do card
                     if (imagens.length > 1) {
                         const carrosselImagens = card.querySelector('.carrossel-imagens');
                         addSwipeSupport(carrosselImagens, (direction) => moveCarrossel(carrosselId, direction));
@@ -174,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Funções para os carrosséis menores nos cards
+    // Funções para os carrosséis nos cards
     window.moveCarrossel = function(id, direction) {
         const carrossel = document.getElementById(id);
         if (!carrossel) return;
@@ -213,6 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const carrosselDots = document.getElementById("modalCarrosselDots");
         const prevButton = document.getElementById("modalPrev");
         const nextButton = document.getElementById("modalNext");
+        const modalClose = document.querySelector('.modal-close');
         
         modal.style.display = "flex";
         carrosselImagens.innerHTML = "";
@@ -238,6 +283,9 @@ document.addEventListener('DOMContentLoaded', () => {
             prevButton.classList.remove("visible");
             nextButton.classList.remove("visible");
         }
+
+        // Fechar modal ao clicar no botão de fechar
+        modalClose.addEventListener('click', closeModal);
     };
     
     window.moveModalCarrossel = function(direction) {
@@ -271,6 +319,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Filtrando por categoria:', categoria);
         document.querySelectorAll('.categoria-item').forEach(item => item.classList.toggle('ativa', item.dataset.categoria === categoria));
         carregarProdutos(1);
+        sidebar.classList.remove('active'); // Fecha sidebar após selecionar categoria
     };
 
     window.filtrarPorLoja = function(loja) {
