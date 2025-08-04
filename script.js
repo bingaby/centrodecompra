@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('img').forEach(img => {
         img.onerror = () => {
             console.log(`Erro ao carregar imagem: ${img.src}`);
-            img.src = 'https://via.placeholder.com/150';
+            img.src = '/imagens/placeholder.jpg';
         };
     });
 
@@ -121,10 +121,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     let imagens = [];
                     try {
-                        imagens = produto.imagens ? JSON.parse(produto.imagens) : ['https://via.placeholder.com/150'];
+                        imagens = produto.imagens ? JSON.parse(produto.imagens) : ['/imagens/placeholder.jpg'];
                     } catch (e) {
                         console.error(`Erro ao parsear imagens para o produto ${produto.nome}:`, e);
-                        imagens = ['https://via.placeholder.com/150'];
+                        imagens = ['/imagens/placeholder.jpg'];
                     }
                     
                     const carrosselId = `carrossel-${produto.id}`;
@@ -144,10 +144,19 @@ document.addEventListener('DOMContentLoaded', () => {
                             ` : ""}
                         </div>
                         <span class="produto-nome">${produto.nome}</span>
+                        <span class="preco-link" data-preco="${parseFloat(produto.preco).toFixed(2)}">Clique aqui para ver o preço</span>
                         <p class="descricao">${produto.descricao || 'Sem descrição'}</p>
                         <a href="${produto.link}" target="_blank" class="tarja-preco ${lojaClass}" aria-label="Comprar ${produto.nome} na ${produto.loja}">Comprar na ${produto.loja}</a>
                     `;
                     gridProdutos.appendChild(card);
+
+                    // Adicionar evento para revelar preço
+                    const precoLink = card.querySelector('.preco-link');
+                    precoLink.addEventListener('click', () => {
+                        const preco = precoLink.getAttribute('data-preco');
+                        precoLink.textContent = `R$ ${preco}`;
+                        precoLink.classList.remove('preco-link');
+                    });
 
                     // Adicionar suporte a deslizar no carrossel do card
                     if (imagens.length > 1) {
@@ -219,10 +228,10 @@ document.addEventListener('DOMContentLoaded', () => {
         carrosselDots.innerHTML = "";
         
         try {
-            currentModalImages = produto.imagens ? JSON.parse(produto.imagens) : ['https://via.placeholder.com/150'];
+            currentModalImages = produto.imagens ? JSON.parse(produto.imagens) : ['/imagens/placeholder.jpg'];
         } catch (e) {
             console.error(`Erro ao parsear imagens para o modal do produto ${produto.nome}:`, e);
-            currentModalImages = ['https://via.placeholder.com/150'];
+            currentModalImages = ['/imagens/placeholder.jpg'];
         }
         currentImageIndex = Math.max(0, Math.min(imageIndex, currentModalImages.length - 1));
         
