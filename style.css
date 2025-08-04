@@ -9,14 +9,16 @@ body {
     background-color: #f0f2f5;
     color: #333;
     -webkit-tap-highlight-color: transparent;
-    overscroll-behavior: none;
+    overscroll-behavior: none; /* Evita rolagem elástica indesejada */
 }
 
 .container {
+    display: flex;
     max-width: 1200px;
     margin: 0 auto;
     padding: 10px;
-    min-height: calc(100vh - 80px);
+    gap: 10px;
+    min-height: calc(100vh - 80px); /* Ajusta para barra inferior */
 }
 
 /* Header */
@@ -47,6 +49,15 @@ body {
 .header-text p {
     font-size: 0.8em;
     margin: 0;
+}
+
+.hamburger-menu {
+    display: none;
+    font-size: 24px;
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
 }
 
 /* Navegação Superior (Desktop) */
@@ -112,6 +123,46 @@ nav.bottom-nav a i {
     margin-bottom: 4px;
 }
 
+/* Sidebar */
+.sidebar-categorias {
+    width: 100%;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    margin-bottom: 15px;
+    transition: transform 0.3s ease; /* Animação para menu hamburger */
+}
+
+.sidebar-categorias h3 {
+    font-size: 1.1em;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.sidebar-categorias ul {
+    list-style: none;
+}
+
+.categoria-item {
+    padding: 10px 12px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background-color 0.2s, color 0.2s;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.categoria-item:hover {
+    background-color: #f0f0f0;
+}
+
+.categoria-item.ativa {
+    background-color: #FFA500;
+    color: white;
+    font-weight: bold;
+}
+
 /* Main */
 main {
     flex: 1;
@@ -163,25 +214,6 @@ h2 {
     object-fit: contain;
 }
 
-select#categoria {
-    width: 100%;
-    max-width: 500px;
-    padding: 10px 15px;
-    margin: 10px auto;
-    display: block;
-    border: 1px solid #ccc;
-    border-radius: 25px;
-    font-size: 14px;
-    background-color: #fff;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
-    transition: border-color 0.2s;
-}
-
-select#categoria:focus {
-    border-color: #FFA500;
-    outline: none;
-}
-
 .barra-busca {
     width: 100%;
     max-width: 500px;
@@ -231,6 +263,15 @@ select#categoria:focus {
     .grid-produtos {
         grid-template-columns: repeat(8, 1fr);
     }
+    .container {
+        flex-direction: row;
+    }
+    .sidebar-categorias {
+        width: 250px;
+        position: sticky;
+        top: 80px;
+        height: fit-content;
+    }
     .site-header {
         flex-direction: row;
         gap: 20px;
@@ -273,7 +314,8 @@ select#categoria:focus {
         height: 70px;
     }
     .container {
-        padding-bottom: 60px;
+        flex-direction: column;
+        padding-bottom: 60px; /* Espaço para a barra inferior */
     }
     .site-header {
         padding: 10px;
@@ -289,9 +331,27 @@ select#categoria:focus {
         font-size: 0.7em;
     }
     nav.top-nav {
-        display: none;
+        display: none; /* Esconde navegação superior em celulares */
     }
     nav.bottom-nav {
+        display: block; /* Mostra barra de navegação inferior */
+    }
+    .sidebar-categorias {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 80%;
+        max-width: 300px;
+        transform: translateX(-100%);
+        z-index: 1000;
+        margin: 0;
+        border-radius: 0;
+    }
+    .sidebar-categorias.active {
+        transform: translateX(0);
+    }
+    .hamburger-menu {
         display: block;
     }
     .loja img {
@@ -310,7 +370,7 @@ select#categoria:focus {
         -webkit-line-clamp: 1;
     }
     .produto-card .carrossel-prev, .produto-card .carrossel-next {
-        display: none;
+        display: none; /* Usa gestos de deslizar */
     }
     .modal-content {
         max-height: 70%;
@@ -355,7 +415,7 @@ select#categoria:focus {
     display: flex;
     width: 100%;
     height: 100px;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease; /* Transição suave */
 }
 
 .produto-card .carrossel-imagens img {
@@ -697,7 +757,7 @@ select#categoria:focus {
 /* Robô assistente */
 .robo-assistente {
     position: fixed;
-    bottom: 80px;
+    bottom: 80px; /* Ajustado para não sobrepor a barra inferior */
     right: 15px;
     z-index: 950;
 }
@@ -735,7 +795,7 @@ select#categoria:focus {
 
 /* Footer */
 footer {
-    display: none;
+    display: none; /* Escondido em celulares, já que usamos barra inferior */
 }
 
 .disclaimer-afiliado {
