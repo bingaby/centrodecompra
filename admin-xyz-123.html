@@ -69,6 +69,7 @@
     </main>
     <script>
         const API_BASE_URL = 'https://minha-api-produtos.onrender.com';
+        const ADMIN_TOKEN = 'seu_token_secreto'; // Substitua pelo token definido no .env do backend
 
         document.addEventListener('DOMContentLoaded', () => {
             // Manipulador de erro para imagens
@@ -111,13 +112,7 @@
                     data.forEach(produto => {
                         const div = document.createElement('div');
                         div.className = 'produto-item';
-                        let imagens = [];
-                        try {
-                            imagens = produto.imagens ? JSON.parse(produto.imagens) : ['/imagens/placeholder.jpg'];
-                        } catch (e) {
-                            console.error(`Erro ao parsear imagens para o produto ${produto.nome}:`, e);
-                            imagens = ['/imagens/placeholder.jpg'];
-                        }
+                        const imagens = produto.imagens || ['/imagens/placeholder.jpg'];
                         div.innerHTML = `
                             <img src="${imagens[0]}" alt="${produto.nome}">
                             <span>${produto.nome} - R$ ${parseFloat(produto.preco).toFixed(2)}</span>
@@ -147,13 +142,7 @@
                     document.getElementById('categoria').value = produto.categoria;
                     document.getElementById('loja').value = produto.loja;
                     document.getElementById('link').value = produto.link;
-                    let imagens = [];
-                    try {
-                        imagens = produto.imagens ? JSON.parse(produto.imagens) : [];
-                    } catch (e) {
-                        console.error(`Erro ao parsear imagens para o produto ${produto.nome}:`, e);
-                        imagens = [];
-                    }
+                    const imagens = produto.imagens || [];
                     document.getElementById('imagens-preview').innerHTML = imagens.map(img => `<img src="${img}" style="width: 80px; height: 80px; object-fit: contain; margin: 5px;">`).join('');
                     document.getElementById('cancelar-edicao').style.display = 'inline-block';
                     document.querySelector('#produto-form button[type="submit"]').textContent = 'Atualizar Produto';
@@ -169,7 +158,10 @@
                 if (!confirm('Tem certeza que deseja excluir este produto?')) return;
                 try {
                     const response = await fetch(`${API_BASE_URL}/api/produtos/${id}`, {
-                        method: 'DELETE'
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${ADMIN_TOKEN}`,
+                        },
                     });
                     const result = await response.json();
                     if (response.ok) {
@@ -208,7 +200,10 @@
                 try {
                     const response = await fetch(url, {
                         method,
-                        body: formData
+                        body: formData,
+                        headers: {
+                            'Authorization': `Bearer ${ADMIN_TOKEN}`,
+                        },
                     });
                     const result = await response.json();
                     const feedback = document.getElementById('feedback');
