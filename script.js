@@ -6,11 +6,19 @@ let allProducts = [];
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOMContentLoaded disparado, iniciando script.js');
 
+    // Função para alternar sidebar no mobile
+    window.toggleSidebar = function() {
+        const sidebar = document.querySelector('.sidebar-categorias');
+        sidebar.classList.toggle('active');
+        const toggleButton = document.querySelector('.sidebar-toggle');
+        toggleButton.textContent = sidebar.classList.contains('active') ? 'Esconder Categorias' : 'Mostrar Categorias';
+    };
+
     // Manipulador de erro para imagens
     document.querySelectorAll('img').forEach(img => {
         img.onerror = () => {
             console.log(`Erro ao carregar imagem: ${img.src}`);
-            img.src = 'https://via.placeholder.com/150'; // Fallback externo
+            img.src = 'https://via.placeholder.com/150';
         };
     });
 
@@ -261,6 +269,10 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Filtrando por categoria:', categoria);
         document.querySelectorAll('.categoria-item').forEach(item => item.classList.toggle('ativa', item.dataset.categoria === categoria));
         carregarProdutos(1);
+        if (window.innerWidth <= 767) {
+            document.querySelector('.sidebar-categorias').classList.remove('active');
+            document.querySelector('.sidebar-toggle').textContent = 'Mostrar Categorias';
+        }
     };
 
     window.filtrarPorLoja = function(loja) {
