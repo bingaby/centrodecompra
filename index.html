@@ -1,96 +1,96 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Compre os melhores produtos em diversas lojas com o Centro de Compras.">
-    <meta property="og:title" content="Centro de Compras">
-    <meta property="og:description" content="Encontre os melhores produtos de lojas como Amazon, Mercado Livre e mais.">
-    <meta property="og:image" content="/logos/centrodecompras.jpg">
-    <meta property="og:url" content="https://www.centrodecompra.com.br">
-    <meta name="twitter:card" content="summary_large_image">
-    <title>Centro de Compras</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="/style.css">
-    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+ <meta name="description" content="Compre os melhores produtos em diversas lojas com o Centro de Compras.">
+ <meta property="og:title" content="Centro de Compras">
+ <meta property="og:description" content="Encontre os melhores produtos de lojas como Amazon, Mercado Livre e mais.">
+ <meta property="og:image" content="/logos/centrodecompras.jpg">
+ <meta property="og:url" content="https://www.centrodecompra.com.br">
+ <meta name="twitter:card" content="summary_large_image">
+ <title>Centro de Compras</title>
+ <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+ <link rel="stylesheet" href="/style.css">
+ <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 </head>
 <body>
-    <header>
-        <img id="site-logo" src="/logos/centrodecompras.jpg" alt="Logo Centro de Compras" width="150">
-        <nav>
-            <a href="#" class="loja-todas ativa" data-loja="todas" onclick="filtrarPorLoja('todas')">Todas</a>
-            <a href="#" class="loja" data-loja="Amazon" onclick="filtrarPorLoja('Amazon')"><img src="/logos/amazon.png" alt="Amazon" width="20"></a>
-            <a href="#" class="loja" data-loja="Magalu" onclick="filtrarPorLoja('Magalu')"><img src="/logos/magalu.png" alt="Magalu" width="20"></a>
-            <a href="#" class="loja" data-loja="Shein" onclick="filtrarPorLoja('Shein')"><img src="/logos/shein.png" alt="Shein" width="20"></a>
-            <a href="#" class="loja" data-loja="Shopee" onclick="filtrarPorLoja('Shopee')"><img src="/logos/shopee.png" alt="Shopee" width="20"></a>
-            <a href="#" class="loja" data-loja="Mercado Livre" onclick="filtrarPorLoja('Mercado Livre')"><img src="/logos/mercadolivre.jpg" alt="Mercado Livre" width="20"></a>
-            <a href="#" class="loja" data-loja="Alibaba" onclick="filtrarPorLoja('Alibaba')"><img src="/logos/alibaba.png" alt="Alibaba" width="20"></a>
-        </nav>
-        <div class="search-bar">
-            <input type="text" id="busca" placeholder="Buscar produtos..." aria-label="Buscar produtos">
-        </div>
-    </header>
-    <main>
-        <div class="sidebar-categorias">
-            <button class="sidebar-toggle" onclick="toggleSidebar()">Mostrar Categorias</button>
-            <ul>
-                <li class="categoria-item ativa" data-categoria="todas" onclick="filtrarPorCategoria('todas')">Todas</li>
-                <li class="categoria-item" data-categoria="eletronicos" onclick="filtrarPorCategoria('eletronicos')">Eletrônicos</li>
-                <li class="categoria-item" data-categoria="moda" onclick="filtrarPorCategoria('moda')">Moda</li>
-                <li class="categoria-item" data-categoria="casa" onclick="filtrarPorCategoria('casa')">Casa e Decoração</li>
-                <li class="categoria-item" data-categoria="esportes" onclick="filtrarPorCategoria('esportes')">Esportes e Fitness</li>
-                <li class="categoria-item" data-categoria="livros" onclick="filtrarPorCategoria('livros')">Livros</li>
-                <li class="categoria-item" data-categoria="beleza" onclick="filtrarPorCategoria('beleza')">Beleza e Cuidados Pessoais</li>
-                <li class="categoria-item" data-categoria="brinquedos" onclick="filtrarPorCategoria('brinquedos')">Brinquedos e Jogos</li>
-                <li class="categoria-item" data-categoria="alimentos" onclick="filtrarPorCategoria('alimentos')">Alimentos e Bebidas</li>
-                <li class="categoria-item" data-categoria="automotivo" onclick="filtrarPorCategoria('automotivo')">Automotivo</li>
-                <li class="categoria-item" data-categoria="saude" onclick="filtrarPorCategoria('saude')">Saúde e Bem-Estar</li>
-                <li class="categoria-item" data-categoria="informatica" onclick="filtrarPorCategoria('informatica')">Informática</li>
-                <li class="categoria-item" data-categoria="bebes" onclick="filtrarPorCategoria('bebes')">Bebês</li>
-                <li class="categoria-item" data-categoria="joias" onclick="filtrarPorCategoria('joias')">Joias e Acessórios</li>
-                <li class="categoria-item" data-categoria="pet" onclick="filtrarPorCategoria('pet')">Pet</li>
-                <li class="categoria-item" data-categoria="outros" onclick="filtrarPorCategoria('outros')">Outros</li>
-            </ul>
-        </div>
-        <div class="content">
-            <div id="loading-spinner">
-                <i class="fas fa-spinner fa-spin"></i> Carregando...
-            </div>
-            <div id="error-message"></div>
-            <div id="mensagem-vazia" style="display: none;">Nenhum produto encontrado.</div>
-            <div id="grid-produtos" class="grid-produtos"></div>
-            <button id="load-more" style="display: none;">Carregar Mais</button>
-        </div>
-    </main>
-    <footer>
-        <div class="footer-content">
-            <div class="social-links">
-                <a href="https://www.tiktok.com/@cdc.centraldecompas?_t=ZM-8vYQlF9u1dH&_r=1" target="_blank">
-                    <div class="icon"><i class="fab fa-tiktok"></i></div><span>TikTok</span>
-                </a>
-                <a href="https://www.instagram.com/cdccentrodecompras/?utm_source=qr&r=nametag" target="_blank">
-                    <div class="icon"><i class="fab fa-instagram"></i></div><span>Instagram</span>
-                </a>
-                <a href="https://x.com/ComprasCdc" target="_blank">
-                    <div class="icon"><i class="fab fa-x-twitter"></i></div><span>X</span>
-                </a>
-                <a href="https://www.youtube.com/channel/UCaKHlI-hWqwdAXS6Xsv3ZzA" target="_blank">
-                    <div class="icon"><i class="fab fa-youtube"></i></div><span>YouTube</span>
-                </a>
-            </div>
-            <p>&copy; <span id="year"></span> Centro de Compras. Todos os direitos reservados.</p>
-        </div>
-    </footer>
-    <div id="imageModal" class="modal">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <div class="modal-content">
-            <div id="modalCarrosselImagens" class="carrossel-imagens"></div>
-            <button id="modalPrev" class="carrossel-prev" onclick="moveModalCarrossel(-1)" aria-label="Imagem anterior">◄</button>
-            <button id="modalNext" class="carrossel-next" onclick="moveModalCarrossel(1)" aria-label="Próxima imagem">►</button>
-            <div id="modalCarrosselDots" class="carrossel-dots"></div>
-        </div>
-    </div>
-    <script src="/script.js"></script>
+ <header>
+ <img id="site-logo" src="/logos/centrodecompras.jpg" alt="Logo Centro de Compras" width="150">
+ <nav>
+ <a href="#" class="loja-todas ativa" data-loja="todas" onclick="filtrarPorLoja('todas')">Todas</a>
+ <a href="#" class="loja" data-loja="Amazon" onclick="filtrarPorLoja('Amazon')"><img src="/logos/amazon.png" alt="Amazon" width="20"></a>
+ <a href="#" class="loja" data-loja="Magalu" onclick="filtrarPorLoja('Magalu')"><img src="/logos/magalu.png" alt="Magalu" width="20"></a>
+ <a href="#" class="loja" data-loja="Shein" onclick="filtrarPorLoja('Shein')"><img src="/logos/shein.png" alt="Shein" width="20"></a>
+ <a href="#" class="loja" data-loja="Shopee" onclick="filtrarPorLoja('Shopee')"><img src="/logos/shopee.png" alt="Shopee" width="20"></a>
+ <a href="#" class="loja" data-loja="Mercado Livre" onclick="filtrarPorLoja('Mercado Livre')"><img src="/logos/mercadolivre.jpg" alt="Mercado Livre" width="20"></a>
+ <a href="#" class="loja" data-loja="Alibaba" onclick="filtrarPorLoja('Alibaba')"><img src="/logos/alibaba.png" alt="Alibaba" width="20"></a>
+ </nav>
+ <div class="search-bar">
+ <input type="text" id="busca" placeholder="Buscar produtos..." aria-label="Buscar produtos">
+ </div>
+ </header>
+ <main>
+ <div class="sidebar-categorias">
+ <button class="sidebar-toggle" onclick="toggleSidebar()">Mostrar Categorias</button>
+ <ul>
+ <li class="categoria-item ativa" data-categoria="todas" onclick="filtrarPorCategoria('todas')">Todas</li>
+ <li class="categoria-item" data-categoria="eletronicos" onclick="filtrarPorCategoria('eletronicos')">Eletrônicos</li>
+ <li class="categoria-item" data-categoria="moda" onclick="filtrarPorCategoria('moda')">Moda</li>
+ <li class="categoria-item" data-categoria="casa" onclick="filtrarPorCategoria('casa')">Casa e Decoração</li>
+ <li class="categoria-item" data-categoria="esportes" onclick="filtrarPorCategoria('esportes')">Esportes e Fitness</li>
+ <li class="categoria-item" data-categoria="livros" onclick="filtrarPorCategoria('livros')">Livros</li>
+ <li class="categoria-item" data-categoria="beleza" onclick="filtrarPorCategoria('beleza')">Beleza e Cuidados Pessoais</li>
+ <li class="categoria-item" data-categoria="brinquedos" onclick="filtrarPorCategoria('brinquedos')">Brinquedos e Jogos</li>
+ <li class="categoria-item" data-categoria="alimentos" onclick="filtrarPorCategoria('alimentos')">Alimentos e Bebidas</li>
+ <li class="categoria-item" data-categoria="automotivo" onclick="filtrarPorCategoria('automotivo')">Automotivo</li>
+ <li class="categoria-item" data-categoria="saude" onclick="filtrarPorCategoria('saude')">Saúde e Bem-Estar</li>
+ <li class="categoria-item" data-categoria="informatica" onclick="filtrarPorCategoria('informatica')">Informática</li>
+ <li class="categoria-item" data-categoria="bebes" onclick="filtrarPorCategoria('bebes')">Bebês</li>
+ <li class="categoria-item" data-categoria="joias" onclick="filtrarPorCategoria('joias')">Joias e Acessórios</li>
+ <li class="categoria-item" data-categoria="pet" onclick="filtrarPorCategoria('pet')">Pet</li>
+ <li class="categoria-item" data-categoria="outros" onclick="filtrarPorCategoria('outros')">Outros</li>
+ </ul>
+ </div>
+ <div class="content">
+ <div id="loading-spinner">
+ <i class="fas fa-spinner fa-spin"></i> Carregando...
+ </div>
+ <div id="error-message"></div>
+ <div id="mensagem-vazia" style="display: none;">Nenhum produto encontrado.</div>
+ <div id="grid-produtos" class="grid-produtos"></div>
+ <button id="load-more" style="display: none;">Carregar Mais</button>
+ </div>
+ </main>
+ <footer>
+ <div class="footer-content">
+ <div class="social-links">
+ <a href="https://www.tiktok.com/@cdc.centraldecompas?_t=ZM-8vYQlF9u1dH&_r=1" target="_blank">
+ <div class="icon"><i class="fab fa-tiktok"></i></div><span>TikTok</span>
+ </a>
+ <a href="https://www.instagram.com/cdccentrodecompras/?utm_source=qr&r=nametag" target="_blank">
+ <div class="icon"><i class="fab fa-instagram"></i></div><span>Instagram</span>
+ </a>
+ <a href="https://x.com/ComprasCdc" target="_blank">
+ <div class="icon"><i class="fab fa-x-twitter"></i></div><span>X</span>
+ </a>
+ <a href="https://www.youtube.com/channel/UCaKHlI-hWqwdAXS6Xsv3ZzA" target="_blank">
+ <div class="icon"><i class="fab fa-youtube"></i></div><span>YouTube</span>
+ </a>
+ </div>
+ <p>&copy; <span id="year"></span> Centro de Compras. Todos os direitos reservados.</p>
+ </div>
+ </footer>
+ <div id="imageModal" class="modal">
+ <span class="close" onclick="closeModal()">&times;</span>
+ <div class="modal-content">
+ <div id="modalCarrosselImagens" class="carrossel-imagens"></div>
+ <button id="modalPrev" class="carrossel-prev" onclick="moveModalCarrossel(-1)" aria-label="Imagem anterior">◄</button>
+ <button id="modalNext" class="carrossel-next" onclick="moveModalCarrossel(1)" aria-label="Próxima imagem">►</button>
+ <div id="modalCarrosselDots" class="carrossel-dots"></div>
+ </div>
+ </div>
+ <script src="/script.js"></script>
 </body>
 </html>
