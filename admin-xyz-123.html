@@ -69,14 +69,14 @@
     </main>
     <script>
         const API_BASE_URL = 'https://minha-api-produtos.onrender.com';
-        const ADMIN_TOKEN = 'seu_token_secreto'; // Substitua pelo token definido no .env do backend
+        const ADMIN_TOKEN = 'seu_token_secreto'; // Substitua pelo token do .env
 
         document.addEventListener('DOMContentLoaded', () => {
             // Manipulador de erro para imagens
             document.querySelectorAll('img').forEach(img => {
                 img.onerror = () => {
                     console.log(`Erro ao carregar imagem: ${img.src}`);
-                    img.src = '/imagens/placeholder.jpg';
+                    img.src = 'https://via.placeholder.com/150';
                 };
             });
 
@@ -112,7 +112,7 @@
                     data.forEach(produto => {
                         const div = document.createElement('div');
                         div.className = 'produto-item';
-                        const imagens = produto.imagens || ['/imagens/placeholder.jpg'];
+                        const imagens = produto.imagens || ['https://via.placeholder.com/150'];
                         div.innerHTML = `
                             <img src="${imagens[0]}" alt="${produto.nome}">
                             <span>${produto.nome} - R$ ${parseFloat(produto.preco).toFixed(2)}</span>
