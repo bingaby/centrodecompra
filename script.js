@@ -1,6 +1,6 @@
 const API_BASE_URL = 'https://minha-api-produtos.onrender.com';
 let currentPage = 1;
-let allProducts = [];
+let allProducts = []; // Armazenar todos os produtos carregados para o carrossel do modal
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOMContentLoaded disparado, iniciando script.js');
@@ -13,14 +13,12 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     });
 
-    // Clique triplo e toque longo no logo
+    // Clique triplo no logo
     const logo = document.getElementById('site-logo');
     if (!logo) {
         console.error("Elemento com ID 'site-logo' não encontrado");
     } else {
         let clickCount = 0, clickTimeout = null;
-        let touchStartTime = 0;
-
         logo.addEventListener('click', (e) => {
             console.log('Clique no logo:', clickCount + 1);
             e.stopPropagation();
@@ -37,50 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 clickCount = 0;
             }
         });
-
-        logo.addEventListener('touchstart', (e) => {
-            touchStartTime = Date.now();
-        });
-        logo.addEventListener('touchend', (e) => {
-            const touchDuration = Date.now() - touchStartTime;
-            if (touchDuration > 1000) {
-                console.log('Toque longo detectado, redirecionando para admin-xyz-123.html');
-                window.location.href = '/admin-xyz-123.html';
-            }
-        });
     }
-
-    // Manipulador para o menu hamburger
-    const hamburgerMenu = document.querySelector('.hamburger-menu');
-    const sidebar = document.querySelector('.sidebar-categorias');
-    if (hamburgerMenu && sidebar) {
-        hamburgerMenu.addEventListener('click', () => {
-            sidebar.classList.toggle('active');
-        });
-
-        document.addEventListener('click', (e) => {
-            if (!sidebar.contains(e.target) && !hamburgerMenu.contains(e.target)) {
-                sidebar.classList.remove('active');
-            }
-        });
-    }
-
-    // Manipulador para a barra de navegação inferior
-    const bottomNavLinks = document.querySelectorAll('.bottom-nav a');
-    bottomNavLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            bottomNavLinks.forEach(l => l.classList.remove('active'));
-            link.classList.add('active');
-            if (link.textContent.includes('Categorias')) {
-                sidebar.classList.toggle('active');
-            } else if (link.textContent.includes('Contato')) {
-                window.location.href = '#contato';
-            } else {
-                window.location.href = '#';
-            }
-        });
-    });
 
     // Atualizar ano no footer
     const yearElement = document.getElementById('year');
@@ -88,24 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
         yearElement.textContent = new Date().getFullYear();
     } else {
         console.warn("Elemento com ID 'year' não encontrado");
-    }
-
-    // Função para detectar gestos de deslizar
-    function addSwipeSupport(element, moveCallback) {
-        let touchStartX = 0;
-        let touchEndX = 0;
-        element.addEventListener('touchstart', (e) => {
-            touchStartX = e.changedTouches[0].screenX;
-        });
-        element.addEventListener('touchend', (e) => {
-            touchEndX = e.changedTouches[0].screenX;
-            const deltaX = touchEndX - touchStartX;
-            if (deltaX > 50) {
-                moveCallback(-1); // Deslizar para a direita
-            } else if (deltaX < -50) {
-                moveCallback(1); // Deslizar para a esquerda
-            }
-        });
     }
 
     // Carregar produtos
@@ -164,6 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     card.setAttribute('data-categoria', produto.categoria.toLowerCase());
                     card.setAttribute('data-loja', produto.loja.toLowerCase());
                     
+                    // Converte a string JSON de imagens para um array com tratamento de erro
                     let imagens = [];
                     try {
                         imagens = produto.imagens ? JSON.parse(produto.imagens) : ['https://via.placeholder.com/150'];
@@ -193,11 +131,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         <a href="${produto.link}" target="_blank" class="tarja-preco ${lojaClass}" aria-label="Comprar ${produto.nome} na ${produto.loja}">Comprar na ${produto.loja}</a>
                     `;
                     gridProdutos.appendChild(card);
-
-                    if (imagens.length > 1) {
-                        const carrosselImagens = card.querySelector('.carrossel-imagens');
-                        addSwipeSupport(carrosselImagens, (direction) => moveCarrossel(carrosselId, direction));
-                    }
                 });
             }
             
@@ -218,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Funções para os carrosséis nos cards
+    // Funções para os carrosséis menores nos cards
     window.moveCarrossel = function(id, direction) {
         const carrossel = document.getElementById(id);
         if (!carrossel) return;
@@ -257,7 +190,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const carrosselDots = document.getElementById("modalCarrosselDots");
         const prevButton = document.getElementById("modalPrev");
         const nextButton = document.getElementById("modalNext");
-        const modalClose = document.querySelector('.modal-close');
         
         modal.style.display = "flex";
         carrosselImagens.innerHTML = "";
@@ -278,14 +210,10 @@ document.addEventListener('DOMContentLoaded', () => {
             carrosselDots.innerHTML = currentModalImages.map((_, i) => `<span class="carrossel-dot ${i === currentImageIndex ? "ativo" : ""}" onclick="setModalCarrosselImage(${i})"></span>`).join("");
             prevButton.classList.add("visible");
             nextButton.classList.add("visible");
-            addSwipeSupport(carrosselImagens, (direction) => moveModalCarrossel(direction));
         } else {
             prevButton.classList.remove("visible");
             nextButton.classList.remove("visible");
         }
-
-        // Fechar modal ao clicar no botão de fechar
-        modalClose.addEventListener('click', closeModal);
     };
     
     window.moveModalCarrossel = function(direction) {
@@ -319,7 +247,6 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Filtrando por categoria:', categoria);
         document.querySelectorAll('.categoria-item').forEach(item => item.classList.toggle('ativa', item.dataset.categoria === categoria));
         carregarProdutos(1);
-        sidebar.classList.remove('active'); // Fecha sidebar após selecionar categoria
     };
 
     window.filtrarPorLoja = function(loja) {
