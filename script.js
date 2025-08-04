@@ -138,19 +138,11 @@ document.addEventListener('DOMContentLoaded', () => {
                             ` : ""}
                         </div>
                         <span class="produto-nome">${produto.nome}</span>
-                        <span class="preco-link" data-preco="${parseFloat(produto.preco).toFixed(2)}">Clique aqui para ver o preço</span>
+                        <a href="${produto.link}" target="_blank" class="preco-link" aria-label="Ver oferta de ${produto.nome} na ${produto.loja}">Clique aqui para ver o preço</a>
                         <p class="descricao">${produto.descricao || 'Sem descrição'}</p>
                         <a href="${produto.link}" target="_blank" class="tarja-preco ${lojaClass}" aria-label="Comprar ${produto.nome} na ${produto.loja}">Comprar na ${produto.loja}</a>
                     `;
                     gridProdutos.appendChild(card);
-
-                    // Adicionar evento para revelar preço
-                    const precoLink = card.querySelector('.preco-link');
-                    precoLink.addEventListener('click', () => {
-                        const preco = precoLink.getAttribute('data-preco');
-                        precoLink.textContent = `R$ ${preco}`;
-                        precoLink.classList.remove('preco-link');
-                    });
 
                     // Adicionar suporte a deslizar no carrossel do card
                     if (imagens.length > 1) {
