@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('img').forEach(img => {
         img.onerror = () => {
             console.log(`Erro ao carregar imagem: ${img.src}`);
-            img.src = '/imagens/placeholder.jpg';
+            img.src = 'https://via.placeholder.com/150';
         };
     });
 
@@ -101,15 +101,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     card.setAttribute('data-categoria', produto.categoria.toLowerCase());
                     card.setAttribute('data-loja', produto.loja.toLowerCase());
                     
-                    // Converte a string JSON de imagens para um array
-                    const imagens = JSON.parse(produto.imagens);
+                    // Converte a string JSON de imagens para um array com tratamento de erro
+                    let imagens = [];
+                    try {
+                        imagens = produto.imagens ? JSON.parse(produto.imagens) : ['https://via.placeholder.com/150'];
+                    } catch (e) {
+                        console.error(`Erro ao parsear imagens para o produto ${produto.nome}:`, e);
+                        imagens = ['https://via.placeholder.com/150'];
+                    }
                     
                     const carrosselId = `carrossel-${produto.id}`;
+                    const lojaClass = `tarja-${produto.loja.toLowerCase().replace(/\s/g, '')}`;
                     
                     card.innerHTML = `
                         <div class="carrossel" id="${carrosselId}">
                             <div class="carrossel-imagens">
-                                ${imagens.map((img, idx) => `<img src="${img}" alt="${produto.nome}" loading="lazy" onclick="openModal('${produto.id}', ${idx})">`).join("")}
+                                ${imagens.map((img, idx) => `<img src="${img}" alt="${produto.nome} - Imagem ${idx + 1}" loading="lazy" onclick="openModal('${produto.id}', ${idx})">`).join("")}
                             </div>
                             ${imagens.length > 1 ? `
                                 <button class="carrossel-prev" onclick="moveCarrossel('${carrosselId}', -1)" aria-label="Imagem anterior">◄</button>
@@ -119,9 +126,9 @@ document.addEventListener('DOMContentLoaded', () => {
                                 </div>
                             ` : ""}
                         </div>
-                        <h4>${produto.nome}</h4>
+                        <span class="produto-nome">${produto.nome}</span>
                         <p class="descricao">${produto.descricao || 'Sem descrição'}</p>
-                        <a href="${produto.link}" target="_blank" class="ver-na-loja" aria-label="Clique para ver o preço de ${produto.nome} na loja">Ver na Loja</a>
+                        <a href="${produto.link}" target="_blank" class="tarja-preco ${lojaClass}" aria-label="Comprar ${produto.nome} na ${produto.loja}">Comprar na ${produto.loja}</a>
                     `;
                     gridProdutos.appendChild(card);
                 });
@@ -188,7 +195,12 @@ document.addEventListener('DOMContentLoaded', () => {
         carrosselImagens.innerHTML = "";
         carrosselDots.innerHTML = "";
         
-        currentModalImages = JSON.parse(produto.imagens);
+        try {
+            currentModalImages = produto.imagens ? JSON.parse(produto.imagens) : ['https://via.placeholder.com/150'];
+        } catch (e) {
+            console.error(`Erro ao parsear imagens para o modal do produto ${produto.nome}:`, e);
+            currentModalImages = ['https://via.placeholder.com/150'];
+        }
         currentImageIndex = Math.max(0, Math.min(imageIndex, currentModalImages.length - 1));
         
         carrosselImagens.innerHTML = currentModalImages.map((img, idx) => `<img src="${img}" alt="${produto.nome} - Imagem ${idx + 1}" loading="lazy">`).join("");
