@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Roboto', sans-serif;
-    background-color: #f0f2f5;
+    background-color: #f5f5f5; /* Fundo claro, estilo Mercado Livre */
     color: #333;
     -webkit-tap-highlight-color: transparent;
 }
@@ -16,70 +16,76 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     padding: 10px;
-    gap: 10px;
+    gap: 10px; /* Gap reduzido */
 }
 
 /* Header */
 .site-header {
-    background-color: #FFA500;
+    background-color: #FFA500; /* Cor do tema */
     color: white;
-    padding: 15px;
-    text-align: center;
+    padding: 10px 15px;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 10px;
+    justify-content: space-between;
+    flex-wrap: wrap;
 }
 
 .logo-container img {
-    width: 120px;
-    height: 40px;
+    width: 100px;
+    height: 30px;
     object-fit: contain;
 }
 
+.header-text {
+    flex: 1;
+    text-align: center;
+}
+
 .header-text h1 {
-    font-size: 1.5em;
+    font-size: 1.4em;
+    margin-bottom: 5px;
 }
 
 .header-text p {
-    font-size: 0.9em;
+    font-size: 0.8em;
+    max-width: 500px;
+    margin: 0 auto;
 }
 
 /* Navegação */
 nav {
-    background-color: #2E8B57;
-    padding: 10px;
+    background-color: #2E8B57; /* Cor do tema */
+    padding: 8px;
     text-align: center;
 }
 
 nav a {
     color: white;
-    margin: 0 10px;
+    margin: 0 8px;
     text-decoration: none;
-    font-weight: bold;
-    font-size: 0.9em;
-    padding: 8px;
-    display: inline-block;
+    font-weight: 500;
+    font-size: 0.85em;
+    padding: 6px 12px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
 }
 
 nav a:hover {
-    text-decoration: underline;
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Sidebar */
 .sidebar-categorias {
-    width: 100%;
+    width: 200px;
     background-color: #fff;
-    padding: 15px;
+    padding: 10px;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .sidebar-categorias h3 {
-    font-size: 1.1em;
-    margin-bottom: 10px;
+    font-size: 1em;
+    margin-bottom: 8px;
     color: #333;
 }
 
@@ -88,12 +94,12 @@ nav a:hover {
 }
 
 .categoria-item {
-    padding: 10px 12px;
+    padding: 8px 10px;
     cursor: pointer;
-    border-radius: 6px;
+    border-radius: 4px;
     transition: background-color 0.2s, color 0.2s;
-    font-size: 14px;
-    margin-bottom: 5px;
+    font-size: 13px;
+    margin-bottom: 4px;
 }
 
 .categoria-item:hover {
@@ -112,36 +118,36 @@ main {
 }
 
 section {
-    padding: 15px;
+    padding: 10px;
     background-color: #fff;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 h2 {
-    font-size: 1.5em;
-    margin-bottom: 15px;
+    font-size: 1.4em;
+    margin-bottom: 10px;
     text-align: center;
 }
 
 .lojas-parceiras h3 {
-    font-size: 1.2em;
+    font-size: 1.1em;
     text-align: center;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .grid-lojas {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 10px;
-    margin-bottom: 15px;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 8px;
+    margin-bottom: 10px;
 }
 
 .loja, .loja-todas {
     text-align: center;
-    padding: 8px;
-    border: 2px solid #ddd;
-    border-radius: 8px;
+    padding: 6px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
     cursor: pointer;
     transition: border-color 0.2s, background-color 0.2s;
 }
@@ -152,36 +158,36 @@ h2 {
 }
 
 .loja img {
-    width: 80px;
-    height: 30px;
+    width: 60px;
+    height: 25px;
     object-fit: contain;
 }
 
 .barra-busca {
     width: 100%;
-    max-width: 500px;
-    padding: 10px;
+    max-width: 400px;
+    padding: 8px 15px;
     margin: 10px auto;
     display: block;
     border: 1px solid #ccc;
-    border-radius: 25px;
-    font-size: 14px;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+    border-radius: 20px;
+    font-size: 13px;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
 }
 
 .loading-spinner {
     display: none;
     text-align: center;
-    padding: 15px;
+    padding: 10px;
 }
 
 .loading-spinner::after {
     content: '';
     display: inline-block;
-    width: 30px;
-    height: 30px;
-    border: 4px solid #FFA500;
-    border-top: 4px solid transparent;
+    width: 24px;
+    height: 24px;
+    border: 3px solid #FFA500;
+    border-top: 3px solid transparent;
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -198,63 +204,58 @@ h2 {
 
 @media (min-width: 1200px) {
     .grid-produtos {
-        grid-template-columns: repeat(8, 1fr);
+        grid-template-columns: repeat(4, 1fr); /* 4 colunas, estilo Mercado Livre */
     }
 }
 
 @media (max-width: 1199px) and (min-width: 768px) {
     .grid-produtos {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(3, 1fr);
     }
 }
 
 @media (max-width: 767px) {
     .grid-produtos {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, 1fr); /* 2 colunas no mobile */
     }
     .produto-card {
-        max-height: 180px;
-    }
-    .carrossel-imagens img {
-        height: 80px;
+        max-height: 200px;
     }
     .container {
         flex-direction: column;
     }
     .site-header {
-        padding: 10px;
+        flex-direction: column;
+        align-items: center;
+        padding: 8px;
     }
     .logo-container img {
-        width: 100px;
-        height: 30px;
+        width: 80px;
+        height: 25px;
     }
     .header-text h1 {
         font-size: 1.2em;
     }
     .header-text p {
-        font-size: 0.8em;
-    }
-    nav a {
-        font-size: 0.8em;
-        margin: 0 5px;
-        padding: 6px;
+        font-size: 0.7em;
     }
     .sidebar-categorias {
-        position: static;
+        width: 100%;
+        padding: 8px;
     }
     .loja img {
-        width: 60px;
-        height: 25px;
+        width: 50px;
+        height: 20px;
     }
     .tarja-preco {
-        font-size: 11px;
-        padding: 5px 8px;
+        font-size: 10px;
+        padding: 6px;
     }
     .produto-nome {
-        font-size: 12px;
+        font-size: 11px;
     }
     .preco-link {
-        font-size: 12px;
+        font-size: 11px;
     }
     .descricao {
         font-size: 10px;
@@ -267,41 +268,54 @@ h2 {
     flex-direction: column;
     justify-content: space-between;
     background: white;
+    border: 1px solid #e0e0e0; /* Borda sutil, estilo Mercado Livre */
     border-radius: 8px;
     padding: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: transform 0.2s;
-    text-align: left;
-    max-height: 250px;
+    transition: box-shadow 0.2s, transform 0.2s;
 }
 
 .produto-card:hover {
-    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    transform: translateY(-3px);
 }
 
 .produto-card .carrossel {
     position: relative;
     width: 100%;
-    height: 100px;
+    height: 150px;
 }
 
 .produto-card .carrossel-imagens {
     display: flex;
     width: 100%;
-    height: 100px;
+    height: 150px;
+    background: #fff; /* Fundo branco para imagens */
 }
 
 .produto-card .carrossel-imagens img {
     width: 100%;
-    height: 100px;
-    object-fit: contain;
+    height: 150px;
+    object-fit: contain; /* Proporção mantida */
     flex: 0 0 100%;
     transition: transform 0.3s ease;
-    border-radius: 8px;
+    border-radius: 4px;
+}
+
+@media (max-width: 767px) {
+    .produto-card .carrossel {
+        height: 100px;
+    }
+    .produto-card .carrossel-imagens {
+        height: 100px;
+    }
+    .produto-card .carrossel-imagens img {
+        height: 100px;
+    }
 }
 
 .produto-card .produto-nome {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
     color: #333;
     margin: 5px 0;
@@ -315,9 +329,10 @@ h2 {
 
 .produto-card .preco-link {
     font-size: 14px;
+    font-weight: bold;
     color: #ff6200;
     cursor: pointer;
-    text-decoration: underline;
+    text-decoration: none; /* Removido sublinhado para estilo Mercado Livre */
     margin: 5px 0;
 }
 
@@ -326,7 +341,7 @@ h2 {
 }
 
 .produto-card .descricao {
-    font-size: 12px;
+    font-size: 11px;
     color: #666;
     margin: 5px 0;
     overflow: hidden;
@@ -337,24 +352,20 @@ h2 {
 }
 
 .produto-card .tarja-preco {
-    display: inline-block;
-    padding: 6px 10px;
-    margin: 8px 0;
+    display: block;
+    padding: 8px;
+    margin-top: 8px;
     border-radius: 4px;
     text-decoration: none;
     font-weight: bold;
     font-size: 12px;
-    transition: background 0.2s ease;
     text-align: center;
-    width: 100%;
-}
-
-.tarja-preco {
+    transition: background 0.2s ease;
     background: #ff6200;
     color: white;
 }
 
-.tarja-preco:hover {
+.produto-card .tarja-preco:hover {
     background: #e55a00;
 }
 
@@ -367,7 +378,7 @@ h2 {
 .tarja-shein:hover { background-color: #22644c; }
 .tarja-shopee { background-color: #ee4d2d; }
 .tarja-shopee:hover { background-color: #d84126; }
-.tarja-mercadolivre { background-color: #ffe600; color: #000; }
+.tarja-mercadolivre { background-color: #ffe600; color: #333; }
 .tarja-mercadolivre:hover { background-color: #e0d000; }
 .tarja-alibaba { background-color: #ff6a00; }
 .tarja-alibaba:hover { background-color: #e55a00; }
@@ -666,9 +677,9 @@ footer {
 /* Admin-specific styles */
 .form-section {
     background: white;
-    padding: 20px;
+    padding: 15px;
     border-radius: 8px;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
@@ -677,7 +688,7 @@ footer {
     align-items: center;
     gap: 10px;
     margin-bottom: 10px;
-    padding: 10px;
+    padding: 8px;
     background: #f9f9f9;
     border-radius: 4px;
 }
@@ -739,7 +750,7 @@ footer {
 
 @media (max-width: 767px) {
     .form-section {
-        padding: 15px;
+        padding: 10px;
     }
     .form-section input,
     .form-section textarea,
