@@ -177,7 +177,7 @@ h2 {
     display: inline-block;
     width: 40px;
     height: 40px;
-    border: 4px solid #FFA500;
+    border: 術
     border-top: 4px solid transparent;
     border-radius: 50%;
     animation: spin 1s linear infinite;
@@ -187,11 +187,34 @@ h2 {
     to { transform: rotate(360deg); }
 }
 
-/* Seção de produtos (estilo de e-commerce) */
+/* Seção de produtos */
 .grid-produtos {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 20px;
+    grid-gap: 10px;
+}
+
+@media (min-width: 1200px) {
+    .grid-produtos {
+        grid-template-columns: repeat(8, 1fr);
+    }
+}
+
+@media (max-width: 1199px) and (min-width: 768px) {
+    .grid-produtos {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 767px) {
+    .grid-produtos {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .produto-card {
+        max-height: 200px;
+    }
+    .carrossel-imagens img {
+        height: 80px;
+    }
 }
 
 .produto-card {
@@ -199,36 +222,42 @@ h2 {
     flex-direction: column;
     justify-content: space-between;
     background: white;
-    border-radius: 10px;
-    padding: 15px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    transition: transform 0.2s, box-shadow 0.2s;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
     text-align: left;
-    height: 100%;
+    max-height: 250px;
 }
 
 .produto-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    transform: translateY(-5px);
+}
+
+.produto-card .carrossel {
+    position: relative;
+    width: 100%;
+    height: 100px;
+    overflow: hidden;
 }
 
 .produto-card .carrossel-imagens {
-    height: 200px;
+    display: flex;
     width: 100%;
-    margin-bottom: 15px;
-    overflow: hidden;
-    border-radius: 8px;
+    height: 100px;
 }
 
 .produto-card .carrossel-imagens img {
     width: 100%;
-    height: 100%;
+    height: 100px;
     object-fit: contain;
+    flex: 0 0 100%;
+    transition: transform 0.3s ease;
     border-radius: 8px;
 }
 
 .produto-card .produto-nome {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 500;
     color: #333;
     margin: 5px 0;
@@ -240,38 +269,76 @@ h2 {
     -webkit-box-orient: vertical;
 }
 
-.produto-card .produto-preco {
-    font-size: 18px;
-    font-weight: 700;
-    color: #ff6200;
-    margin: 10px 0;
+.produto-card .tarja-preco {
+    display: inline-block;
+    padding: 6px 10px;
+    margin: 8px 0;
+    border-radius: 4px;
     text-decoration: none;
-    transition: color 0.2s;
+    font-weight: bold;
+    font-size: 12px;
+    transition: background 0.2s ease;
     text-align: center;
-}
-
-.produto-card .produto-preco:hover {
-    color: #e55a00;
-    text-decoration: underline;
+    width: 100%;
 }
 
 .tarja-preco {
-    display: block;
-    width: 100%;
-    text-align: center;
     background: #ff6200;
     color: white;
-    padding: 12px 10px;
-    margin-top: 15px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 14px;
-    transition: background-color 0.2s;
 }
 
 .tarja-preco:hover {
     background: #e55a00;
+}
+
+/* Classes de cores específicas para cada loja */
+.tarja-amazon {
+    background-color: #ff9900;
+}
+
+.tarja-amazon:hover {
+    background-color: #e58a00;
+}
+
+.tarja-magalu {
+    background-color: #ff0092;
+}
+
+.tarja-magalu:hover {
+    background-color: #e00080;
+}
+
+.tarja-shein {
+    background-color: #2b785d;
+}
+
+.tarja-shein:hover {
+    background-color: #22644c;
+}
+
+.tarja-shopee {
+    background-color: #ee4d2d;
+}
+
+.tarja-shopee:hover {
+    background-color: #d84126;
+}
+
+.tarja-mercadolivre {
+    background-color: #ffe600;
+    color: #000;
+}
+
+.tarja-mercadolivre:hover {
+    background-color: #e0d000;
+}
+
+.tarja-alibaba {
+    background-color: #ff6a00;
+}
+
+.tarja-alibaba:hover {
+    background-color: #e55a00;
 }
 
 /* Modal */
@@ -340,6 +407,14 @@ h2 {
     display: none;
 }
 
+.carrossel-prev {
+    left: 10px;
+}
+
+.carrossel-next {
+    right: 10px;
+}
+
 .carrossel-prev.visible, .carrossel-next.visible {
     display: block;
 }
@@ -381,20 +456,20 @@ h2 {
 /* Outros elementos */
 #load-more {
     display: none;
-    margin: 30px auto;
-    padding: 12px 25px;
-    background: #2E8B57;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background: #ff6200;
     color: white;
     border: none;
-    border-radius: 25px;
+    border-radius: 4px;
     cursor: pointer;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: bold;
     transition: background-color 0.2s;
 }
 
 #load-more:hover {
-    background: #25794c;
+    background: #e55a00;
 }
 
 .mensagem-vazia {
@@ -402,6 +477,13 @@ h2 {
     font-size: 1.2em;
     color: #666;
     margin-top: 50px;
+}
+
+.aviso-afiliado {
+    text-align: center;
+    font-size: 12px;
+    color: #777;
+    margin: 20px 0;
 }
 
 /* Social links */
@@ -431,12 +513,6 @@ h2 {
 .social-links img {
     width: 24px;
     height: 24px;
-}
-
-.social-links span {
-    display: block;
-    font-size: 0.9em;
-    color: #333;
 }
 
 /* WhatsApp e Telegram */
@@ -527,46 +603,4 @@ footer {
     max-width: 80%;
     margin-left: auto;
     margin-right: auto;
-}
-
-/* --- Cores dos botões de cada loja --- */
-/* Use um seletor que contenha parte do link para cada loja */
-.produto-card a.tarja-preco[href*="magazineluiza.com.br"] {
-    background-color: #0074c1;
-}
-
-.produto-card a.tarja-preco[href*="magazineluiza.com.br"]:hover {
-    background-color: #005fa3;
-}
-
-.produto-card a.tarja-preco[href*="amazon.com.br"] {
-    background-color: #ff9900;
-}
-
-.produto-card a.tarja-preco[href*="amazon.com.br"]:hover {
-    background-color: #e68a00;
-}
-
-.produto-card a.tarja-preco[href*="shopee.com.br"] {
-    background-color: #ee4d2d;
-}
-
-.produto-card a.tarja-preco[href*="shopee.com.br"]:hover {
-    background-color: #d8401f;
-}
-
-.produto-card a.tarja-preco[href*="br.shein.com"] {
-    background-color: #ff0000;
-}
-
-.produto-card a.tarja-preco[href*="br.shein.com"]:hover {
-    background-color: #cc0000;
-}
-
-.produto-card a.tarja-preco[href*="alibaba.com"] {
-    background-color: #ff6a00;
-}
-
-.produto-card a.tarja-preco[href*="alibaba.com"]:hover {
-    background-color: #e55a00;
 }
