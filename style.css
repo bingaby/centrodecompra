@@ -216,7 +216,7 @@ h2 {
         max-height: 180px;
     }
     .carrossel-imagens img {
-        height: 80px; /* Reduzido para telas menores */
+        height: 80px;
     }
     .container {
         flex-direction: column;
@@ -282,19 +282,18 @@ h2 {
 .produto-card .carrossel {
     position: relative;
     width: 100%;
-    height: 100px; /* Reduzido de 150px */
-    overflow: hidden;
+    height: 100px;
 }
 
 .produto-card .carrossel-imagens {
     display: flex;
     width: 100%;
-    height: 100px; /* Reduzido de 150px */
+    height: 100px;
 }
 
 .produto-card .carrossel-imagens img {
     width: 100%;
-    height: 100px; /* Reduzido de 150px */
+    height: 100px;
     object-fit: contain;
     flex: 0 0 100%;
     transition: transform 0.3s ease;
