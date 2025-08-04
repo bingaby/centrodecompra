@@ -8,14 +8,14 @@ body {
     font-family: 'Roboto', sans-serif;
     background-color: #f0f2f5;
     color: #333;
-    -webkit-tap-highlight-color: transparent; /* Remove destaque ao tocar em links/botões */
+    -webkit-tap-highlight-color: transparent;
 }
 
 .container {
     display: flex;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 10px; /* Reduzido para telas menores */
+    padding: 10px;
     gap: 10px;
 }
 
@@ -26,20 +26,20 @@ body {
     padding: 15px;
     text-align: center;
     display: flex;
-    flex-direction: column; /* Empilhar verticalmente em telas pequenas */
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 10px;
 }
 
 .logo-container img {
-    width: 120px; /* Menor em telas pequenas */
+    width: 120px;
     height: 40px;
     object-fit: contain;
 }
 
 .header-text h1 {
-    font-size: 1.5em; /* Reduzido para melhor legibilidade */
+    font-size: 1.5em;
 }
 
 .header-text p {
@@ -58,8 +58,8 @@ nav a {
     margin: 0 10px;
     text-decoration: none;
     font-weight: bold;
-    font-size: 0.9em; /* Ajustado para telas menores */
-    padding: 8px; /* Área de toque maior */
+    font-size: 0.9em;
+    padding: 8px;
     display: inline-block;
 }
 
@@ -69,7 +69,7 @@ nav a:hover {
 
 /* Sidebar */
 .sidebar-categorias {
-    width: 100%; /* Ocupa toda a largura em telas pequenas */
+    width: 100%;
     background-color: #fff;
     padding: 15px;
     border-radius: 8px;
@@ -152,7 +152,7 @@ h2 {
 }
 
 .loja img {
-    width: 80px; /* Reduzido para telas menores */
+    width: 80px;
     height: 30px;
     object-fit: contain;
 }
@@ -213,13 +213,13 @@ h2 {
         grid-template-columns: repeat(2, 1fr);
     }
     .produto-card {
-        max-height: 180px; /* Reduzido para telas menores */
+        max-height: 180px;
     }
     .carrossel-imagens img {
-        height: 70px; /* Ajustado para melhor proporção */
+        height: 80px; /* Reduzido para telas menores */
     }
     .container {
-        flex-direction: column; /* Empilhar sidebar e main */
+        flex-direction: column;
     }
     .site-header {
         padding: 10px;
@@ -240,7 +240,7 @@ h2 {
         padding: 6px;
     }
     .sidebar-categorias {
-        position: static; /* Remove sticky em telas pequenas */
+        position: static;
     }
     .loja img {
         width: 60px;
@@ -253,9 +253,12 @@ h2 {
     .produto-nome {
         font-size: 12px;
     }
+    .preco-link {
+        font-size: 12px;
+    }
     .descricao {
         font-size: 10px;
-        -webkit-line-clamp: 1; /* Menos linhas para economizar espaço */
+        -webkit-line-clamp: 1;
     }
 }
 
@@ -279,19 +282,19 @@ h2 {
 .produto-card .carrossel {
     position: relative;
     width: 100%;
-    height: 100px;
+    height: 100px; /* Reduzido de 150px */
     overflow: hidden;
 }
 
 .produto-card .carrossel-imagens {
     display: flex;
     width: 100%;
-    height: 100px;
+    height: 100px; /* Reduzido de 150px */
 }
 
 .produto-card .carrossel-imagens img {
     width: 100%;
-    height: 100px;
+    height: 100px; /* Reduzido de 150px */
     object-fit: contain;
     flex: 0 0 100%;
     transition: transform 0.3s ease;
@@ -309,6 +312,18 @@ h2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
+}
+
+.produto-card .preco-link {
+    font-size: 14px;
+    color: #ff6200;
+    cursor: pointer;
+    text-decoration: underline;
+    margin: 5px 0;
+}
+
+.produto-card .preco-link:hover {
+    color: #e55a00;
 }
 
 .produto-card .descricao {
@@ -374,7 +389,7 @@ h2 {
 
 .modal-content {
     position: relative;
-    max-width: 95%; /* Ajustado para telas menores */
+    max-width: 95%;
     max-height: 80%;
     width: auto;
     height: auto;
@@ -390,7 +405,7 @@ h2 {
 .modal-content .carrossel-imagens img {
     width: 100%;
     height: auto;
-    max-width: 600px; /* Reduzido para telas menores */
+    max-width: 600px;
     max-height: 400px;
     object-fit: contain;
     flex: 0 0 100%;
@@ -422,7 +437,7 @@ h2 {
     font-size: 16px;
     border-radius: 4px;
     display: none;
-    min-width: 44px; /* Tamanho mínimo para toque */
+    min-width: 44px;
     min-height: 44px;
 }
 
@@ -485,7 +500,7 @@ h2 {
     cursor: pointer;
     font-size: 12px;
     border-radius: 4px;
-    min-width: 44px; /* Tamanho mínimo para toque */
+    min-width: 44px;
     min-height: 44px;
 }
 
@@ -510,7 +525,7 @@ h2 {
     font-size: 14px;
     font-weight: bold;
     transition: background-color 0.2s;
-    min-width: 120px; /* Área de toque maior */
+    min-width: 120px;
 }
 
 #load-more:hover {
@@ -647,4 +662,101 @@ footer {
     max-width: 90%;
     margin-left: auto;
     margin-right: auto;
+}
+
+/* Admin-specific styles */
+.form-section {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.produto-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+    background: #f9f9f9;
+    border-radius: 4px;
+}
+
+.produto-item img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+}
+
+.produto-item button {
+    padding: 5px 10px;
+    background: #ff6200;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.produto-item button:hover {
+    background: #e55a00;
+}
+
+#feedback {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.form-section label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-section input,
+.form-section textarea,
+.form-section select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.form-section button {
+    padding: 10px 15px;
+    background: #ff6200;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.form-section button:hover {
+    background: #e55a00;
+}
+
+@media (max-width: 767px) {
+    .form-section {
+        padding: 15px;
+    }
+    .form-section input,
+    .form-section textarea,
+    .form-section select {
+        font-size: 12px;
+    }
+    .form-section button {
+        font-size: 12px;
+        padding: 8px 12px;
+    }
+    .produto-item img {
+        width: 40px;
+        height: 40px;
+    }
+    .produto-item button {
+        font-size: 12px;
+        padding: 5px 8px;
+    }
 }
