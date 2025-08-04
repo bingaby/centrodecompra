@@ -45,8 +45,13 @@
                 <li class="categoria-item" data-categoria="esportes" onclick="filtrarPorCategoria('esportes')" role="button" aria-label="Filtrar por Esportes">Esportes</li>
                 <li class="categoria-item" data-categoria="livros" onclick="filtrarPorCategoria('livros')" role="button" aria-label="Filtrar por Livros">Livros</li>
                 <li class="categoria-item" data-categoria="infantil" onclick="filtrarPorCategoria('infantil')" role="button" aria-label="Filtrar por Infantil">Infantil</li>
-                <li class="categoria-item" data-categoria="celulares" onclick="filtrarPorCategoria('Celulares')" role="button" aria-label="Filtrar por Celulares">Celulares</li>
-                <li class="categoria-item" data-categoria="eletrodomesticos" onclick="filtrarPorCategoria('Eletrodomésticos')" role="button" aria-label="Filtrar por Eletrodomésticos">Eletrodomésticos</li>
+                <li class="categoria-item" data-categoria="Celulares" onclick="filtrarPorCategoria('Celulares')" role="button" aria-label="Filtrar por Celulares">Celulares</li>
+                <li class="categoria-item" data-categoria="Eletrodomésticos" onclick="filtrarPorCategoria('Eletrodomésticos')" role="button" aria-label="Filtrar por Eletrodomésticos">Eletrodomésticos</li>
+                <li class="categoria-item" data-categoria="pet" onclick="filtrarPorCategoria('pet')" role="button" aria-label="Filtrar por Pet">Pet</li>
+                <li class="categoria-item" data-categoria="jardinagem" onclick="filtrarPorCategoria('jardinagem')" role="button" aria-label="Filtrar por Jardinagem">Jardinagem</li>
+                <li class="categoria-item" data-categoria="automotivo" onclick="filtrarPorCategoria('automotivo')" role="button" aria-label="Filtrar por Automotivo">Automotivo</li>
+                <li class="categoria-item" data-categoria="gastronomia" onclick="filtrarPorCategoria('gastronomia')" role="button" aria-label="Filtrar por Gastronomia">Gastronomia</li>
+                <li class="categoria-item" data-categoria="games" onclick="filtrarPorCategoria('games')" role="button" aria-label="Filtrar por Games">Games</li>
             </ul>
         </aside>
         <main>
@@ -71,7 +76,6 @@
                 <button id="load-more" onclick="carregarMaisProdutos()">Carregar Mais</button>
                 <p class="mensagem-vazia" id="mensagem-vazia" aria-live="polite">Nenhum produto encontrado.</p>
                 <p class="error-message" id="error-message" style="display: none;" aria-live="assertive"></p>
-                <p class="aviso-afiliado">Os links fornecidos são de afiliados, o que significa que podemos receber uma comissão por compras realizadas através deles, sem custo adicional para você.</p>
             </section>
             <a class="whatsapp" href="https://wa.me/5521975179737" target="_blank">📲 Atendimento via WhatsApp</a>
             <a class="telegram" href="https://t.me/boost/centraldecomprascdc" target="_blank">📢 Canal no Telegram</a>
@@ -90,12 +94,11 @@
             <button class="carrossel-prev" id="modalPrev" onclick="moveModalCarrossel(-1)" aria-label="Imagem anterior">◄</button>
             <button class="carrossel-next" id="modalNext" onclick="moveModalCarrossel(1)" aria-label="Próxima imagem">►</button>
             <div class="carrossel-dots" id="modalCarrosselDots"></div>
-            <p class="modal-error" id="modalError" style="display: none;">Erro ao carregar imagens.</p>
+            <p class="modal-error" id="modalError" style="display: none; color: red; text-align: center;">Erro ao carregar imagens.</p>
         </div>
     </div>
     <footer>
         <p>🔧 Todos os direitos reservados <strong>Grupo Centro de Compra "CdC"</strong> © <span id="year"></span></p>
-        <p class="disclaimer-afiliado">Os links fornecidos são de afiliados, o que significa que podemos receber uma comissão por compras realizadas através deles, sem custo adicional para você.</p>
     </footer>
     <div class="robo-assistente">
         <a href="https://wa.me/5521975179737" target="_blank">
@@ -103,187 +106,6 @@
             <div class="robo-texto">Posso ajudar?</div>
         </a>
     </div>
-
-    <script>
-        const API_BASE_URL = 'https://minha-api-produtos.onrender.com';
-        let currentPage = 1;
-        let currentCategoria = 'todas';
-        let currentLoja = 'todas';
-        let currentBusca = '';
-
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('year').textContent = new Date().getFullYear();
-
-            let clickCount = 0;
-            let clickTimeout;
-            document.getElementById('site-logo').addEventListener('click', (e) => {
-                e.preventDefault();
-                clickCount++;
-                if (clickCount === 3) {
-                    window.location.href = 'admin-xyz-123.html';
-                    clickCount = 0;
-                }
-                clearTimeout(clickTimeout);
-                clickTimeout = setTimeout(() => {
-                    clickCount = 0;
-                }, 1000);
-            });
-
-            async function carregarProdutos(reset = false) {
-                if (reset) {
-                    currentPage = 1;
-                    document.getElementById('grid-produtos').innerHTML = '';
-                }
-                const gridProdutos = document.getElementById('grid-produtos');
-                const loadingSpinner = document.getElementById('loading-spinner');
-                const mensagemVazia = document.getElementById('mensagem-vazia');
-                const errorMessage = document.getElementById('error-message');
-                const loadMoreButton = document.getElementById('load-more');
-
-                loadingSpinner.style.display = 'block';
-                mensagemVazia.style.display = 'none';
-                errorMessage.style.display = 'none';
-
-                try {
-                    const params = new URLSearchParams({
-                        categoria: currentCategoria,
-                        loja: currentLoja,
-                        busca: currentBusca,
-                        page: currentPage,
-                        limit: 12
-                    });
-                    const response = await fetch(`${API_BASE_URL}/api/produtos?${params}`);
-                    if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
-                    const { data, total } = await response.json();
-
-                    if (data.length === 0 && currentPage === 1) {
-                        mensagemVazia.style.display = 'block';
-                        loadMoreButton.style.display = 'none';
-                    } else {
-                        data.forEach(produto => {
-                            const div = document.createElement('div');
-                            div.className = 'produto-card';
-                            
-                            const lojaClass = `tarja-${produto.loja.toLowerCase().replace(/\s/g, '')}`;
-                            const placeholderUrl = 'https://via.placeholder.com/150';
-                            const imageUrl = produto.imagens && produto.imagens.length > 0 ? produto.imagens[0] : placeholderUrl;
-
-                            const cardHTML = `
-                                <div class="carrossel">
-                                    <div class="carrossel-imagens" data-images='${JSON.stringify(produto.imagens || [placeholderUrl])}'>
-                                        <img src="${imageUrl}" alt="${produto.nome}">
-                                    </div>
-                                </div>
-                                <span class="produto-nome">${produto.nome}</span>
-                                <a href="${produto.link}" target="_blank" class="tarja-preco ${lojaClass}">Comprar na ${produto.loja}</a>
-                            `;
-
-                            div.innerHTML = cardHTML;
-                            gridProdutos.appendChild(div);
-
-                            const newImg = div.querySelector('img');
-                            newImg.onerror = () => {
-                                console.error(`Erro ao carregar imagem: ${newImg.src}`);
-                                newImg.src = placeholderUrl;
-                            };
-                        });
-                        loadMoreButton.style.display = data.length < total ? 'block' : 'none';
-                    }
-                } catch (error) {
-                    console.error('Erro ao carregar produtos:', error);
-                    errorMessage.textContent = 'Erro ao carregar produtos';
-                    errorMessage.style.display = 'block';
-                } finally {
-                    loadingSpinner.style.display = 'none';
-                }
-            }
-
-            window.carregarMaisProdutos = () => {
-                currentPage++;
-                carregarProdutos();
-            };
-
-            window.filtrarPorCategoria = (categoria) => {
-                currentCategoria = categoria;
-                currentPage = 1;
-                document.getElementById('grid-produtos').innerHTML = '';
-                document.querySelectorAll('.categoria-item').forEach(item => {
-                    item.classList.toggle('ativa', item.dataset.categoria === categoria);
-                });
-                carregarProdutos();
-            };
-
-            window.filtrarPorLoja = (loja) => {
-                currentLoja = loja;
-                currentPage = 1;
-                document.getElementById('grid-produtos').innerHTML = '';
-                document.querySelectorAll('.loja, .loja-todas').forEach(item => {
-                    item.classList.toggle('ativa', item.dataset.loja === loja);
-                });
-                carregarProdutos();
-            };
-
-            document.getElementById('busca').addEventListener('input', (e) => {
-                currentBusca = e.target.value;
-                currentPage = 1;
-                document.getElementById('grid-produtos').innerHTML = '';
-                carregarProdutos();
-            });
-
-            window.openModal = (images) => {
-                const modal = document.getElementById('imageModal');
-                const carrosselImagens = document.getElementById('modalCarrosselImagens');
-                const carrosselDots = document.getElementById('modalCarrosselDots');
-                let currentIndex = 0;
-
-                carrosselImagens.innerHTML = '';
-                carrosselDots.innerHTML = '';
-                const placeholderUrl = 'https://via.placeholder.com/150';
-                const finalImages = images && images.length > 0 ? images : [placeholderUrl];
-
-                finalImages.forEach((imgSrc, index) => {
-                    const img = document.createElement('img');
-                    img.src = imgSrc;
-                    img.onerror = () => {
-                        img.src = placeholderUrl;
-                    };
-                    carrosselImagens.appendChild(img);
-
-                    const dot = document.createElement('span');
-                    dot.className = 'carrossel-dot';
-                    if (index === 0) dot.className += ' ativo';
-                    dot.onclick = () => moveModalCarrossel(index - currentIndex);
-                    carrosselDots.appendChild(dot);
-                });
-
-                document.getElementById('modalPrev').classList.toggle('visible', finalImages.length > 1);
-                document.getElementById('modalNext').classList.toggle('visible', finalImages.length > 1);
-                modal.style.display = 'flex';
-
-                window.moveModalCarrossel = (step) => {
-                    const totalImages = finalImages.length;
-                    currentIndex = (currentIndex + step + totalImages) % totalImages;
-                    carrosselImagens.style.transform = `translateX(-${currentIndex * 100}%)`;
-                    document.querySelectorAll('.carrossel-dot').forEach((dot, index) => {
-                        dot.classList.toggle('ativo', index === currentIndex);
-                    });
-                };
-            };
-
-            window.closeModal = () => {
-                document.getElementById('imageModal').style.display = 'none';
-            };
-
-            document.getElementById('grid-produtos').addEventListener('click', (e) => {
-                const carrossel = e.target.closest('.carrossel-imagens');
-                if (carrossel) {
-                    const images = JSON.parse(carrossel.dataset.images);
-                    openModal(images);
-                }
-            });
-
-            carregarProdutos();
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
