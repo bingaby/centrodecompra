@@ -6,20 +6,21 @@
     <meta name="description" content="Ofertas com descontos reais nas principais lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliado seguros e atualizados.">
     <meta property="og:title" content="Centro de Compras - Ofertas e Descontos">
     <meta property="og:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliados seguros e atualizados!">
-    <meta property="og:image" content="logos/centrodecompras.jpg">
-    <meta property="og:url" content="https://centrodecompra.com.br/">
+    <meta property="og:image" content="/logos/centrodecompras.jpg">
+    <meta property="og:url" content="https://www.centrodecompra.com.br/">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Centro de Compras - Ofertas e Descontos">
     <meta name="twitter:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliados seguros e atualizados!">
-    <meta name="twitter:image" content="logos/centrodecompras.jpg">
+    <meta name="twitter:image" content="/logos/centrodecompras.jpg">
     <title>Centro de Compras - Ofertas do Dia</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/style.css">
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 </head>
 <body>
     <header class="site-header">
         <div class="logo-container">
-            <a href="#"><img src="logos/centrodecompras.jpg" alt="Centro de Compras" loading="lazy" id="site-logo"></a>
+            <a href="#"><img src="/logos/centrodecompras.jpg" alt="Centro de Compras" loading="lazy" id="site-logo"></a>
         </div>
         <div class="header-text">
             <h1>Centro de Compras</h1>
@@ -27,10 +28,10 @@
         </div>
     </header>
     <nav>
-        <a href="index.html">Promoções</a>
-        <a href="cupom.html">Cupom de desconto</a>
-        <a href="sobre.html">Sobre</a>
-        <a href="contato.html">Contato</a>
+        <a href="/index.html">Promoções</a>
+        <a href="/cupom.html">Cupom de desconto</a>
+        <a href="/sobre.html">Sobre</a>
+        <a href="/contato.html">Contato</a>
     </nav>
     <div class="container">
         <aside class="sidebar-categorias">
@@ -61,12 +62,12 @@
                     <h3>🌟 Lojas Parceiras</h3>
                     <div class="grid-lojas">
                         <div class="loja-todas ativa" data-loja="todas" onclick="filtrarPorLoja('todas')" role="button" aria-label="Filtrar por Todas as Lojas"><span>Todas as Lojas</span></div>
-                        <div class="loja" data-loja="amazon" onclick="filtrarPorLoja('amazon')" role="button" aria-label="Filtrar por Amazon"><img src="logos/amazon.png" alt="Logo da Amazon" loading="lazy"></div>
-                        <div class="loja" data-loja="magalu" onclick="filtrarPorLoja('magalu')" role="button" aria-label="Filtrar por Magalu"><img src="logos/magalu.png" alt="Logo da Magalu" loading="lazy"></div>
-                        <div class="loja" data-loja="shein" onclick="filtrarPorLoja('shein')" role="button" aria-label="Filtrar por Shein"><img src="logos/shein.png" alt="Logo da Shein" loading="lazy"></div>
-                        <div class="loja" data-loja="shopee" onclick="filtrarPorLoja('shopee')" role="button" aria-label="Filtrar por Shopee"><img src="logos/shopee.png" alt="Logo da Shopee" loading="lazy"></div>
-                        <div class="loja" data-loja="mercadolivre" onclick="filtrarPorLoja('mercadolivre')" role="button" aria-label="Filtrar por Mercado Livre"><img src="logos/mercadolivre.jpg" alt="Logo do Mercado Livre" loading="lazy"></div>
-                        <div class="loja" data-loja="alibaba" onclick="filtrarPorLoja('alibaba')" role="button" aria-label="Filtrar por Alibaba"><img src="logos/alibaba.png" alt="Logo da Alibaba" loading="lazy"></div>
+                        <div class="loja" data-loja="amazon" onclick="filtrarPorLoja('amazon')" role="button" aria-label="Filtrar por Amazon"><img src="/logos/amazon.png" alt="Logo da Amazon" loading="lazy"></div>
+                        <div class="loja" data-loja="magalu" onclick="filtrarPorLoja('magalu')" role="button" aria-label="Filtrar por Magalu"><img src="/logos/magalu.png" alt="Logo da Magalu" loading="lazy"></div>
+                        <div class="loja" data-loja="shein" onclick="filtrarPorLoja('shein')" role="button" aria-label="Filtrar por Shein"><img src="/logos/shein.png" alt="Logo da Shein" loading="lazy"></div>
+                        <div class="loja" data-loja="shopee" onclick="filtrarPorLoja('shopee')" role="button" aria-label="Filtrar por Shopee"><img src="/logos/shopee.png" alt="Logo da Shopee" loading="lazy"></div>
+                        <div class="loja" data-loja="mercadolivre" onclick="filtrarPorLoja('mercadolivre')" role="button" aria-label="Filtrar por Mercado Livre"><img src="/logos/mercadolivre.jpg" alt="Logo do Mercado Livre" loading="lazy"></div>
+                        <div class="loja" data-loja="alibaba" onclick="filtrarPorLoja('alibaba')" role="button" aria-label="Filtrar por Alibaba"><img src="/logos/alibaba.png" alt="Logo da Alibaba" loading="lazy"></div>
                     </div>
                 </div>
                 <input type="text" id="busca" placeholder="Busque por produtos..." class="barra-busca" aria-label="Buscar produtos" aria-describedby="busca-instrucao">
@@ -80,10 +81,10 @@
             <a class="whatsapp" href="https://wa.me/5521975179737" target="_blank">📲 Atendimento via WhatsApp</a>
             <a class="telegram" href="https://t.me/boost/centraldecomprascdc" target="_blank">📢 Canal no Telegram</a>
             <div class="social-links">
-                <a href="https://www.tiktok.com/@cdc.centraldecompas?_t=ZM-8vYQlF9u1dH&_r=1" target="_blank"><div class="icon"><img src="logos/tiktok.png" alt="Ícone do TikTok" loading="lazy"></div><span>TikTok</span></a>
-                <a href="https://www.instagram.com/cdccentrodecompras/?utm_source=qr&r=nametag" target="_blank"><div class="icon"><img src="logos/instagram.png" alt="Ícone do Instagram" loading="lazy"></div><span>Instagram</span></a>
-                <a href="https://x.com/ComprasCdc" target="_blank"><div class="icon"><img src="logos/x.png" alt="Ícone do X" loading="lazy"></div><span>X</span></a>
-                <a href="https://www.youtube.com/channel/UCaKHlI-hWqwdAXS6Xsv3ZzA" target="_blank"><div class="icon"><img src="logos/youtube.png" alt="Ícone do YouTube" loading="lazy"></div><span>YouTube</span></a>
+                <a href="https://www.tiktok.com/@cdc.centraldecompas?_t=ZM-8vYQlF9u1dH&_r=1" target="_blank"><div class="icon"><img src="/logos/tiktok.png" alt="Ícone do TikTok" loading="lazy"></div><span>TikTok</span></a>
+                <a href="https://www.instagram.com/cdccentrodecompras/?utm_source=qr&r=nametag" target="_blank"><div class="icon"><img src="/logos/instagram.png" alt="Ícone do Instagram" loading="lazy"></div><span>Instagram</span></a>
+                <a href="https://x.com/ComprasCdc" target="_blank"><div class="icon"><img src="/logos/x.png" alt="Ícone do X" loading="lazy"></div><span>X</span></a>
+                <a href="https://www.youtube.com/channel/UCaKHlI-hWqwdAXS6Xsv3ZzA" target="_blank"><div class="icon"><img src="/logos/youtube.png" alt="Ícone do YouTube" loading="lazy"></div><span>YouTube</span></a>
             </div>
         </main>
     </div>
@@ -102,10 +103,10 @@
     </footer>
     <div class="robo-assistente">
         <a href="https://wa.me/5521975179737" target="_blank">
-            <img src="imagens/robo.jpg" alt="Robô Assistente" class="robo-imagem">
+            <img src="/imagens/robo.jpg" alt="Robô Assistente" class="robo-imagem">
             <div class="robo-texto">Posso ajudar?</div>
         </a>
     </div>
-    <script src="script.js"></script>
+    <script src="/script.js"></script>
 </body>
 </html>
