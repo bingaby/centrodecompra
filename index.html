@@ -15,90 +15,6 @@
     <title>Centro de Compras - Ofertas do Dia</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <style>
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { position: relative; max-width: 90%; max-height: 90%; width: auto; height: auto; }
-        .modal-content .carrossel-imagens { display: flex; overflow: hidden; width: 100%; height: 100%; }
-        .modal-content .carrossel-imagens img { width: 100%; height: auto; max-width: 800px; max-height: 600px; object-fit: contain; flex: 0 0 100%; transition: transform 0.3s ease; }
-        .modal-close { position: absolute; top: 10px; right: 10px; background: #ff6200; color: #fff; border: none; padding: 8px 12px; border-radius: 50%; cursor: pointer; font-size: 16px; }
-        .carrossel-prev, .carrossel-next { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0, 0, 0, 0.5); color: #fff; border: none; padding: 10px; cursor: pointer; font-size: 18px; border-radius: 4px; display: none; }
-        .carrossel-prev.visible, .carrossel-next.visible { display: block; }
-        .carrossel-prev { left: 10px; }
-        .carrossel-next { right: 10px; }
-        .carrossel-dots { position: absolute; bottom: 10px; width: 100%; text-align: center; }
-        .carrossel-dot { display: inline-block; width: 10px; height: 10px; background: #ccc; border-radius: 50%; margin: 0 5px; cursor: pointer; }
-        .carrossel-dot.ativo { background: #ff6200; }
-        .modal-error { color: red; text-align: center; margin-top: 10px; font-size: 14px; }
-        .error-message { color: red; text-align: center; margin-top: 10px; }
-
-        /* Estilos do botão de compra */
-        .tarja-preco {
-            display: inline-block;
-            background: #ff6200; /* Cor padrão */
-            color: white;
-            padding: 6px 10px;
-            margin: 8px 0;
-            border-radius: 4px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 12px;
-            transition: background 0.2s ease;
-        }
-
-        /* Classes de cores específicas para cada loja */
-        .tarja-amazon { background-color: #ff9900; }
-        .tarja-magalu { background-color: #ff0092; }
-        .tarja-shein { background-color: #2b785d; }
-        .tarja-shopee { background-color: #ee4d2d; }
-        .tarja-mercadolivre { background-color: #ffe600; color: #000; }
-        .tarja-alibaba { background-color: #ff6a00; }
-
-        /* Estilos de hover para as cores das lojas */
-        .tarja-amazon:hover { background-color: #e58a00; }
-        .tarja-magalu:hover { background-color: #e00080; }
-        .tarja-shein:hover { background-color: #22644c; }
-        .tarja-shopee:hover { background-color: #d84126; }
-        .tarja-mercadolivre:hover { background-color: #e0d000; }
-        .tarja-alibaba:hover { background-color: #e55a00; }
-
-        #load-more { display: none; margin: 20px auto; padding: 10px 20px; background: #ff6200; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
-        #load-more:hover { background: #e55a00; }
-        .produto-card { transition: transform 0.2s; background: white; border-radius: 8px; padding: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-height: 250px; }
-        .produto-card:hover { transform: translateY(-5px); }
-        .produto-card span { font-size: 14px; display: block; margin: 5px 0; }
-        .carrossel { position: relative; width: 100%; height: 100px; overflow: hidden; }
-        .carrossel-imagens { display: flex; width: 100%; height: 100px; }
-        .carrossel-imagens img { width: 100%; height: 100px; object-fit: contain; flex: 0 0 100%; transition: transform 0.3s ease; }
-        
-        /* Ajuste do grid para 8 produtos por linha em telas grandes e responsividade */
-        .grid-produtos { 
-            display: grid; 
-            grid-gap: 10px;
-        }
-        @media (min-width: 1200px) {
-            .grid-produtos {
-                grid-template-columns: repeat(8, 1fr);
-            }
-        }
-        @media (max-width: 1199px) and (min-width: 768px) {
-            .grid-produtos {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-        @media (max-width: 767px) {
-            .grid-produtos {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .produto-card { max-height: 200px; }
-            .carrossel-imagens img { height: 80px; }
-        }
-        .aviso-afiliado {
-            text-align: center;
-            font-size: 12px;
-            color: #777;
-            margin: 20px 0;
-        }
-    </style>
 </head>
 <body>
     <header class="site-header">
@@ -155,6 +71,7 @@
                 <button id="load-more" onclick="carregarMaisProdutos()">Carregar Mais</button>
                 <p class="mensagem-vazia" id="mensagem-vazia" aria-live="polite">Nenhum produto encontrado.</p>
                 <p class="error-message" id="error-message" style="display: none;" aria-live="assertive"></p>
+                <p class="aviso-afiliado">Os links fornecidos são de afiliados, o que significa que podemos receber uma comissão por compras realizadas através deles, sem custo adicional para você.</p>
             </section>
             <a class="whatsapp" href="https://wa.me/5521975179737" target="_blank">📲 Atendimento via WhatsApp</a>
             <a class="telegram" href="https://t.me/boost/centraldecomprascdc" target="_blank">📢 Canal no Telegram</a>
@@ -173,11 +90,12 @@
             <button class="carrossel-prev" id="modalPrev" onclick="moveModalCarrossel(-1)" aria-label="Imagem anterior">◄</button>
             <button class="carrossel-next" id="modalNext" onclick="moveModalCarrossel(1)" aria-label="Próxima imagem">►</button>
             <div class="carrossel-dots" id="modalCarrosselDots"></div>
-            <p class="modal-error" id="modalError" style="display: none; color: red; text-align: center;">Erro ao carregar imagens.</p>
+            <p class="modal-error" id="modalError" style="display: none;">Erro ao carregar imagens.</p>
         </div>
     </div>
     <footer>
         <p>🔧 Todos os direitos reservados <strong>Grupo Centro de Compra "CdC"</strong> © <span id="year"></span></p>
+        <p class="disclaimer-afiliado">Os links fornecidos são de afiliados, o que significa que podemos receber uma comissão por compras realizadas através deles, sem custo adicional para você.</p>
     </footer>
     <div class="robo-assistente">
         <a href="https://wa.me/5521975179737" target="_blank">
@@ -256,7 +174,7 @@
                                         <img src="${imageUrl}" alt="${produto.nome}">
                                     </div>
                                 </div>
-                                <span>${produto.nome}</span>
+                                <span class="produto-nome">${produto.nome}</span>
                                 <a href="${produto.link}" target="_blank" class="tarja-preco ${lojaClass}">Comprar na ${produto.loja}</a>
                             `;
 
@@ -369,4 +287,3 @@
     </script>
 </body>
 </html>
-
