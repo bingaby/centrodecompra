@@ -15,15 +15,15 @@ body {
     display: flex;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 10px;
-    gap: 10px; /* Gap reduzido */
+    padding: 15px; /* Aumentado no mobile */
+    gap: 10px;
 }
 
 /* Header */
 .site-header {
-    background-color: #FFA500; /* Cor do tema */
+    background-color: #FFA500;
     color: white;
-    padding: 10px 15px;
+    padding: 12px 15px; /* Aumentado no mobile */
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -54,7 +54,7 @@ body {
 
 /* Navegação */
 nav {
-    background-color: #2E8B57; /* Cor do tema */
+    background-color: #2E8B57;
     padding: 8px;
     text-align: center;
 }
@@ -64,8 +64,8 @@ nav a {
     margin: 0 8px;
     text-decoration: none;
     font-weight: 500;
-    font-size: 0.85em;
-    padding: 6px 12px;
+    font-size: 0.9em; /* Aumentado para acessibilidade */
+    padding: 8px 14px;
     border-radius: 4px;
     transition: background-color 0.2s;
 }
@@ -110,6 +110,21 @@ nav a:hover {
     background-color: #FFA500;
     color: white;
     font-weight: bold;
+}
+
+/* Botão colapsável para sidebar no mobile */
+.sidebar-toggle {
+    display: none;
+    background: #FFA500;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-bottom: 10px;
+    width: 100%;
+    text-align: center;
 }
 
 /* Main */
@@ -173,6 +188,9 @@ h2 {
     border-radius: 20px;
     font-size: 13px;
     box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23999" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.001 0zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>') no-repeat 10px center;
+    background-size: 16px;
+    padding-left: 30px;
 }
 
 .loading-spinner {
@@ -204,7 +222,7 @@ h2 {
 
 @media (min-width: 1200px) {
     .grid-produtos {
-        grid-template-columns: repeat(4, 1fr); /* 4 colunas, estilo Mercado Livre */
+        grid-template-columns: repeat(4, 1fr);
     }
 }
 
@@ -216,18 +234,19 @@ h2 {
 
 @media (max-width: 767px) {
     .grid-produtos {
-        grid-template-columns: repeat(2, 1fr); /* 2 colunas no mobile */
+        grid-template-columns: repeat(2, 1fr);
     }
     .produto-card {
-        max-height: 200px;
+        max-height: 220px; /* Ajustado para imagens maiores */
     }
     .container {
         flex-direction: column;
+        padding: 15px; /* Margens maiores no mobile */
     }
     .site-header {
         flex-direction: column;
         align-items: center;
-        padding: 8px;
+        padding: 12px;
     }
     .logo-container img {
         width: 80px;
@@ -242,14 +261,21 @@ h2 {
     .sidebar-categorias {
         width: 100%;
         padding: 8px;
+        display: none; /* Escondida por padrão no mobile */
+    }
+    .sidebar-categorias.active {
+        display: block; /* Mostrada quando ativada */
+    }
+    .sidebar-toggle {
+        display: block; /* Botão visível no mobile */
     }
     .loja img {
         width: 50px;
         height: 20px;
     }
     .tarja-preco {
-        font-size: 10px;
-        padding: 6px;
+        font-size: 11px; /* Maior para facilitar cliques */
+        padding: 8px;
     }
     .produto-nome {
         font-size: 11px;
@@ -259,7 +285,33 @@ h2 {
     }
     .descricao {
         font-size: 10px;
-        -webkit-line-clamp: 1;
+        -webkit-line-clamp: 2; /* 2 linhas para mais contexto */
+    }
+    .robo-assistente {
+        bottom: 10px;
+        right: 10px;
+    }
+    .robo-imagem {
+        width: 40px; /* Menor no mobile */
+        height: 40px;
+    }
+    .robo-texto {
+        font-size: 0.7em;
+    }
+    .social-links {
+        gap: 10px;
+    }
+    .social-links .icon {
+        width: 30px;
+        height: 30px;
+    }
+    .social-links img {
+        width: 16px;
+        height: 16px;
+    }
+    .whatsapp, .telegram {
+        font-size: 12px;
+        padding: 8px 15px;
     }
 }
 
@@ -268,7 +320,7 @@ h2 {
     flex-direction: column;
     justify-content: space-between;
     background: white;
-    border: 1px solid #e0e0e0; /* Borda sutil, estilo Mercado Livre */
+    border: 1px solid #e0e0e0;
     border-radius: 8px;
     padding: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -290,13 +342,13 @@ h2 {
     display: flex;
     width: 100%;
     height: 150px;
-    background: #fff; /* Fundo branco para imagens */
+    background: #fff;
 }
 
 .produto-card .carrossel-imagens img {
     width: 100%;
     height: 150px;
-    object-fit: contain; /* Proporção mantida */
+    object-fit: contain;
     flex: 0 0 100%;
     transition: transform 0.3s ease;
     border-radius: 4px;
@@ -304,13 +356,13 @@ h2 {
 
 @media (max-width: 767px) {
     .produto-card .carrossel {
-        height: 100px;
+        height: 120px; /* Imagens maiores no mobile */
     }
     .produto-card .carrossel-imagens {
-        height: 100px;
+        height: 120px;
     }
     .produto-card .carrossel-imagens img {
-        height: 100px;
+        height: 120px;
     }
 }
 
@@ -332,7 +384,7 @@ h2 {
     font-weight: bold;
     color: #ff6200;
     cursor: pointer;
-    text-decoration: none; /* Removido sublinhado para estilo Mercado Livre */
+    text-decoration: none;
     margin: 5px 0;
 }
 
@@ -451,16 +503,16 @@ h2 {
     min-height: 44px;
 }
 
+.carrossel-prev.visible, .carrossel-next.visible {
+    display: block;
+}
+
 .carrossel-prev {
     left: 5px;
 }
 
 .carrossel-next {
     right: 5px;
-}
-
-.carrossel-prev.visible, .carrossel-next.visible {
-    display: block;
 }
 
 .carrossel-dots {
@@ -560,7 +612,7 @@ h2 {
 .social-links {
     display: flex;
     justify-content: center;
-    gap: 15px;
+    gap: 10px;
     margin: 15px 0;
 }
 
@@ -571,8 +623,8 @@ h2 {
 }
 
 .social-links .icon {
-    width: 36px;
-    height: 36px;
+    width: 30px;
+    height: 30px;
     background: #e0e0e0;
     border-radius: 50%;
     display: flex;
@@ -581,21 +633,21 @@ h2 {
 }
 
 .social-links img {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
 }
 
 /* WhatsApp e Telegram */
 .whatsapp, .telegram {
     display: block;
     width: fit-content;
-    padding: 10px 20px;
-    margin: 15px auto;
+    padding: 8px 15px;
+    margin: 10px auto;
     color: white;
     text-decoration: none;
     border-radius: 25px;
     font-weight: bold;
-    font-size: 14px;
+    font-size: 12px;
     text-align: center;
     transition: background-color 0.2s;
 }
@@ -619,14 +671,14 @@ h2 {
 /* Robô assistente */
 .robo-assistente {
     position: fixed;
-    bottom: 15px;
-    right: 15px;
+    bottom: 10px;
+    right: 10px;
     z-index: 1000;
 }
 
 .robo-imagem {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     object-fit: contain;
     border-radius: 50%;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
@@ -643,9 +695,9 @@ h2 {
     color: white;
     padding: 6px 10px;
     border-radius: 12px;
-    font-size: 0.8em;
+    font-size: 0.7em;
     position: absolute;
-    bottom: 60px;
+    bottom: 50px;
     right: 0;
     white-space: nowrap;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
