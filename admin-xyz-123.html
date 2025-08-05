@@ -6,7 +6,785 @@
     <title>Administração - Centro de Compras</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Reset e Variáveis CSS */
+        :root {
+            --primary-color: #3483fa;
+            --primary-hover: #2968c8;
+            --secondary-color: #00a650;
+            --accent-color: #ffe600;
+            --warning-color: #ff9500;
+            --error-color: #f23d4f;
+            --success-color: #00a650;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --text-muted: #999999;
+            --background-primary: #ffffff;
+            --background-secondary: #f5f5f5;
+            --background-tertiary: #ebebeb;
+            --border-color: #e6e6e6;
+            --border-light: #f0f0f0;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+            --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.2);
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --transition-fast: 0.15s ease;
+            --transition-normal: 0.3s ease;
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --spacing-2xl: 3rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background-color: var(--background-secondary);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .admin-body {
+            background-color: var(--background-secondary);
+        }
+
+        /* Header Admin */
+        .admin-header {
+            background: var(--background-primary);
+            box-shadow: var(--shadow-md);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: var(--spacing-lg) 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-md);
+        }
+
+        .admin-header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-logo {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            color: var(--primary-color);
+        }
+
+        .admin-logo i {
+            font-size: 2rem;
+        }
+
+        .admin-logo h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm) var(--spacing-lg);
+            background: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            transition: var(--transition-fast);
+        }
+
+        .back-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        /* Layout Admin */
+        .admin-layout {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: calc(100vh - 100px);
+            gap: var(--spacing-xl);
+            padding: var(--spacing-xl) 0;
+        }
+
+        /* Sidebar Admin */
+        .admin-sidebar {
+            background: var(--background-primary);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            padding: var(--spacing-lg);
+            height: fit-content;
+            position: sticky;
+            top: 120px;
+        }
+
+        .admin-nav ul {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            transition: var(--transition-fast);
+            font-weight: 500;
+        }
+
+        .nav-link:hover,
+        .nav-item.active .nav-link {
+            background: rgba(52, 131, 250, 0.1);
+            color: var(--primary-color);
+        }
+
+        .nav-link i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Conteúdo Principal Admin */
+        .admin-main {
+            background: var(--background-primary);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+
+        .admin-container {
+            padding: var(--spacing-xl);
+        }
+
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .dashboard-card {
+            background: var(--background-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            transition: var(--transition-fast);
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .card-icon.products { background: var(--primary-color); }
+        .card-icon.categories { background: var(--secondary-color); }
+        .card-icon.stores { background: var(--warning-color); }
+        .card-icon.views { background: var(--error-color); }
+
+        .card-content h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .card-content p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        /* Seções Admin */
+        .admin-section {
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        .section-header h2 {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            margin-top: var(--spacing-xs);
+        }
+
+        .section-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        /* Formulário */
+        .form-container {
+            background: var(--background-secondary);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .product-form {
+            max-width: 100%;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: var(--spacing-md);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            font-size: 1rem;
+            transition: var(--transition-fast);
+            background: var(--background-primary);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(52, 131, 250, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Upload de Arquivo */
+        .file-upload-area {
+            position: relative;
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-xl);
+            text-align: center;
+            transition: var(--transition-fast);
+            cursor: pointer;
+            background: var(--background-primary);
+        }
+
+        .file-upload-area:hover,
+        .file-upload-area.drag-over {
+            border-color: var(--primary-color);
+            background: rgba(52, 131, 250, 0.05);
+        }
+
+        .file-upload-area input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .upload-placeholder {
+            pointer-events: none;
+        }
+
+        .upload-placeholder i {
+            font-size: 3rem;
+            color: var(--text-muted);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .upload-placeholder p {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .upload-placeholder small {
+            color: var(--text-secondary);
+        }
+
+        /* Preview de Imagens */
+        .images-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-md);
+        }
+
+        .preview-item {
+            position: relative;
+            background: var(--background-primary);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .preview-item img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+        }
+
+        .preview-info {
+            padding: var(--spacing-sm);
+        }
+
+        .file-name {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-xs);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .file-size {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        .remove-preview {
+            position: absolute;
+            top: var(--spacing-xs);
+            right: var(--spacing-xs);
+            background: var(--error-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: var(--transition-fast);
+        }
+
+        .remove-preview:hover {
+            background: #d32f2f;
+            transform: scale(1.1);
+        }
+
+        /* Ações do Formulário */
+        .form-actions {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-xl);
+            padding-top: var(--spacing-lg);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn-primary,
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md) var(--spacing-xl);
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background: var(--background-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--background-primary);
+        }
+
+        /* Feedback */
+        .form-feedback {
+            margin-top: var(--spacing-md);
+        }
+
+        .feedback-success {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md);
+            background: rgba(0, 166, 80, 0.1);
+            color: var(--success-color);
+            border: 1px solid rgba(0, 166, 80, 0.2);
+            border-radius: var(--radius-md);
+        }
+
+        .feedback-error {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md);
+            background: rgba(242, 61, 79, 0.1);
+            color: var(--error-color);
+            border: 1px solid rgba(242, 61, 79, 0.2);
+            border-radius: var(--radius-md);
+        }
+
+        /* Busca */
+        .search-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: var(--spacing-md);
+            color: var(--text-muted);
+        }
+
+        .search-box input {
+            padding: var(--spacing-sm) var(--spacing-md) var(--spacing-sm) 2.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            width: 250px;
+        }
+
+        .btn-refresh {
+            padding: var(--spacing-sm);
+            background: var(--background-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .btn-refresh:hover {
+            background: var(--background-secondary);
+        }
+
+        /* Lista de Produtos */
+        .products-table-container {
+            background: var(--background-primary);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+            padding: var(--spacing-lg);
+        }
+
+        .product-admin-card {
+            background: var(--background-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            transition: var(--transition-fast);
+        }
+
+        .product-admin-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .product-image {
+            height: 150px;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-info {
+            padding: var(--spacing-md);
+        }
+
+        .product-info h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: var(--spacing-sm);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .product-price {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .product-tags {
+            display: flex;
+            gap: var(--spacing-xs);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .tag {
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .tag.category {
+            background: rgba(52, 131, 250, 0.1);
+            color: var(--primary-color);
+        }
+
+        .tag.store {
+            background: rgba(0, 166, 80, 0.1);
+            color: var(--secondary-color);
+        }
+
+        .product-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md);
+            border-top: 1px solid var(--border-light);
+        }
+
+        .btn-edit,
+        .btn-delete {
+            flex: 1;
+            padding: var(--spacing-sm);
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: var(--transition-fast);
+        }
+
+        .btn-edit {
+            background: rgba(255, 149, 0, 0.1);
+            color: var(--warning-color);
+        }
+
+        .btn-edit:hover {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .btn-delete {
+            background: rgba(242, 61, 79, 0.1);
+            color: var(--error-color);
+        }
+
+        .btn-delete:hover {
+            background: var(--error-color);
+            color: white;
+        }
+
+        /* Estados */
+        .loading-state,
+        .empty-state,
+        .error-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-2xl);
+            text-align: center;
+        }
+
+        .loading-spinner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state i,
+        .error-state i {
+            font-size: 4rem;
+            color: var(--text-muted);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .empty-state h3,
+        .error-state h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .empty-state p,
+        .error-state p {
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        /* Responsividade */
+        @media (max-width: 1024px) {
+            .admin-layout {
+                grid-template-columns: 1fr;
+                gap: var(--spacing-lg);
+            }
+
+            .admin-sidebar {
+                position: static;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 var(--spacing-sm);
+            }
+
+            .admin-header-content {
+                flex-direction: column;
+                gap: var(--spacing-md);
+            }
+
+            .dashboard-cards {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--spacing-md);
+            }
+
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-box input {
+                width: 200px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .admin-container {
+                padding: var(--spacing-md);
+            }
+
+            .form-container {
+                padding: var(--spacing-md);
+            }
+
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 <body class="admin-body">
     <!-- Header Admin -->
@@ -18,7 +796,7 @@
                     <h1>Painel Administrativo</h1>
                 </div>
                 <div class="admin-actions">
-                    <a href="/" class="back-btn">
+                    <a href="index.html" class="back-btn">
                         <i class="fas fa-arrow-left"></i>
                         <span>Voltar ao Site</span>
                     </a>
@@ -27,493 +805,404 @@
         </div>
     </header>
 
-    <!-- Sidebar Admin -->
+    <!-- Layout Admin -->
     <div class="admin-layout">
-        <aside class="admin-sidebar">
-            <nav class="admin-nav">
-                <ul>
-                    <li class="nav-item active">
-                        <a href="#produtos" class="nav-link">
-                            <i class="fas fa-box"></i>
-                            <span>Produtos</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#categorias" class="nav-link">
-                            <i class="fas fa-tags"></i>
-                            <span>Categorias</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#lojas" class="nav-link">
-                            <i class="fas fa-store"></i>
-                            <span>Lojas</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#estatisticas" class="nav-link">
-                            <i class="fas fa-chart-bar"></i>
-                            <span>Estatísticas</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-        </aside>
+        <div class="container">
+            <!-- Sidebar Admin -->
+            <aside class="admin-sidebar">
+                <nav class="admin-nav">
+                    <ul>
+                        <li class="nav-item active">
+                            <a href="#produtos" class="nav-link">
+                                <i class="fas fa-box"></i>
+                                <span>Produtos</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#categorias" class="nav-link">
+                                <i class="fas fa-tags"></i>
+                                <span>Categorias</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#lojas" class="nav-link">
+                                <i class="fas fa-store"></i>
+                                <span>Lojas</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#estatisticas" class="nav-link">
+                                <i class="fas fa-chart-bar"></i>
+                                <span>Estatísticas</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </aside>
 
-        <!-- Conteúdo Principal Admin -->
-        <main class="admin-main">
-            <div class="admin-container">
-                <!-- Dashboard Cards -->
-                <section class="dashboard-cards">
-                    <div class="dashboard-card">
-                        <div class="card-icon products">
-                            <i class="fas fa-box"></i>
+            <!-- Conteúdo Principal Admin -->
+            <main class="admin-main">
+                <div class="admin-container">
+                    <!-- Dashboard Cards -->
+                    <section class="dashboard-cards">
+                        <div class="dashboard-card">
+                            <div class="card-icon products">
+                                <i class="fas fa-box"></i>
+                            </div>
+                            <div class="card-content">
+                                <h3 id="total-produtos">12</h3>
+                                <p>Total de Produtos</p>
+                            </div>
                         </div>
-                        <div class="card-content">
-                            <h3 id="total-produtos">0</h3>
-                            <p>Total de Produtos</p>
+                        <div class="dashboard-card">
+                            <div class="card-icon categories">
+                                <i class="fas fa-tags"></i>
+                            </div>
+                            <div class="card-content">
+                                <h3>10</h3>
+                                <p>Categorias Ativas</p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="dashboard-card">
-                        <div class="card-icon categories">
-                            <i class="fas fa-tags"></i>
+                        <div class="dashboard-card">
+                            <div class="card-icon stores">
+                                <i class="fas fa-store"></i>
+                            </div>
+                            <div class="card-content">
+                                <h3>6</h3>
+                                <p>Lojas Parceiras</p>
+                            </div>
                         </div>
-                        <div class="card-content">
-                            <h3>15</h3>
-                            <p>Categorias Ativas</p>
+                        <div class="dashboard-card">
+                            <div class="card-icon views">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <div class="card-content">
+                                <h3>2.5K</h3>
+                                <p>Visualizações</p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="dashboard-card">
-                        <div class="card-icon stores">
-                            <i class="fas fa-store"></i>
-                        </div>
-                        <div class="card-content">
-                            <h3>6</h3>
-                            <p>Lojas Parceiras</p>
-                        </div>
-                    </div>
-                    <div class="dashboard-card">
-                        <div class="card-icon views">
-                            <i class="fas fa-eye"></i>
-                        </div>
-                        <div class="card-content">
-                            <h3>12.5K</h3>
-                            <p>Visualizações</p>
-                        </div>
-                    </div>
-                </section>
+                    </section>
 
-                <!-- Formulário de Produto -->
-                <section class="admin-section">
-                    <div class="section-header">
-                        <h2><i class="fas fa-plus-circle"></i> Adicionar/Editar Produto</h2>
-                        <p>Preencha as informações do produto</p>
-                    </div>
-                    
-                    <div class="form-container">
-                        <form id="produto-form" class="product-form">
-                            <input type="hidden" id="produto-id" name="id">
-                            
-                            <div class="form-grid">
-                                <div class="form-group full-width">
-                                    <label for="nome">
-                                        <i class="fas fa-tag"></i>
-                                        Nome do Produto
-                                    </label>
-                                    <input type="text" id="nome" name="nome" required placeholder="Digite o nome do produto">
-                                </div>
-
-                                <div class="form-group full-width">
-                                    <label for="descricao">
-                                        <i class="fas fa-align-left"></i>
-                                        Descrição
-                                    </label>
-                                    <textarea id="descricao" name="descricao" placeholder="Descreva o produto" rows="3"></textarea>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="preco">
-                                        <i class="fas fa-dollar-sign"></i>
-                                        Preço (R$)
-                                    </label>
-                                    <input type="number" id="preco" name="preco" step="0.01" required placeholder="0,00">
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="categoria">
-                                        <i class="fas fa-folder"></i>
-                                        Categoria
-                                    </label>
-                                    <select id="categoria" name="categoria" required>
-                                        <option value="">Selecione uma categoria</option>
-                                        <option value="eletronicos">📱 Eletrônicos</option>
-                                        <option value="moda">👗 Moda</option>
-                                        <option value="casa">🏠 Casa</option>
-                                        <option value="beleza">💄 Beleza</option>
-                                        <option value="esportes">⚽ Esportes</option>
-                                        <option value="infantil">🧸 Infantil</option>
-                                        <option value="automotivo">🚗 Automotivo</option>
-                                        <option value="games">🎮 Games</option>
-                                        <option value="livros">📚 Livros</option>
-                                    </select>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="loja">
-                                        <i class="fas fa-store"></i>
-                                        Loja
-                                    </label>
-                                    <select id="loja" name="loja" required>
-                                        <option value="">Selecione uma loja</option>
-                                        <option value="amazon">🛒 Amazon</option>
-                                        <option value="mercadolivre">📦 Mercado Livre</option>
-                                        <option value="shopee">🛍️ Shopee</option>
-                                        <option value="magalu">🏪 Magalu</option>
-                                        <option value="shein">👕 Shein</option>
-                                        <option value="alibaba">🌐 Alibaba</option>
-                                    </select>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="link">
-                                        <i class="fas fa-link"></i>
-                                        Link do Produto
-                                    </label>
-                                    <input type="url" id="link" name="link" required placeholder="https://...">
-                                </div>
-
-                                <div class="form-group full-width">
-                                    <label for="imagens">
-                                        <i class="fas fa-images"></i>
-                                        Imagens do Produto
-                                    </label>
-                                    <div class="file-upload-area">
-                                        <input type="file" id="imagens" name="imagens" accept="image/*" multiple>
-                                        <div class="upload-placeholder">
-                                            <i class="fas fa-cloud-upload-alt"></i>
-                                            <p>Clique para selecionar imagens ou arraste aqui</p>
-                                            <small>Formatos aceitos: JPG, PNG, GIF (máx. 5MB cada)</small>
-                                        </div>
+                    <!-- Formulário de Produto -->
+                    <section class="admin-section">
+                        <div class="section-header">
+                            <div>
+                                <h2><i class="fas fa-plus-circle"></i> Adicionar/Editar Produto</h2>
+                                <p>Preencha as informações do produto</p>
+                            </div>
+                        </div>
+                        
+                        <div class="form-container">
+                            <form id="produto-form" class="product-form">
+                                <input type="hidden" id="produto-id" name="id">
+                                
+                                <div class="form-grid">
+                                    <div class="form-group full-width">
+                                        <label for="nome">
+                                            <i class="fas fa-tag"></i>
+                                            Nome do Produto
+                                        </label>
+                                        <input type="text" id="nome" name="nome" required placeholder="Digite o nome do produto">
                                     </div>
-                                    <div id="imagens-preview" class="images-preview"></div>
+
+                                    <div class="form-group full-width">
+                                        <label for="descricao">
+                                            <i class="fas fa-align-left"></i>
+                                            Descrição
+                                        </label>
+                                        <textarea id="descricao" name="descricao" placeholder="Descreva o produto" rows="3"></textarea>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="preco">
+                                            <i class="fas fa-dollar-sign"></i>
+                                            Preço (R$)
+                                        </label>
+                                        <input type="number" id="preco" name="preco" step="0.01" required placeholder="0,00">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="categoria">
+                                            <i class="fas fa-folder"></i>
+                                            Categoria
+                                        </label>
+                                        <select id="categoria" name="categoria" required>
+                                            <option value="">Selecione uma categoria</option>
+                                            <option value="eletronicos">📱 Eletrônicos</option>
+                                            <option value="moda">👗 Moda</option>
+                                            <option value="casa">🏠 Casa</option>
+                                            <option value="beleza">💄 Beleza</option>
+                                            <option value="esportes">⚽ Esportes</option>
+                                            <option value="infantil">🧸 Infantil</option>
+                                            <option value="automotivo">🚗 Automotivo</option>
+                                            <option value="games">🎮 Games</option>
+                                            <option value="livros">📚 Livros</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="loja">
+                                            <i class="fas fa-store"></i>
+                                            Loja
+                                        </label>
+                                        <select id="loja" name="loja" required>
+                                            <option value="">Selecione uma loja</option>
+                                            <option value="amazon">🛒 Amazon</option>
+                                            <option value="mercadolivre">📦 Mercado Livre</option>
+                                            <option value="shopee">🛍️ Shopee</option>
+                                            <option value="magalu">🏪 Magalu</option>
+                                            <option value="shein">👕 Shein</option>
+                                            <option value="alibaba">🌐 Alibaba</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="link">
+                                            <i class="fas fa-link"></i>
+                                            Link do Produto
+                                        </label>
+                                        <input type="url" id="link" name="link" required placeholder="https://...">
+                                    </div>
+
+                                    <div class="form-group full-width">
+                                        <label for="imagens">
+                                            <i class="fas fa-images"></i>
+                                            Imagens do Produto
+                                        </label>
+                                        <div class="file-upload-area">
+                                            <input type="file" id="imagens" name="imagens" accept="image/*" multiple>
+                                            <div class="upload-placeholder">
+                                                <i class="fas fa-cloud-upload-alt"></i>
+                                                <p>Clique para selecionar imagens ou arraste aqui</p>
+                                                <small>Formatos aceitos: JPG, PNG, GIF (máx. 5MB cada)</small>
+                                            </div>
+                                        </div>
+                                        <div id="imagens-preview" class="images-preview"></div>
+                                    </div>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="submit" class="btn-primary">
+                                        <i class="fas fa-save"></i>
+                                        <span>Salvar Produto</span>
+                                    </button>
+                                    <button type="button" id="cancelar-edicao" class="btn-secondary" style="display: none;">
+                                        <i class="fas fa-times"></i>
+                                        <span>Cancelar</span>
+                                    </button>
+                                </div>
+
+                                <div id="feedback" class="form-feedback"></div>
+                            </form>
+                        </div>
+                    </section>
+
+                    <!-- Lista de Produtos -->
+                    <section class="admin-section">
+                        <div class="section-header">
+                            <div>
+                                <h2><i class="fas fa-list"></i> Lista de Produtos</h2>
+                            </div>
+                            <div class="section-actions">
+                                <div class="search-box">
+                                    <i class="fas fa-search"></i>
+                                    <input type="text" id="search-produtos" placeholder="Buscar produtos...">
+                                </div>
+                                <button class="btn-refresh" onclick="carregarProdutos()">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="products-table-container">
+                            <div id="produtos-lista" class="products-table">
+                                <div class="loading-state">
+                                    <div class="loading-spinner">
+                                        <div class="spinner"></div>
+                                        <p>Carregando produtos...</p>
+                                    </div>
                                 </div>
                             </div>
-
-                            <div class="form-actions">
-                                <button type="submit" class="btn-primary">
-                                    <i class="fas fa-save"></i>
-                                    <span>Salvar Produto</span>
-                                </button>
-                                <button type="button" id="cancelar-edicao" class="btn-secondary" style="display: none;">
-                                    <i class="fas fa-times"></i>
-                                    <span>Cancelar</span>
-                                </button>
-                            </div>
-
-                            <div id="feedback" class="form-feedback"></div>
-                        </form>
-                    </div>
-                </section>
-
-                <!-- Lista de Produtos -->
-                <section class="admin-section">
-                    <div class="section-header">
-                        <h2><i class="fas fa-list"></i> Lista de Produtos</h2>
-                        <div class="section-actions">
-                            <div class="search-box">
-                                <i class="fas fa-search"></i>
-                                <input type="text" id="search-produtos" placeholder="Buscar produtos...">
-                            </div>
-                            <button class="btn-refresh" onclick="carregarProdutos()">
-                                <i class="fas fa-sync-alt"></i>
-                            </button>
                         </div>
-                    </div>
-                    
-                    <div class="products-table-container">
-                        <div id="produtos-lista" class="products-table"></div>
-                    </div>
-                </section>
-            </div>
-        </main>
+                    </section>
+                </div>
+            </main>
+        </div>
     </div>
 
     <script>
         const API_BASE_URL = 'https://minha-api-produtos.onrender.com';
 
-        document.addEventListener('DOMContentLoaded', () => {
-            // Atualizar ano
-            document.getElementById('year').textContent = new Date().getFullYear();
+        // Dados de exemplo para demonstração
+        const SAMPLE_ADMIN_PRODUCTS = [
+            {
+                id: 1,
+                nome: "Smartphone Samsung Galaxy A54 128GB",
+                descricao: "Smartphone com tela de 6.4 polegadas, câmera tripla de 50MP e bateria de 5000mAh. Processador Exynos 1380, Android 13 e design premium.",
+                preco: 1299.99,
+                categoria: "eletronicos",
+                loja: "amazon",
+                link: "https://amazon.com.br/produto-exemplo",
+                imagens: ["https://via.placeholder.com/300x300/1a1a1a/ffffff?text=Samsung+Galaxy+A54"]
+            },
+            {
+                id: 2,
+                nome: "Tênis Nike Air Max 270 Masculino",
+                descricao: "Tênis esportivo com tecnologia Air Max, conforto e estilo para o dia a dia. Solado em borracha e cabedal em mesh respirável.",
+                preco: 599.90,
+                categoria: "moda",
+                loja: "mercadolivre",
+                link: "https://mercadolivre.com.br/produto-exemplo",
+                imagens: ["https://via.placeholder.com/300x300/ff6b35/ffffff?text=Nike+Air+Max+270"]
+            },
+            {
+                id: 3,
+                nome: "Fone Bluetooth JBL Tune 510BT",
+                descricao: "Fone de ouvido sem fio com qualidade de som JBL e bateria de 40 horas. Conexão Bluetooth 5.0 e microfone integrado.",
+                preco: 199.99,
+                categoria: "eletronicos",
+                loja: "shopee",
+                link: "https://shopee.com.br/produto-exemplo",
+                imagens: ["https://via.placeholder.com/300x300/0066cc/ffffff?text=JBL+Tune+510BT"]
+            },
+            {
+                id: 4,
+                nome: "Vestido Floral Feminino Midi",
+                descricao: "Vestido midi com estampa floral, tecido leve e confortável para o verão. Modelagem evasê e manga curta.",
+                preco: 89.90,
+                categoria: "moda",
+                loja: "shein",
+                link: "https://shein.com.br/produto-exemplo",
+                imagens: ["https://via.placeholder.com/300x300/ff69b4/ffffff?text=Vestido+Floral"]
+            },
+            {
+                id: 5,
+                nome: "Cafeteira Elétrica Mondial 30 Xícaras",
+                descricao: "Cafeteira elétrica com capacidade para 30 xícaras, filtro permanente e sistema corta-pingos. Potência de 800W.",
+                preco: 129.90,
+                categoria: "casa",
+                loja: "magalu",
+                link: "https://magazineluiza.com.br/produto-exemplo",
+                imagens: ["https://via.placeholder.com/300x300/8b4513/ffffff?text=Cafeteira+Mondial"]
+            },
+            {
+                id: 6,
+                nome: "Kit Ferramentas 108 Peças Profissional",
+                descricao: "Kit completo de ferramentas para casa e trabalho, maleta organizadora resistente. Inclui chaves, alicates e bits.",
+                preco: 299.99,
+                categoria: "automotivo",
+                loja: "alibaba",
+                link: "https://alibaba.com/produto-exemplo",
+                imagens: ["https://via.placeholder.com/300x300/696969/ffffff?text=Kit+Ferramentas"]
+            }
+        ];
 
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Iniciando painel administrativo...');
+            
             // Preview de imagens
             const imagensInput = document.getElementById('imagens');
             const imagensPreview = document.getElementById('imagens-preview');
             
-            imagensInput.addEventListener('change', (e) => {
-                imagensPreview.innerHTML = '';
-                Array.from(e.target.files).forEach((file, index) => {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const previewItem = document.createElement('div');
-                        previewItem.className = 'preview-item';
-                        previewItem.innerHTML = `
-                            <img src="${e.target.result}" alt="Preview ${index + 1}">
-                            <div class="preview-info">
-                                <span class="file-name">${file.name}</span>
-                                <span class="file-size">${(file.size / 1024 / 1024).toFixed(2)} MB</span>
-                            </div>
-                            <button type="button" class="remove-preview" onclick="this.parentElement.remove()">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        `;
-                        imagensPreview.appendChild(previewItem);
-                    };
-                    reader.readAsDataURL(file);
+            if (imagensInput && imagensPreview) {
+                imagensInput.addEventListener('change', (e) => {
+                    imagensPreview.innerHTML = '';
+                    Array.from(e.target.files).forEach((file, index) => {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            const previewItem = document.createElement('div');
+                            previewItem.className = 'preview-item';
+                            previewItem.innerHTML = `
+                                <img src="${e.target.result}" alt="Preview ${index + 1}">
+                                <div class="preview-info">
+                                    <span class="file-name">${file.name}</span>
+                                    <span class="file-size">${(file.size / 1024 / 1024).toFixed(2)} MB</span>
+                                </div>
+                                <button type="button" class="remove-preview" onclick="this.parentElement.remove()">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            `;
+                            imagensPreview.appendChild(previewItem);
+                        };
+                        reader.readAsDataURL(file);
+                    });
                 });
-            });
+            }
 
             // Drag and drop para upload
             const uploadArea = document.querySelector('.file-upload-area');
             
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                uploadArea.addEventListener(eventName, preventDefaults, false);
-            });
+            if (uploadArea) {
+                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                    uploadArea.addEventListener(eventName, preventDefaults, false);
+                });
 
-            function preventDefaults(e) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
+                function preventDefaults(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
 
-            ['dragenter', 'dragover'].forEach(eventName => {
-                uploadArea.addEventListener(eventName, highlight, false);
-            });
+                ['dragenter', 'dragover'].forEach(eventName => {
+                    uploadArea.addEventListener(eventName, highlight, false);
+                });
 
-            ['dragleave', 'drop'].forEach(eventName => {
-                uploadArea.addEventListener(eventName, unhighlight, false);
-            });
+                ['dragleave', 'drop'].forEach(eventName => {
+                    uploadArea.addEventListener(eventName, unhighlight, false);
+                });
 
-            function highlight(e) {
-                uploadArea.classList.add('drag-over');
-            }
+                function highlight(e) {
+                    uploadArea.classList.add('drag-over');
+                }
 
-            function unhighlight(e) {
-                uploadArea.classList.remove('drag-over');
-            }
+                function unhighlight(e) {
+                    uploadArea.classList.remove('drag-over');
+                }
 
-            uploadArea.addEventListener('drop', handleDrop, false);
+                uploadArea.addEventListener('drop', handleDrop, false);
 
-            function handleDrop(e) {
-                const dt = e.dataTransfer;
-                const files = dt.files;
-                imagensInput.files = files;
-                imagensInput.dispatchEvent(new Event('change'));
-            }
-
-            // Carregar produtos
-            async function carregarProdutos() {
-                const produtosLista = document.getElementById('produtos-lista');
-                produtosLista.innerHTML = `
-                    <div class="loading-state">
-                        <div class="loading-spinner">
-                            <div class="spinner"></div>
-                        </div>
-                        <p>Carregando produtos...</p>
-                    </div>
-                `;
-                
-                try {
-                    const response = await fetch(`${API_BASE_URL}/api/produtos`);
-                    if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
-                    
-                    const { data } = await response.json();
-                    
-                    // Atualizar contador
-                    document.getElementById('total-produtos').textContent = data.length;
-                    
-                    produtosLista.innerHTML = '';
-                    
-                    if (data.length === 0) {
-                        produtosLista.innerHTML = `
-                            <div class="empty-state">
-                                <i class="fas fa-box-open"></i>
-                                <h3>Nenhum produto encontrado</h3>
-                                <p>Adicione seu primeiro produto usando o formulário acima.</p>
-                            </div>
-                        `;
-                        return;
+                function handleDrop(e) {
+                    const dt = e.dataTransfer;
+                    const files = dt.files;
+                    if (imagensInput) {
+                        imagensInput.files = files;
+                        imagensInput.dispatchEvent(new Event('change'));
                     }
-
-                    // Criar tabela
-                    const table = document.createElement('div');
-                    table.className = 'products-grid';
-                    
-                    data.forEach(produto => {
-                        let imagens = [];
-                        try {
-                            imagens = produto.imagens ? JSON.parse(produto.imagens) : [];
-                        } catch (e) {
-                            imagens = [];
-                        }
-
-                        const productCard = document.createElement('div');
-                        productCard.className = 'product-admin-card';
-                        productCard.innerHTML = `
-                            <div class="product-image">
-                                <img src="${imagens[0] || 'https://via.placeholder.com/100x100/f0f0f0/999999?text=Sem+Imagem'}" alt="${produto.nome}">
-                            </div>
-                            <div class="product-info">
-                                <h4>${produto.nome}</h4>
-                                <p class="product-price">R$ ${parseFloat(produto.preco).toFixed(2)}</p>
-                                <div class="product-tags">
-                                    <span class="tag category">${produto.categoria}</span>
-                                    <span class="tag store">${produto.loja}</span>
-                                </div>
-                            </div>
-                            <div class="product-actions">
-                                <button onclick="editarProduto(${produto.id})" class="btn-edit" title="Editar">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button onclick="excluirProduto(${produto.id})" class="btn-delete" title="Excluir">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        `;
-                        table.appendChild(productCard);
-                    });
-                    
-                    produtosLista.appendChild(table);
-                } catch (error) {
-                    console.error('Erro ao carregar produtos:', error);
-                    produtosLista.innerHTML = `
-                        <div class="error-state">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <h3>Erro ao carregar produtos</h3>
-                            <p>Verifique sua conexão e tente novamente.</p>
-                            <button onclick="carregarProdutos()" class="btn-primary">
-                                <i class="fas fa-redo"></i>
-                                Tentar Novamente
-                            </button>
-                        </div>
-                    `;
                 }
             }
 
-            // Funções globais
-            window.editarProduto = async function(id) {
-                try {
-                    const response = await fetch(`${API_BASE_URL}/api/produtos?id=${id}`);
-                    const { data } = await response.json();
-                    const produto = data.find(p => p.id === id);
-                    
-                    if (!produto) throw new Error('Produto não encontrado');
-
-                    // Preencher formulário
-                    document.getElementById('produto-id').value = produto.id;
-                    document.getElementById('nome').value = produto.nome;
-                    document.getElementById('descricao').value = produto.descricao || '';
-                    document.getElementById('preco').value = produto.preco;
-                    document.getElementById('categoria').value = produto.categoria;
-                    document.getElementById('loja').value = produto.loja;
-                    document.getElementById('link').value = produto.link;
-
-                    // Mostrar imagens atuais
-                    let imagens = [];
-                    try {
-                        imagens = produto.imagens ? JSON.parse(produto.imagens) : [];
-                    } catch (e) {
-                        imagens = [];
-                    }
-
-                    const imagensPreview = document.getElementById('imagens-preview');
-                    imagensPreview.innerHTML = imagens.map((img, index) => `
-                        <div class="preview-item">
-                            <img src="${img}" alt="Imagem atual ${index + 1}">
-                            <div class="preview-info">
-                                <span class="file-name">Imagem atual</span>
-                            </div>
-                        </div>
-                    `).join('');
-
-                    document.getElementById('cancelar-edicao').style.display = 'inline-flex';
-                    document.querySelector('#produto-form button[type="submit"] span').textContent = 'Atualizar Produto';
-                    
-                    // Scroll para o formulário
-                    document.querySelector('.product-form').scrollIntoView({ behavior: 'smooth' });
-                } catch (error) {
-                    console.error('Erro ao carregar produto:', error);
-                    showFeedback('Erro ao carregar produto', 'error');
-                }
-            };
-
-            window.excluirProduto = async function(id) {
-                if (!confirm('Tem certeza que deseja excluir este produto?')) return;
-                
-                try {
-                    const response = await fetch(`${API_BASE_URL}/api/produtos/${id}`, {
-                        method: 'DELETE'
-                    });
-                    
-                    const result = await response.json();
-                    
-                    if (response.ok) {
-                        showFeedback(result.message || 'Produto excluído com sucesso', 'success');
-                        carregarProdutos();
-                    } else {
-                        showFeedback(result.message || 'Erro ao excluir produto', 'error');
-                    }
-                } catch (error) {
-                    console.error('Erro ao excluir produto:', error);
-                    showFeedback('Erro ao conectar com a API', 'error');
-                }
-            };
+            // Carregar produtos iniciais
+            carregarProdutos();
 
             // Cancelar edição
-            document.getElementById('cancelar-edicao').addEventListener('click', () => {
-                document.getElementById('produto-form').reset();
-                document.getElementById('imagens-preview').innerHTML = '';
-                document.getElementById('produto-id').value = '';
-                document.getElementById('cancelar-edicao').style.display = 'none';
-                document.querySelector('#produto-form button[type="submit"] span').textContent = 'Salvar Produto';
-                showFeedback('', '');
-            });
-
-            // Função para mostrar feedback
-            function showFeedback(message, type) {
-                const feedback = document.getElementById('feedback');
-                feedback.innerHTML = message ? `
-                    <div class="feedback-${type}">
-                        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
-                        <span>${message}</span>
-                    </div>
-                ` : '';
-                
-                if (message) {
-                    setTimeout(() => {
-                        feedback.innerHTML = '';
-                    }, 5000);
-                }
+            const cancelarBtn = document.getElementById('cancelar-edicao');
+            if (cancelarBtn) {
+                cancelarBtn.addEventListener('click', () => {
+                    document.getElementById('produto-form').reset();
+                    document.getElementById('imagens-preview').innerHTML = '';
+                    document.getElementById('produto-id').value = '';
+                    cancelarBtn.style.display = 'none';
+                    document.querySelector('#produto-form button[type="submit"] span').textContent = 'Salvar Produto';
+                    showFeedback('', '');
+                });
             }
 
             // Formulário de produto
-            document.getElementById('produto-form').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                
-                const formData = new FormData(e.target);
-                const id = document.getElementById('produto-id').value;
-                const url = id ? `${API_BASE_URL}/api/produtos/${id}` : `${API_BASE_URL}/api/produtos`;
-                const method = id ? 'PUT' : 'POST';
-
-                try {
-                    const response = await fetch(url, {
-                        method,
-                        body: formData
-                    });
-
-                    const result = await response.json();
-
-                    if (response.ok) {
+            const produtoForm = document.getElementById('produto-form');
+            if (produtoForm) {
+                produtoForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(e.target);
+                    const id = document.getElementById('produto-id').value;
+                    
+                    try {
+                        showFeedback('Salvando produto...', 'info');
+                        
+                        // Simular salvamento para demonstração
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        
                         showFeedback(
-                            result.message || (id ? 'Produto atualizado com sucesso' : 'Produto adicionado com sucesso'), 
+                            id ? 'Produto atualizado com sucesso!' : 'Produto adicionado com sucesso!', 
                             'success'
                         );
                         
@@ -522,31 +1211,195 @@
                         document.getElementById('produto-id').value = '';
                         document.getElementById('cancelar-edicao').style.display = 'none';
                         document.querySelector('#produto-form button[type="submit"] span').textContent = 'Salvar Produto';
-                        carregarProdutos();
-                    } else {
-                        showFeedback(result.message || 'Erro ao salvar produto', 'error');
+                        
+                        // Recarregar lista de produtos
+                        setTimeout(() => {
+                            carregarProdutos();
+                        }, 1000);
+                        
+                    } catch (error) {
+                        console.error('Erro ao salvar produto:', error);
+                        showFeedback('Erro ao salvar produto', 'error');
                     }
-                } catch (error) {
-                    console.error('Erro ao salvar produto:', error);
-                    showFeedback('Erro ao conectar com a API', 'error');
-                }
-            });
+                });
+            }
 
             // Busca de produtos
-            document.getElementById('search-produtos').addEventListener('input', (e) => {
-                const searchTerm = e.target.value.toLowerCase();
-                const productCards = document.querySelectorAll('.product-admin-card');
-                
-                productCards.forEach(card => {
-                    const productName = card.querySelector('h4').textContent.toLowerCase();
-                    const isVisible = productName.includes(searchTerm);
-                    card.style.display = isVisible ? 'flex' : 'none';
+            const searchInput = document.getElementById('search-produtos');
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    const searchTerm = e.target.value.toLowerCase();
+                    const productCards = document.querySelectorAll('.product-admin-card');
+                    
+                    productCards.forEach(card => {
+                        const productName = card.querySelector('h4').textContent.toLowerCase();
+                        const isVisible = productName.includes(searchTerm);
+                        card.style.display = isVisible ? 'block' : 'none';
+                    });
                 });
-            });
-
-            // Carregar produtos iniciais
-            carregarProdutos();
+            }
         });
+
+        // Carregar produtos
+        function carregarProdutos() {
+            const produtosLista = document.getElementById('produtos-lista');
+            if (!produtosLista) return;
+
+            console.log('📦 Carregando produtos...');
+            
+            produtosLista.innerHTML = `
+                <div class="loading-state">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Carregando produtos...</p>
+                    </div>
+                </div>
+            `;
+            
+            // Simular carregamento
+            setTimeout(() => {
+                produtosLista.innerHTML = '';
+                
+                if (SAMPLE_ADMIN_PRODUCTS.length === 0) {
+                    produtosLista.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-box-open"></i>
+                            <h3>Nenhum produto encontrado</h3>
+                            <p>Adicione seu primeiro produto usando o formulário acima.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Criar grid de produtos
+                const grid = document.createElement('div');
+                grid.className = 'products-grid';
+                
+                SAMPLE_ADMIN_PRODUCTS.forEach(produto => {
+                    const productCard = document.createElement('div');
+                    productCard.className = 'product-admin-card';
+                    productCard.innerHTML = `
+                        <div class="product-image">
+                            <img src="${produto.imagens[0] || 'https://via.placeholder.com/300x200/f0f0f0/999999?text=Sem+Imagem'}" 
+                                 alt="${produto.nome}"
+                                 onerror="this.src='https://via.placeholder.com/300x200/f0f0f0/999999?text=Sem+Imagem'">
+                        </div>
+                        <div class="product-info">
+                            <h4>${produto.nome}</h4>
+                            <p class="product-price">R$ ${parseFloat(produto.preco).toFixed(2)}</p>
+                            <div class="product-tags">
+                                <span class="tag category">${produto.categoria}</span>
+                                <span class="tag store">${produto.loja}</span>
+                            </div>
+                        </div>
+                        <div class="product-actions">
+                            <button onclick="editarProduto(${produto.id})" class="btn-edit" title="Editar">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                            <button onclick="excluirProduto(${produto.id})" class="btn-delete" title="Excluir">
+                                <i class="fas fa-trash"></i> Excluir
+                            </button>
+                        </div>
+                    `;
+                    grid.appendChild(productCard);
+                });
+                
+                produtosLista.appendChild(grid);
+                
+                // Atualizar contador
+                document.getElementById('total-produtos').textContent = SAMPLE_ADMIN_PRODUCTS.length;
+                
+                console.log(`✅ ${SAMPLE_ADMIN_PRODUCTS.length} produtos carregados`);
+            }, 1000);
+        }
+
+        // Editar produto
+        function editarProduto(id) {
+            console.log('✏️ Editando produto ID:', id);
+            
+            const produto = SAMPLE_ADMIN_PRODUCTS.find(p => p.id === id);
+            
+            if (!produto) {
+                showFeedback('Produto não encontrado', 'error');
+                return;
+            }
+
+            // Preencher formulário
+            document.getElementById('produto-id').value = produto.id;
+            document.getElementById('nome').value = produto.nome;
+            document.getElementById('descricao').value = produto.descricao || '';
+            document.getElementById('preco').value = produto.preco;
+            document.getElementById('categoria').value = produto.categoria;
+            document.getElementById('loja').value = produto.loja;
+            document.getElementById('link').value = produto.link;
+
+            // Mostrar imagens atuais
+            const imagensPreview = document.getElementById('imagens-preview');
+            imagensPreview.innerHTML = produto.imagens.map((img, index) => `
+                <div class="preview-item">
+                    <img src="${img}" alt="Imagem atual ${index + 1}">
+                    <div class="preview-info">
+                        <span class="file-name">Imagem atual ${index + 1}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('cancelar-edicao').style.display = 'inline-flex';
+            document.querySelector('#produto-form button[type="submit"] span').textContent = 'Atualizar Produto';
+            
+            // Scroll para o formulário
+            document.querySelector('.product-form').scrollIntoView({ behavior: 'smooth' });
+            
+            showFeedback('Produto carregado para edição', 'success');
+        }
+
+        // Excluir produto
+        function excluirProduto(id) {
+            if (!confirm('Tem certeza que deseja excluir este produto?')) return;
+            
+            console.log('🗑️ Excluindo produto ID:', id);
+            
+            // Simular exclusão
+            const index = SAMPLE_ADMIN_PRODUCTS.findIndex(p => p.id === id);
+            if (index > -1) {
+                SAMPLE_ADMIN_PRODUCTS.splice(index, 1);
+                showFeedback('Produto excluído com sucesso!', 'success');
+                carregarProdutos();
+            } else {
+                showFeedback('Produto não encontrado', 'error');
+            }
+        }
+
+        // Função para mostrar feedback
+        function showFeedback(message, type) {
+            const feedback = document.getElementById('feedback');
+            
+            if (!message) {
+                feedback.innerHTML = '';
+                return;
+            }
+            
+            const iconMap = {
+                success: 'check-circle',
+                error: 'exclamation-circle',
+                info: 'info-circle'
+            };
+            
+            feedback.innerHTML = `
+                <div class="feedback-${type}">
+                    <i class="fas fa-${iconMap[type] || 'info-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            if (type !== 'info') {
+                setTimeout(() => {
+                    feedback.innerHTML = '';
+                }, 5000);
+            }
+        }
+
+        console.log('✅ Painel administrativo carregado com sucesso!');
     </script>
 </body>
 </html>
