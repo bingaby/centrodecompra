@@ -1,799 +1,800 @@
 const API_CONFIG = {
-  REAL_API: "https://minha-api-produtos.onrender.com",
-  USE_LOCAL_DATA: false,
-  ADMIN_TOKEN: "seu_token_secreto",
-}
+  REAL_API: "https://minha-api-produtos.onrender.com",
+  USE_LOCAL_DATA: false,
+  ADMIN_TOKEN: "098457098457",
+};
 
-let currentPage = 1
-let allProducts = []
-let isLoading = false
+let currentPage = 1;
+let allProducts = [];
+let isLoading = false;
 
+// CORREÇÃO: Usando um serviço de placeholder mais confiável para evitar o erro 404
 function createImagePlaceholder(width = 300, height = 200, text = "Produto") {
-  return `https://via.placeholder.com/${width}x${height}/f0f0f0/999999?text=${encodeURIComponent(text)}`
+  return `https://placeholder.co/${width}x${height}/f0f0f0/999999?text=${encodeURIComponent(text)}`;
 }
 
 function debounce(func, wait) {
-  let timeout
-  return function executedFunction(...args) {
-    const later = () => {
-      clearTimeout(timeout)
-      func(...args)
-    }
-    clearTimeout(timeout)
-    timeout = setTimeout(later, wait)
-  }
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("🚀 Iniciando Centro de Compras...")
-  console.log("🌐 Conectando com API:", API_CONFIG.REAL_API)
+  console.log("🚀 Iniciando Centro de Compras...");
+  console.log("🌐 Conectando com API:", API_CONFIG.REAL_API);
 
-  testApiConnection()
-  initializeHeader()
-  initializeSidebar()
-  initializeSearch()
-  initializeFilters()
-  initializeModal()
-  loadProducts()
-  updateFooterYear()
-  setupLazyLoading()
-  setupServiceWorker()
-})
+  testApiConnection();
+  initializeHeader();
+  initializeSidebar();
+  initializeSearch();
+  initializeFilters();
+  initializeModal();
+  loadProducts();
+  updateFooterYear();
+  setupLazyLoading();
+  setupServiceWorker();
+});
 
 async function testApiConnection() {
-  try {
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 10000)
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-    const response = await fetch(`${API_CONFIG.REAL_API}/api/produtos?limit=1`, {
-      method: "GET",
-      signal: controller.signal,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
+    const response = await fetch(`${API_CONFIG.REAL_API}/api/produtos?limit=1`, {
+      method: "GET",
+      signal: controller.signal,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-    clearTimeout(timeoutId)
+    clearTimeout(timeoutId);
 
-    if (response.ok) {
-      console.log("✅ API conectada com sucesso!")
-      showConnectionStatus("online")
-    } else {
-      throw new Error(`API retornou status ${response.status}`)
-    }
-  } catch (error) {
-    console.error("❌ Erro na conexão com API:", error.message)
-    showConnectionStatus("offline")
-  }
+    if (response.ok) {
+      console.log("✅ API conectada com sucesso!");
+      showConnectionStatus("online");
+    } else {
+      throw new Error(`API retornou status ${response.status}`);
+    }
+  } catch (error) {
+    console.error("❌ Erro na conexão com API:", error.message);
+    showConnectionStatus("offline");
+  }
 }
 
 function showConnectionStatus(status) {
-  const existingStatus = document.querySelector(".connection-status")
-  if (existingStatus) {
-    existingStatus.remove()
-  }
+  const existingStatus = document.querySelector(".connection-status");
+  if (existingStatus) {
+    existingStatus.remove();
+  }
 
-  const statusDiv = document.createElement("div")
-  statusDiv.className = `connection-status ${status}`
-  statusDiv.innerHTML = `
-    <div class="status-content">
-      <i class="fas fa-${status === "online" ? "wifi" : "exclamation-triangle"}"></i>
-      <span>${status === "online" ? "Conectado ao servidor" : "Erro de conexão com servidor"}</span>
-      ${status === "offline" ? "<small>Verifique sua conexão com a internet</small>" : ""}
-    </div>
-  `
+  const statusDiv = document.createElement("div");
+  statusDiv.className = `connection-status ${status}`;
+  statusDiv.innerHTML = `
+    <div class="status-content">
+      <i class="fas fa-${status === "online" ? "wifi" : "exclamation-triangle"}"></i>
+      <span>${status === "online" ? "Conectado ao servidor" : "Erro de conexão com servidor"}</span>
+      ${status === "offline" ? "<small>Verifique sua conexão com a internet</small>" : ""}
+    </div>
+  `;
 
-  document.body.appendChild(statusDiv)
+  document.body.appendChild(statusDiv);
 
-  setTimeout(() => {
-    if (statusDiv.parentNode) {
-      statusDiv.remove()
-    }
-  }, 5000)
+  setTimeout(() => {
+    if (statusDiv.parentNode) {
+      statusDiv.remove();
+    }
+  }, 5000);
 }
 
 function initializeHeader() {
-  const logo = document.getElementById("site-logo")
-  if (logo) {
-    let clickCount = 0
-    let clickTimeout = null
+  const logo = document.getElementById("site-logo");
+  if (logo) {
+    let clickCount = 0;
+    let clickTimeout = null;
 
-    logo.addEventListener("click", (e) => {
-      e.preventDefault()
-      clickCount++
+    logo.addEventListener("click", (e) => {
+      e.preventDefault();
+      clickCount++;
 
-      if (clickCount === 1) {
-        clickTimeout = setTimeout(() => {
-          clickCount = 0
-        }, 1000)
-      } else if (clickCount === 3) {
-        clearTimeout(clickTimeout)
-        window.location.href = "/admin-xyz-123.html"
-        clickCount = 0
-      }
-    })
-  }
+      if (clickCount === 1) {
+        clickTimeout = setTimeout(() => {
+          clickCount = 0;
+        }, 1000);
+      } else if (clickCount === 3) {
+        clearTimeout(clickTimeout);
+        window.location.href = "/admin-xyz-123.html";
+        clickCount = 0;
+      }
+    });
+  }
 
-  const searchBtn = document.querySelector(".search-btn")
-  if (searchBtn) {
-    searchBtn.addEventListener("click", () => {
-      const searchInput = document.getElementById("busca")
-      if (searchInput && searchInput.value.trim()) {
-        loadProducts(1, false)
-      }
-    })
-  }
+  const searchBtn = document.querySelector(".search-btn");
+  if (searchBtn) {
+    searchBtn.addEventListener("click", () => {
+      const searchInput = document.getElementById("busca");
+      if (searchInput && searchInput.value.trim()) {
+        loadProducts(1, false);
+      }
+    });
+  }
 }
 
 function initializeSidebar() {
-  const categoriesBtn = document.getElementById("categories-toggle")
-  const sidebar = document.getElementById("categories-sidebar")
-  const overlay = document.getElementById("overlay")
-  const closeSidebar = document.getElementById("close-sidebar")
+  const categoriesBtn = document.getElementById("categories-toggle");
+  const sidebar = document.getElementById("categories-sidebar");
+  const overlay = document.getElementById("overlay");
+  const closeSidebar = document.getElementById("close-sidebar");
 
-  if (categoriesBtn && sidebar && overlay) {
-    categoriesBtn.addEventListener("click", () => {
-      sidebar.classList.add("active")
-      overlay.classList.add("active")
-      document.body.style.overflow = "hidden"
-    })
+  if (categoriesBtn && sidebar && overlay) {
+    categoriesBtn.addEventListener("click", () => {
+      sidebar.classList.add("active");
+      overlay.classList.add("active");
+      document.body.style.overflow = "hidden";
+    });
 
-    const closeSidebarHandler = () => {
-      sidebar.classList.remove("active")
-      overlay.classList.remove("active")
-      document.body.style.overflow = ""
-    }
+    const closeSidebarHandler = () => {
+      sidebar.classList.remove("active");
+      overlay.classList.remove("active");
+      document.body.style.overflow = "";
+    };
 
-    if (closeSidebar) {
-      closeSidebar.addEventListener("click", closeSidebarHandler)
-    }
+    if (closeSidebar) {
+      closeSidebar.addEventListener("click", closeSidebarHandler);
+    }
 
-    overlay.addEventListener("click", closeSidebarHandler)
+    overlay.addEventListener("click", closeSidebarHandler);
 
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && sidebar.classList.contains("active")) {
-        closeSidebarHandler()
-      }
-    })
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && sidebar.classList.contains("active")) {
+        closeSidebarHandler();
+      }
+    });
 
-    const categoryItems = document.querySelectorAll(".category-item")
-    categoryItems.forEach((item) => {
-      item.addEventListener("click", () => {
-        const categoria = item.dataset.categoria
-        filterByCategory(categoria)
-        closeSidebarHandler()
-      })
-    })
-  }
+    const categoryItems = document.querySelectorAll(".category-item");
+    categoryItems.forEach((item) => {
+      item.addEventListener("click", () => {
+        const categoria = item.dataset.categoria;
+        filterByCategory(categoria);
+        closeSidebarHandler();
+      });
+    });
+  }
 }
 
 function initializeSearch() {
-  const searchInput = document.getElementById("busca")
-  if (searchInput) {
-    const debouncedSearch = debounce(() => {
-      loadProducts(1, false)
-    }, 500)
+  const searchInput = document.getElementById("busca");
+  if (searchInput) {
+    const debouncedSearch = debounce(() => {
+      loadProducts(1, false);
+    }, 500);
 
-    searchInput.addEventListener("input", debouncedSearch)
+    searchInput.addEventListener("input", debouncedSearch);
 
-    searchInput.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault()
-        loadProducts(1, false)
-      }
-    })
-  }
+    searchInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        loadProducts(1, false);
+      }
+    });
+  }
 }
 
 function initializeFilters() {
-  const storeCards = document.querySelectorAll(".store-card")
-  storeCards.forEach((card) => {
-    card.addEventListener("click", () => {
-      const loja = card.dataset.loja
-      filterByStore(loja)
-    })
-  })
+  const storeCards = document.querySelectorAll(".store-card");
+  storeCards.forEach((card) => {
+    card.addEventListener("click", () => {
+      const loja = card.dataset.loja;
+      filterByStore(loja);
+    });
+  });
 
-  const viewBtns = document.querySelectorAll(".view-btn")
-  viewBtns.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      viewBtns.forEach((b) => b.classList.remove("active"))
-      btn.classList.add("active")
+  const viewBtns = document.querySelectorAll(".view-btn");
+  viewBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      viewBtns.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
 
-      const view = btn.dataset.view
-      const productsGrid = document.getElementById("grid-produtos")
-      if (productsGrid) {
-        productsGrid.className = view === "list" ? "products-list" : "products-grid"
-      }
-    })
-  })
+      const view = btn.dataset.view;
+      const productsGrid = document.getElementById("grid-produtos");
+      if (productsGrid) {
+        productsGrid.className = view === "list" ? "products-list" : "products-grid";
+      }
+    });
+  });
 
-  const sortSelect = document.getElementById("sort-select")
-  if (sortSelect) {
-    sortSelect.addEventListener("change", () => {
-      loadProducts(1, false)
-    })
-  }
+  const sortSelect = document.getElementById("sort-select");
+  if (sortSelect) {
+    sortSelect.addEventListener("change", () => {
+      loadProducts(1, false);
+    });
+  }
 
-  const loadMoreBtn = document.getElementById("load-more")
-  if (loadMoreBtn) {
-    loadMoreBtn.addEventListener("click", () => {
-      loadProducts(currentPage + 1, true)
-    })
-  }
+  const loadMoreBtn = document.getElementById("load-more");
+  if (loadMoreBtn) {
+    loadMoreBtn.addEventListener("click", () => {
+      loadProducts(currentPage + 1, true);
+    });
+  }
 }
 
 function initializeModal() {
-  const modal = document.getElementById("imageModal")
-  const modalClose = document.getElementById("modal-close")
-  const modalBackdrop = document.querySelector(".modal-backdrop")
+  const modal = document.getElementById("imageModal");
+  const modalClose = document.getElementById("modal-close");
+  const modalBackdrop = document.querySelector(".modal-backdrop");
 
-  if (modal && modalClose && modalBackdrop) {
-    const closeModal = () => {
-      modal.style.display = "none"
-      document.body.style.overflow = ""
-    }
+  if (modal && modalClose && modalBackdrop) {
+    const closeModal = () => {
+      modal.style.display = "none";
+      document.body.style.overflow = "";
+    };
 
-    modalClose.addEventListener("click", closeModal)
-    modalBackdrop.addEventListener("click", closeModal)
+    modalClose.addEventListener("click", closeModal);
+    modalBackdrop.addEventListener("click", closeModal);
 
-    document.addEventListener("keydown", (e) => {
-      if (modal.style.display === "flex") {
-        switch (e.key) {
-          case "Escape":
-            closeModal()
-            break
-          case "ArrowLeft":
-            window.moveModalCarousel(-1)
-            break
-          case "ArrowRight":
-            window.moveModalCarousel(1)
-            break
-        }
-      }
-    })
-  }
+    document.addEventListener("keydown", (e) => {
+      if (modal.style.display === "flex") {
+        switch (e.key) {
+          case "Escape":
+            closeModal();
+            break;
+          case "ArrowLeft":
+            window.moveModalCarousel(-1);
+            break;
+          case "ArrowRight":
+            window.moveModalCarousel(1);
+            break;
+        }
+      }
+    });
+  }
 
-  const modalPrev = document.getElementById("modalPrev")
-  const modalNext = document.getElementById("modalNext")
+  const modalPrev = document.getElementById("modalPrev");
+  const modalNext = document.getElementById("modalNext");
 
-  if (modalPrev) {
-    modalPrev.addEventListener("click", () => window.moveModalCarousel(-1))
-  }
+  if (modalPrev) {
+    modalPrev.addEventListener("click", () => window.moveModalCarousel(-1));
+  }
 
-  if (modalNext) {
-    modalNext.addEventListener("click", () => window.moveModalCarousel(1))
-  }
+  if (modalNext) {
+    modalNext.addEventListener("click", () => window.moveModalCarousel(1));
+  }
 }
 
 async function loadProducts(page = 1, append = false) {
-  if (isLoading) return
+  if (isLoading) return;
 
-  console.log(`📦 Carregando produtos da API - Página: ${page}`)
+  console.log(`📦 Carregando produtos da API - Página: ${page}`);
 
-  isLoading = true
+  isLoading = true;
 
-  const categoria = document.querySelector(".category-item.active")?.dataset.categoria || "todas"
-  const loja = document.querySelector(".store-card.active")?.dataset.loja || "todas"
-  const busca = document.getElementById("busca")?.value.trim() || ""
-  const sort = document.getElementById("sort-select")?.value || "relevance"
+  const categoria = document.querySelector(".category-item.active")?.dataset.categoria || "todas";
+  const loja = document.querySelector(".store-card.active")?.dataset.loja || "todas";
+  const busca = document.getElementById("busca")?.value.trim() || "";
+  const sort = document.getElementById("sort-select")?.value || "relevance";
 
-  const spinner = document.getElementById("loading-spinner")
-  const gridProdutos = document.getElementById("grid-produtos")
-  const mensagemVazia = document.getElementById("mensagem-vazia")
-  const errorMessage = document.getElementById("error-message")
-  const loadMoreButton = document.getElementById("load-more")
+  const spinner = document.getElementById("loading-spinner");
+  const gridProdutos = document.getElementById("grid-produtos");
+  const mensagemVazia = document.getElementById("mensagem-vazia");
+  const errorMessage = document.getElementById("error-message");
+  const loadMoreButton = document.getElementById("load-more");
 
-  if (spinner) spinner.style.display = "block"
-  if (!append && gridProdutos) gridProdutos.innerHTML = ""
-  if (mensagemVazia) mensagemVazia.style.display = "none"
-  if (errorMessage) errorMessage.style.display = "none"
-  if (loadMoreButton) loadMoreButton.style.display = "none"
+  if (spinner) spinner.style.display = "block";
+  if (!append && gridProdutos) gridProdutos.innerHTML = "";
+  if (mensagemVazia) mensagemVazia.style.display = "none";
+  if (errorMessage) errorMessage.style.display = "none";
+  if (loadMoreButton) loadMoreButton.style.display = "none";
 
-  try {
-    const url = buildApiUrl(page, categoria, loja, busca, sort)
-    console.log("🌐 Fazendo requisição para:", url)
+  try {
+    const url = buildApiUrl(page, categoria, loja, busca, sort);
+    console.log("🌐 Fazendo requisição para:", url);
 
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 15000)
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      signal: controller.signal,
-    })
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      signal: controller.signal,
+    });
 
-    clearTimeout(timeoutId)
+    clearTimeout(timeoutId);
 
-    if (!response.ok) {
-      throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`)
-    }
+    if (!response.ok) {
+      throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
+    }
 
-    const result = await response.json()
-    console.log("📊 Resposta da API:", result)
+    const result = await response.json();
+    console.log("📊 Resposta da API:", result);
 
-    if (result.status !== "success") {
-      throw new Error(result.message || "Erro na resposta da API")
-    }
+    if (result.status !== "success") {
+      throw new Error(result.message || "Erro na resposta da API");
+    }
 
-    const data = result.data || []
-    const total = result.total || 0
+    const data = result.data || [];
+    const total = result.total || 0;
 
-    if (!append) {
-      allProducts = []
-    }
+    if (!append) {
+      allProducts = [];
+    }
 
-    allProducts.push(...data)
+    allProducts.push(...data);
 
-    if (allProducts.length === 0) {
-      showEmptyState()
-    } else {
-      renderProducts(data, append)
+    if (allProducts.length === 0) {
+      showEmptyState();
+    } else {
+      renderProducts(data, append);
 
-      if (loadMoreButton && allProducts.length < total) {
-        loadMoreButton.style.display = "flex"
-      }
-    }
+      if (loadMoreButton && allProducts.length < total) {
+        loadMoreButton.style.display = "flex";
+      }
+    }
 
-    currentPage = page
-    updateResultsTitle(categoria, loja, busca, allProducts.length, total)
+    currentPage = page;
+    updateResultsTitle(categoria, loja, busca, allProducts.length, total);
 
-    console.log(`✅ Carregados ${data.length} produtos (${allProducts.length} de ${total} total)`)
-  } catch (error) {
-    console.error("❌ Erro ao carregar produtos:", error)
-    showErrorState(error.message)
-  } finally {
-    if (spinner) spinner.style.display = "none"
-    isLoading = false
-  }
+    console.log(`✅ Carregados ${data.length} produtos (${allProducts.length} de ${total} total)`);
+  } catch (error) {
+    console.error("❌ Erro ao carregar produtos:", error);
+    showErrorState(error.message);
+  } finally {
+    if (spinner) spinner.style.display = "none";
+    isLoading = false;
+  }
 }
 
 function buildApiUrl(page, categoria, loja, busca, sort) {
-  let url = `${API_CONFIG.REAL_API}/api/produtos?page=${page}&limit=12`
+  let url = `${API_CONFIG.REAL_API}/api/produtos?page=${page}&limit=12`;
 
-  if (categoria && categoria !== "todas") url += `&categoria=${encodeURIComponent(categoria)}`
-  if (loja && loja !== "todas") url += `&loja=${encodeURIComponent(loja)}`
-  if (busca) url += `&busca=${encodeURIComponent(busca)}`
-  if (sort && sort !== "relevance") url += `&sort=${sort}`
+  if (categoria && categoria !== "todas") url += `&categoria=${encodeURIComponent(categoria)}`;
+  if (loja && loja !== "todas") url += `&loja=${encodeURIComponent(loja)}`;
+  if (busca) url += `&busca=${encodeURIComponent(busca)}`;
+  if (sort && sort !== "relevance") url += `&sort=${sort}`;
 
-  return url
+  return url;
 }
 
 function renderProducts(products, append = false) {
-  const gridProdutos = document.getElementById("grid-produtos")
-  if (!gridProdutos) return
+  const gridProdutos = document.getElementById("grid-produtos");
+  if (!gridProdutos) return;
 
-  if (!append) {
-    gridProdutos.innerHTML = ""
-  }
+  if (!append) {
+    gridProdutos.innerHTML = "";
+  }
 
-  products.forEach((produto, index) => {
-    const card = createProductCard(produto)
-    card.style.animationDelay = `${index * 0.1}s`
-    gridProdutos.appendChild(card)
-  })
+  products.forEach((produto, index) => {
+    const card = createProductCard(produto);
+    card.style.animationDelay = `${index * 0.1}s`;
+    gridProdutos.appendChild(card);
+  });
 
-  gridProdutos.style.display = "grid"
+  gridProdutos.style.display = "grid";
 }
 
 function createProductCard(produto) {
-  const card = document.createElement("div")
-  card.className = "produto-card"
-  card.setAttribute("data-categoria", produto.categoria.toLowerCase())
-  card.setAttribute("data-loja", produto.loja.toLowerCase())
+  const card = document.createElement("div");
+  card.className = "produto-card";
+  card.setAttribute("data-categoria", produto.categoria.toLowerCase());
+  card.setAttribute("data-loja", produto.loja.toLowerCase());
 
-  let imagens = []
+  let imagens = [];
 
-  if (Array.isArray(produto.imagens)) {
-    imagens = produto.imagens
-  } else if (typeof produto.imagens === "string") {
-    try {
-      imagens = JSON.parse(produto.imagens)
-    } catch (e) {
-      imagens = [produto.imagens]
-    }
-  }
+  if (Array.isArray(produto.imagens)) {
+    imagens = produto.imagens;
+  } else if (typeof produto.imagens === "string") {
+    try {
+      imagens = JSON.parse(produto.imagens);
+    } catch (e) {
+      imagens = [produto.imagens];
+    }
+  }
 
-  if (imagens.length === 0) {
-    imagens = [createImagePlaceholder(300, 200, produto.nome)]
-  }
+  if (imagens.length === 0) {
+    imagens = [createImagePlaceholder(300, 200, produto.nome)];
+  }
 
-  const carrosselId = `carrossel-${produto.id}`
-  const lojaClass = `tarja-${produto.loja.toLowerCase().replace(/\s/g, "")}`
+  const carrosselId = `carrossel-${produto.id}`;
+  const lojaClass = `tarja-${produto.loja.toLowerCase().replace(/\s/g, "")}`;
 
-  card.innerHTML = `
-    <div class="carrossel" id="${carrosselId}">
-      <div class="carrossel-imagens">
-        ${imagens
-          .map(
-            (img, idx) => `
-          <img src="${img}" 
-               alt="${produto.nome} - Imagem ${idx + 1}" 
-               loading="lazy" 
-               onclick="openModal('${produto.id}', ${idx})"
-               onerror="this.src='${createImagePlaceholder(300, 200, produto.nome)}'">
-        `,
-          )
-          .join("")}
-      </div>
-      ${
-        imagens.length > 1
-          ? `
-        <button class="carrossel-prev" onclick="window.moveCarousel('${carrosselId}', -1)" aria-label="Imagem anterior">
-          <i class="fas fa-chevron-left"></i>
-        </button>
-        <button class="carrossel-next" onclick="window.moveCarousel('${carrosselId}', 1)" aria-label="Próxima imagem">
-          <i class="fas fa-chevron-right"></i>
-        </button>
-        <div class="carrossel-dots">
-          ${imagens
-            .map(
-              (_, idx) => `
-            <span class="carrossel-dot ${idx === 0 ? "ativo" : ""}" 
-                  onclick="window.setCarouselImage('${carrosselId}', ${idx})" 
-                  aria-label="Selecionar imagem ${idx + 1}"></span>
-          `,
-            )
-            .join("")}
-        </div>
-      `
-          : ""
-      }
-    </div>
-    <h3 class="produto-nome">${produto.nome}</h3>
-    <div class="preco-link" data-preco="${Number.parseFloat(produto.preco).toFixed(2)}">
-      <i class="fas fa-eye"></i>
-      <span>Clique para ver o preço</span>
-    </div>
-    <p class="descricao">${produto.descricao || "Sem descrição disponível"}</p>
-    <a href="${produto.link}" 
-       target="_blank" 
-       class="tarja-preco ${lojaClass}" 
-       aria-label="Comprar ${produto.nome} na ${produto.loja}"
-       rel="noopener noreferrer">
-      <i class="fas fa-shopping-cart"></i>
-      <span>Comprar na ${produto.loja}</span>
-    </a>
-  `
+  card.innerHTML = `
+    <div class="carrossel" id="${carrosselId}">
+      <div class="carrossel-imagens">
+        ${imagens
+          .map(
+            (img, idx) => `
+          <img src="${img}" 
+               alt="${produto.nome} - Imagem ${idx + 1}" 
+               loading="lazy" 
+               onclick="openModal('${produto.id}', ${idx})"
+               onerror="this.src='${createImagePlaceholder(300, 200, produto.nome)}'">
+        `,
+          )
+          .join("")}
+      </div>
+      ${
+        imagens.length > 1
+          ? `
+        <button class="carrossel-prev" onclick="window.moveCarousel('${carrosselId}', -1)" aria-label="Imagem anterior">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="carrossel-next" onclick="window.moveCarousel('${carrosselId}', 1)" aria-label="Próxima imagem">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+        <div class="carrossel-dots">
+          ${imagens
+            .map(
+              (_, idx) => `
+            <span class="carrossel-dot ${idx === 0 ? "ativo" : ""}" 
+                  onclick="window.setCarouselImage('${carrosselId}', ${idx})" 
+                  aria-label="Selecionar imagem ${idx + 1}"></span>
+          `,
+            )
+            .join("")}
+        </div>
+      `
+          : ""
+      }
+    </div>
+    <h3 class="produto-nome">${produto.nome}</h3>
+    <div class="preco-link" data-preco="${Number.parseFloat(produto.preco).toFixed(2)}">
+      <i class="fas fa-eye"></i>
+      <span>Clique para ver o preço</span>
+    </div>
+    <p class="descricao">${produto.descricao || "Sem descrição disponível"}</p>
+    <a href="${produto.link}" 
+       target="_blank" 
+       class="tarja-preco ${lojaClass}" 
+       aria-label="Comprar ${produto.nome} na ${produto.loja}"
+       rel="noopener noreferrer">
+      <i class="fas fa-shopping-cart"></i>
+      <span>Comprar na ${produto.loja}</span>
+    </a>
+  `;
 
-  const precoLink = card.querySelector(".preco-link")
-  precoLink.addEventListener("click", () => {
-    const preco = precoLink.getAttribute("data-preco")
-    precoLink.innerHTML = `
-      <i class="fas fa-dollar-sign"></i>
-      <span>R$ ${preco}</span>
-    `
-    precoLink.classList.add("price-revealed")
-    precoLink.style.cursor = "default"
-  })
+  const precoLink = card.querySelector(".preco-link");
+  precoLink.addEventListener("click", () => {
+    const preco = precoLink.getAttribute("data-preco");
+    precoLink.innerHTML = `
+      <i class="fas fa-dollar-sign"></i>
+      <span>R$ ${preco}</span>
+    `;
+    precoLink.classList.add("price-revealed");
+    precoLink.style.cursor = "default";
+  });
 
-  if (imagens.length > 1) {
-    addSwipeSupport(card.querySelector(".carrossel-imagens"), (direction) => {
-      window.moveCarousel(carrosselId, direction)
-    })
-  }
+  if (imagens.length > 1) {
+    addSwipeSupport(card.querySelector(".carrossel-imagens"), (direction) => {
+      window.moveCarousel(carrosselId, direction);
+    });
+  }
 
-  return card
+  return card;
 }
 
 window.moveCarousel = (id, direction) => {
-  const carousel = document.getElementById(id)
-  if (!carousel) return
+  const carousel = document.getElementById(id);
+  if (!carousel) return;
 
-  const images = carousel.querySelector(".carrossel-imagens")
-  const dots = carousel.querySelectorAll(".carrossel-dot")
-  let index = Number.parseInt(images.dataset.index || 0)
-  const total = images.children.length
+  const images = carousel.querySelector(".carrossel-imagens");
+  const dots = carousel.querySelectorAll(".carrossel-dot");
+  let index = Number.parseInt(images.dataset.index || 0);
+  const total = images.children.length;
 
-  index = (index + direction + total) % total
-  images.style.transform = `translateX(-${index * 100}%)`
-  images.dataset.index = index
+  index = (index + direction + total) % total;
+  images.style.transform = `translateX(-${index * 100}%)`;
+  images.dataset.index = index;
 
-  dots.forEach((dot, i) => {
-    dot.classList.toggle("ativo", i === index)
-  })
-}
+  dots.forEach((dot, i) => {
+    dot.classList.toggle("ativo", i === index);
+  });
+};
 
 window.setCarouselImage = (id, index) => {
-  const carousel = document.getElementById(id)
-  if (!carousel) return
+  const carousel = document.getElementById(id);
+  if (!carousel) return;
 
-  const images = carousel.querySelector(".carrossel-imagens")
-  const dots = carousel.querySelectorAll(".carrossel-dot")
+  const images = carousel.querySelector(".carrossel-imagens");
+  const dots = carousel.querySelectorAll(".carrossel-dot");
 
-  images.style.transform = `translateX(-${index * 100}%)`
-  images.dataset.index = index
+  images.style.transform = `translateX(-${index * 100}%)`;
+  images.dataset.index = index;
 
-  dots.forEach((dot, i) => {
-    dot.classList.toggle("ativo", i === index)
-  })
-}
+  dots.forEach((dot, i) => {
+    dot.classList.toggle("ativo", i === index);
+  });
+};
 
-let currentImageIndex = 0
-let currentModalImages = []
+let currentImageIndex = 0;
+let currentModalImages = [];
 
 window.openModal = (id, imageIndex) => {
-  const produto = allProducts.find((p) => p.id == id)
-  if (!produto) {
-    console.error("Produto não encontrado:", id)
-    return
-  }
+  const produto = allProducts.find((p) => p.id == id);
+  if (!produto) {
+    console.error("Produto não encontrado:", id);
+    return;
+  }
 
-  const modal = document.getElementById("imageModal")
-  const carouselImages = document.getElementById("modalCarrosselImagens")
-  const carouselDots = document.getElementById("modalCarrosselDots")
-  const prevButton = document.getElementById("modalPrev")
-  const nextButton = document.getElementById("modalNext")
+  const modal = document.getElementById("imageModal");
+  const carouselImages = document.getElementById("modalCarrosselImagens");
+  const carouselDots = document.getElementById("modalCarrosselDots");
+  const prevButton = document.getElementById("modalPrev");
+  const nextButton = document.getElementById("modalNext");
 
-  if (!modal || !carouselImages) return
+  if (!modal || !carouselImages) return;
 
-  if (Array.isArray(produto.imagens)) {
-    currentModalImages = produto.imagens
-  } else if (typeof produto.imagens === "string") {
-    try {
-      currentModalImages = JSON.parse(produto.imagens)
-    } catch (e) {
-      currentModalImages = [produto.imagens]
-    }
-  } else {
-    currentModalImages = []
-  }
+  if (Array.isArray(produto.imagens)) {
+    currentModalImages = produto.imagens;
+  } else if (typeof produto.imagens === "string") {
+    try {
+      currentModalImages = JSON.parse(produto.imagens);
+    } catch (e) {
+      currentModalImages = [produto.imagens];
+    }
+  } else {
+    currentModalImages = [];
+  }
 
-  if (currentModalImages.length === 0) {
-    currentModalImages = [createImagePlaceholder(800, 600, produto.nome)]
-  }
+  if (currentModalImages.length === 0) {
+    currentModalImages = [createImagePlaceholder(800, 600, produto.nome)];
+  }
 
-  currentImageIndex = Math.max(0, Math.min(imageIndex, currentModalImages.length - 1))
+  currentImageIndex = Math.max(0, Math.min(imageIndex, currentModalImages.length - 1));
 
-  carouselImages.innerHTML = currentModalImages
-    .map(
-      (img, idx) => `
-      <img src="${img}" 
-           alt="${produto.nome} - Imagem ${idx + 1}" 
-           loading="lazy"
-           onerror="this.src='${createImagePlaceholder(800, 600, produto.nome)}'">
-    `,
-    )
-    .join("")
+  carouselImages.innerHTML = currentModalImages
+    .map(
+      (img, idx) => `
+      <img src="${img}" 
+           alt="${produto.nome} - Imagem ${idx + 1}" 
+           loading="lazy"
+           onerror="this.src='${createImagePlaceholder(800, 600, produto.nome)}'">
+    `,
+    )
+    .join("");
 
-  carouselImages.style.transform = `translateX(-${currentImageIndex * 100}%)`
+  carouselImages.style.transform = `translateX(-${currentImageIndex * 100}%)`;
 
-  if (carouselDots && currentModalImages.length > 1) {
-    carouselDots.innerHTML = currentModalImages
-      .map(
-        (_, i) => `
-        <span class="carrossel-dot ${i === currentImageIndex ? "ativo" : ""}" 
-              onclick="window.setModalCarouselImage(${i})"></span>
-      `,
-      )
-      .join("")
-  }
+  if (carouselDots && currentModalImages.length > 1) {
+    carouselDots.innerHTML = currentModalImages
+      .map(
+        (_, i) => `
+        <span class="carrossel-dot ${i === currentImageIndex ? "ativo" : ""}" 
+              onclick="window.setModalCarouselImage(${i})"></span>
+      `,
+      )
+      .join("");
+  }
 
-  if (prevButton && nextButton) {
-    const showNav = currentModalImages.length > 1
-    prevButton.style.display = showNav ? "flex" : "none"
-    nextButton.style.display = showNav ? "flex" : "none"
-  }
+  if (prevButton && nextButton) {
+    const showNav = currentModalImages.length > 1;
+    prevButton.style.display = showNav ? "flex" : "none";
+    nextButton.style.display = showNav ? "flex" : "none";
+  }
 
-  modal.style.display = "flex"
-  document.body.style.overflow = "hidden"
+  modal.style.display = "flex";
+  document.body.style.overflow = "hidden";
 
-  if (currentModalImages.length > 1) {
-    addSwipeSupport(carouselImages, window.moveModalCarousel)
-  }
-}
+  if (currentModalImages.length > 1) {
+    addSwipeSupport(carouselImages, window.moveModalCarousel);
+  }
+};
 
 window.moveModalCarousel = (direction) => {
-  const carouselImages = document.getElementById("modalCarrosselImagens")
-  const carouselDots = document.getElementById("modalCarrosselDots")
+  const carouselImages = document.getElementById("modalCarrosselImagens");
+  const carouselDots = document.getElementById("modalCarrosselDots");
 
-  if (!carouselImages) return
+  if (!carouselImages) return;
 
-  const total = currentModalImages.length
-  currentImageIndex = (currentImageIndex + direction + total) % total
+  const total = currentModalImages.length;
+  currentImageIndex = (currentImageIndex + direction + total) % total;
 
-  carouselImages.style.transform = `translateX(-${currentImageIndex * 100}%)`
+  carouselImages.style.transform = `translateX(-${currentImageIndex * 100}%)`;
 
-  if (carouselDots) {
-    const dots = carouselDots.children
-    Array.from(dots).forEach((dot, i) => {
-      dot.classList.toggle("ativo", i === currentImageIndex)
-    })
-  }
-}
+  if (carouselDots) {
+    const dots = carouselDots.children;
+    Array.from(dots).forEach((dot, i) => {
+      dot.classList.toggle("ativo", i === currentImageIndex);
+    });
+  }
+};
 
 window.setModalCarouselImage = (index) => {
-  const carouselImages = document.getElementById("modalCarrosselImagens")
-  const carouselDots = document.getElementById("modalCarrosselDots")
+  const carouselImages = document.getElementById("modalCarrosselImagens");
+  const carouselDots = document.getElementById("modalCarrosselDots");
 
-  if (!carouselImages) return
+  if (!carouselImages) return;
 
-  currentImageIndex = index
-  carouselImages.style.transform = `translateX(-${index * 100}%)`
+  currentImageIndex = index;
+  carouselImages.style.transform = `translateX(-${index * 100}%)`;
 
-  if (carouselDots) {
-    const dots = carouselDots.children
-    Array.from(dots).forEach((dot, i) => {
-      dot.classList.toggle("ativo", i === index)
-    })
-  }
-}
+  if (carouselDots) {
+    const dots = carouselDots.children;
+    Array.from(dots).forEach((dot, i) => {
+      dot.classList.toggle("ativo", i === index);
+    });
+  }
+};
 
 function filterByCategory(categoria) {
-  console.log("🔍 Filtrando por categoria:", categoria)
+  console.log("🔍 Filtrando por categoria:", categoria);
 
-  document.querySelectorAll(".category-item").forEach((item) => {
-    item.classList.toggle("active", item.dataset.categoria === categoria)
-  })
+  document.querySelectorAll(".category-item").forEach((item) => {
+    item.classList.toggle("active", item.dataset.categoria === categoria);
+  });
 
-  currentPage = 1
-  loadProducts(1, false)
+  currentPage = 1;
+  loadProducts(1, false);
 }
 
 function filterByStore(loja) {
-  console.log("🏪 Filtrando por loja:", loja)
+  console.log("🏪 Filtrando por loja:", loja);
 
-  document.querySelectorAll(".store-card").forEach((card) => {
-    card.classList.toggle("active", card.dataset.loja === loja)
-  })
+  document.querySelectorAll(".store-card").forEach((card) => {
+    card.classList.toggle("active", card.dataset.loja === loja);
+  });
 
-  currentPage = 1
-  loadProducts(1, false)
+  currentPage = 1;
+  loadProducts(1, false);
 }
 
 function showEmptyState() {
-  const gridProdutos = document.getElementById("grid-produtos")
-  const mensagemVazia = document.getElementById("mensagem-vazia")
+  const gridProdutos = document.getElementById("grid-produtos");
+  const mensagemVazia = document.getElementById("mensagem-vazia");
 
-  if (gridProdutos) gridProdutos.style.display = "none"
-  if (mensagemVazia) mensagemVazia.style.display = "flex"
+  if (gridProdutos) gridProdutos.style.display = "none";
+  if (mensagemVazia) mensagemVazia.style.display = "flex";
 }
 
 function showErrorState(errorMessage = "Erro desconhecido") {
-  const gridProdutos = document.getElementById("grid-produtos")
-  const errorDiv = document.getElementById("error-message")
+  const gridProdutos = document.getElementById("grid-produtos");
+  const errorDiv = document.getElementById("error-message");
 
-  if (gridProdutos) gridProdutos.style.display = "none"
-  if (errorDiv) {
-    errorDiv.style.display = "flex"
-    const errorText = errorDiv.querySelector("p")
-    if (errorText) {
-      errorText.textContent = `Erro: ${errorMessage}. Verifique sua conexão com a internet.`
-    }
-  }
+  if (gridProdutos) gridProdutos.style.display = "none";
+  if (errorDiv) {
+    errorDiv.style.display = "flex";
+    const errorText = errorDiv.querySelector("p");
+    if (errorText) {
+      errorText.textContent = `Erro: ${errorMessage}. Verifique sua conexão com a internet.`;
+    }
+  }
 }
 
 function updateResultsTitle(categoria, loja, busca, showing, total) {
-  const titulo = document.getElementById("ofertas-titulo")
-  if (!titulo) return
+  const titulo = document.getElementById("ofertas-titulo");
+  if (!titulo) return;
 
-  let text = "🔥 Ofertas do Dia"
+  let text = "🔥 Ofertas do Dia";
 
-  if (busca) {
-    text = `🔍 Resultados para "${busca}"`
-  } else if (categoria !== "todas") {
-    const categoryNames = {
-      eletronicos: "Eletrônicos",
-      moda: "Moda",
-      casa: "Casa e Decoração",
-      beleza: "Beleza e Cuidado",
-      esportes: "Esportes e Fitness",
-      infantil: "Bebês e Crianças",
-      automotivo: "Automotivo",
-      games: "Games",
-      livros: "Livros",
-      fitness: "Fitness",
-      pet: "Pet Shop",
-      jardinagem: "Jardinagem",
-      gastronomia: "Gastronomia",
-    }
-    text = `📂 ${categoryNames[categoria] || categoria}`
-  } else if (loja !== "todas") {
-    const storeNames = {
-      amazon: "Amazon",
-      mercadolivre: "Mercado Livre",
-      shopee: "Shopee",
-      magalu: "Magalu",
-      shein: "Shein",
-      alibaba: "Alibaba",
-    }
-    text = `🏪 ${storeNames[loja] || loja}`
-  }
+  if (busca) {
+    text = `🔍 Resultados para "${busca}"`;
+  } else if (categoria !== "todas") {
+    const categoryNames = {
+      eletronicos: "Eletrônicos",
+      moda: "Moda",
+      casa: "Casa e Decoração",
+      beleza: "Beleza e Cuidado",
+      esportes: "Esportes e Fitness",
+      infantil: "Bebês e Crianças",
+      automotivo: "Automotivo",
+      games: "Games",
+      livros: "Livros",
+      fitness: "Fitness",
+      pet: "Pet Shop",
+      jardinagem: "Jardinagem",
+      gastronomia: "Gastronomia",
+    };
+    text = `📂 ${categoryNames[categoria] || categoria}`;
+  } else if (loja !== "todas") {
+    const storeNames = {
+      amazon: "Amazon",
+      mercadolivre: "Mercado Livre",
+      shopee: "Shopee",
+      magalu: "Magalu",
+      shein: "Shein",
+      alibaba: "Alibaba",
+    };
+    text = `🏪 ${storeNames[loja] || loja}`;
+  }
 
-  titulo.innerHTML = `${text} <small>(${showing} de ${total})</small>`
+  titulo.innerHTML = `${text} <small>(${showing} de ${total})</small>`;
 }
 
 function updateFooterYear() {
-  const yearElement = document.getElementById("year")
-  if (yearElement) {
-    yearElement.textContent = new Date().getFullYear()
-  }
+  const yearElement = document.getElementById("year");
+  if (yearElement) {
+    yearElement.textContent = new Date().getFullYear();
+  }
 }
 
 function addSwipeSupport(element, callback) {
-  let touchStartX = 0
-  let touchEndX = 0
-  let touchStartY = 0
-  let touchEndY = 0
+  let touchStartX = 0;
+  let touchEndX = 0;
+  let touchStartY = 0;
+  let touchEndY = 0;
 
-  element.addEventListener(
-    "touchstart",
-    (e) => {
-      touchStartX = e.changedTouches[0].screenX
-      touchStartY = e.changedTouches[0].screenY
-    },
-    { passive: true },
-  )
+  element.addEventListener(
+    "touchstart",
+    (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+    },
+    { passive: true },
+  );
 
-  element.addEventListener(
-    "touchend",
-    (e) => {
-      touchEndX = e.changedTouches[0].screenX
-      touchEndY = e.changedTouches[0].screenY
+  element.addEventListener(
+    "touchend",
+    (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      touchEndY = e.changedTouches[0].screenY;
 
-      const deltaX = touchEndX - touchStartX
-      const deltaY = touchEndY - touchStartY
+      const deltaX = touchEndX - touchStartX;
+      const deltaY = touchEndY - touchStartY;
 
-      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
-        callback(deltaX > 0 ? -1 : 1)
-      }
-    },
-    { passive: true },
-  )
+      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+        callback(deltaX > 0 ? -1 : 1);
+      }
+    },
+    { passive: true },
+  );
 }
 
 document.addEventListener(
-  "error",
-  (e) => {
-    if (e.target.tagName === "IMG") {
-      console.log("⚠️ Erro ao carregar imagem:", e.target.src)
-      e.target.src = createImagePlaceholder(300, 200, "Imagem não encontrada")
-    }
-  },
-  true,
-)
+  "error",
+  (e) => {
+    if (e.target.tagName === "IMG") {
+      console.log("⚠️ Erro ao carregar imagem:", e.target.src);
+      e.target.src = createImagePlaceholder(300, 200, "Imagem não encontrada");
+    }
+  },
+  true,
+);
 
 function setupLazyLoading() {
-  if ("IntersectionObserver" in window) {
-    const imageObserver = new IntersectionObserver((entries, observer) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const img = entry.target
-          if (img.dataset.src) {
-            img.src = img.dataset.src
-            img.classList.remove("lazy")
-            observer.unobserve(img)
-          }
-        }
-      })
-    })
+  if ("IntersectionObserver" in window) {
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          if (img.dataset.src) {
+            img.src = img.dataset.src;
+            img.classList.remove("lazy");
+            observer.unobserve(img);
+          }
+        }
+      });
+    });
 
-    document.querySelectorAll("img[data-src]").forEach((img) => {
-      imageObserver.observe(img)
-    })
-  }
+    document.querySelectorAll("img[data-src]").forEach((img) => {
+      imageObserver.observe(img);
+    });
+  }
 }
 
 function setupServiceWorker() {
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker
-        .register("/sw.js")
-        .then((registration) => {
-          console.log("✅ Service Worker registrado:", registration)
-        })
-        .catch((registrationError) => {
-          console.log("❌ Falha no Service Worker:", registrationError)
-        })
-    })
-  }
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker
+        .register("/sw.js")
+        .then((registration) => {
+          console.log("✅ Service Worker registrado:", registration);
+        })
+        .catch((registrationError) => {
+          console.log("❌ Falha no Service Worker:", registrationError);
+        });
+    });
+  }
 }
 
-window.loadProducts = loadProducts
-window.filterByCategory = filterByCategory
-window.filterByStore = filterByStore
+window.loadProducts = loadProducts;
+window.filterByCategory = filterByCategory;
+window.filterByStore = filterByStore;
 
-console.log("📋 Script conectado à API carregado com sucesso!")
-console.log("🔧 Configuração:", API_CONFIG)
+console.log("📋 Script conectado à API carregado com sucesso!");
+console.log("🔧 Configuração:", API_CONFIG);
