@@ -112,21 +112,32 @@
             gap: var(--spacing-md);
         }
 
-        .sync-status {
+        .api-status {
             display: flex;
             align-items: center;
             gap: var(--spacing-sm);
             padding: var(--spacing-sm) var(--spacing-md);
-            background: rgba(0, 166, 80, 0.1);
-            color: var(--success-color);
             border-radius: var(--radius-md);
             font-size: 0.875rem;
             font-weight: 500;
         }
 
-        .sync-status.syncing {
+        .api-status.connected {
+            background: rgba(0, 166, 80, 0.1);
+            color: var(--success-color);
+            border: 1px solid rgba(0, 166, 80, 0.3);
+        }
+
+        .api-status.connecting {
             background: rgba(255, 149, 0, 0.1);
             color: var(--warning-color);
+            border: 1px solid rgba(255, 149, 0, 0.3);
+        }
+
+        .api-status.error {
+            background: rgba(242, 61, 79, 0.1);
+            color: var(--error-color);
+            border: 1px solid rgba(242, 61, 79, 0.3);
         }
 
         .back-btn {
@@ -540,9 +551,9 @@
         /* Preview de Imagens */
         .images-preview {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: var(--spacing-lg);
-            margin-top: var(--spacing-xl);
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-lg);
         }
 
         .preview-item {
@@ -562,7 +573,7 @@
 
         .preview-item img {
             width: 100%;
-            height: 140px;
+            height: 80px;
             object-fit: cover;
         }
 
@@ -646,6 +657,12 @@
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow-lg);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .btn-secondary {
@@ -766,9 +783,9 @@
 
         .products-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: var(--spacing-xl);
-            padding: var(--spacing-xl);
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: var(--spacing-lg);
+            padding: var(--spacing-lg);
         }
 
         .product-admin-card {
@@ -787,7 +804,7 @@
         }
 
         .product-image {
-            height: 200px;
+            height: 120px;
             overflow: hidden;
             position: relative;
         }
@@ -1039,9 +1056,9 @@
                     <h1>Painel Administrativo</h1>
                 </div>
                 <div class="header-actions">
-                    <div id="sync-status" class="sync-status">
-                        <i class="fas fa-sync-alt"></i>
-                        <span>Sincronizado</span>
+                    <div id="api-status" class="api-status connecting">
+                        <i class="fas fa-sync-alt fa-spin"></i>
+                        <span>Conectando...</span>
                     </div>
                     <a href="index.html" class="back-btn">
                         <i class="fas fa-arrow-left"></i>
@@ -1120,7 +1137,7 @@
                                 <i class="fas fa-tags"></i>
                             </div>
                             <div class="card-content">
-                                <h3 id="total-categorias">9</h3>
+                                <h3 id="total-categorias">12</h3>
                                 <p>Categorias Ativas</p>
                                 <div class="card-trend up">
                                     <i class="fas fa-arrow-up"></i>
@@ -1210,6 +1227,10 @@
                                             <option value="automotivo">🚗 Automotivo</option>
                                             <option value="games">🎮 Games</option>
                                             <option value="livros">📚 Livros</option>
+                                            <option value="fitness">💪 Fitness</option>
+                                            <option value="pet">🐕 Pet Shop</option>
+                                            <option value="jardinagem">🌱 Jardinagem</option>
+                                            <option value="gastronomia">🍳 Gastronomia</option>
                                         </select>
                                     </div>
 
@@ -1255,7 +1276,7 @@
                                 </div>
 
                                 <div class="form-actions">
-                                    <button type="submit" class="btn-primary">
+                                    <button type="submit" class="btn-primary" id="submit-btn">
                                         <i class="fas fa-save"></i>
                                         <span>Salvar Produto</span>
                                     </button>
@@ -1309,141 +1330,175 @@
     </div>
 
     <script>
-        // Sistema de gerenciamento de produtos com localStorage
-        class ProductManager {
+        // Configuração da API
+        const API_CONFIG = {
+            BASE_URL: 'https://minha-api-produtos.onrender.com',
+            TOKEN: 'seu_token_secreto',
+            TIMEOUT: 15000
+        };
+
+        // Sistema de gerenciamento de produtos conectado com API real
+        class APIProductManager {
             constructor() {
-                this.storageKey = 'centro_compras_produtos';
+                this.baseURL = API_CONFIG.BASE_URL;
+                this.token = API_CONFIG.TOKEN;
+                this.timeout = API_CONFIG.TIMEOUT;
                 this.init();
             }
 
-            init() {
-                // Inicializar com produtos de exemplo se não existir dados
-                if (!localStorage.getItem(this.storageKey)) {
-                    this.initializeWithSampleData();
-                }
+            async init() {
+                console.log('🚀 Iniciando conexão com API...');
+                await this.testConnection();
             }
 
-            initializeWithSampleData() {
-                const sampleProducts = [
-                    {
-                        id: Date.now() + 1,
-                        nome: "Smartphone Samsung Galaxy A54 128GB",
-                        descricao: "Smartphone com tela de 6.4 polegadas, câmera tripla de 50MP e bateria de 5000mAh. Processador Exynos 1380, Android 13 e design premium.",
-                        preco: 1299.99,
-                        categoria: "eletronicos",
-                        loja: "amazon",
-                        link: "https://amazon.com.br/produto-exemplo",
-                        imagens: ["https://via.placeholder.com/300x300/1a1a1a/ffffff?text=Samsung+Galaxy+A54"],
-                        dataAdicao: new Date().toISOString()
-                    },
-                    {
-                        id: Date.now() + 2,
-                        nome: "Tênis Nike Air Max 270 Masculino",
-                        descricao: "Tênis esportivo com tecnologia Air Max, conforto e estilo para o dia a dia. Solado em borracha e cabedal em mesh respirável.",
-                        preco: 599.90,
-                        categoria: "moda",
-                        loja: "mercadolivre",
-                        link: "https://mercadolivre.com.br/produto-exemplo",
-                        imagens: ["https://via.placeholder.com/300x300/ff6b35/ffffff?text=Nike+Air+Max+270"],
-                        dataAdicao: new Date().toISOString()
-                    },
-                    {
-                        id: Date.now() + 3,
-                        nome: "Fone Bluetooth JBL Tune 510BT",
-                        descricao: "Fone de ouvido sem fio com qualidade de som JBL e bateria de 40 horas. Conexão Bluetooth 5.0 e microfone integrado.",
-                        preco: 199.99,
-                        categoria: "eletronicos",
-                        loja: "shopee",
-                        link: "https://shopee.com.br/produto-exemplo",
-                        imagens: ["https://via.placeholder.com/300x300/0066cc/ffffff?text=JBL+Tune+510BT"],
-                        dataAdicao: new Date().toISOString()
-                    }
-                ];
-                
-                this.saveProducts(sampleProducts);
-            }
-
-            getAllProducts() {
-                const products = localStorage.getItem(this.storageKey);
-                return products ? JSON.parse(products) : [];
-            }
-
-            saveProducts(products) {
-                localStorage.setItem(this.storageKey, JSON.stringify(products));
-                this.syncWithMainSite();
-            }
-
-            addProduct(product) {
-                const products = this.getAllProducts();
-                product.id = Date.now();
-                product.dataAdicao = new Date().toISOString();
-                products.push(product);
-                this.saveProducts(products);
-                return product;
-            }
-
-            updateProduct(id, updatedProduct) {
-                const products = this.getAllProducts();
-                const index = products.findIndex(p => p.id === parseInt(id));
-                if (index !== -1) {
-                    products[index] = { ...products[index], ...updatedProduct };
-                    this.saveProducts(products);
-                    return products[index];
-                }
-                return null;
-            }
-
-            deleteProduct(id) {
-                const products = this.getAllProducts();
-                const filteredProducts = products.filter(p => p.id !== parseInt(id));
-                this.saveProducts(filteredProducts);
-                return filteredProducts.length < products.length;
-            }
-
-            getProduct(id) {
-                const products = this.getAllProducts();
-                return products.find(p => p.id === parseInt(id));
-            }
-
-            syncWithMainSite() {
-                // Sincronizar com o site principal
-                const products = this.getAllProducts();
-                localStorage.setItem('centro_compras_sync', JSON.stringify({
-                    products: products,
-                    lastSync: new Date().toISOString()
-                }));
-                
-                // Atualizar status de sincronização
-                this.updateSyncStatus('synced');
-            }
-
-            updateSyncStatus(status) {
-                const syncElement = document.getElementById('sync-status');
-                if (syncElement) {
-                    const statusConfig = {
-                        synced: { icon: 'fas fa-check-circle', text: 'Sincronizado', class: '' },
-                        syncing: { icon: 'fas fa-sync-alt fa-spin', text: 'Sincronizando...', class: 'syncing' },
-                        error: { icon: 'fas fa-exclamation-triangle', text: 'Erro na sincronização', class: 'error' }
-                    };
+            async testConnection() {
+                try {
+                    this.updateAPIStatus('connecting');
                     
-                    const config = statusConfig[status] || statusConfig.synced;
-                    syncElement.innerHTML = `<i class="${config.icon}"></i><span>${config.text}</span>`;
-                    syncElement.className = `sync-status ${config.class}`;
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+                    const response = await fetch(`${this.baseURL}/api/produtos?limit=1`, {
+                        method: 'GET',
+                        headers: this.getHeaders(),
+                        signal: controller.signal
+                    });
+
+                    clearTimeout(timeoutId);
+
+                    if (response.ok) {
+                        console.log('✅ API conectada com sucesso!');
+                        this.updateAPIStatus('connected');
+                        return true;
+                    } else {
+                        throw new Error(`Status: ${response.status}`);
+                    }
+                } catch (error) {
+                    console.error('❌ Erro na conexão:', error.message);
+                    this.updateAPIStatus('error');
+                    return false;
                 }
+            }
+
+            getHeaders(isFormData = false) {
+                const headers = {
+                    'Authorization': `Bearer ${this.token}`
+                };
+                
+                if (!isFormData) {
+                    headers['Content-Type'] = 'application/json';
+                }
+                
+                return headers;
+            }
+
+            updateAPIStatus(status) {
+                const statusElement = document.getElementById('api-status');
+                if (!statusElement) return;
+
+                const statusConfig = {
+                    connecting: { 
+                        icon: 'fas fa-sync-alt fa-spin', 
+                        text: 'Conectando...', 
+                        class: 'connecting' 
+                    },
+                    connected: { 
+                        icon: 'fas fa-check-circle', 
+                        text: 'API Conectada', 
+                        class: 'connected' 
+                    },
+                    error: { 
+                        icon: 'fas fa-exclamation-triangle', 
+                        text: 'Erro de Conexão', 
+                        class: 'error' 
+                    }
+                };
+
+                const config = statusConfig[status] || statusConfig.connecting;
+                statusElement.innerHTML = `<i class="${config.icon}"></i><span>${config.text}</span>`;
+                statusElement.className = `api-status ${config.class}`;
+            }
+
+            async makeRequest(endpoint, options = {}) {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), this.timeout);
+
+                try {
+                    const response = await fetch(`${this.baseURL}${endpoint}`, {
+                        ...options,
+                        headers: {
+                            ...this.getHeaders(options.body instanceof FormData),
+                            ...options.headers
+                        },
+                        signal: controller.signal
+                    });
+
+                    clearTimeout(timeoutId);
+
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({}));
+                        throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+                    }
+
+                    return await response.json();
+                } catch (error) {
+                    clearTimeout(timeoutId);
+                    if (error.name === 'AbortError') {
+                        throw new Error('Timeout: Requisição demorou muito para responder');
+                    }
+                    throw error;
+                }
+            }
+
+            async getAllProducts(page = 1, limit = 50) {
+                console.log(`📦 Buscando produtos da API - Página: ${page}`);
+                return await this.makeRequest(`/api/produtos?page=${page}&limit=${limit}`);
+            }
+
+            async addProduct(productData) {
+                console.log('➕ Adicionando produto via API...');
+                return await this.makeRequest('/api/produtos', {
+                    method: 'POST',
+                    body: productData
+                });
+            }
+
+            async updateProduct(id, productData) {
+                console.log(`✏️ Atualizando produto ${id} via API...`);
+                return await this.makeRequest(`/api/produtos/${id}`, {
+                    method: 'PUT',
+                    body: productData
+                });
+            }
+
+            async deleteProduct(id) {
+                console.log(`🗑️ Excluindo produto ${id} via API...`);
+                return await this.makeRequest(`/api/produtos/${id}`, {
+                    method: 'DELETE'
+                });
+            }
+
+            async getProduct(id) {
+                console.log(`🔍 Buscando produto ${id} via API...`);
+                return await this.makeRequest(`/api/produtos/${id}`);
             }
         }
 
         // Inicializar gerenciador de produtos
-        const productManager = new ProductManager();
+        const productManager = new APIProductManager();
 
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('🚀 Iniciando painel administrativo avançado...');
+            console.log('🚀 Iniciando painel administrativo conectado à API...');
             
             initializeImageUpload();
             initializeForm();
             initializeSearch();
-            carregarProdutos();
-            updateDashboard();
+            
+            // Aguardar conexão antes de carregar produtos
+            setTimeout(() => {
+                carregarProdutos();
+                updateDashboard();
+            }, 2000);
         });
 
         function initializeImageUpload() {
@@ -1489,7 +1544,6 @@
 
         function removeImagePreview(button, index) {
             button.parentElement.remove();
-            // Atualizar input de arquivos
             const imagensInput = document.getElementById('imagens');
             const dt = new DataTransfer();
             const files = Array.from(imagensInput.files);
@@ -1547,70 +1601,50 @@
         async function handleFormSubmit(e) {
             e.preventDefault();
             
-            productManager.updateSyncStatus('syncing');
-            showFeedback('Processando produto...', 'info');
+            const submitBtn = document.getElementById('submit-btn');
+            const originalText = submitBtn.innerHTML;
             
             try {
+                // Desabilitar botão e mostrar loading
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Processando...</span>';
+                
+                showFeedback('Processando produto...', 'info');
+                
                 const formData = new FormData(e.target);
                 const id = document.getElementById('produto-id').value;
                 
-                // Processar imagens
-                const imagens = await processImages();
-                
-                const produto = {
-                    nome: formData.get('nome'),
-                    descricao: formData.get('descricao'),
-                    preco: parseFloat(formData.get('preco')),
-                    categoria: formData.get('categoria'),
-                    loja: formData.get('loja'),
-                    link: formData.get('link'),
-                    imagens: imagens
-                };
+                // Validar campos obrigatórios
+                const requiredFields = ['nome', 'preco', 'categoria', 'loja', 'link'];
+                for (let field of requiredFields) {
+                    if (!formData.get(field)) {
+                        throw new Error(`Campo ${field} é obrigatório`);
+                    }
+                }
 
-                // Simular processamento
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                
+                let result;
                 if (id) {
-                    productManager.updateProduct(id, produto);
+                    result = await productManager.updateProduct(id, formData);
                     showFeedback('Produto atualizado com sucesso!', 'success');
                 } else {
-                    productManager.addProduct(produto);
+                    result = await productManager.addProduct(formData);
                     showFeedback('Produto adicionado com sucesso!', 'success');
                 }
+                
+                console.log('✅ Produto salvo:', result);
                 
                 limparFormulario();
                 carregarProdutos();
                 updateDashboard();
                 
             } catch (error) {
-                console.error('Erro ao salvar produto:', error);
-                showFeedback('Erro ao salvar produto. Tente novamente.', 'error');
-                productManager.updateSyncStatus('error');
+                console.error('❌ Erro ao salvar produto:', error);
+                showFeedback(`Erro: ${error.message}`, 'error');
+            } finally {
+                // Reabilitar botão
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
             }
-        }
-
-        async function processImages() {
-            const imagensInput = document.getElementById('imagens');
-            const imagens = [];
-            
-            if (imagensInput.files.length > 0) {
-                for (let file of imagensInput.files) {
-                    if (file.type.startsWith('image/')) {
-                        const dataUrl = await fileToDataUrl(file);
-                        imagens.push(dataUrl);
-                    }
-                }
-            }
-            
-            return imagens.length > 0 ? imagens : ['https://via.placeholder.com/300x300/f0f0f0/999999?text=Sem+Imagem'];
-        }
-
-        function fileToDataUrl(file) {
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.onload = (e) => resolve(e.target.result);
-                reader.readAsDataURL(file);
-            });
         }
 
         function initializeSearch() {
@@ -1630,23 +1664,29 @@
             }
         }
 
-        function carregarProdutos() {
+        async function carregarProdutos() {
             const produtosLista = document.getElementById('produtos-lista');
             if (!produtosLista) return;
 
-            console.log('📦 Carregando produtos...');
+            console.log('📦 Carregando produtos da API...');
             
             produtosLista.innerHTML = `
                 <div class="loading-state">
                     <div class="loading-spinner">
                         <div class="spinner"></div>
-                        <p>Carregando produtos...</p>
+                        <p>Carregando produtos da API...</p>
                     </div>
                 </div>
             `;
             
-            setTimeout(() => {
-                const produtos = productManager.getAllProducts();
+            try {
+                const response = await productManager.getAllProducts();
+                
+                if (!response.success) {
+                    throw new Error(response.message || 'Erro ao carregar produtos');
+                }
+                
+                const produtos = response.data || [];
                 produtosLista.innerHTML = '';
                 
                 if (produtos.length === 0) {
@@ -1666,9 +1706,24 @@
                 produtos.forEach(produto => {
                     const productCard = document.createElement('div');
                     productCard.className = 'product-admin-card';
+                    
+                    // Processar imagens
+                    let imagemPrincipal = 'https://via.placeholder.com/300x200/f0f0f0/999999?text=Sem+Imagem';
+                    
+                    if (produto.imagens && produto.imagens.length > 0) {
+                        try {
+                            const imagens = typeof produto.imagens === 'string' 
+                                ? JSON.parse(produto.imagens) 
+                                : produto.imagens;
+                            imagemPrincipal = imagens[0] || imagemPrincipal;
+                        } catch (e) {
+                            console.warn('Erro ao processar imagens:', e);
+                        }
+                    }
+                    
                     productCard.innerHTML = `
                         <div class="product-image">
-                            <img src="${produto.imagens[0] || 'https://via.placeholder.com/300x200/f0f0f0/999999?text=Sem+Imagem'}" 
+                            <img src="${imagemPrincipal}" 
                                  alt="${produto.nome}"
                                  onerror="this.src='https://via.placeholder.com/300x200/f0f0f0/999999?text=Sem+Imagem'">
                         </div>
@@ -1693,94 +1748,135 @@
                 });
                 
                 produtosLista.appendChild(grid);
-                console.log(`✅ ${produtos.length} produtos carregados`);
-            }, 1000);
-        }
-
-        function updateDashboard() {
-            const produtos = productManager.getAllProducts();
-            const totalProdutos = document.getElementById('total-produtos');
-            
-            if (totalProdutos) {
-                totalProdutos.textContent = produtos.length;
-            }
-
-            // Atualizar outras estatísticas
-            const categorias = [...new Set(produtos.map(p => p.categoria))];
-            const totalCategorias = document.getElementById('total-categorias');
-            if (totalCategorias) {
-                totalCategorias.textContent = categorias.length;
-            }
-
-            // Simular visualizações baseadas no número de produtos
-            const totalVisualizacoes = document.getElementById('total-visualizacoes');
-            if (totalVisualizacoes) {
-                const views = Math.floor(produtos.length * 150 + Math.random() * 500);
-                totalVisualizacoes.textContent = views > 1000 ? `${(views/1000).toFixed(1)}K` : views;
+                console.log(`✅ ${produtos.length} produtos carregados da API`);
+                
+            } catch (error) {
+                console.error('❌ Erro ao carregar produtos:', error);
+                produtosLista.innerHTML = `
+                    <div class="error-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Erro ao carregar produtos</h3>
+                        <p>${error.message}</p>
+                        <button class="btn-primary" onclick="carregarProdutos()">
+                            <i class="fas fa-redo"></i> Tentar Novamente
+                        </button>
+                    </div>
+                `;
             }
         }
 
-        function editarProduto(id) {
+        async function updateDashboard() {
+            try {
+                const response = await productManager.getAllProducts();
+                
+                if (response.success) {
+                    const produtos = response.data || [];
+                    const totalProdutos = document.getElementById('total-produtos');
+                    
+                    if (totalProdutos) {
+                        totalProdutos.textContent = produtos.length;
+                    }
+
+                    // Atualizar outras estatísticas
+                    const categorias = [...new Set(produtos.map(p => p.categoria))];
+                    const totalCategorias = document.getElementById('total-categorias');
+                    if (totalCategorias) {
+                        totalCategorias.textContent = categorias.length;
+                    }
+
+                    // Simular visualizações baseadas no número de produtos
+                    const totalVisualizacoes = document.getElementById('total-visualizacoes');
+                    if (totalVisualizacoes) {
+                        const views = Math.floor(produtos.length * 150 + Math.random() * 500);
+                        totalVisualizacoes.textContent = views > 1000 ? `${(views/1000).toFixed(1)}K` : views;
+                    }
+                }
+            } catch (error) {
+                console.error('Erro ao atualizar dashboard:', error);
+            }
+        }
+
+        async function editarProduto(id) {
             console.log('✏️ Editando produto ID:', id);
             
-            const produto = productManager.getProduct(id);
-            
-            if (!produto) {
-                showFeedback('Produto não encontrado', 'error');
-                return;
+            try {
+                showFeedback('Carregando produto para edição...', 'info');
+                
+                const response = await productManager.getProduct(id);
+                
+                if (!response.success) {
+                    throw new Error(response.message || 'Produto não encontrado');
+                }
+                
+                const produto = response.data;
+
+                // Preencher formulário
+                document.getElementById('produto-id').value = produto.id;
+                document.getElementById('nome').value = produto.nome;
+                document.getElementById('descricao').value = produto.descricao || '';
+                document.getElementById('preco').value = produto.preco;
+                document.getElementById('categoria').value = produto.categoria;
+                document.getElementById('loja').value = produto.loja;
+                document.getElementById('link').value = produto.link;
+
+                // Mostrar imagens atuais
+                const imagensPreview = document.getElementById('imagens-preview');
+                if (produto.imagens && produto.imagens.length > 0) {
+                    try {
+                        const imagens = typeof produto.imagens === 'string' 
+                            ? JSON.parse(produto.imagens) 
+                            : produto.imagens;
+                            
+                        imagensPreview.innerHTML = imagens.map((img, index) => `
+                            <div class="preview-item">
+                                <img src="${img}" alt="Imagem atual ${index + 1}">
+                                <div class="preview-info">
+                                    <span class="file-name">Imagem atual ${index + 1}</span>
+                                    <span class="file-size">Atual</span>
+                                </div>
+                            </div>
+                        `).join('');
+                    } catch (e) {
+                        console.warn('Erro ao processar imagens para edição:', e);
+                    }
+                }
+
+                document.getElementById('cancelar-edicao').style.display = 'inline-flex';
+                document.querySelector('#produto-form button[type="submit"] span').textContent = 'Atualizar Produto';
+                
+                // Scroll para o formulário
+                document.querySelector('.product-form').scrollIntoView({ behavior: 'smooth' });
+                
+                showFeedback('Produto carregado para edição', 'success');
+                
+            } catch (error) {
+                console.error('Erro ao carregar produto:', error);
+                showFeedback(`Erro: ${error.message}`, 'error');
             }
-
-            // Preencher formulário
-            document.getElementById('produto-id').value = produto.id;
-            document.getElementById('nome').value = produto.nome;
-            document.getElementById('descricao').value = produto.descricao || '';
-            document.getElementById('preco').value = produto.preco;
-            document.getElementById('categoria').value = produto.categoria;
-            document.getElementById('loja').value = produto.loja;
-            document.getElementById('link').value = produto.link;
-
-            // Mostrar imagens atuais
-            const imagensPreview = document.getElementById('imagens-preview');
-            if (produto.imagens && produto.imagens.length > 0) {
-                imagensPreview.innerHTML = produto.imagens.map((img, index) => `
-                    <div class="preview-item">
-                        <img src="${img}" alt="Imagem atual ${index + 1}">
-                        <div class="preview-info">
-                            <span class="file-name">Imagem atual ${index + 1}</span>
-                            <span class="file-size">Atual</span>
-                        </div>
-                    </div>
-                `).join('');
-            }
-
-            document.getElementById('cancelar-edicao').style.display = 'inline-flex';
-            document.querySelector('#produto-form button[type="submit"] span').textContent = 'Atualizar Produto';
-            
-            // Scroll para o formulário
-            document.querySelector('.product-form').scrollIntoView({ behavior: 'smooth' });
-            
-            showFeedback('Produto carregado para edição', 'success');
         }
 
-        function excluirProduto(id) {
+        async function excluirProduto(id) {
             if (!confirm('⚠️ Tem certeza que deseja excluir este produto?\n\nEsta ação não pode ser desfeita.')) return;
             
             console.log('🗑️ Excluindo produto ID:', id);
             
-            productManager.updateSyncStatus('syncing');
-            
-            setTimeout(() => {
-                const sucesso = productManager.deleteProduct(id);
+            try {
+                showFeedback('Excluindo produto...', 'info');
                 
-                if (sucesso) {
+                const response = await productManager.deleteProduct(id);
+                
+                if (response.success) {
                     showFeedback('Produto excluído com sucesso!', 'success');
                     carregarProdutos();
                     updateDashboard();
                 } else {
-                    showFeedback('Erro ao excluir produto', 'error');
-                    productManager.updateSyncStatus('error');
+                    throw new Error(response.message || 'Erro ao excluir produto');
                 }
-            }, 500);
+                
+            } catch (error) {
+                console.error('Erro ao excluir produto:', error);
+                showFeedback(`Erro: ${error.message}`, 'error');
+            }
         }
 
         function cancelarEdicao() {
@@ -1826,22 +1922,30 @@
         }
 
         // Função para exportar dados (funcionalidade extra)
-        function exportarDados() {
-            const produtos = productManager.getAllProducts();
-            const dataStr = JSON.stringify(produtos, null, 2);
-            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-            
-            const exportFileDefaultName = `produtos_centro_compras_${new Date().toISOString().split('T')[0]}.json`;
-            
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            linkElement.click();
+        async function exportarDados() {
+            try {
+                const response = await productManager.getAllProducts();
+                if (response.success) {
+                    const produtos = response.data;
+                    const dataStr = JSON.stringify(produtos, null, 2);
+                    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                    
+                    const exportFileDefaultName = `produtos_centro_compras_${new Date().toISOString().split('T')[0]}.json`;
+                    
+                    const linkElement = document.createElement('a');
+                    linkElement.setAttribute('href', dataUri);
+                    linkElement.setAttribute('download', exportFileDefaultName);
+                    linkElement.click();
+                }
+            } catch (error) {
+                console.error('Erro ao exportar dados:', error);
+                showFeedback('Erro ao exportar dados', 'error');
+            }
         }
 
-        console.log('✅ Painel administrativo avançado carregado com sucesso!');
-        console.log('📊 Sistema de sincronização ativo');
-        console.log('💾 Dados persistidos no localStorage');
+        console.log('✅ Painel administrativo conectado à API carregado com sucesso!');
+        console.log('🌐 API Base URL:', API_CONFIG.BASE_URL);
+        console.log('🔐 Autenticação configurada');
     </script>
 </body>
 </html>

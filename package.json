@@ -1,15 +1,8 @@
 {
-  "name": "centro-de-compras-backend",
-  "version": "1.0.0",
-  "main": "server.js",
+  "name": "my-v0-project",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
-    "start": "node server.js"
-  },
-  "dependencies": {
-    "express": "^4.18.2",
-    "firebase": "^10.12.2",
-    "multer": "^1.4.5-lts.1",
-    "dotenv": "^16.4.5",
-    "cors": "^2.8.5"
+    "build": "echo 'no build script'"
   }
 }
