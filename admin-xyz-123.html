@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Painel Administrativo - Centro de Compras">
-  <meta name="keywords" content="admin, painel, gerenciamento, produtos">
-  <meta name="author" content="Centro de Compras">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Painel Administrativo - Centro de Compras</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta name="description" content="Painel administrativo para gerenciamento de produtos do Centro de Compras." />
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
   <style>
     :root {
       --primary-color: #3483fa;
@@ -70,10 +69,16 @@
       padding: var(--spacing-md) 0;
     }
 
+    .admin-header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
     .admin-logo {
       display: flex;
       align-items: center;
-      gap: var(--spacing-sm);
+      gap: var(--spacing-md);
     }
 
     .admin-logo img {
@@ -88,88 +93,105 @@
       margin: 0;
     }
 
-    .admin-nav {
+    .admin-actions {
       display: flex;
-      flex-wrap: wrap;
       gap: var(--spacing-md);
-      padding: var(--spacing-md) 0;
     }
 
-    .admin-nav a {
-      color: var(--text-secondary);
-      text-decoration: none;
+    .admin-action-btn {
+      padding: var(--spacing-sm) var(--spacing-md);
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
       font-weight: 500;
-      padding: var(--spacing-sm) var(--spacing-md);
-      border-radius: var(--radius-md);
       transition: var(--transition-fast);
     }
 
-    .admin-nav a:hover,
-    .admin-nav a.active {
-      background: var(--primary-color);
-      color: white;
-    }
-
-    .sidebar {
-      background: var(--background-primary);
-      width: 250px;
-      height: calc(100vh - 80px);
-      position: fixed;
-      top: 80px;
-      left: 0;
-      box-shadow: var(--shadow-md);
-      padding: var(--spacing-lg);
-      overflow-y: auto;
-    }
-
-    .sidebar ul {
-      list-style: none;
-    }
-
-    .sidebar li {
-      margin-bottom: var(--spacing-md);
-    }
-
-    .sidebar a {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-sm);
-      color: var(--text-secondary);
-      text-decoration: none;
-      padding: var(--spacing-sm) var(--spacing-md);
-      border-radius: var(--radius-md);
-      transition: var(--transition-fast);
-    }
-
-    .sidebar a:hover,
-    .sidebar a.active {
-      background: var(--primary-color);
-      color: white;
+    .admin-action-btn:hover,
+    .admin-action-btn:focus {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+      outline: 2px solid var(--primary-color);
     }
 
     .main-content {
-      margin-left: 270px;
-      padding: var(--spacing-xl);
+      display: flex;
+      gap: var(--spacing-xl);
+      padding: var(--spacing-xl) 0;
     }
 
-    .dashboard {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: var(--spacing-lg);
-      margin-bottom: var(--spacing-xl);
-    }
-
-    .card {
+    .sidebar {
+      width: 250px;
       background: var(--background-primary);
       border-radius: var(--radius-lg);
       box-shadow: var(--shadow-sm);
       padding: var(--spacing-lg);
+    }
+
+    .sidebar-header {
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .sidebar-header h2 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .nav-list {
+      list-style: none;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+
+    .nav-item.active,
+    .nav-item:hover,
+    .nav-item:focus {
+      background: rgba(52, 131, 250, 0.1);
+      color: var(--primary-color);
+    }
+
+    .nav-item i {
+      width: 20px;
+      text-align: center;
+    }
+
+    .content {
+      flex: 1;
+    }
+
+    .dashboard-section {
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--spacing-lg);
+    }
+
+    .dashboard-card {
+      background: var(--background-primary);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: var(--spacing-lg);
+      text-align: center;
       transition: var(--transition-normal);
     }
 
-    .card:hover {
+    .dashboard-card:hover {
       transform: translateY(-4px);
-      box-shadow: var(--shadow-md);
+      box-shadow: var(--shadow-lg);
     }
 
     .card-icon {
@@ -179,59 +201,91 @@
     }
 
     .card-content h3 {
-      font-size: 1.2rem;
-      font-weight: 600;
+      font-size: 1.5rem;
+      font-weight: 700;
       color: var(--text-primary);
-      margin-bottom: var(--spacing-sm);
+      margin-bottom: var(--spacing-xs);
     }
 
     .card-content p {
-      font-size: 0.9rem;
+      font-size: 0.875rem;
       color: var(--text-secondary);
     }
 
-    .form-section,
     .products-section {
       background: var(--background-primary);
       border-radius: var(--radius-lg);
       box-shadow: var(--shadow-sm);
-      padding: var(--spacing-xl);
-      margin-bottom: var(--spacing-xl);
+      padding: var(--spacing-lg);
     }
 
-    .form-section h2,
-    .products-section h2 {
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .section-header h2 {
       font-size: 1.5rem;
       font-weight: 600;
-      margin-bottom: var(--spacing-lg);
       color: var(--text-primary);
     }
 
+    .search-container {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      max-width: 300px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-sm);
+    }
+
+    .search-container input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 0.875rem;
+    }
+
+    .search-container button {
+      background: none;
+      border: none;
+      color: var(--primary-color);
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .form-section {
+      margin-bottom: var(--spacing-xl);
+    }
+
     .form-group {
-      margin-bottom: var(--spacing-lg);
+      margin-bottom: var(--spacing-md);
     }
 
     .form-group label {
       display: block;
       font-weight: 500;
-      margin-bottom: var(--spacing-sm);
+      margin-bottom: var(--spacing-xs);
       color: var(--text-primary);
     }
 
     .form-group input,
-    .form-group textarea,
-    .form-group select {
+    .form-group select,
+    .form-group textarea {
       width: 100%;
-      padding: var(--spacing-md);
+      padding: var(--spacing-sm);
       border: 1px solid var(--border-color);
       border-radius: var(--radius-md);
-      font-size: 1rem;
+      font-size: 0.875rem;
       transition: var(--transition-fast);
     }
 
     .form-group input:focus,
-    .form-group textarea:focus,
-    .form-group select:focus {
+    .form-group select:focus,
+    .form-group textarea:focus {
       border-color: var(--primary-color);
       box-shadow: 0 0 0 3px rgba(52, 131, 250, 0.1);
       outline: none;
@@ -239,15 +293,14 @@
 
     .form-text {
       color: var(--text-muted);
-      font-size: 0.85rem;
+      font-size: 0.75rem;
       margin-top: var(--spacing-xs);
     }
 
     .btn {
-      padding: var(--spacing-md) var(--spacing-lg);
-      border: none;
+      padding: var(--spacing-sm) var(--spacing-lg);
       border-radius: var(--radius-md);
-      font-weight: 600;
+      font-weight: 500;
       cursor: pointer;
       transition: var(--transition-fast);
       display: inline-flex;
@@ -258,41 +311,14 @@
     .btn-primary {
       background: var(--primary-color);
       color: white;
+      border: none;
     }
 
-    .btn-primary:hover {
+    .btn-primary:hover,
+    .btn-primary:focus {
       background: var(--primary-hover);
       transform: translateY(-1px);
-    }
-
-    .btn-danger {
-      background: var(--error-color);
-      color: white;
-    }
-
-    .btn-danger:hover {
-      background: #d32f2f;
-      transform: translateY(-1px);
-    }
-
-    .search-container {
-      display: flex;
-      gap: var(--spacing-md);
-      margin-bottom: var(--spacing-xl);
-    }
-
-    #admin-search {
-      flex: 1;
-      padding: var(--spacing-md);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      font-size: 1rem;
-    }
-
-    #admin-search:focus {
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px rgba(52, 131, 250, 0.1);
-      outline: none;
+      outline: 2px solid var(--primary-color);
     }
 
     .products-table {
@@ -301,6 +327,7 @@
       background: var(--background-primary);
       border-radius: var(--radius-md);
       overflow: hidden;
+      box-shadow: var(--shadow-sm);
     }
 
     .products-table th,
@@ -316,10 +343,9 @@
       color: var(--text-primary);
     }
 
-    .products-table img {
-      width: 60px;
-      height: 60px;
-      object-fit: cover;
+    .products-table td img {
+      width: 50px;
+      height: auto;
       border-radius: var(--radius-sm);
     }
 
@@ -328,16 +354,44 @@
       gap: var(--spacing-sm);
     }
 
+    .btn-edit,
+    .btn-delete {
+      padding: var(--spacing-xs) var(--spacing-sm);
+      font-size: 0.875rem;
+    }
+
+    .btn-edit {
+      background: var(--secondary-color);
+      color: white;
+    }
+
+    .btn-edit:hover,
+    .btn-edit:focus {
+      background: #008c3f;
+      outline: 2px solid var(--secondary-color);
+    }
+
+    .btn-delete {
+      background: var(--error-color);
+      color: white;
+    }
+
+    .btn-delete:hover,
+    .btn-delete:focus {
+      background: #d32f2f;
+      outline: 2px solid var(--error-color);
+    }
+
     .feedback-message {
       position: fixed;
-      top: var(--spacing-md);
-      right: var(--spacing-md);
+      top: var(--spacing-xl);
+      right: var(--spacing-xl);
       padding: var(--spacing-md) var(--spacing-lg);
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-lg);
       box-shadow: var(--shadow-md);
       z-index: 1000;
-      animation: fadeInUp 0.3s ease-out;
-      max-width: 400px;
+      animation: fadeInUp 0.5s ease-out;
+      display: none;
     }
 
     .feedback-success {
@@ -358,7 +412,7 @@
     .loading-spinner {
       display: none;
       text-align: center;
-      padding: var(--spacing-xl);
+      padding: var(--spacing-lg);
     }
 
     .spinner {
@@ -377,66 +431,66 @@
     }
 
     @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
+      from { opacity: 0; transform: translateY(30px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
     @media (max-width: 1200px) {
-      .sidebar {
-        width: 200px;
-      }
       .main-content {
-        margin-left: 220px;
+        flex-direction: column;
       }
-      .dashboard {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      .sidebar {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: var(--spacing-md);
+      }
+      .sidebar-header {
+        display: none;
       }
     }
 
     @media (max-width: 768px) {
-      .sidebar {
-        position: static;
-        width: 100%;
-        height: auto;
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: var(--spacing-md);
-        padding: var(--spacing-md);
-      }
-      .main-content {
-        margin-left: 0;
-        padding: var(--spacing-md);
-      }
-      .products-table {
-        font-size: 0.9rem;
-      }
-      .products-table img {
-        width: 40px;
-        height: 40px;
-      }
-    }
-
-    @media (max-width: 480px) {
       .container {
         padding: 0 var(--spacing-sm);
       }
-      .dashboard {
+      .dashboard-grid {
         grid-template-columns: 1fr;
       }
-      .form-group input,
-      .form-group textarea,
-      .form-group select {
-        font-size: 0.9rem;
+      .products-table {
+        font-size: 0.875rem;
       }
       .products-table th,
       .products-table td {
         padding: var(--spacing-sm);
       }
-      .products-table img {
-        display: none;
+      .products-table td img {
+        width: 40px;
       }
-      .products-table .actions {
-        flex-direction: column;
+      .feedback-message {
+        top: var(--spacing-md);
+        right: var(--spacing-md);
+        left: var(--spacing-md);
+        max-width: none;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .products-table {
+        display: block;
+        overflow-x: auto;
+      }
+      .admin-logo h1 {
+        font-size: 1.2rem;
+      }
+      .admin-action-btn {
+        padding: var(--spacing-xs) var(--spacing-sm);
+        font-size: 0.875rem;
+      }
+      .form-group input,
+      .form-group select,
+      .form-group textarea {
+        font-size: 0.75rem;
       }
     }
 
@@ -446,393 +500,436 @@
         transition-duration: 0.01ms !important;
       }
     }
-
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --text-primary: #ffffff;
-        --text-secondary: #b3b3b3;
-        --text-muted: #666666;
-        --background-primary: #1a1a1a;
-        --background-secondary: #0f0f0f;
-        --background-tertiary: #2a2a2a;
-        --border-color: #333333;
-        --border-light: #2a2a2a;
-      }
-    }
   </style>
 </head>
 <body>
   <header class="admin-header">
     <div class="container">
       <div class="admin-logo">
-        <img src="https://via.placeholder.com/40x40/3483fa/ffffff?text=Admin" alt="Logo Centro de Compras Admin">
+        <img src="https://via.placeholder.com/40x40/3483fa/ffffff?text=Admin" alt="Logo Painel Administrativo" />
         <h1>Painel Administrativo</h1>
       </div>
-      <nav class="admin-nav">
-        <a href="#" class="active" data-section="dashboard" aria-label="Visualizar dashboard">Dashboard</a>
-        <a href="#" data-section="products" aria-label="Gerenciar produtos">Produtos</a>
-        <a href="#" data-section="add-product" aria-label="Adicionar novo produto">Adicionar Produto</a>
-      </nav>
+      <div class="admin-actions">
+        <button class="admin-action-btn" id="logout-btn" aria-label="Sair do painel administrativo">
+          <i class="fas fa-sign-out-alt"></i> Sair
+        </button>
+      </div>
     </div>
   </header>
 
-  <aside class="sidebar">
-    <ul>
-      <li><a href="#" class="active" data-section="dashboard" aria-label="Dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-      <li><a href="#" data-section="products" aria-label="Produtos"><i class="fas fa-box"></i> Produtos</a></li>
-      <li><a href="#" data-section="add-product" aria-label="Adicionar Produto"><i class="fas fa-plus-circle"></i> Adicionar Produto</a></li>
-    </ul>
-  </aside>
-
   <main class="main-content">
-    <div class="feedback-message" id="feedback-message"></div>
-    <section class="dashboard" id="dashboard">
-      <div class="card">
-        <i class="fas fa-box-open card-icon"></i>
-        <div class="card-content">
-          <h3>Total de Produtos</h3>
-          <p id="total-products">0</p>
-        </div>
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h2><i class="fas fa-cogs"></i> Menu</h2>
       </div>
-      <div class="card">
-        <i class="fas fa-store card-icon"></i>
-        <div class="card-content">
-          <h3>Lojas Ativas</h3>
-          <p id="active-stores">0</p>
-        </div>
-      </div>
-      <div class="card">
-        <i class="fas fa-tags card-icon"></i>
-        <div class="card-content">
-          <h3>Categorias</h3>
-          <p id="categories-count">0</p>
-        </div>
-      </div>
-    </section>
+      <ul class="nav-list">
+        <li class="nav-item active" data-section="dashboard" aria-label="Ir para o dashboard">
+          <i class="fas fa-tachometer-alt"></i> Dashboard
+        </li>
+        <li class="nav-item" data-section="products" aria-label="Gerenciar produtos">
+          <i class="fas fa-box"></i> Produtos
+        </li>
+        <li class="nav-item" data-section="analytics" aria-label="Ver análises">
+          <i class="fas fa-chart-line"></i> Análises
+        </li>
+        <li class="nav-item" data-section="settings" aria-label="Configurações">
+          <i class="fas fa-cog"></i> Configurações
+        </li>
+      </ul>
+    </aside>
 
-    <section class="form-section hidden" id="add-product">
-      <h2><i class="fas fa-plus-circle"></i> Adicionar Novo Produto</h2>
-      <form id="product-form" aria-label="Formulário para adicionar ou editar produto">
-        <div class="form-group">
-          <label for="nome">Nome do Produto</label>
-          <input type="text" id="nome" name="nome" required aria-required="true" placeholder="Digite o nome do produto">
+    <div class="content">
+      <section class="dashboard-section" id="dashboard-section">
+        <h2><i class="fas fa-tachometer-alt"></i> Visão Geral</h2>
+        <div class="dashboard-grid">
+          <div class="dashboard-card">
+            <i class="fas fa-box-open card-icon"></i>
+            <div class="card-content">
+              <h3 id="total-products">0</h3>
+              <p>Produtos Cadastrados</p>
+            </div>
+          </div>
+          <div class="dashboard-card">
+            <i class="fas fa-eye card-icon"></i>
+            <div class="card-content">
+              <h3 id="total-views">0</h3>
+              <p>Visualizações</p>
+            </div>
+          </div>
+          <div class="dashboard-card">
+            <i class="fas fa-shopping-cart card-icon"></i>
+            <div class="card-content">
+              <h3 id="total-sales">0</h3>
+              <p>Conversões</p>
+            </div>
+          </div>
         </div>
-        <div class="form-group">
-          <label for="descricao">Descrição</label>
-          <textarea id="descricao" name="descricao" required aria-required="true" placeholder="Digite a descrição do produto"></textarea>
-        </div>
-        <div class="form-group">
-          <label for="preco">Preço (R$)</label>
-          <input type="number" id="preco" name="preco" step="0.01" required aria-required="true" placeholder="Digite o preço">
-        </div>
-        <div class="form-group">
-          <label for="categoria">Categoria</label>
-          <select id="categoria" name="categoria" required aria-required="true">
-            <option value="" disabled selected>Selecione uma categoria</option>
-            <option value="eletronicos">Eletrônicos</option>
-            <option value="moda">Moda</option>
-            <option value="casa">Casa</option>
-            <option value="beleza">Beleza</option>
-            <option value="esportes">Esportes</option>
-            <option value="infantil">Infantil</option>
-            <option value="automotivo">Automotivo</option>
-            <option value="games">Games</option>
-            <option value="livros">Livros</option>
-            <option value="fitness">Fitness</option>
-            <option value="pet">Pet Shop</option>
-            <option value="jardinagem">Jardinagem</option>
-            <option value="gastronomia">Gastronomia</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="loja">Loja</label>
-          <select id="loja" name="loja" required aria-required="true">
-            <option value="" disabled selected>Selecione uma loja</option>
-            <option value="amazon">Amazon</option>
-            <option value="mercadolivre">Mercado Livre</option>
-            <option value="shopee">Shopee</option>
-            <option value="magalu">Magalu</option>
-            <option value="shein">Shein</option>
-            <option value="alibaba">Alibaba</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="link">Link do Produto</label>
-          <input type="url" id="link" name="link" required aria-required="true" placeholder="Digite o link do produto">
-        </div>
-        <div class="form-group">
-          <label for="imagens">Imagens (JPEG/PNG, máx. 5MB cada)</label>
-          <input type="file" id="imagens" name="imagens" multiple accept="image/jpeg,image/png" aria-describedby="image-help">
-          <small id="image-help" class="form-text">Formatos aceitos: JPEG, PNG. Tamanho máximo: 5MB por imagem.</small>
-        </div>
-        <button type="submit" class="btn btn-primary" aria-label="Salvar produto">
-          <i class="fas fa-save"></i> Salvar Produto
-        </button>
-      </form>
-    </section>
+      </section>
 
-    <section class="products-section hidden" id="products">
-      <h2><i class="fas fa-box"></i> Gerenciar Produtos</h2>
-      <div class="search-container">
-        <input type="text" id="admin-search" placeholder="Buscar produtos..." aria-label="Buscar produtos no painel">
-        <button class="btn btn-primary" onclick="loadProducts()" aria-label="Iniciar busca de produtos"><i class="fas fa-search"></i> Buscar</button>
-      </div>
-      <div class="loading-spinner" id="loading-spinner">
-        <div class="spinner"></div>
-        <span>Carregando produtos...</span>
-      </div>
-      <table class="products-table" id="products-table">
-        <thead>
-          <tr>
-            <th>Imagem</th>
-            <th>Nome</th>
-            <th>Categoria</th>
-            <th>Loja</th>
-            <th>Preço</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </section>
+      <section class="products-section" id="products-section">
+        <div class="section-header">
+          <h2><i class="fas fa-box"></i> Gerenciar Produtos</h2>
+          <div class="search-container">
+            <input
+              type="text"
+              id="admin-search"
+              placeholder="Buscar produtos..."
+              aria-label="Buscar produtos no painel"
+            />
+            <button aria-label="Iniciar busca">
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3>Adicionar/Editar Produto</h3>
+          <form id="product-form" aria-label="Formulário para adicionar ou editar produto">
+            <div class="form-group">
+              <label for="nome">Nome do Produto</label>
+              <input type="text" id="nome" name="nome" required aria-required="true" placeholder="Digite o nome do produto" />
+            </div>
+            <div class="form-group">
+              <label for="descricao">Descrição</label>
+              <textarea id="descricao" name="descricao" required aria-required="true" placeholder="Digite a descrição do produto"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="preco">Preço (R$)</label>
+              <input type="number" id="preco" name="preco" step="0.01" required aria-required="true" placeholder="Digite o preço" />
+            </div>
+            <div class="form-group">
+              <label for="categoria">Categoria</label>
+              <select id="categoria" name="categoria" required aria-required="true">
+                <option value="" disabled selected>Selecione uma categoria</option>
+                <option value="eletronicos">Eletrônicos</option>
+                <option value="moda">Moda</option>
+                <option value="casa">Casa</option>
+                <option value="beleza">Beleza</option>
+                <option value="esportes">Esportes</option>
+                <option value="infantil">Infantil</option>
+                <option value="automotivo">Automotivo</option>
+                <option value="games">Games</option>
+                <option value="livros">Livros</option>
+                <option value="fitness">Fitness</option>
+                <option value="pet">Pet Shop</option>
+                <option value="jardinagem">Jardinagem</option>
+                <option value="gastronomia">Gastronomia</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="loja">Loja</label>
+              <select id="loja" name="loja" required aria-required="true">
+                <option value="" disabled selected>Selecione uma loja</option>
+                <option value="amazon">Amazon</option>
+                <option value="mercadolivre">Mercado Livre</option>
+                <option value="shopee">Shopee</option>
+                <option value="magalu">Magalu</option>
+                <option value="shein">Shein</option>
+                <option value="alibaba">Alibaba</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="link">Link do Produto</label>
+              <input type="url" id="link" name="link" required aria-required="true" placeholder="Digite o link do produto" />
+            </div>
+            <div class="form-group">
+              <label for="imagens">Imagens (JPEG/PNG, máx. 5MB cada)</label>
+              <input type="file" id="imagens" name="imagens" multiple accept="image/jpeg,image/png" aria-describedby="image-help" />
+              <small id="image-help" class="form-text">Formatos aceitos: JPEG, PNG. Tamanho máximo: 5MB por imagem.</small>
+            </div>
+            <button type="submit" class="btn btn-primary" aria-label="Salvar produto">
+              <i class="fas fa-save"></i> Salvar Produto
+            </button>
+          </form>
+        </div>
+
+        <div class="loading-spinner" id="loading-spinner">
+          <div class="spinner"></div>
+          <p>Carregando produtos...</p>
+        </div>
+
+        <table class="products-table" id="products-table" aria-label="Tabela de produtos cadastrados">
+          <thead>
+            <tr>
+              <th>Imagem</th>
+              <th>Nome</th>
+              <th>Preço</th>
+              <th>Categoria</th>
+              <th>Loja</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="products-tbody"></tbody>
+        </table>
+      </section>
+
+      <section class="analytics-section hidden" id="analytics-section">
+        <h2><i class="fas fa-chart-line"></i> Análises</h2>
+        <p>Estatísticas detalhadas estarão disponíveis em breve.</p>
+      </section>
+
+      <section class="settings-section hidden" id="settings-section">
+        <h2><i class="fas fa-cog"></i> Configurações</h2>
+        <p>Configurações do painel administrativo estarão disponíveis em breve.</p>
+      </section>
+    </div>
   </main>
+
+  <div class="feedback-message" id="feedback-message"></div>
 
   <script>
     const API_CONFIG = {
       REAL_API: "https://minha-api-produtos.onrender.com",
       TOKEN: "seu-token-aqui",
       TIMEOUT: 15000,
-    }
+    };
 
     class APIProductManager {
-      static async fetchProducts(search = "") {
+      constructor() {
+        this.baseUrl = API_CONFIG.REAL_API;
+        this.token = API_CONFIG.TOKEN;
+      }
+
+      async makeRequest(endpoint, method = "GET", data = null) {
+        const headers = {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.token}`,
+        };
+
+        const config = {
+          method,
+          headers,
+          signal: AbortSignal.timeout(API_CONFIG.TIMEOUT),
+        };
+
+        if (data) {
+          config.body = JSON.stringify(data);
+        }
+
         try {
-          const url = search ? `${API_CONFIG.REAL_API}/api/produtos?busca=${encodeURIComponent(search)}` : `${API_CONFIG.REAL_API}/api/produtos`
-          const response = await fetch(url, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${API_CONFIG.TOKEN}`,
-            },
-            signal: AbortSignal.timeout(API_CONFIG.TIMEOUT),
-          })
-          if (!response.ok) throw new Error(`HTTP ${response.status}`)
-          const result = await response.json()
-          return result.data || []
+          const response = await fetch(`${this.baseUrl}${endpoint}`, config);
+          if (!response.ok) {
+            throw new Error(`Erro HTTP: ${response.status}`);
+          }
+          return await response.json();
         } catch (error) {
-          showFeedback(`Erro ao carregar produtos: ${error.message}`, "error")
-          return []
+          console.error(`Erro na requisição ${endpoint}:`, error);
+          throw error;
         }
       }
 
-      static async addProduct(formData) {
-        try {
-          const response = await fetch(`${API_CONFIG.REAL_API}/api/produtos`, {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${API_CONFIG.TOKEN}`,
-            },
-            body: formData,
-            signal: AbortSignal.timeout(API_CONFIG.TIMEOUT),
-          })
-          if (!response.ok) throw new Error(`HTTP ${response.status}`)
-          return await response.json()
-        } catch (error) {
-          showFeedback(`Erro ao adicionar produto: ${error.message}`, "error")
-          return null
-        }
+      async getProducts(page = 1, search = "") {
+        const endpoint = `/api/produtos?page=${page}&limit=10${search ? `&search=${encodeURIComponent(search)}` : ""}`;
+        return this.makeRequest(endpoint);
       }
 
-      static async updateProduct(id, formData) {
-        try {
-          const response = await fetch(`${API_CONFIG.REAL_API}/api/produtos/${id}`, {
-            method: "PUT",
-            headers: {
-              Authorization: `Bearer ${API_CONFIG.TOKEN}`,
-            },
-            body: formData,
-            signal: AbortSignal.timeout(API_CONFIG.TIMEOUT),
-          })
-          if (!response.ok) throw new Error(`HTTP ${response.status}`)
-          return await response.json()
-        } catch (error) {
-          showFeedback(`Erro ao atualizar produto: ${error.message}`, "error")
-          return null
-        }
+      async getStats() {
+        return this.makeRequest("/api/stats");
       }
 
-      static async deleteProduct(id) {
-        try {
-          const response = await fetch(`${API_CONFIG.REAL_API}/api/produtos/${id}`, {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${API_CONFIG.TOKEN}`,
-            },
-            signal: AbortSignal.timeout(API_CONFIG.TIMEOUT),
-          })
-          if (!response.ok) throw new Error(`HTTP ${response.status}`)
-          return true
-        } catch (error) {
-          showFeedback(`Erro ao excluir produto: ${error.message}`, "error")
-          return false
-        }
+      async addProduct(productData) {
+        return this.makeRequest("/api/produtos", "POST", productData);
       }
-    }
 
-    function showFeedback(message, type) {
-      const feedback = document.getElementById("feedback-message")
-      feedback.textContent = message
-      feedback.className = `feedback-message feedback-${type}`
-      feedback.style.display = "block"
-      setTimeout(() => {
-        feedback.style.display = "none"
-      }, 5000)
-    }
-
-    function validateImages(files) {
-      const maxSize = 5 * 1024 * 1024 // 5MB
-      for (const file of files) {
-        if (!["image/jpeg", "image/png"].includes(file.type)) {
-          showFeedback("Apenas imagens JPEG ou PNG são permitidas.", "error")
-          return false
-        }
-        if (file.size > maxSize) {
-          showFeedback("Cada imagem deve ter no máximo 5MB.", "error")
-          return false
-        }
+      async updateProduct(id, productData) {
+        return this.makeRequest(`/api/produtos/${id}`, "PUT", productData);
       }
-      return true
-    }
 
-    async function loadProducts(search = "") {
-      const spinner = document.getElementById("loading-spinner")
-      const tableBody = document.querySelector("#products-table tbody")
-      spinner.style.display = "block"
-      tableBody.innerHTML = ""
-
-      const products = await APIProductManager.fetchProducts(search)
-      if (products.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="6">Nenhum produto encontrado.</td></tr>'
-      } else {
-        products.forEach((product) => {
-          const row = document.createElement("tr")
-          const images = Array.isArray(product.imagens) ? product.imagens : product.imagens ? JSON.parse(product.imagens) : []
-          row.innerHTML = `
-            <td><img src="${images[0] || "https://via.placeholder.com/60x60?text=Sem+Imagem"}" alt="${product.nome}"></td>
-            <td>${product.nome}</td>
-            <td>${product.categoria}</td>
-            <td>${product.loja}</td>
-            <td>R$ ${Number.parseFloat(product.preco).toFixed(2)}</td>
-            <td class="actions">
-              <button class="btn btn-primary edit-btn" data-id="${product.id}" aria-label="Editar produto ${product.nome}">
-                <i class="fas fa-edit"></i> Editar
-              </button>
-              <button class="btn btn-danger delete-btn" data-id="${product.id}" aria-label="Excluir produto ${product.nome}">
-                <i class="fas fa-trash"></i> Excluir
-              </button>
-            </td>
-          `
-          tableBody.appendChild(row)
-        })
+      async deleteProduct(id) {
+        return this.makeRequest(`/api/produtos/${id}`, "DELETE");
       }
-      spinner.style.display = "none"
-    }
 
-    async function loadDashboard() {
-      const products = await APIProductManager.fetchProducts()
-      const totalProducts = products.length
-      const stores = [...new Set(products.map((p) => p.loja))].length
-      const categories = [...new Set(products.map((p) => p.categoria))].length
+      async uploadImages(files) {
+        const formData = new FormData();
+        for (const file of files) {
+          if (file.size > 5 * 1024 * 1024) {
+            throw new Error("Imagem excede o limite de 5MB");
+          }
+          if (!["image/jpeg", "image/png"].includes(file.type)) {
+            throw new Error("Formato de imagem inválido. Use JPEG ou PNG.");
+          }
+          formData.append("imagens", file);
+        }
 
-      document.getElementById("total-products").textContent = totalProducts
-      document.getElementById("active-stores").textContent = stores
-      document.getElementById("categories-count").textContent = categories
+        const response = await fetch(`${this.baseUrl}/api/upload`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${this.token}` },
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error(`Erro no upload: ${response.status}`);
+        }
+
+        return await response.json();
+      }
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-      loadDashboard()
-      loadProducts()
+      const productManager = new APIProductManager();
+      let currentPage = 1;
+      let editingProductId = null;
 
-      const navLinks = document.querySelectorAll(".admin-nav a, .sidebar a")
-      const sections = document.querySelectorAll(".dashboard, .form-section, .products-section")
+      const feedbackMessage = document.getElementById("feedback-message");
+      const productForm = document.getElementById("product-form");
+      const productsTableBody = document.getElementById("products-tbody");
+      const searchInput = document.getElementById("admin-search");
+      const loadingSpinner = document.getElementById("loading-spinner");
+      const totalProducts = document.getElementById("total-products");
+      const totalViews = document.getElementById("total-views");
+      const totalSales = document.getElementById("total-sales");
 
-      navLinks.forEach((link) => {
-        link.addEventListener("click", (e) => {
-          e.preventDefault()
-          navLinks.forEach((l) => l.classList.remove("active"))
-          link.classList.add("active")
-          sections.forEach((s) => s.classList.add("hidden"))
-          document.getElementById(link.dataset.section).classList.remove("hidden")
-        })
-      })
+      function showFeedback(message, type) {
+        feedbackMessage.textContent = message;
+        feedbackMessage.className = `feedback-message feedback-${type}`;
+        feedbackMessage.style.display = "block";
+        setTimeout(() => {
+          feedbackMessage.style.display = "none";
+        }, 5000);
+      }
 
-      const productForm = document.getElementById("product-form")
-      let editingProductId = null
+      async function loadStats() {
+        try {
+          const stats = await productManager.getStats();
+          totalProducts.textContent = stats.totalProducts || 0;
+          totalViews.textContent = stats.totalViews || 0;
+          totalSales.textContent = stats.totalSales || 0;
+        } catch (error) {
+          showFeedback("Erro ao carregar estatísticas", "error");
+        }
+      }
+
+      async function loadProducts(page = 1, search = "") {
+        try {
+          loadingSpinner.style.display = "block";
+          const response = await productManager.getProducts(page, search);
+          productsTableBody.innerHTML = "";
+          response.data.forEach((product) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+              <td><img src="${product.imagens[0] || "https://via.placeholder.com/50"}" alt="${product.nome}" /></td>
+              <td>${product.nome}</td>
+              <td>R$ ${Number.parseFloat(product.preco).toFixed(2)}</td>
+              <td>${product.categoria}</td>
+              <td>${product.loja}</td>
+              <td class="actions">
+                <button class="btn btn-edit" data-id="${product.id}" aria-label="Editar produto ${product.nome}">
+                  <i class="fas fa-edit"></i> Editar
+                </button>
+                <button class="btn btn-delete" data-id="${product.id}" aria-label="Excluir produto ${product.nome}">
+                  <i class="fas fa-trash"></i> Excluir
+                </button>
+              </td>
+            `;
+            productsTableBody.appendChild(row);
+          });
+        } catch (error) {
+          showFeedback("Erro ao carregar produtos", "error");
+        } finally {
+          loadingSpinner.style.display = "none";
+        }
+      }
 
       productForm.addEventListener("submit", async (e) => {
-        e.preventDefault()
-        const formData = new FormData(productForm)
-        const files = document.getElementById("imagens").files
+        e.preventDefault();
+        const formData = new FormData(productForm);
+        const productData = {
+          nome: formData.get("nome"),
+          descricao: formData.get("descricao"),
+          preco: parseFloat(formData.get("preco")),
+          categoria: formData.get("categoria"),
+          loja: formData.get("loja"),
+          link: formData.get("link"),
+        };
 
-        if (files.length > 0 && !validateImages(files)) {
-          return
+        try {
+          loadingSpinner.style.display = "block";
+          const files = formData.getAll("imagens");
+          let imagens = [];
+          if (files.length > 0 && files[0].size > 0) {
+            const uploadResponse = await productManager.uploadImages(files);
+            imagens = uploadResponse.urls;
+          }
+
+          if (editingProductId) {
+            await productManager.updateProduct(editingProductId, { ...productData, imagens });
+            showFeedback("Produto atualizado com sucesso!", "success");
+          } else {
+            await productManager.addProduct({ ...productData, imagens });
+            showFeedback("Produto adicionado com sucesso!", "success");
+          }
+
+          productForm.reset();
+          editingProductId = null;
+          await loadProducts();
+          await loadStats();
+        } catch (error) {
+          showFeedback(error.message || "Erro ao salvar produto", "error");
+        } finally {
+          loadingSpinner.style.display = "none";
+        }
+      });
+
+      productsTableBody.addEventListener("click", async (e) => {
+        if (e.target.closest(".btn-edit")) {
+          const id = e.target.closest(".btn-edit").dataset.id;
+          try {
+            const response = await productManager.getProducts();
+            const product = response.data.find((p) => p.id == id);
+            if (product) {
+              document.getElementById("nome").value = product.nome;
+              document.getElementById("descricao").value = product.descricao;
+              document.getElementById("preco").value = product.preco;
+              document.getElementById("categoria").value = product.categoria;
+              document.getElementById("loja").value = product.loja;
+              document.getElementById("link").value = product.link;
+              editingProductId = id;
+              showFeedback("Editando produto...", "info");
+            }
+          } catch (error) {
+            showFeedback("Erro ao carregar produto", "error");
+          }
         }
 
-        const spinner = document.getElementById("loading-spinner")
-        spinner.style.display = "block"
-
-        if (editingProductId) {
-          const result = await APIProductManager.updateProduct(editingProductId, formData)
-          if (result) {
-            showFeedback("Produto atualizado com sucesso!", "success")
-            productForm.reset()
-            editingProductId = null
-            loadProducts()
-          }
-        } else {
-          const result = await APIProductManager.addProduct(formData)
-          if (result) {
-            showFeedback("Produto adicionado com sucesso!", "success")
-            productForm.reset()
-            loadProducts()
-          }
-        }
-        spinner.style.display = "none"
-      })
-
-      document.getElementById("products-table").addEventListener("click", async (e) => {
-        if (e.target.closest(".edit-btn")) {
-          const id = e.target.closest(".edit-btn").dataset.id
-          const products = await APIProductManager.fetchProducts()
-          const product = products.find((p) => p.id == id)
-          if (product) {
-            document.getElementById("nome").value = product.nome
-            document.getElementById("descricao").value = product.descricao
-            document.getElementById("preco").value = product.preco
-            document.getElementById("categoria").value = product.categoria
-            document.getElementById("loja").value = product.loja
-            document.getElementById("link").value = product.link
-            editingProductId = id
-            document.querySelector(".admin-nav a[data-section='add-product']").click()
-          }
-        } else if (e.target.closest(".delete-btn")) {
-          if (confirm("Deseja realmente excluir este produto?")) {
-            const id = e.target.closest(".delete-btn").dataset.id
-            const success = await APIProductManager.deleteProduct(id)
-            if (success) {
-              showFeedback("Produto excluído com sucesso!", "success")
-              loadProducts()
+        if (e.target.closest(".btn-delete")) {
+          const id = e.target.closest(".btn-delete").dataset.id;
+          if (confirm("Tem certeza que deseja excluir este produto?")) {
+            try {
+              await productManager.deleteProduct(id);
+              showFeedback("Produto excluído com sucesso!", "success");
+              await loadProducts();
+              await loadStats();
+            } catch (error) {
+              showFeedback("Erro ao excluir produto", "error");
             }
           }
         }
-      })
+      });
 
-      const searchInput = document.getElementById("admin-search")
-      searchInput.addEventListener("input", () => {
-        loadProducts(searchInput.value)
-      })
-    })
+      searchInput.addEventListener("input", async () => {
+        const search = searchInput.value.trim();
+        await loadProducts(1, search);
+      });
+
+      document.querySelectorAll(".nav-item").forEach((item) => {
+        item.addEventListener("click", () => {
+          document.querySelectorAll(".nav-item").forEach((i) => i.classList.remove("active"));
+          item.classList.add("active");
+          const section = item.dataset.section;
+          document.querySelectorAll(".content > section").forEach((sec) => {
+            sec.classList.add("hidden");
+          });
+          document.getElementById(`${section}-section`).classList.remove("hidden");
+        });
+      });
+
+      document.getElementById("logout-btn").addEventListener("click", () => {
+        window.location.href = "/index.html";
+      });
+
+      loadStats();
+      loadProducts();
+    });
   </script>
 </body>
 </html>
