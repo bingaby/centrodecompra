@@ -52,27 +52,26 @@
             font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             line-height: 1.6;
             color: var(--text-primary);
-            background-color: var(--background-secondary);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
 
-        .admin-body {
-            background-color: var(--background-secondary);
-        }
-
         /* Header Admin */
         .admin-header {
-            background: var(--background-primary);
-            box-shadow: var(--shadow-md);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow-lg);
             position: sticky;
             top: 0;
             z-index: 1000;
             padding: var(--spacing-lg) 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 0 var(--spacing-md);
         }
@@ -91,50 +90,103 @@
         }
 
         .admin-logo i {
-            font-size: 2rem;
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .admin-logo h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: rgba(0, 166, 80, 0.1);
+            color: var(--success-color);
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .sync-status.syncing {
+            background: rgba(255, 149, 0, 0.1);
+            color: var(--warning-color);
         }
 
         .back-btn {
             display: flex;
             align-items: center;
             gap: var(--spacing-sm);
-            padding: var(--spacing-sm) var(--spacing-lg);
-            background: var(--primary-color);
+            padding: var(--spacing-md) var(--spacing-xl);
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
             color: white;
             text-decoration: none;
-            border-radius: var(--radius-md);
-            font-weight: 500;
+            border-radius: var(--radius-lg);
+            font-weight: 600;
             transition: var(--transition-fast);
+            box-shadow: var(--shadow-md);
         }
 
         .back-btn:hover {
-            background: var(--primary-hover);
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
         }
 
         /* Layout Admin */
         .admin-layout {
             display: grid;
-            grid-template-columns: 250px 1fr;
-            min-height: calc(100vh - 100px);
+            grid-template-columns: 280px 1fr;
+            min-height: calc(100vh - 120px);
             gap: var(--spacing-xl);
             padding: var(--spacing-xl) 0;
         }
 
         /* Sidebar Admin */
         .admin-sidebar {
-            background: var(--background-primary);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-sm);
-            padding: var(--spacing-lg);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            padding: var(--spacing-xl);
             height: fit-content;
             position: sticky;
-            top: 120px;
+            top: 140px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
+            padding-bottom: var(--spacing-lg);
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        .sidebar-header h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .sidebar-header p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
         }
 
         .admin-nav ul {
@@ -149,87 +201,171 @@
             display: flex;
             align-items: center;
             gap: var(--spacing-md);
-            padding: var(--spacing-md);
+            padding: var(--spacing-md) var(--spacing-lg);
             color: var(--text-secondary);
             text-decoration: none;
-            border-radius: var(--radius-md);
+            border-radius: var(--radius-lg);
             transition: var(--transition-fast);
             font-weight: 500;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: var(--transition-normal);
+        }
+
+        .nav-link:hover::before {
+            left: 100%;
         }
 
         .nav-link:hover,
         .nav-item.active .nav-link {
-            background: rgba(52, 131, 250, 0.1);
+            background: linear-gradient(135deg, rgba(52, 131, 250, 0.1), rgba(0, 166, 80, 0.1));
             color: var(--primary-color);
+            transform: translateX(5px);
+            box-shadow: var(--shadow-sm);
         }
 
         .nav-link i {
-            width: 20px;
+            width: 24px;
             text-align: center;
+            font-size: 1.1rem;
         }
 
         /* Conteúdo Principal Admin */
         .admin-main {
-            background: var(--background-primary);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-sm);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
             overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .admin-container {
-            padding: var(--spacing-xl);
+            padding: var(--spacing-2xl);
         }
 
         /* Dashboard Cards */
         .dashboard-cards {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: var(--spacing-lg);
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-xl);
             margin-bottom: var(--spacing-2xl);
         }
 
         .dashboard-card {
-            background: var(--background-primary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: var(--spacing-lg);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-xl);
             display: flex;
             align-items: center;
-            gap: var(--spacing-md);
-            transition: var(--transition-fast);
+            gap: var(--spacing-lg);
+            transition: var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
         }
 
         .dashboard-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
         }
 
         .card-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: var(--radius-lg);
+            width: 80px;
+            height: 80px;
+            border-radius: var(--radius-xl);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 2rem;
             color: white;
+            position: relative;
+            overflow: hidden;
         }
 
-        .card-icon.products { background: var(--primary-color); }
-        .card-icon.categories { background: var(--secondary-color); }
-        .card-icon.stores { background: var(--warning-color); }
-        .card-icon.views { background: var(--error-color); }
+        .card-icon::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transform: rotate(45deg);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .card-icon.products { 
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover)); 
+        }
+        .card-icon.categories { 
+            background: linear-gradient(135deg, var(--secondary-color), #00d463); 
+        }
+        .card-icon.stores { 
+            background: linear-gradient(135deg, var(--warning-color), #ffb347); 
+        }
+        .card-icon.views { 
+            background: linear-gradient(135deg, var(--error-color), #ff6b7a); 
+        }
 
         .card-content h3 {
-            font-size: 1.8rem;
-            font-weight: 700;
+            font-size: 2.5rem;
+            font-weight: 800;
             color: var(--text-primary);
             margin-bottom: var(--spacing-xs);
+            background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .card-content p {
             color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .card-trend {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
             font-size: 0.875rem;
+            font-weight: 600;
+            margin-top: var(--spacing-xs);
+        }
+
+        .card-trend.up {
+            color: var(--success-color);
+        }
+
+        .card-trend.down {
+            color: var(--error-color);
         }
 
         /* Seções Admin */
@@ -241,23 +377,30 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: var(--spacing-lg);
-            padding-bottom: var(--spacing-md);
-            border-bottom: 2px solid var(--border-light);
+            margin-bottom: var(--spacing-xl);
+            padding-bottom: var(--spacing-lg);
+            border-bottom: 3px solid transparent;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color)) bottom;
+            background-size: 100% 3px;
+            background-repeat: no-repeat;
         }
 
         .section-header h2 {
             display: flex;
             align-items: center;
-            gap: var(--spacing-sm);
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--text-primary);
+            gap: var(--spacing-md);
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .section-header p {
             color: var(--text-secondary);
-            margin-top: var(--spacing-xs);
+            margin-top: var(--spacing-sm);
+            font-size: 1rem;
         }
 
         .section-actions {
@@ -268,10 +411,13 @@
 
         /* Formulário */
         .form-container {
-            background: var(--background-secondary);
-            border-radius: var(--radius-lg);
-            padding: var(--spacing-xl);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(248, 250, 252, 0.9));
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-2xl);
             margin-bottom: var(--spacing-xl);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: var(--shadow-lg);
         }
 
         .product-form {
@@ -280,8 +426,8 @@
 
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: var(--spacing-lg);
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: var(--spacing-xl);
         }
 
         .form-group {
@@ -297,21 +443,28 @@
             display: flex;
             align-items: center;
             gap: var(--spacing-sm);
-            font-weight: 600;
+            font-weight: 700;
             color: var(--text-primary);
-            margin-bottom: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+            font-size: 1rem;
+        }
+
+        .form-group label i {
+            color: var(--primary-color);
+            font-size: 1.1rem;
         }
 
         .form-group input,
         .form-group select,
         .form-group textarea {
-            padding: var(--spacing-md);
+            padding: var(--spacing-lg);
             border: 2px solid var(--border-color);
-            border-radius: var(--radius-md);
+            border-radius: var(--radius-lg);
             font-family: inherit;
             font-size: 1rem;
             transition: var(--transition-fast);
-            background: var(--background-primary);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(5px);
         }
 
         .form-group input:focus,
@@ -319,30 +472,33 @@
         .form-group textarea:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(52, 131, 250, 0.1);
+            box-shadow: 0 0 0 4px rgba(52, 131, 250, 0.1);
+            background: rgba(255, 255, 255, 1);
         }
 
         .form-group textarea {
             resize: vertical;
-            min-height: 100px;
+            min-height: 120px;
         }
 
         /* Upload de Arquivo */
         .file-upload-area {
             position: relative;
-            border: 2px dashed var(--border-color);
-            border-radius: var(--radius-md);
-            padding: var(--spacing-xl);
+            border: 3px dashed var(--border-color);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-2xl);
             text-align: center;
             transition: var(--transition-fast);
             cursor: pointer;
-            background: var(--background-primary);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(248, 250, 252, 0.9));
+            backdrop-filter: blur(5px);
         }
 
         .file-upload-area:hover,
         .file-upload-area.drag-over {
             border-color: var(--primary-color);
-            background: rgba(52, 131, 250, 0.05);
+            background: linear-gradient(135deg, rgba(52, 131, 250, 0.05), rgba(0, 166, 80, 0.05));
+            transform: scale(1.02);
         }
 
         .file-upload-area input[type="file"] {
@@ -360,51 +516,63 @@
         }
 
         .upload-placeholder i {
-            font-size: 3rem;
-            color: var(--text-muted);
-            margin-bottom: var(--spacing-md);
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-lg);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .upload-placeholder p {
-            font-size: 1.1rem;
-            font-weight: 600;
+            font-size: 1.2rem;
+            font-weight: 700;
             color: var(--text-primary);
             margin-bottom: var(--spacing-sm);
         }
 
         .upload-placeholder small {
             color: var(--text-secondary);
+            font-size: 1rem;
         }
 
         /* Preview de Imagens */
         .images-preview {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: var(--spacing-md);
-            margin-top: var(--spacing-md);
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-xl);
         }
 
         .preview-item {
             position: relative;
-            background: var(--background-primary);
-            border-radius: var(--radius-md);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius-lg);
             overflow: hidden;
-            box-shadow: var(--shadow-sm);
+            box-shadow: var(--shadow-md);
+            transition: var(--transition-fast);
+        }
+
+        .preview-item:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
         }
 
         .preview-item img {
             width: 100%;
-            height: 120px;
+            height: 140px;
             object-fit: cover;
         }
 
         .preview-info {
-            padding: var(--spacing-sm);
+            padding: var(--spacing-md);
         }
 
         .file-name {
             display: block;
-            font-size: 0.75rem;
+            font-size: 0.875rem;
             font-weight: 600;
             color: var(--text-primary);
             margin-bottom: var(--spacing-xs);
@@ -414,26 +582,27 @@
         }
 
         .file-size {
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             color: var(--text-secondary);
         }
 
         .remove-preview {
             position: absolute;
-            top: var(--spacing-xs);
-            right: var(--spacing-xs);
+            top: var(--spacing-sm);
+            right: var(--spacing-sm);
             background: var(--error-color);
             color: white;
             border: none;
             border-radius: 50%;
-            width: 24px;
-            height: 24px;
+            width: 32px;
+            height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            font-size: 0.75rem;
+            font-size: 0.875rem;
             transition: var(--transition-fast);
+            box-shadow: var(--shadow-md);
         }
 
         .remove-preview:hover {
@@ -444,73 +613,97 @@
         /* Ações do Formulário */
         .form-actions {
             display: flex;
-            gap: var(--spacing-md);
-            margin-top: var(--spacing-xl);
-            padding-top: var(--spacing-lg);
-            border-top: 1px solid var(--border-color);
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-2xl);
+            padding-top: var(--spacing-xl);
+            border-top: 2px solid var(--border-light);
         }
 
         .btn-primary,
-        .btn-secondary {
+        .btn-secondary,
+        .btn-danger {
             display: inline-flex;
             align-items: center;
             gap: var(--spacing-sm);
-            padding: var(--spacing-md) var(--spacing-xl);
+            padding: var(--spacing-lg) var(--spacing-2xl);
             border: none;
-            border-radius: var(--radius-md);
-            font-weight: 600;
+            border-radius: var(--radius-lg);
+            font-weight: 700;
             font-size: 1rem;
             cursor: pointer;
             transition: var(--transition-fast);
             text-decoration: none;
+            position: relative;
+            overflow: hidden;
         }
 
         .btn-primary {
-            background: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
             color: white;
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-hover);
-            transform: translateY(-1px);
             box-shadow: var(--shadow-md);
         }
 
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
         .btn-secondary {
-            background: var(--background-tertiary);
+            background: linear-gradient(135deg, var(--background-tertiary), var(--background-primary));
             color: var(--text-primary);
-            border: 1px solid var(--border-color);
+            border: 2px solid var(--border-color);
         }
 
         .btn-secondary:hover {
-            background: var(--background-primary);
+            background: linear-gradient(135deg, var(--background-primary), var(--background-secondary));
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--error-color), #d32f2f);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
         }
 
         /* Feedback */
         .form-feedback {
-            margin-top: var(--spacing-md);
+            margin-top: var(--spacing-lg);
+        }
+
+        .feedback-success,
+        .feedback-error,
+        .feedback-info {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            border: 1px solid;
         }
 
         .feedback-success {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            padding: var(--spacing-md);
             background: rgba(0, 166, 80, 0.1);
             color: var(--success-color);
-            border: 1px solid rgba(0, 166, 80, 0.2);
-            border-radius: var(--radius-md);
+            border-color: rgba(0, 166, 80, 0.3);
         }
 
         .feedback-error {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            padding: var(--spacing-md);
             background: rgba(242, 61, 79, 0.1);
             color: var(--error-color);
-            border: 1px solid rgba(242, 61, 79, 0.2);
-            border-radius: var(--radius-md);
+            border-color: rgba(242, 61, 79, 0.3);
+        }
+
+        .feedback-info {
+            background: rgba(52, 131, 250, 0.1);
+            color: var(--primary-color);
+            border-color: rgba(52, 131, 250, 0.3);
         }
 
         /* Busca */
@@ -522,150 +715,192 @@
 
         .search-box i {
             position: absolute;
-            left: var(--spacing-md);
+            left: var(--spacing-lg);
             color: var(--text-muted);
+            font-size: 1.1rem;
         }
 
         .search-box input {
-            padding: var(--spacing-sm) var(--spacing-md) var(--spacing-sm) 2.5rem;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            font-size: 0.875rem;
-            width: 250px;
-        }
-
-        .btn-refresh {
-            padding: var(--spacing-sm);
-            background: var(--background-primary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            cursor: pointer;
+            padding: var(--spacing-md) var(--spacing-lg) var(--spacing-md) 3rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            font-size: 1rem;
+            width: 300px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(5px);
             transition: var(--transition-fast);
         }
 
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(52, 131, 250, 0.1);
+        }
+
+        .btn-refresh {
+            padding: var(--spacing-md);
+            background: linear-gradient(135deg, var(--background-primary), var(--background-secondary));
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: var(--transition-fast);
+            color: var(--text-primary);
+            font-size: 1.1rem;
+        }
+
         .btn-refresh:hover {
-            background: var(--background-secondary);
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: white;
+            transform: rotate(180deg);
         }
 
         /* Lista de Produtos */
         .products-table-container {
-            background: var(--background-primary);
-            border-radius: var(--radius-lg);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius-xl);
             overflow: hidden;
-            box-shadow: var(--shadow-sm);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         .products-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: var(--spacing-lg);
-            padding: var(--spacing-lg);
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: var(--spacing-xl);
+            padding: var(--spacing-xl);
         }
 
         .product-admin-card {
-            background: var(--background-primary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(248, 250, 252, 0.9));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: var(--radius-xl);
             overflow: hidden;
-            transition: var(--transition-fast);
-        }
-
-        .product-admin-card:hover {
-            transform: translateY(-2px);
+            transition: var(--transition-normal);
             box-shadow: var(--shadow-md);
         }
 
+        .product-admin-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+        }
+
         .product-image {
-            height: 150px;
+            height: 200px;
             overflow: hidden;
+            position: relative;
         }
 
         .product-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: var(--transition-normal);
+        }
+
+        .product-admin-card:hover .product-image img {
+            transform: scale(1.05);
         }
 
         .product-info {
-            padding: var(--spacing-md);
+            padding: var(--spacing-xl);
         }
 
         .product-info h4 {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: var(--spacing-sm);
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing-md);
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            color: var(--text-primary);
         }
 
         .product-price {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            margin-bottom: var(--spacing-sm);
+            font-size: 1.3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: var(--spacing-md);
         }
 
         .product-tags {
             display: flex;
-            gap: var(--spacing-xs);
-            margin-bottom: var(--spacing-md);
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+            flex-wrap: wrap;
         }
 
         .tag {
-            padding: var(--spacing-xs) var(--spacing-sm);
-            border-radius: var(--radius-sm);
-            font-size: 0.75rem;
-            font-weight: 500;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            font-weight: 600;
+            backdrop-filter: blur(5px);
         }
 
         .tag.category {
-            background: rgba(52, 131, 250, 0.1);
+            background: rgba(52, 131, 250, 0.15);
             color: var(--primary-color);
+            border: 1px solid rgba(52, 131, 250, 0.3);
         }
 
         .tag.store {
-            background: rgba(0, 166, 80, 0.1);
+            background: rgba(0, 166, 80, 0.15);
             color: var(--secondary-color);
+            border: 1px solid rgba(0, 166, 80, 0.3);
         }
 
         .product-actions {
             display: flex;
-            gap: var(--spacing-sm);
-            padding: var(--spacing-md);
-            border-top: 1px solid var(--border-light);
+            gap: var(--spacing-md);
+            padding: var(--spacing-lg) var(--spacing-xl);
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.5);
         }
 
         .btn-edit,
         .btn-delete {
             flex: 1;
-            padding: var(--spacing-sm);
+            padding: var(--spacing-md);
             border: none;
-            border-radius: var(--radius-sm);
+            border-radius: var(--radius-md);
             cursor: pointer;
             font-size: 0.875rem;
+            font-weight: 600;
             transition: var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
         }
 
         .btn-edit {
-            background: rgba(255, 149, 0, 0.1);
+            background: rgba(255, 149, 0, 0.15);
             color: var(--warning-color);
+            border: 1px solid rgba(255, 149, 0, 0.3);
         }
 
         .btn-edit:hover {
             background: var(--warning-color);
             color: white;
+            transform: translateY(-1px);
         }
 
         .btn-delete {
-            background: rgba(242, 61, 79, 0.1);
+            background: rgba(242, 61, 79, 0.15);
             color: var(--error-color);
+            border: 1px solid rgba(242, 61, 79, 0.3);
         }
 
         .btn-delete:hover {
             background: var(--error-color);
             color: white;
+            transform: translateY(-1px);
         }
 
         /* Estados */
@@ -684,13 +919,13 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: var(--spacing-md);
+            gap: var(--spacing-lg);
         }
 
         .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid var(--border-color);
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(52, 131, 250, 0.2);
             border-top: 4px solid var(--primary-color);
             border-radius: 50%;
             animation: spin 1s linear infinite;
@@ -703,27 +938,32 @@
 
         .empty-state i,
         .error-state i {
-            font-size: 4rem;
+            font-size: 5rem;
             color: var(--text-muted);
-            margin-bottom: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            background: linear-gradient(135deg, var(--text-muted), var(--text-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .empty-state h3,
         .error-state h3 {
-            font-size: 1.5rem;
-            font-weight: 600;
+            font-size: 1.8rem;
+            font-weight: 700;
             color: var(--text-primary);
-            margin-bottom: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
         }
 
         .empty-state p,
         .error-state p {
             color: var(--text-secondary);
-            margin-bottom: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+            font-size: 1.1rem;
         }
 
         /* Responsividade */
-        @media (max-width: 1024px) {
+        @media (max-width: 1200px) {
             .admin-layout {
                 grid-template-columns: 1fr;
                 gap: var(--spacing-lg);
@@ -731,6 +971,9 @@
 
             .admin-sidebar {
                 position: static;
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: var(--spacing-md);
             }
 
             .form-grid {
@@ -749,7 +992,7 @@
             }
 
             .dashboard-cards {
-                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             }
 
             .section-header {
@@ -763,30 +1006,30 @@
             }
 
             .search-box input {
-                width: 200px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .admin-container {
-                padding: var(--spacing-md);
-            }
-
-            .form-container {
-                padding: var(--spacing-md);
-            }
-
-            .dashboard-cards {
-                grid-template-columns: 1fr;
+                width: 250px;
             }
 
             .form-actions {
                 flex-direction: column;
             }
         }
+
+        @media (max-width: 480px) {
+            .admin-container {
+                padding: var(--spacing-lg);
+            }
+
+            .form-container {
+                padding: var(--spacing-lg);
+            }
+
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
-<body class="admin-body">
+<body>
     <!-- Header Admin -->
     <header class="admin-header">
         <div class="container">
@@ -795,7 +1038,11 @@
                     <i class="fas fa-cogs"></i>
                     <h1>Painel Administrativo</h1>
                 </div>
-                <div class="admin-actions">
+                <div class="header-actions">
+                    <div id="sync-status" class="sync-status">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>Sincronizado</span>
+                    </div>
                     <a href="index.html" class="back-btn">
                         <i class="fas fa-arrow-left"></i>
                         <span>Voltar ao Site</span>
@@ -810,6 +1057,10 @@
         <div class="container">
             <!-- Sidebar Admin -->
             <aside class="admin-sidebar">
+                <div class="sidebar-header">
+                    <h3>Menu de Administração</h3>
+                    <p>Gerencie seu e-commerce</p>
+                </div>
                 <nav class="admin-nav">
                     <ul>
                         <li class="nav-item active">
@@ -836,6 +1087,12 @@
                                 <span>Estatísticas</span>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="#configuracoes" class="nav-link">
+                                <i class="fas fa-cog"></i>
+                                <span>Configurações</span>
+                            </a>
+                        </li>
                     </ul>
                 </nav>
             </aside>
@@ -850,8 +1107,12 @@
                                 <i class="fas fa-box"></i>
                             </div>
                             <div class="card-content">
-                                <h3 id="total-produtos">12</h3>
+                                <h3 id="total-produtos">0</h3>
                                 <p>Total de Produtos</p>
+                                <div class="card-trend up">
+                                    <i class="fas fa-arrow-up"></i>
+                                    <span>+12% este mês</span>
+                                </div>
                             </div>
                         </div>
                         <div class="dashboard-card">
@@ -859,8 +1120,12 @@
                                 <i class="fas fa-tags"></i>
                             </div>
                             <div class="card-content">
-                                <h3>10</h3>
+                                <h3 id="total-categorias">9</h3>
                                 <p>Categorias Ativas</p>
+                                <div class="card-trend up">
+                                    <i class="fas fa-arrow-up"></i>
+                                    <span>+2 novas</span>
+                                </div>
                             </div>
                         </div>
                         <div class="dashboard-card">
@@ -870,6 +1135,10 @@
                             <div class="card-content">
                                 <h3>6</h3>
                                 <p>Lojas Parceiras</p>
+                                <div class="card-trend up">
+                                    <i class="fas fa-arrow-up"></i>
+                                    <span>100% ativas</span>
+                                </div>
                             </div>
                         </div>
                         <div class="dashboard-card">
@@ -877,8 +1146,12 @@
                                 <i class="fas fa-eye"></i>
                             </div>
                             <div class="card-content">
-                                <h3>2.5K</h3>
+                                <h3 id="total-visualizacoes">2.5K</h3>
                                 <p>Visualizações</p>
+                                <div class="card-trend up">
+                                    <i class="fas fa-arrow-up"></i>
+                                    <span>+25% hoje</span>
+                                </div>
                             </div>
                         </div>
                     </section>
@@ -888,7 +1161,7 @@
                         <div class="section-header">
                             <div>
                                 <h2><i class="fas fa-plus-circle"></i> Adicionar/Editar Produto</h2>
-                                <p>Preencha as informações do produto</p>
+                                <p>Preencha as informações do produto para adicionar ao catálogo</p>
                             </div>
                         </div>
                         
@@ -902,15 +1175,15 @@
                                             <i class="fas fa-tag"></i>
                                             Nome do Produto
                                         </label>
-                                        <input type="text" id="nome" name="nome" required placeholder="Digite o nome do produto">
+                                        <input type="text" id="nome" name="nome" required placeholder="Digite o nome completo do produto">
                                     </div>
 
                                     <div class="form-group full-width">
                                         <label for="descricao">
                                             <i class="fas fa-align-left"></i>
-                                            Descrição
+                                            Descrição Detalhada
                                         </label>
-                                        <textarea id="descricao" name="descricao" placeholder="Descreva o produto" rows="3"></textarea>
+                                        <textarea id="descricao" name="descricao" placeholder="Descreva as características, benefícios e especificações do produto" rows="4"></textarea>
                                     </div>
 
                                     <div class="form-group">
@@ -930,10 +1203,10 @@
                                             <option value="">Selecione uma categoria</option>
                                             <option value="eletronicos">📱 Eletrônicos</option>
                                             <option value="moda">👗 Moda</option>
-                                            <option value="casa">🏠 Casa</option>
-                                            <option value="beleza">💄 Beleza</option>
-                                            <option value="esportes">⚽ Esportes</option>
-                                            <option value="infantil">🧸 Infantil</option>
+                                            <option value="casa">🏠 Casa e Decoração</option>
+                                            <option value="beleza">💄 Beleza e Cuidado</option>
+                                            <option value="esportes">⚽ Esportes e Fitness</option>
+                                            <option value="infantil">🧸 Bebês e Crianças</option>
                                             <option value="automotivo">🚗 Automotivo</option>
                                             <option value="games">🎮 Games</option>
                                             <option value="livros">📚 Livros</option>
@@ -943,14 +1216,14 @@
                                     <div class="form-group">
                                         <label for="loja">
                                             <i class="fas fa-store"></i>
-                                            Loja
+                                            Loja Parceira
                                         </label>
                                         <select id="loja" name="loja" required>
                                             <option value="">Selecione uma loja</option>
                                             <option value="amazon">🛒 Amazon</option>
                                             <option value="mercadolivre">📦 Mercado Livre</option>
                                             <option value="shopee">🛍️ Shopee</option>
-                                            <option value="magalu">🏪 Magalu</option>
+                                            <option value="magalu">🏪 Magazine Luiza</option>
                                             <option value="shein">👕 Shein</option>
                                             <option value="alibaba">🌐 Alibaba</option>
                                         </select>
@@ -961,7 +1234,7 @@
                                             <i class="fas fa-link"></i>
                                             Link do Produto
                                         </label>
-                                        <input type="url" id="link" name="link" required placeholder="https://...">
+                                        <input type="url" id="link" name="link" required placeholder="https://exemplo.com/produto">
                                     </div>
 
                                     <div class="form-group full-width">
@@ -974,7 +1247,7 @@
                                             <div class="upload-placeholder">
                                                 <i class="fas fa-cloud-upload-alt"></i>
                                                 <p>Clique para selecionar imagens ou arraste aqui</p>
-                                                <small>Formatos aceitos: JPG, PNG, GIF (máx. 5MB cada)</small>
+                                                <small>Formatos aceitos: JPG, PNG, GIF (máx. 5MB cada) - Múltiplas imagens</small>
                                             </div>
                                         </div>
                                         <div id="imagens-preview" class="images-preview"></div>
@@ -988,7 +1261,11 @@
                                     </button>
                                     <button type="button" id="cancelar-edicao" class="btn-secondary" style="display: none;">
                                         <i class="fas fa-times"></i>
-                                        <span>Cancelar</span>
+                                        <span>Cancelar Edição</span>
+                                    </button>
+                                    <button type="button" id="limpar-form" class="btn-danger">
+                                        <i class="fas fa-trash"></i>
+                                        <span>Limpar Formulário</span>
                                     </button>
                                 </div>
 
@@ -1001,14 +1278,15 @@
                     <section class="admin-section">
                         <div class="section-header">
                             <div>
-                                <h2><i class="fas fa-list"></i> Lista de Produtos</h2>
+                                <h2><i class="fas fa-list"></i> Gerenciar Produtos</h2>
+                                <p>Visualize, edite e remova produtos do catálogo</p>
                             </div>
                             <div class="section-actions">
                                 <div class="search-box">
                                     <i class="fas fa-search"></i>
                                     <input type="text" id="search-produtos" placeholder="Buscar produtos...">
                                 </div>
-                                <button class="btn-refresh" onclick="carregarProdutos()">
+                                <button class="btn-refresh" onclick="carregarProdutos()" title="Atualizar lista">
                                     <i class="fas fa-sync-alt"></i>
                                 </button>
                             </div>
@@ -1031,200 +1309,311 @@
     </div>
 
     <script>
-        const API_BASE_URL = 'https://minha-api-produtos.onrender.com';
-
-        // Dados de exemplo para demonstração
-        const SAMPLE_ADMIN_PRODUCTS = [
-            {
-                id: 1,
-                nome: "Smartphone Samsung Galaxy A54 128GB",
-                descricao: "Smartphone com tela de 6.4 polegadas, câmera tripla de 50MP e bateria de 5000mAh. Processador Exynos 1380, Android 13 e design premium.",
-                preco: 1299.99,
-                categoria: "eletronicos",
-                loja: "amazon",
-                link: "https://amazon.com.br/produto-exemplo",
-                imagens: ["https://via.placeholder.com/300x300/1a1a1a/ffffff?text=Samsung+Galaxy+A54"]
-            },
-            {
-                id: 2,
-                nome: "Tênis Nike Air Max 270 Masculino",
-                descricao: "Tênis esportivo com tecnologia Air Max, conforto e estilo para o dia a dia. Solado em borracha e cabedal em mesh respirável.",
-                preco: 599.90,
-                categoria: "moda",
-                loja: "mercadolivre",
-                link: "https://mercadolivre.com.br/produto-exemplo",
-                imagens: ["https://via.placeholder.com/300x300/ff6b35/ffffff?text=Nike+Air+Max+270"]
-            },
-            {
-                id: 3,
-                nome: "Fone Bluetooth JBL Tune 510BT",
-                descricao: "Fone de ouvido sem fio com qualidade de som JBL e bateria de 40 horas. Conexão Bluetooth 5.0 e microfone integrado.",
-                preco: 199.99,
-                categoria: "eletronicos",
-                loja: "shopee",
-                link: "https://shopee.com.br/produto-exemplo",
-                imagens: ["https://via.placeholder.com/300x300/0066cc/ffffff?text=JBL+Tune+510BT"]
-            },
-            {
-                id: 4,
-                nome: "Vestido Floral Feminino Midi",
-                descricao: "Vestido midi com estampa floral, tecido leve e confortável para o verão. Modelagem evasê e manga curta.",
-                preco: 89.90,
-                categoria: "moda",
-                loja: "shein",
-                link: "https://shein.com.br/produto-exemplo",
-                imagens: ["https://via.placeholder.com/300x300/ff69b4/ffffff?text=Vestido+Floral"]
-            },
-            {
-                id: 5,
-                nome: "Cafeteira Elétrica Mondial 30 Xícaras",
-                descricao: "Cafeteira elétrica com capacidade para 30 xícaras, filtro permanente e sistema corta-pingos. Potência de 800W.",
-                preco: 129.90,
-                categoria: "casa",
-                loja: "magalu",
-                link: "https://magazineluiza.com.br/produto-exemplo",
-                imagens: ["https://via.placeholder.com/300x300/8b4513/ffffff?text=Cafeteira+Mondial"]
-            },
-            {
-                id: 6,
-                nome: "Kit Ferramentas 108 Peças Profissional",
-                descricao: "Kit completo de ferramentas para casa e trabalho, maleta organizadora resistente. Inclui chaves, alicates e bits.",
-                preco: 299.99,
-                categoria: "automotivo",
-                loja: "alibaba",
-                link: "https://alibaba.com/produto-exemplo",
-                imagens: ["https://via.placeholder.com/300x300/696969/ffffff?text=Kit+Ferramentas"]
+        // Sistema de gerenciamento de produtos com localStorage
+        class ProductManager {
+            constructor() {
+                this.storageKey = 'centro_compras_produtos';
+                this.init();
             }
-        ];
+
+            init() {
+                // Inicializar com produtos de exemplo se não existir dados
+                if (!localStorage.getItem(this.storageKey)) {
+                    this.initializeWithSampleData();
+                }
+            }
+
+            initializeWithSampleData() {
+                const sampleProducts = [
+                    {
+                        id: Date.now() + 1,
+                        nome: "Smartphone Samsung Galaxy A54 128GB",
+                        descricao: "Smartphone com tela de 6.4 polegadas, câmera tripla de 50MP e bateria de 5000mAh. Processador Exynos 1380, Android 13 e design premium.",
+                        preco: 1299.99,
+                        categoria: "eletronicos",
+                        loja: "amazon",
+                        link: "https://amazon.com.br/produto-exemplo",
+                        imagens: ["https://via.placeholder.com/300x300/1a1a1a/ffffff?text=Samsung+Galaxy+A54"],
+                        dataAdicao: new Date().toISOString()
+                    },
+                    {
+                        id: Date.now() + 2,
+                        nome: "Tênis Nike Air Max 270 Masculino",
+                        descricao: "Tênis esportivo com tecnologia Air Max, conforto e estilo para o dia a dia. Solado em borracha e cabedal em mesh respirável.",
+                        preco: 599.90,
+                        categoria: "moda",
+                        loja: "mercadolivre",
+                        link: "https://mercadolivre.com.br/produto-exemplo",
+                        imagens: ["https://via.placeholder.com/300x300/ff6b35/ffffff?text=Nike+Air+Max+270"],
+                        dataAdicao: new Date().toISOString()
+                    },
+                    {
+                        id: Date.now() + 3,
+                        nome: "Fone Bluetooth JBL Tune 510BT",
+                        descricao: "Fone de ouvido sem fio com qualidade de som JBL e bateria de 40 horas. Conexão Bluetooth 5.0 e microfone integrado.",
+                        preco: 199.99,
+                        categoria: "eletronicos",
+                        loja: "shopee",
+                        link: "https://shopee.com.br/produto-exemplo",
+                        imagens: ["https://via.placeholder.com/300x300/0066cc/ffffff?text=JBL+Tune+510BT"],
+                        dataAdicao: new Date().toISOString()
+                    }
+                ];
+                
+                this.saveProducts(sampleProducts);
+            }
+
+            getAllProducts() {
+                const products = localStorage.getItem(this.storageKey);
+                return products ? JSON.parse(products) : [];
+            }
+
+            saveProducts(products) {
+                localStorage.setItem(this.storageKey, JSON.stringify(products));
+                this.syncWithMainSite();
+            }
+
+            addProduct(product) {
+                const products = this.getAllProducts();
+                product.id = Date.now();
+                product.dataAdicao = new Date().toISOString();
+                products.push(product);
+                this.saveProducts(products);
+                return product;
+            }
+
+            updateProduct(id, updatedProduct) {
+                const products = this.getAllProducts();
+                const index = products.findIndex(p => p.id === parseInt(id));
+                if (index !== -1) {
+                    products[index] = { ...products[index], ...updatedProduct };
+                    this.saveProducts(products);
+                    return products[index];
+                }
+                return null;
+            }
+
+            deleteProduct(id) {
+                const products = this.getAllProducts();
+                const filteredProducts = products.filter(p => p.id !== parseInt(id));
+                this.saveProducts(filteredProducts);
+                return filteredProducts.length < products.length;
+            }
+
+            getProduct(id) {
+                const products = this.getAllProducts();
+                return products.find(p => p.id === parseInt(id));
+            }
+
+            syncWithMainSite() {
+                // Sincronizar com o site principal
+                const products = this.getAllProducts();
+                localStorage.setItem('centro_compras_sync', JSON.stringify({
+                    products: products,
+                    lastSync: new Date().toISOString()
+                }));
+                
+                // Atualizar status de sincronização
+                this.updateSyncStatus('synced');
+            }
+
+            updateSyncStatus(status) {
+                const syncElement = document.getElementById('sync-status');
+                if (syncElement) {
+                    const statusConfig = {
+                        synced: { icon: 'fas fa-check-circle', text: 'Sincronizado', class: '' },
+                        syncing: { icon: 'fas fa-sync-alt fa-spin', text: 'Sincronizando...', class: 'syncing' },
+                        error: { icon: 'fas fa-exclamation-triangle', text: 'Erro na sincronização', class: 'error' }
+                    };
+                    
+                    const config = statusConfig[status] || statusConfig.synced;
+                    syncElement.innerHTML = `<i class="${config.icon}"></i><span>${config.text}</span>`;
+                    syncElement.className = `sync-status ${config.class}`;
+                }
+            }
+        }
+
+        // Inicializar gerenciador de produtos
+        const productManager = new ProductManager();
 
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('🚀 Iniciando painel administrativo...');
+            console.log('🚀 Iniciando painel administrativo avançado...');
             
-            // Preview de imagens
+            initializeImageUpload();
+            initializeForm();
+            initializeSearch();
+            carregarProdutos();
+            updateDashboard();
+        });
+
+        function initializeImageUpload() {
             const imagensInput = document.getElementById('imagens');
             const imagensPreview = document.getElementById('imagens-preview');
-            
-            if (imagensInput && imagensPreview) {
-                imagensInput.addEventListener('change', (e) => {
-                    imagensPreview.innerHTML = '';
-                    Array.from(e.target.files).forEach((file, index) => {
-                        const reader = new FileReader();
-                        reader.onload = (e) => {
-                            const previewItem = document.createElement('div');
-                            previewItem.className = 'preview-item';
-                            previewItem.innerHTML = `
-                                <img src="${e.target.result}" alt="Preview ${index + 1}">
-                                <div class="preview-info">
-                                    <span class="file-name">${file.name}</span>
-                                    <span class="file-size">${(file.size / 1024 / 1024).toFixed(2)} MB</span>
-                                </div>
-                                <button type="button" class="remove-preview" onclick="this.parentElement.remove()">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            `;
-                            imagensPreview.appendChild(previewItem);
-                        };
-                        reader.readAsDataURL(file);
-                    });
-                });
-            }
-
-            // Drag and drop para upload
             const uploadArea = document.querySelector('.file-upload-area');
             
+            if (imagensInput && imagensPreview) {
+                imagensInput.addEventListener('change', handleImagePreview);
+            }
+
             if (uploadArea) {
-                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                    uploadArea.addEventListener(eventName, preventDefaults, false);
-                });
+                setupDragAndDrop(uploadArea, imagensInput);
+            }
+        }
 
-                function preventDefaults(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
+        function handleImagePreview(e) {
+            const imagensPreview = document.getElementById('imagens-preview');
+            imagensPreview.innerHTML = '';
+            
+            Array.from(e.target.files).forEach((file, index) => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const previewItem = document.createElement('div');
+                        previewItem.className = 'preview-item';
+                        previewItem.innerHTML = `
+                            <img src="${e.target.result}" alt="Preview ${index + 1}">
+                            <div class="preview-info">
+                                <span class="file-name">${file.name}</span>
+                                <span class="file-size">${(file.size / 1024 / 1024).toFixed(2)} MB</span>
+                            </div>
+                            <button type="button" class="remove-preview" onclick="removeImagePreview(this, ${index})">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        `;
+                        imagensPreview.appendChild(previewItem);
+                    };
+                    reader.readAsDataURL(file);
                 }
+            });
+        }
 
-                ['dragenter', 'dragover'].forEach(eventName => {
-                    uploadArea.addEventListener(eventName, highlight, false);
-                });
+        function removeImagePreview(button, index) {
+            button.parentElement.remove();
+            // Atualizar input de arquivos
+            const imagensInput = document.getElementById('imagens');
+            const dt = new DataTransfer();
+            const files = Array.from(imagensInput.files);
+            files.splice(index, 1);
+            files.forEach(file => dt.items.add(file));
+            imagensInput.files = dt.files;
+        }
 
-                ['dragleave', 'drop'].forEach(eventName => {
-                    uploadArea.addEventListener(eventName, unhighlight, false);
-                });
+        function setupDragAndDrop(uploadArea, imagensInput) {
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, preventDefaults, false);
+            });
 
-                function highlight(e) {
-                    uploadArea.classList.add('drag-over');
-                }
-
-                function unhighlight(e) {
-                    uploadArea.classList.remove('drag-over');
-                }
-
-                uploadArea.addEventListener('drop', handleDrop, false);
-
-                function handleDrop(e) {
-                    const dt = e.dataTransfer;
-                    const files = dt.files;
-                    if (imagensInput) {
-                        imagensInput.files = files;
-                        imagensInput.dispatchEvent(new Event('change'));
-                    }
-                }
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
             }
 
-            // Carregar produtos iniciais
-            carregarProdutos();
+            ['dragenter', 'dragover'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, () => uploadArea.classList.add('drag-over'), false);
+            });
 
-            // Cancelar edição
-            const cancelarBtn = document.getElementById('cancelar-edicao');
-            if (cancelarBtn) {
-                cancelarBtn.addEventListener('click', () => {
-                    document.getElementById('produto-form').reset();
-                    document.getElementById('imagens-preview').innerHTML = '';
-                    document.getElementById('produto-id').value = '';
-                    cancelarBtn.style.display = 'none';
-                    document.querySelector('#produto-form button[type="submit"] span').textContent = 'Salvar Produto';
-                    showFeedback('', '');
-                });
-            }
+            ['dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, () => uploadArea.classList.remove('drag-over'), false);
+            });
 
-            // Formulário de produto
+            uploadArea.addEventListener('drop', (e) => {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                if (imagensInput) {
+                    imagensInput.files = files;
+                    imagensInput.dispatchEvent(new Event('change'));
+                }
+            }, false);
+        }
+
+        function initializeForm() {
             const produtoForm = document.getElementById('produto-form');
+            const cancelarBtn = document.getElementById('cancelar-edicao');
+            const limparBtn = document.getElementById('limpar-form');
+
             if (produtoForm) {
-                produtoForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    
-                    const formData = new FormData(e.target);
-                    const id = document.getElementById('produto-id').value;
-                    
-                    try {
-                        showFeedback('Salvando produto...', 'info');
-                        
-                        // Simular salvamento para demonstração
-                        await new Promise(resolve => setTimeout(resolve, 1000));
-                        
-                        showFeedback(
-                            id ? 'Produto atualizado com sucesso!' : 'Produto adicionado com sucesso!', 
-                            'success'
-                        );
-                        
-                        e.target.reset();
-                        document.getElementById('imagens-preview').innerHTML = '';
-                        document.getElementById('produto-id').value = '';
-                        document.getElementById('cancelar-edicao').style.display = 'none';
-                        document.querySelector('#produto-form button[type="submit"] span').textContent = 'Salvar Produto';
-                        
-                        // Recarregar lista de produtos
-                        setTimeout(() => {
-                            carregarProdutos();
-                        }, 1000);
-                        
-                    } catch (error) {
-                        console.error('Erro ao salvar produto:', error);
-                        showFeedback('Erro ao salvar produto', 'error');
-                    }
-                });
+                produtoForm.addEventListener('submit', handleFormSubmit);
             }
 
-            // Busca de produtos
+            if (cancelarBtn) {
+                cancelarBtn.addEventListener('click', cancelarEdicao);
+            }
+
+            if (limparBtn) {
+                limparBtn.addEventListener('click', limparFormulario);
+            }
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            productManager.updateSyncStatus('syncing');
+            showFeedback('Processando produto...', 'info');
+            
+            try {
+                const formData = new FormData(e.target);
+                const id = document.getElementById('produto-id').value;
+                
+                // Processar imagens
+                const imagens = await processImages();
+                
+                const produto = {
+                    nome: formData.get('nome'),
+                    descricao: formData.get('descricao'),
+                    preco: parseFloat(formData.get('preco')),
+                    categoria: formData.get('categoria'),
+                    loja: formData.get('loja'),
+                    link: formData.get('link'),
+                    imagens: imagens
+                };
+
+                // Simular processamento
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                if (id) {
+                    productManager.updateProduct(id, produto);
+                    showFeedback('Produto atualizado com sucesso!', 'success');
+                } else {
+                    productManager.addProduct(produto);
+                    showFeedback('Produto adicionado com sucesso!', 'success');
+                }
+                
+                limparFormulario();
+                carregarProdutos();
+                updateDashboard();
+                
+            } catch (error) {
+                console.error('Erro ao salvar produto:', error);
+                showFeedback('Erro ao salvar produto. Tente novamente.', 'error');
+                productManager.updateSyncStatus('error');
+            }
+        }
+
+        async function processImages() {
+            const imagensInput = document.getElementById('imagens');
+            const imagens = [];
+            
+            if (imagensInput.files.length > 0) {
+                for (let file of imagensInput.files) {
+                    if (file.type.startsWith('image/')) {
+                        const dataUrl = await fileToDataUrl(file);
+                        imagens.push(dataUrl);
+                    }
+                }
+            }
+            
+            return imagens.length > 0 ? imagens : ['https://via.placeholder.com/300x300/f0f0f0/999999?text=Sem+Imagem'];
+        }
+
+        function fileToDataUrl(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function initializeSearch() {
             const searchInput = document.getElementById('search-produtos');
             if (searchInput) {
                 searchInput.addEventListener('input', (e) => {
@@ -1233,14 +1622,14 @@
                     
                     productCards.forEach(card => {
                         const productName = card.querySelector('h4').textContent.toLowerCase();
-                        const isVisible = productName.includes(searchTerm);
+                        const productDesc = card.querySelector('.product-info').textContent.toLowerCase();
+                        const isVisible = productName.includes(searchTerm) || productDesc.includes(searchTerm);
                         card.style.display = isVisible ? 'block' : 'none';
                     });
                 });
             }
-        });
+        }
 
-        // Carregar produtos
         function carregarProdutos() {
             const produtosLista = document.getElementById('produtos-lista');
             if (!produtosLista) return;
@@ -1256,11 +1645,11 @@
                 </div>
             `;
             
-            // Simular carregamento
             setTimeout(() => {
+                const produtos = productManager.getAllProducts();
                 produtosLista.innerHTML = '';
                 
-                if (SAMPLE_ADMIN_PRODUCTS.length === 0) {
+                if (produtos.length === 0) {
                     produtosLista.innerHTML = `
                         <div class="empty-state">
                             <i class="fas fa-box-open"></i>
@@ -1271,11 +1660,10 @@
                     return;
                 }
                 
-                // Criar grid de produtos
                 const grid = document.createElement('div');
                 grid.className = 'products-grid';
                 
-                SAMPLE_ADMIN_PRODUCTS.forEach(produto => {
+                produtos.forEach(produto => {
                     const productCard = document.createElement('div');
                     productCard.className = 'product-admin-card';
                     productCard.innerHTML = `
@@ -1293,10 +1681,10 @@
                             </div>
                         </div>
                         <div class="product-actions">
-                            <button onclick="editarProduto(${produto.id})" class="btn-edit" title="Editar">
+                            <button onclick="editarProduto(${produto.id})" class="btn-edit" title="Editar produto">
                                 <i class="fas fa-edit"></i> Editar
                             </button>
-                            <button onclick="excluirProduto(${produto.id})" class="btn-delete" title="Excluir">
+                            <button onclick="excluirProduto(${produto.id})" class="btn-delete" title="Excluir produto">
                                 <i class="fas fa-trash"></i> Excluir
                             </button>
                         </div>
@@ -1305,19 +1693,37 @@
                 });
                 
                 produtosLista.appendChild(grid);
-                
-                // Atualizar contador
-                document.getElementById('total-produtos').textContent = SAMPLE_ADMIN_PRODUCTS.length;
-                
-                console.log(`✅ ${SAMPLE_ADMIN_PRODUCTS.length} produtos carregados`);
+                console.log(`✅ ${produtos.length} produtos carregados`);
             }, 1000);
         }
 
-        // Editar produto
+        function updateDashboard() {
+            const produtos = productManager.getAllProducts();
+            const totalProdutos = document.getElementById('total-produtos');
+            
+            if (totalProdutos) {
+                totalProdutos.textContent = produtos.length;
+            }
+
+            // Atualizar outras estatísticas
+            const categorias = [...new Set(produtos.map(p => p.categoria))];
+            const totalCategorias = document.getElementById('total-categorias');
+            if (totalCategorias) {
+                totalCategorias.textContent = categorias.length;
+            }
+
+            // Simular visualizações baseadas no número de produtos
+            const totalVisualizacoes = document.getElementById('total-visualizacoes');
+            if (totalVisualizacoes) {
+                const views = Math.floor(produtos.length * 150 + Math.random() * 500);
+                totalVisualizacoes.textContent = views > 1000 ? `${(views/1000).toFixed(1)}K` : views;
+            }
+        }
+
         function editarProduto(id) {
             console.log('✏️ Editando produto ID:', id);
             
-            const produto = SAMPLE_ADMIN_PRODUCTS.find(p => p.id === id);
+            const produto = productManager.getProduct(id);
             
             if (!produto) {
                 showFeedback('Produto não encontrado', 'error');
@@ -1335,14 +1741,17 @@
 
             // Mostrar imagens atuais
             const imagensPreview = document.getElementById('imagens-preview');
-            imagensPreview.innerHTML = produto.imagens.map((img, index) => `
-                <div class="preview-item">
-                    <img src="${img}" alt="Imagem atual ${index + 1}">
-                    <div class="preview-info">
-                        <span class="file-name">Imagem atual ${index + 1}</span>
+            if (produto.imagens && produto.imagens.length > 0) {
+                imagensPreview.innerHTML = produto.imagens.map((img, index) => `
+                    <div class="preview-item">
+                        <img src="${img}" alt="Imagem atual ${index + 1}">
+                        <div class="preview-info">
+                            <span class="file-name">Imagem atual ${index + 1}</span>
+                            <span class="file-size">Atual</span>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `).join('');
+            }
 
             document.getElementById('cancelar-edicao').style.display = 'inline-flex';
             document.querySelector('#produto-form button[type="submit"] span').textContent = 'Atualizar Produto';
@@ -1353,24 +1762,41 @@
             showFeedback('Produto carregado para edição', 'success');
         }
 
-        // Excluir produto
         function excluirProduto(id) {
-            if (!confirm('Tem certeza que deseja excluir este produto?')) return;
+            if (!confirm('⚠️ Tem certeza que deseja excluir este produto?\n\nEsta ação não pode ser desfeita.')) return;
             
             console.log('🗑️ Excluindo produto ID:', id);
             
-            // Simular exclusão
-            const index = SAMPLE_ADMIN_PRODUCTS.findIndex(p => p.id === id);
-            if (index > -1) {
-                SAMPLE_ADMIN_PRODUCTS.splice(index, 1);
-                showFeedback('Produto excluído com sucesso!', 'success');
-                carregarProdutos();
-            } else {
-                showFeedback('Produto não encontrado', 'error');
-            }
+            productManager.updateSyncStatus('syncing');
+            
+            setTimeout(() => {
+                const sucesso = productManager.deleteProduct(id);
+                
+                if (sucesso) {
+                    showFeedback('Produto excluído com sucesso!', 'success');
+                    carregarProdutos();
+                    updateDashboard();
+                } else {
+                    showFeedback('Erro ao excluir produto', 'error');
+                    productManager.updateSyncStatus('error');
+                }
+            }, 500);
         }
 
-        // Função para mostrar feedback
+        function cancelarEdicao() {
+            limparFormulario();
+            document.getElementById('cancelar-edicao').style.display = 'none';
+            document.querySelector('#produto-form button[type="submit"] span').textContent = 'Salvar Produto';
+            showFeedback('Edição cancelada', 'info');
+        }
+
+        function limparFormulario() {
+            document.getElementById('produto-form').reset();
+            document.getElementById('imagens-preview').innerHTML = '';
+            document.getElementById('produto-id').value = '';
+            showFeedback('', '');
+        }
+
         function showFeedback(message, type) {
             const feedback = document.getElementById('feedback');
             
@@ -1399,7 +1825,23 @@
             }
         }
 
-        console.log('✅ Painel administrativo carregado com sucesso!');
+        // Função para exportar dados (funcionalidade extra)
+        function exportarDados() {
+            const produtos = productManager.getAllProducts();
+            const dataStr = JSON.stringify(produtos, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `produtos_centro_compras_${new Date().toISOString().split('T')[0]}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+
+        console.log('✅ Painel administrativo avançado carregado com sucesso!');
+        console.log('📊 Sistema de sincronização ativo');
+        console.log('💾 Dados persistidos no localStorage');
     </script>
 </body>
 </html>
