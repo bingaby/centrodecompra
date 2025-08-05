@@ -1,16 +1,17 @@
 const express = require('express');
+const path = require('path');
 const cors = require('cors');
 const { Pool } = require('pg');
 const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
 const { Server } = require('socket.io');
-const http = require('http'); // Adicionado
+const http = require('http');
 require('dotenv').config();
 
 const app = express();
 const upload = multer({ storage: multer.memoryStorage() });
 
-// Lista de categorias e lojas permitidas (alinhada com o frontend)
+// Lista de categorias e lojas permitidas
 const CATEGORIAS_PERMITIDAS = [
     'eletronicos', 'moda', 'fitness', 'casa', 'beleza', 'esportes', 'livros',
     'infantil', 'Celulares', 'Eletrodomésticos', 'pet', 'jardinagem', 'automotivo',
@@ -109,28 +110,44 @@ io.on('connection', (socket) => {
 const cache = new Map();
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
 
-// --- ROTAS DA API ---
-
-// Rota de boas-vindas para a URL principal (resolve o "Cannot GET /")
+// --- ROTAS DO FRONTEND ---
+// Servindo arquivos estáticos diretamente do diretório raiz
 app.get('/', (req, res) => {
-    res.json({
-        status: 'success',
-        message: 'Bem-vindo à API de produtos do Centro de Compras!',
-        endpoints: {
-            produtos: '/api/produtos',
-            stats: '/api/stats',
-        },
-    });
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Rota para buscar estatísticas (resolve o erro 404 no frontend)
+app.get('/contato.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'contato.html'));
+});
+
+app.get('/admin-xyz-123.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'admin-xyz-123.html'));
+});
+
+// Servir arquivos JavaScript
+app.get('/admin.js', (req, res) => {
+    res.sendFile(path.join(__dirname, 'admin.js'));
+});
+
+// Servir arquivos CSS do Font Awesome
+app.get('/css/all.min.css', (req, res) => {
+    res.sendFile(path.join(__dirname, 'node_modules/@fortawesome/fontawesome-free/css/all.min.css'));
+});
+
+// Servir outros arquivos de pastas (ex: imagens, logos)
+app.use('/imagens', express.static(path.join(__dirname, 'imagens')));
+app.use('/logos', express.static(path.join(__dirname, 'logos')));
+
+
+// --- ROTAS DA API ---
+
+// Rota para buscar estatísticas
 app.get('/api/stats', async (req, res) => {
     try {
         const totalProductsQuery = 'SELECT COUNT(*) FROM produtos';
         const { rows } = await pool.query(totalProductsQuery);
         const totalProducts = parseInt(rows[0].count);
 
-        // Dados de views e vendas fictícios, pois não há tabelas para eles
         const totalViews = Math.floor(Math.random() * 5000) + totalProducts;
         const totalSales = Math.floor(Math.random() * 200) + 1;
 
@@ -146,13 +163,11 @@ app.get('/api/stats', async (req, res) => {
     }
 });
 
-
 // Rota para buscar produtos
 app.get('/api/produtos', async (req, res) => {
     try {
         const { categoria, loja, busca, page = 1, limit = 12 } = req.query;
         const offset = (page - 1) * limit;
-        console.log('Parâmetros recebidos:', { categoria, loja, busca, page, limit });
 
         if (categoria && categoria !== 'todas' && !CATEGORIAS_PERMITIDAS.includes(categoria)) {
             return res.status(400).json({ status: 'error', message: 'Categoria inválida' });
@@ -165,7 +180,6 @@ app.get('/api/produtos', async (req, res) => {
         if (cache.has(cacheKey)) {
             const cached = cache.get(cacheKey);
             if (Date.now() - cached.timestamp < CACHE_DURATION) {
-                console.log('Retornando dados do cache');
                 return res.json(cached.data);
             }
         }
