@@ -4,176 +4,338 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administração - Centro de Compras</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="admin-body">
+    <!-- Header Admin -->
     <header class="admin-header">
-        <div class="admin-header-content">
-            <h1>🛠️ Administração de Produtos</h1>
-            <a href="/" class="back-link">← Voltar ao Início</a>
+        <div class="container">
+            <div class="admin-header-content">
+                <div class="admin-logo">
+                    <i class="fas fa-cogs"></i>
+                    <h1>Painel Administrativo</h1>
+                </div>
+                <div class="admin-actions">
+                    <a href="/" class="back-btn">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Voltar ao Site</span>
+                    </a>
+                </div>
+            </div>
         </div>
     </header>
 
-    <main class="admin-main">
-        <div class="admin-container">
-            <section class="form-section">
-                <div class="form-header">
-                    <h2>📝 Adicionar/Editar Produto</h2>
-                    <p>Preencha os dados do produto abaixo</p>
-                </div>
-                
-                <form id="produto-form" class="produto-form">
-                    <input type="hidden" id="produto-id" name="id">
+    <!-- Sidebar Admin -->
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <nav class="admin-nav">
+                <ul>
+                    <li class="nav-item active">
+                        <a href="#produtos" class="nav-link">
+                            <i class="fas fa-box"></i>
+                            <span>Produtos</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#categorias" class="nav-link">
+                            <i class="fas fa-tags"></i>
+                            <span>Categorias</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#lojas" class="nav-link">
+                            <i class="fas fa-store"></i>
+                            <span>Lojas</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#estatisticas" class="nav-link">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Estatísticas</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Conteúdo Principal Admin -->
+        <main class="admin-main">
+            <div class="admin-container">
+                <!-- Dashboard Cards -->
+                <section class="dashboard-cards">
+                    <div class="dashboard-card">
+                        <div class="card-icon products">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 id="total-produtos">0</h3>
+                            <p>Total de Produtos</p>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="card-icon categories">
+                            <i class="fas fa-tags"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>15</h3>
+                            <p>Categorias Ativas</p>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="card-icon stores">
+                            <i class="fas fa-store"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>6</h3>
+                            <p>Lojas Parceiras</p>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="card-icon views">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>12.5K</h3>
+                            <p>Visualizações</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Formulário de Produto -->
+                <section class="admin-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-plus-circle"></i> Adicionar/Editar Produto</h2>
+                        <p>Preencha as informações do produto</p>
+                    </div>
                     
-                    <div class="form-group">
-                        <label for="nome">Nome do Produto</label>
-                        <input type="text" id="nome" name="nome" required placeholder="Digite o nome do produto">
-                    </div>
+                    <div class="form-container">
+                        <form id="produto-form" class="product-form">
+                            <input type="hidden" id="produto-id" name="id">
+                            
+                            <div class="form-grid">
+                                <div class="form-group full-width">
+                                    <label for="nome">
+                                        <i class="fas fa-tag"></i>
+                                        Nome do Produto
+                                    </label>
+                                    <input type="text" id="nome" name="nome" required placeholder="Digite o nome do produto">
+                                </div>
 
-                    <div class="form-group">
-                        <label for="descricao">Descrição</label>
-                        <textarea id="descricao" name="descricao" placeholder="Descreva o produto (opcional)" rows="3"></textarea>
-                    </div>
+                                <div class="form-group full-width">
+                                    <label for="descricao">
+                                        <i class="fas fa-align-left"></i>
+                                        Descrição
+                                    </label>
+                                    <textarea id="descricao" name="descricao" placeholder="Descreva o produto" rows="3"></textarea>
+                                </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="preco">Preço (R$)</label>
-                            <input type="number" id="preco" name="preco" step="0.01" required placeholder="0,00">
+                                <div class="form-group">
+                                    <label for="preco">
+                                        <i class="fas fa-dollar-sign"></i>
+                                        Preço (R$)
+                                    </label>
+                                    <input type="number" id="preco" name="preco" step="0.01" required placeholder="0,00">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="categoria">
+                                        <i class="fas fa-folder"></i>
+                                        Categoria
+                                    </label>
+                                    <select id="categoria" name="categoria" required>
+                                        <option value="">Selecione uma categoria</option>
+                                        <option value="eletronicos">📱 Eletrônicos</option>
+                                        <option value="moda">👗 Moda</option>
+                                        <option value="casa">🏠 Casa</option>
+                                        <option value="beleza">💄 Beleza</option>
+                                        <option value="esportes">⚽ Esportes</option>
+                                        <option value="infantil">🧸 Infantil</option>
+                                        <option value="automotivo">🚗 Automotivo</option>
+                                        <option value="games">🎮 Games</option>
+                                        <option value="livros">📚 Livros</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="loja">
+                                        <i class="fas fa-store"></i>
+                                        Loja
+                                    </label>
+                                    <select id="loja" name="loja" required>
+                                        <option value="">Selecione uma loja</option>
+                                        <option value="amazon">🛒 Amazon</option>
+                                        <option value="mercadolivre">📦 Mercado Livre</option>
+                                        <option value="shopee">🛍️ Shopee</option>
+                                        <option value="magalu">🏪 Magalu</option>
+                                        <option value="shein">👕 Shein</option>
+                                        <option value="alibaba">🌐 Alibaba</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="link">
+                                        <i class="fas fa-link"></i>
+                                        Link do Produto
+                                    </label>
+                                    <input type="url" id="link" name="link" required placeholder="https://...">
+                                </div>
+
+                                <div class="form-group full-width">
+                                    <label for="imagens">
+                                        <i class="fas fa-images"></i>
+                                        Imagens do Produto
+                                    </label>
+                                    <div class="file-upload-area">
+                                        <input type="file" id="imagens" name="imagens" accept="image/*" multiple>
+                                        <div class="upload-placeholder">
+                                            <i class="fas fa-cloud-upload-alt"></i>
+                                            <p>Clique para selecionar imagens ou arraste aqui</p>
+                                            <small>Formatos aceitos: JPG, PNG, GIF (máx. 5MB cada)</small>
+                                        </div>
+                                    </div>
+                                    <div id="imagens-preview" class="images-preview"></div>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn-primary">
+                                    <i class="fas fa-save"></i>
+                                    <span>Salvar Produto</span>
+                                </button>
+                                <button type="button" id="cancelar-edicao" class="btn-secondary" style="display: none;">
+                                    <i class="fas fa-times"></i>
+                                    <span>Cancelar</span>
+                                </button>
+                            </div>
+
+                            <div id="feedback" class="form-feedback"></div>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- Lista de Produtos -->
+                <section class="admin-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-list"></i> Lista de Produtos</h2>
+                        <div class="section-actions">
+                            <div class="search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="search-produtos" placeholder="Buscar produtos...">
+                            </div>
+                            <button class="btn-refresh" onclick="carregarProdutos()">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
                         </div>
-
-                        <div class="form-group">
-                            <label for="categoria">Categoria</label>
-                            <select id="categoria" name="categoria" required>
-                                <option value="">Selecione uma categoria</option>
-                                <option value="eletronicos">📱 Eletrônicos</option>
-                                <option value="moda">👗 Moda</option>
-                                <option value="fitness">💪 Fitness</option>
-                                <option value="casa">🏠 Casa</option>
-                                <option value="beleza">💄 Beleza</option>
-                                <option value="esportes">⚽ Esportes</option>
-                                <option value="livros">📚 Livros</option>
-                                <option value="infantil">🧸 Infantil</option>
-                                <option value="Celulares">📱 Celulares</option>
-                                <option value="Eletrodomésticos">🔌 Eletrodomésticos</option>
-                                <option value="pet">🐕 Pet</option>
-                                <option value="jardinagem">🌱 Jardinagem</option>
-                                <option value="automotivo">🚗 Automotivo</option>
-                                <option value="gastronomia">🍳 Gastronomia</option>
-                                <option value="games">🎮 Games</option>
-                            </select>
-                        </div>
                     </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="loja">Loja</label>
-                            <select id="loja" name="loja" required>
-                                <option value="">Selecione uma loja</option>
-                                <option value="amazon">🛒 Amazon</option>
-                                <option value="magalu">🏪 Magalu</option>
-                                <option value="shein">👕 Shein</option>
-                                <option value="shopee">🛍️ Shopee</option>
-                                <option value="mercadolivre">📦 Mercado Livre</option>
-                                <option value="alibaba">🌐 Alibaba</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="link">Link do Produto</label>
-                            <input type="url" id="link" name="link" required placeholder="https://...">
-                        </div>
+                    
+                    <div class="products-table-container">
+                        <div id="produtos-lista" class="products-table"></div>
                     </div>
-
-                    <div class="form-group">
-                        <label for="imagens">Imagens do Produto</label>
-                        <div class="file-input-container">
-                            <input type="file" id="imagens" name="imagens" accept="image/*" multiple>
-                            <label for="imagens" class="file-input-label">
-                                <span class="file-icon">📷</span>
-                                <span>Escolher imagens</span>
-                            </label>
-                        </div>
-                        <div id="imagens-preview" class="imagens-preview"></div>
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="submit" class="btn-primary">
-                            <span class="btn-icon">💾</span>
-                            <span>Salvar Produto</span>
-                        </button>
-                        <button type="button" id="cancelar-edicao" class="btn-secondary" style="display: none;">
-                            <span class="btn-icon">❌</span>
-                            <span>Cancelar Edição</span>
-                        </button>
-                    </div>
-
-                    <div id="feedback" class="feedback-message"></div>
-                </form>
-            </section>
-
-            <section class="lista-produtos-section">
-                <div class="lista-header">
-                    <h2>📋 Lista de Produtos</h2>
-                    <p>Gerencie todos os produtos cadastrados</p>
-                </div>
-                <div id="produtos-lista" class="produtos-lista"></div>
-            </section>
-        </div>
-    </main>
+                </section>
+            </div>
+        </main>
+    </div>
 
     <script>
         const API_BASE_URL = 'https://minha-api-produtos.onrender.com';
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Manipulador de erro para imagens
-            document.querySelectorAll('img').forEach(img => {
-                img.onerror = () => {
-                    console.log(`Erro ao carregar imagem: ${img.src}`);
-                    img.src = '/imagens/placeholder.jpg';
-                };
-            });
+            // Atualizar ano
+            document.getElementById('year').textContent = new Date().getFullYear();
 
-            // Pré-visualização de imagens
+            // Preview de imagens
             const imagensInput = document.getElementById('imagens');
             const imagensPreview = document.getElementById('imagens-preview');
             
-            imagensInput.addEventListener('change', () => {
+            imagensInput.addEventListener('change', (e) => {
                 imagensPreview.innerHTML = '';
-                Array.from(imagensInput.files).forEach(file => {
-                    const previewItem = document.createElement('div');
-                    previewItem.className = 'preview-item';
-                    
-                    const img = document.createElement('img');
-                    img.src = URL.createObjectURL(file);
-                    img.alt = file.name;
-                    
-                    const fileName = document.createElement('span');
-                    fileName.textContent = file.name;
-                    fileName.className = 'file-name';
-                    
-                    previewItem.appendChild(img);
-                    previewItem.appendChild(fileName);
-                    imagensPreview.appendChild(previewItem);
+                Array.from(e.target.files).forEach((file, index) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const previewItem = document.createElement('div');
+                        previewItem.className = 'preview-item';
+                        previewItem.innerHTML = `
+                            <img src="${e.target.result}" alt="Preview ${index + 1}">
+                            <div class="preview-info">
+                                <span class="file-name">${file.name}</span>
+                                <span class="file-size">${(file.size / 1024 / 1024).toFixed(2)} MB</span>
+                            </div>
+                            <button type="button" class="remove-preview" onclick="this.parentElement.remove()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        `;
+                        imagensPreview.appendChild(previewItem);
+                    };
+                    reader.readAsDataURL(file);
                 });
             });
 
-            // Carregar lista de produtos
+            // Drag and drop para upload
+            const uploadArea = document.querySelector('.file-upload-area');
+            
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, unhighlight, false);
+            });
+
+            function highlight(e) {
+                uploadArea.classList.add('drag-over');
+            }
+
+            function unhighlight(e) {
+                uploadArea.classList.remove('drag-over');
+            }
+
+            uploadArea.addEventListener('drop', handleDrop, false);
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                imagensInput.files = files;
+                imagensInput.dispatchEvent(new Event('change'));
+            }
+
+            // Carregar produtos
             async function carregarProdutos() {
                 const produtosLista = document.getElementById('produtos-lista');
-                produtosLista.innerHTML = '<div class="loading-produtos"><div class="spinner"></div><p>Carregando produtos...</p></div>';
+                produtosLista.innerHTML = `
+                    <div class="loading-state">
+                        <div class="loading-spinner">
+                            <div class="spinner"></div>
+                        </div>
+                        <p>Carregando produtos...</p>
+                    </div>
+                `;
                 
                 try {
                     const response = await fetch(`${API_BASE_URL}/api/produtos`);
                     if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
                     
                     const { data } = await response.json();
+                    
+                    // Atualizar contador
+                    document.getElementById('total-produtos').textContent = data.length;
+                    
                     produtosLista.innerHTML = '';
                     
                     if (data.length === 0) {
                         produtosLista.innerHTML = `
                             <div class="empty-state">
-                                <span class="empty-icon">📦</span>
+                                <i class="fas fa-box-open"></i>
                                 <h3>Nenhum produto encontrado</h3>
                                 <p>Adicione seu primeiro produto usando o formulário acima.</p>
                             </div>
@@ -181,55 +343,62 @@
                         return;
                     }
 
+                    // Criar tabela
+                    const table = document.createElement('div');
+                    table.className = 'products-grid';
+                    
                     data.forEach(produto => {
-                        const div = document.createElement('div');
-                        div.className = 'produto-item';
-                        
                         let imagens = [];
                         try {
-                            imagens = produto.imagens ? JSON.parse(produto.imagens) : ['/imagens/placeholder.jpg'];
+                            imagens = produto.imagens ? JSON.parse(produto.imagens) : [];
                         } catch (e) {
-                            console.error(`Erro ao parsear imagens para o produto ${produto.nome}:`, e);
-                            imagens = ['/imagens/placeholder.jpg'];
+                            imagens = [];
                         }
 
-                        div.innerHTML = `
-                            <div class="produto-image">
-                                <img src="${imagens[0]}" alt="${produto.nome}" loading="lazy">
+                        const productCard = document.createElement('div');
+                        productCard.className = 'product-admin-card';
+                        productCard.innerHTML = `
+                            <div class="product-image">
+                                <img src="${imagens[0] || 'https://via.placeholder.com/100x100/f0f0f0/999999?text=Sem+Imagem'}" alt="${produto.nome}">
                             </div>
-                            <div class="produto-info">
-                                <h4 class="produto-nome">${produto.nome}</h4>
-                                <p class="produto-preco">R$ ${parseFloat(produto.preco).toFixed(2)}</p>
-                                <span class="produto-categoria">${produto.categoria}</span>
-                                <span class="produto-loja">${produto.loja}</span>
+                            <div class="product-info">
+                                <h4>${produto.nome}</h4>
+                                <p class="product-price">R$ ${parseFloat(produto.preco).toFixed(2)}</p>
+                                <div class="product-tags">
+                                    <span class="tag category">${produto.categoria}</span>
+                                    <span class="tag store">${produto.loja}</span>
+                                </div>
                             </div>
-                            <div class="produto-actions">
-                                <button onclick="editarProduto(${produto.id})" class="btn-edit">
-                                    <span>✏️</span>
-                                    <span>Editar</span>
+                            <div class="product-actions">
+                                <button onclick="editarProduto(${produto.id})" class="btn-edit" title="Editar">
+                                    <i class="fas fa-edit"></i>
                                 </button>
-                                <button onclick="excluirProduto(${produto.id})" class="btn-delete">
-                                    <span>🗑️</span>
-                                    <span>Excluir</span>
+                                <button onclick="excluirProduto(${produto.id})" class="btn-delete" title="Excluir">
+                                    <i class="fas fa-trash"></i>
                                 </button>
                             </div>
                         `;
-                        produtosLista.appendChild(div);
+                        table.appendChild(productCard);
                     });
+                    
+                    produtosLista.appendChild(table);
                 } catch (error) {
                     console.error('Erro ao carregar produtos:', error);
                     produtosLista.innerHTML = `
                         <div class="error-state">
-                            <span class="error-icon">⚠️</span>
+                            <i class="fas fa-exclamation-triangle"></i>
                             <h3>Erro ao carregar produtos</h3>
                             <p>Verifique sua conexão e tente novamente.</p>
-                            <button onclick="carregarProdutos()" class="btn-retry">Tentar Novamente</button>
+                            <button onclick="carregarProdutos()" class="btn-primary">
+                                <i class="fas fa-redo"></i>
+                                Tentar Novamente
+                            </button>
                         </div>
                     `;
                 }
             }
 
-            // Editar produto
+            // Funções globais
             window.editarProduto = async function(id) {
                 try {
                     const response = await fetch(`${API_BASE_URL}/api/produtos?id=${id}`);
@@ -238,6 +407,7 @@
                     
                     if (!produto) throw new Error('Produto não encontrado');
 
+                    // Preencher formulário
                     document.getElementById('produto-id').value = produto.id;
                     document.getElementById('nome').value = produto.nome;
                     document.getElementById('descricao').value = produto.descricao || '';
@@ -246,34 +416,35 @@
                     document.getElementById('loja').value = produto.loja;
                     document.getElementById('link').value = produto.link;
 
+                    // Mostrar imagens atuais
                     let imagens = [];
                     try {
                         imagens = produto.imagens ? JSON.parse(produto.imagens) : [];
                     } catch (e) {
-                        console.error(`Erro ao parsear imagens para o produto ${produto.nome}:`, e);
                         imagens = [];
                     }
 
                     const imagensPreview = document.getElementById('imagens-preview');
-                    imagensPreview.innerHTML = imagens.map(img => `
+                    imagensPreview.innerHTML = imagens.map((img, index) => `
                         <div class="preview-item">
-                            <img src="${img}" alt="Imagem do produto">
-                            <span class="file-name">Imagem atual</span>
+                            <img src="${img}" alt="Imagem atual ${index + 1}">
+                            <div class="preview-info">
+                                <span class="file-name">Imagem atual</span>
+                            </div>
                         </div>
                     `).join('');
 
                     document.getElementById('cancelar-edicao').style.display = 'inline-flex';
-                    document.querySelector('#produto-form button[type="submit"] span:last-child').textContent = 'Atualizar Produto';
+                    document.querySelector('#produto-form button[type="submit"] span').textContent = 'Atualizar Produto';
                     
                     // Scroll para o formulário
-                    document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth' });
+                    document.querySelector('.product-form').scrollIntoView({ behavior: 'smooth' });
                 } catch (error) {
-                    console.error('Erro ao carregar produto para edição:', error);
+                    console.error('Erro ao carregar produto:', error);
                     showFeedback('Erro ao carregar produto', 'error');
                 }
             };
 
-            // Excluir produto
             window.excluirProduto = async function(id) {
                 if (!confirm('Tem certeza que deseja excluir este produto?')) return;
                 
@@ -302,30 +473,32 @@
                 document.getElementById('imagens-preview').innerHTML = '';
                 document.getElementById('produto-id').value = '';
                 document.getElementById('cancelar-edicao').style.display = 'none';
-                document.querySelector('#produto-form button[type="submit"] span:last-child').textContent = 'Salvar Produto';
+                document.querySelector('#produto-form button[type="submit"] span').textContent = 'Salvar Produto';
                 showFeedback('', '');
             });
 
             // Função para mostrar feedback
             function showFeedback(message, type) {
                 const feedback = document.getElementById('feedback');
-                feedback.textContent = message;
-                feedback.className = `feedback-message ${type}`;
+                feedback.innerHTML = message ? `
+                    <div class="feedback-${type}">
+                        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                        <span>${message}</span>
+                    </div>
+                ` : '';
                 
                 if (message) {
                     setTimeout(() => {
-                        feedback.textContent = '';
-                        feedback.className = 'feedback-message';
+                        feedback.innerHTML = '';
                     }, 5000);
                 }
             }
 
-            // Formulário de adição/atualização de produto
-            const form = document.getElementById('produto-form');
-            form.addEventListener('submit', async (e) => {
+            // Formulário de produto
+            document.getElementById('produto-form').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 
-                const formData = new FormData(form);
+                const formData = new FormData(e.target);
                 const id = document.getElementById('produto-id').value;
                 const url = id ? `${API_BASE_URL}/api/produtos/${id}` : `${API_BASE_URL}/api/produtos`;
                 const method = id ? 'PUT' : 'POST';
@@ -344,11 +517,11 @@
                             'success'
                         );
                         
-                        form.reset();
+                        e.target.reset();
                         document.getElementById('imagens-preview').innerHTML = '';
                         document.getElementById('produto-id').value = '';
                         document.getElementById('cancelar-edicao').style.display = 'none';
-                        document.querySelector('#produto-form button[type="submit"] span:last-child').textContent = 'Salvar Produto';
+                        document.querySelector('#produto-form button[type="submit"] span').textContent = 'Salvar Produto';
                         carregarProdutos();
                     } else {
                         showFeedback(result.message || 'Erro ao salvar produto', 'error');
@@ -357,6 +530,18 @@
                     console.error('Erro ao salvar produto:', error);
                     showFeedback('Erro ao conectar com a API', 'error');
                 }
+            });
+
+            // Busca de produtos
+            document.getElementById('search-produtos').addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                const productCards = document.querySelectorAll('.product-admin-card');
+                
+                productCards.forEach(card => {
+                    const productName = card.querySelector('h4').textContent.toLowerCase();
+                    const isVisible = productName.includes(searchTerm);
+                    card.style.display = isVisible ? 'flex' : 'none';
+                });
             });
 
             // Carregar produtos iniciais
