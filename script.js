@@ -9,7 +9,7 @@ let allProducts = []
 let isLoading = false
 
 function createImagePlaceholder(width = 300, height = 200, text = "Produto") {
-  return `https://via.placeholder.com/${width}x${height}/f0f0f0/999999?text=${encodeURIComponent(text)}`
+  return `https://placehold.co/${width}x${height}?text=${encodeURIComponent(text)}&font=roboto`
 }
 
 function debounce(func, wait) {
