@@ -1,88 +1,14 @@
-const API_CONFIG = {
-  REAL_API: "https://minha-api-produtos.onrender.com",
-  USE_LOCAL_DATA: false,
-  ADMIN_TOKEN: "seu_token_secreto",
-}
-
-let currentPage = 1
-let allProducts = []
-let isLoading = false
-
-function createImagePlaceholder(width = 300, height = 200, text = "Produto") {
-  return `https://via.placeholder.com/${width}x${height}/f0f0f0/999999?text=${encodeURIComponent(text)}`
-}
-
-function debounce(func, wait) {
-  let timeout
-  return function executedFunction(...args) {
-    const later = () => {
-      clearTimeout(timeout)
-      func(...args)
-    }
-    clearTimeout(timeout)
-    timeout = setTimeout(later, wait)
-  }
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  console.log("🚀 Iniciando Centro de Compras...")
-  console.log("🌐 Conectando com API:", API_CONFIG.REAL_API)
-
-  testApiConnection()
-  initializeHeader()
-  initializeSidebar()
-  initializeSearch()
-  initializeFilters()
-  initializeModal()
-  loadProducts()
-  updateFooterYear()
-  setupLazyLoading()
-  setupServiceWorker()
-})
+c
 
 async function testApiConnection() {
   try {
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 10000)
-
-    const response = await fetch(`${API_CONFIG.REAL_API}/api/produtos?limit=1`, {
-      method: "GET",
-      signal: controller.signal,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-
-    clearTimeout(timeoutId)
-
-    if (response.ok) {
-      console.log("✅ API conectada com sucesso!")
-      showConnectionStatus("online")
+    const ti
     } else {
-      throw new Error(`API retornou status ${response.status}`)
-    }
-  } catch (error) {
-    console.error("❌ Erro na conexão com API:", error.message)
-    showConnectionStatus("offline")
-  }
-}
-
-function showConnectionStatus(status) {
-  const existingStatus = document.querySelector(".connection-status")
-  if (existingStatus) {
-    existingStatus.remove()
   }
 
   const statusDiv = document.createElement("div")
-  statusDiv.className = `connection-status ${status}`
-  statusDiv.innerHTML = `
-    <div class="status-content">
-      <i class="fas fa-${status === "online" ? "wifi" : "exclamation-triangle"}"></i>
-      <span>${status === "online" ? "Conectado ao servidor" : "Erro de conexão com servidor"}</span>
-      ${status === "offline" ? "<small>Verifique sua conexão com a internet</small>" : ""}
-    </div>
-  `
-
+  statusDiv.c
   document.body.appendChild(statusDiv)
 
   setTimeout(() => {
