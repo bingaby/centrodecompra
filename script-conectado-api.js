@@ -1,7 +1,7 @@
 const API_CONFIG = {
   REAL_API: "https://minha-api-produtos.onrender.com",
   USE_LOCAL_DATA: false,
-  TIMEOUT: 15000,
+  ADMIN_TOKEN: "seu_token_secreto",
 }
 
 let currentPage = 1
@@ -9,7 +9,7 @@ let allProducts = []
 let isLoading = false
 
 function createImagePlaceholder(width = 300, height = 200, text = "Produto") {
-  return `https://placehold.co/${width}x${height}?text=${encodeURIComponent(text)}&font=roboto`
+  return `https://via.placeholder.com/${width}x${height}/f0f0f0/999999?text=${encodeURIComponent(text)}`
 }
 
 function debounce(func, wait) {
@@ -21,37 +21,6 @@ function debounce(func, wait) {
     }
     clearTimeout(timeout)
     timeout = setTimeout(later, wait)
-  }
-}
-
-async function makeRequest(endpoint, options = {}) {
-  const url = `${API_CONFIG.REAL_API}${endpoint}`
-  const controller = new AbortController()
-  const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.TIMEOUT)
-
-  try {
-    options.headers = {
-      ...options.headers,
-      'Content-Type': 'application/json'
-    }
-    options.signal = controller.signal
-
-    const response = await fetch(url, options)
-    clearTimeout(timeoutId)
-
-    if (!response.ok) {
-      let message = `Erro HTTP: ${response.status}`
-      if (response.status === 401) message += ' (Não autorizado)'
-      if (response.status === 404) message += ' (Endpoint não encontrado)'
-      throw new Error(message)
-    }
-
-    const data = await response.json()
-    return data
-
-  } catch (error) {
-    console.error(`Erro na requisição ${endpoint}:`, error)
-    throw error
   }
 }
 
