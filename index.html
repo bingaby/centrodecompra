@@ -1,408 +1,580 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Ofertas com descontos reais nas principais lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliado seguros e atualizados.">
-    <meta property="og:title" content="Centro de Compras - Ofertas e Descontos">
-    <meta property="og:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliados seguros e atualizados!">
-    <meta property="og:image" content="https://via.placeholder.com/1200x630/3483fa/ffffff?text=Centro+de+Compras">
-    <meta property="og:url" content="https://centrodecompra.com.br/">
-    <meta name="twitter:card" content="summary_large_image">
-    <title>Centro de Compras - Ofertas do Dia</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <!-- Header Principal -->
-    <header class="main-header">
-        <div class="header-top">
-            <div class="container">
-                <div class="header-info">
-                    <span><i class="fas fa-shipping-fast"></i> Frete grátis em milhares de produtos</span>
-                    <span><i class="fas fa-shield-alt"></i> Compra 100% segura</span>
-                </div>
-                <div class="header-links">
-                    <a href="#" class="header-link">Ajuda</a>
-                    <a href="#" class="header-link">Contato</a>
-                </div>
-            </div>
-        </div>
-        
-        <div class="header-main">
-            <div class="container">
-                <div class="header-content">
-                    <div class="logo-section">
-                        <img src="https://via.placeholder.com/180x60/3483fa/ffffff?text=Centro+de+Compras" alt="Centro de Compras" class="logo" id="site-logo">
-                    </div>
-                    
-                    <div class="search-section">
-                        <div class="search-container">
-                            <input type="text" id="busca" placeholder="Buscar produtos, marcas e muito mais..." class="search-input">
-                            <button class="search-btn" type="button">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </div>
-                        <div class="search-suggestions" id="search-suggestions"></div>
-                    </div>
-                    
-                    <div class="header-actions">
-                        <a href="https://wa.me/5521975179737" class="action-btn whatsapp-btn" target="_blank">
-                            <i class="fab fa-whatsapp"></i>
-                            <span>WhatsApp</span>
-                        </a>
-                        <a href="https://t.me/boost/centraldecomprascdc" class="action-btn telegram-btn" target="_blank">
-                            <i class="fab fa-telegram"></i>
-                            <span>Telegram</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <nav class="main-nav">
-            <div class="container">
-                <div class="nav-content">
-                    <div class="nav-categories">
-                        <button class="categories-btn" id="categories-toggle">
-                            <i class="fas fa-bars"></i>
-                            <span>Categorias</span>
-                            <i class="fas fa-chevron-down"></i>
-                        </button>
-                    </div>
-                    <div class="nav-links">
-                        <a href="#" class="nav-link active">Ofertas do Dia</a>
-                        <a href="#" class="nav-link">Mais Vendidos</a>
-                        <a href="#" class="nav-link">Cupons</a>
-                        <a href="#" class="nav-link">Eletrônicos</a>
-                        <a href="#" class="nav-link">Moda</a>
-                        <a href="#" class="nav-link">Casa</a>
-                    </div>
-                </div>
-            </div>
-        </nav>
-    </header>
+const API_CONFIG = {
+  REAL_API: "https://minha-api-produtos.onrender.com",
+  USE_LOCAL_DATA: false,
+  TEST_API: "https://jsonplaceholder.typicode.com",
+};
 
-    <!-- Sidebar de Categorias -->
-    <div class="categories-sidebar" id="categories-sidebar">
-        <div class="sidebar-header">
-            <h3><i class="fas fa-list"></i> Categorias</h3>
-            <button class="close-sidebar" id="close-sidebar">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="sidebar-content">
-            <ul class="categories-list">
-                <li class="category-item active" data-categoria="todas">
-                    <i class="fas fa-th-large"></i>
-                    <span>Todas as Categorias</span>
-                </li>
-                <li class="category-item" data-categoria="eletronicos">
-                    <i class="fas fa-laptop"></i>
-                    <span>Eletrônicos</span>
-                </li>
-                <li class="category-item" data-categoria="moda">
-                    <i class="fas fa-tshirt"></i>
-                    <span>Moda</span>
-                </li>
-                <li class="category-item" data-categoria="casa">
-                    <i class="fas fa-home"></i>
-                    <span>Casa e Decoração</span>
-                </li>
-                <li class="category-item" data-categoria="beleza">
-                    <i class="fas fa-heart"></i>
-                    <span>Beleza e Cuidado</span>
-                </li>
-                <li class="category-item" data-categoria="esportes">
-                    <i class="fas fa-dumbbell"></i>
-                    <span>Esportes e Fitness</span>
-                </li>
-                <li class="category-item" data-categoria="infantil">
-                    <i class="fas fa-baby"></i>
-                    <span>Bebês e Crianças</span>
-                </li>
-                <li class="category-item" data-categoria="automotivo">
-                    <i class="fas fa-car"></i>
-                    <span>Automotivo</span>
-                </li>
-                <li class="category-item" data-categoria="games">
-                    <i class="fas fa-gamepad"></i>
-                    <span>Games</span>
-                </li>
-                <li class="category-item" data-categoria="livros">
-                    <i class="fas fa-book"></i>
-                    <span>Livros</span>
-                </li>
-                <li class="category-item" data-categoria="fitness">
-                    <i class="fas fa-dumbbell"></i>
-                    <span>Fitness</span>
-                </li>
-                <li class="category-item" data-categoria="pet">
-                    <i class="fas fa-paw"></i>
-                    <span>Pet Shop</span>
-                </li>
-                <li class="category-item" data-categoria="jardinagem">
-                    <i class="fas fa-leaf"></i>
-                    <span>Jardinagem</span>
-                </li>
-                <li class="category-item" data-categoria="gastronomia">
-                    <i class="fas fa-utensils"></i>
-                    <span>Gastronomia</span>
-                </li>
-            </ul>
-        </div>
+let currentPage = 1;
+let allProducts = [];
+let isLoading = false;
+let currentImageIndex = 0;
+
+const SAMPLE_PRODUCTS = [
+  
+];
+
+function createImagePlaceholder(width = 300, height = 200, text = "Produto") {
+  return `https://via.placeholder.com/${width}x${height}/f0f0f0/999999?text=${encodeURIComponent(text)}`;
+}
+
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("🚀 Iniciando Centro de Compras...");
+  if (API_CONFIG.USE_LOCAL_DATA) {
+    console.log("📱 Modo OFFLINE ativado - usando dados locais");
+    showConnectionStatus("offline");
+  } else {
+    console.log("🌐 Modo ONLINE - tentando conectar com API");
+    testApiConnection();
+  }
+
+  initializeHeader();
+  initializeSidebar();
+  initializeSearch();
+  initializeFilters();
+  initializeModal();
+  loadProducts();
+  updateFooterYear();
+  setupLazyLoading();
+  setupServiceWorker();
+});
+
+async function testApiConnection() {
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    const response = await fetch(`${API_CONFIG.REAL_API}/api/health`, {
+      method: "GET",
+      signal: controller.signal,
+      headers: { "Content-Type": "application/json" },
+    });
+    clearTimeout(timeoutId);
+    if (response.ok) {
+      console.log("✅ API conectada com sucesso!");
+      showConnectionStatus("online");
+    } else {
+      throw new Error(`API retornou status ${response.status}`);
+    }
+  } catch (error) {
+    console.warn("⚠️ Falha na conexão com API, usando modo offline:", error.message);
+    API_CONFIG.USE_LOCAL_DATA = true;
+    showConnectionStatus("offline");
+  }
+}
+
+function showConnectionStatus(status) {
+  const existingStatus = document.querySelector(".connection-status");
+  if (existingStatus) existingStatus.remove();
+
+  const statusDiv = document.createElement("div");
+  statusDiv.className = `connection-status ${status}`;
+  statusDiv.innerHTML = `
+    <div class="status-content">
+      <i class="fas fa-${status === "online" ? "wifi" : "exclamation-triangle"}"></i>
+      <span>${status === "online" ? "Conectado ao servidor" : "Modo offline - dados de exemplo"}</span>
+      ${status === "offline" ? "<small>Configure sua API no arquivo script.js</small>" : ""}
     </div>
+  `;
+  document.body.appendChild(statusDiv);
+  setTimeout(() => statusDiv.remove(), 5000);
+}
 
-    <!-- Overlay -->
-    <div class="overlay" id="overlay"></div>
+function initializeHeader() {
+  const logo = document.getElementById("site-logo");
+  if (logo) {
+    let clickCount = 0;
+    let clickTimeout = null;
+    logo.addEventListener("click", (e) => {
+      e.preventDefault();
+      clickCount++;
+      if (clickCount === 1) {
+        clickTimeout = setTimeout(() => clickCount = 0, 1000);
+      } else if (clickCount === 3) {
+        clearTimeout(clickTimeout);
+        window.location.href = "/admin-xyz-123.html";
+        clickCount = 0;
+      }
+    });
+  }
 
-    <!-- Conteúdo Principal -->
-    <main class="main-content">
-        <div class="container">
-            <!-- Banner de Ofertas -->
-            <section class="offers-banner">
-                <div class="banner-content">
-                    <div class="banner-text">
-                        <h1>🔥 Ofertas Imperdíveis</h1>
-                        <p>Descontos de até 70% nas melhores lojas do Brasil</p>
-                    </div>
-                    <div class="banner-stats">
-                        <div class="stat-item">
-                            <span class="stat-number">1000+</span>
-                            <span class="stat-label">Produtos</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-number">50+</span>
-                            <span class="stat-label">Lojas</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-number">70%</span>
-                            <span class="stat-label">Desconto</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
+  const searchBtn = document.querySelector(".search-btn");
+  if (searchBtn) {
+    searchBtn.addEventListener("click", () => {
+      const searchInput = document.getElementById("busca");
+      if (searchInput && searchInput.value.trim()) {
+        loadProducts(1, false);
+      }
+    });
+  }
+}
 
-            <!-- Lojas Parceiras -->
-            <section class="stores-section">
-                <div class="section-header">
-                    <h2><i class="fas fa-store"></i> Lojas Parceiras</h2>
-                    <p>Compre com segurança nas melhores lojas online</p>
-                </div>
-                <div class="stores-grid">
-                    <div class="store-card active" data-loja="todas">
-                        <div class="store-icon">
-                            <i class="fas fa-th-large"></i>
-                        </div>
-                        <span class="store-name">Todas</span>
-                    </div>
-                    <div class="store-card amazon" data-loja="amazon">
-                        <div class="store-logo">
-                            <img src="https://via.placeholder.com/80x30/ff9900/ffffff?text=Amazon" alt="Amazon">
-                        </div>
-                        <span class="store-name">Amazon</span>
-                    </div>
-                    <div class="store-card mercadolivre" data-loja="mercadolivre">
-                        <div class="store-logo">
-                            <img src="https://via.placeholder.com/80x30/ffe600/333333?text=ML" alt="Mercado Livre">
-                        </div>
-                        <span class="store-name">Mercado Livre</span>
-                    </div>
-                    <div class="store-card shopee" data-loja="shopee">
-                        <div class="store-logo">
-                            <img src="https://via.placeholder.com/80x30/ee4d2d/ffffff?text=Shopee" alt="Shopee">
-                        </div>
-                        <span class="store-name">Shopee</span>
-                    </div>
-                    <div class="store-card magalu" data-loja="magalu">
-                        <div class="store-logo">
-                            <img src="https://via.placeholder.com/80x30/0066cc/ffffff?text=Magalu" alt="Magalu">
-                        </div>
-                        <span class="store-name">Magalu</span>
-                    </div>
-                    <div class="store-card shein" data-loja="shein">
-                        <div class="store-logo">
-                            <img src="https://via.placeholder.com/80x30/000000/ffffff?text=SHEIN" alt="Shein">
-                        </div>
-                        <span class="store-name">Shein</span>
-                    </div>
-                    <div class="store-card alibaba" data-loja="alibaba">
-                        <div class="store-logo">
-                            <img src="https://via.placeholder.com/80x30/ff6a00/ffffff?text=Alibaba" alt="Alibaba">
-                        </div>
-                        <span class="store-name">Alibaba</span>
-                    </div>
-                </div>
-            </section>
+function initializeSidebar() {
+  const categoriesBtn = document.getElementById("categories-toggle");
+  const sidebar = document.getElementById("categories-sidebar");
+  const overlay = document.getElementById("overlay");
+  const closeSidebar = document.getElementById("close-sidebar");
 
-            <!-- Loading -->
-            <div class="loading-container" id="loading-spinner">
-                <div class="loading-spinner">
-                    <div class="spinner"></div>
-                    <p>Carregando ofertas incríveis...</p>
-                </div>
-            </div>
+  if (categoriesBtn && sidebar && overlay) {
+    categoriesBtn.addEventListener("click", () => {
+      sidebar.classList.add("active");
+      overlay.classList.add("active");
+      document.body.style.overflow = "hidden";
+    });
 
-            <!-- Grid de Produtos -->
-            <section class="products-section">
-                <div class="section-header">
-                    <h2 id="ofertas-titulo"><i class="fas fa-fire"></i> Ofertas do Dia</h2>
-                    <div class="section-actions">
-                        <div class="view-toggle">
-                            <button class="view-btn active" data-view="grid">
-                                <i class="fas fa-th"></i>
-                            </button>
-                            <button class="view-btn" data-view="list">
-                                <i class="fas fa-list"></i>
-                            </button>
-                        </div>
-                        <div class="sort-dropdown">
-                            <select id="sort-select">
-                                <option value="relevance">Mais Relevantes</option>
-                                <option value="price-low">Menor Preço</option>
-                                <option value="price-high">Maior Preço</option>
-                                <option value="newest">Mais Recentes</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="products-grid" id="grid-produtos"></div>
-                
-                <div class="load-more-container">
-                    <button id="load-more" class="load-more-btn">
-                        <i class="fas fa-plus"></i>
-                        <span>Carregar Mais Produtos</span>
-                    </button>
-                </div>
-            </section>
+    const closeSidebarHandler = () => {
+      sidebar.classList.remove("active");
+      overlay.classList.remove("active");
+      document.body.style.overflow = "";
+    };
 
-            <!-- Mensagens de Estado -->
-            <div class="empty-state" id="mensagem-vazia">
-                <div class="empty-icon">
-                    <i class="fas fa-search"></i>
-                </div>
-                <h3>Nenhum produto encontrado</h3>
-                <p>Tente ajustar os filtros ou buscar por outros termos</p>
-                <button class="btn-primary" onclick="location.reload()">
-                    <i class="fas fa-refresh"></i>
-                    Limpar Filtros
-                </button>
-            </div>
+    if (closeSidebar) closeSidebar.addEventListener("click", closeSidebarHandler);
+    overlay.addEventListener("click", closeSidebarHandler);
 
-            <div class="error-state" id="error-message">
-                <div class="error-icon">
-                    <i class="fas fa-exclamation-triangle"></i>
-                </div>
-                <h3>Ops! Algo deu errado</h3>
-                <p>Não foi possível carregar os produtos. Verifique sua conexão.</p>
-                <button class="btn-primary" onclick="location.reload()">
-                    <i class="fas fa-redo"></i>
-                    Tentar Novamente
-                </button>
-            </div>
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && sidebar.classList.contains("active")) {
+        closeSidebarHandler();
+      }
+    });
+
+    const categoryItems = document.querySelectorAll(".category-item");
+    categoryItems.forEach((item) => {
+      item.addEventListener("click", () => {
+        categoryItems.forEach((i) => i.classList.remove("active"));
+        item.classList.add("active");
+        const categoria = item.dataset.categoria;
+        loadProducts(1, false);
+        closeSidebarHandler();
+      });
+    });
+  }
+}
+
+function initializeSearch() {
+  const searchInput = document.getElementById("busca");
+  if (searchInput) {
+    const debouncedSearch = debounce(() => loadProducts(1, false), 500);
+    searchInput.addEventListener("input", debouncedSearch);
+    searchInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        loadProducts(1, false);
+      }
+    });
+  }
+}
+
+function initializeFilters() {
+  const storeCards = document.querySelectorAll(".store-card");
+  storeCards.forEach((card) => {
+    card.addEventListener("click", () => {
+      storeCards.forEach((c) => c.classList.remove("active"));
+      card.classList.add("active");
+      loadProducts(1, false);
+    });
+  });
+
+  const viewBtns = document.querySelectorAll(".view-btn");
+  viewBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      viewBtns.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      const view = btn.dataset.view;
+      const productsGrid = document.getElementById("grid-produtos");
+      if (productsGrid) {
+        productsGrid.className = view === "list" ? "products-list" : "products-grid";
+      }
+    });
+  });
+
+  const sortSelect = document.getElementById("sort-select");
+  if (sortSelect) {
+    sortSelect.addEventListener("change", () => loadProducts(1, false));
+  }
+
+  const loadMoreBtn = document.getElementById("load-more");
+  if (loadMoreBtn) {
+    loadMoreBtn.addEventListener("click", () => loadProducts(currentPage + 1, true));
+  }
+}
+
+function initializeModal() {
+  const modal = document.getElementById("imageModal");
+  const modalClose = document.getElementById("modal-close");
+  const modalBackdrop = document.querySelector(".modal-backdrop");
+
+  if (modal && modalClose && modalBackdrop) {
+    const closeModal = () => {
+      modal.style.display = "none";
+      document.body.style.overflow = "";
+    };
+
+    modalClose.addEventListener("click", closeModal);
+    modalBackdrop.addEventListener("click", closeModal);
+
+    document.addEventListener("keydown", (e) => {
+      if (modal.style.display === "flex" && e.key === "Escape") {
+        closeModal();
+      }
+    });
+
+    window.moveModalCarousel = (direction) => {
+      const images = document.querySelectorAll("#modalCarrosselImagens img");
+      const dots = document.querySelectorAll("#modalCarrosselDots .dot");
+      if (images.length === 0) return;
+
+      currentImageIndex = (currentImageIndex + direction + images.length) % images.length;
+      const offset = -currentImageIndex * 100;
+      document.getElementById("modalCarrosselImagens").style.transform = `translateX(${offset}%)`;
+      dots.forEach((dot, index) => {
+        dot.classList.toggle("active", index === currentImageIndex);
+      });
+    };
+  }
+
+  const modalPrev = document.getElementById("modalPrev");
+  const modalNext = document.getElementById("modalNext");
+  if (modalPrev) modalPrev.addEventListener("click", () => window.moveModalCarousel(-1));
+  if (modalNext) modalNext.addEventListener("click", () => window.moveModalCarousel(1));
+}
+
+async function incrementProductView(productId) {
+  if (API_CONFIG.USE_LOCAL_DATA) return;
+  try {
+    await fetch(`${API_CONFIG.REAL_API}/api/produtos/${productId}/view`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    console.error("Erro ao incrementar visualização:", error);
+  }
+}
+
+async function loadProducts(page = 1, append = false) {
+  if (isLoading) return;
+  isLoading = true;
+
+  const categoria = document.querySelector(".category-item.active")?.dataset.categoria || "todas";
+  const loja = document.querySelector(".store-card.active")?.dataset.loja || "todas";
+  const busca = document.getElementById("busca")?.value.trim() || "";
+  const sort = document.getElementById("sort-select")?.value || "relevance";
+
+  const spinner = document.getElementById("loading-spinner");
+  const gridProdutos = document.getElementById("grid-produtos");
+  const mensagemVazia = document.getElementById("mensagem-vazia");
+  const errorMessage = document.getElementById("error-message");
+  const loadMoreButton = document.getElementById("load-more");
+
+  if (spinner) spinner.style.display = "block";
+  if (!append && gridProdutos) gridProdutos.innerHTML = "";
+  if (mensagemVazia) mensagemVazia.style.display = "none";
+  if (errorMessage) errorMessage.style.display = "none";
+  if (loadMoreButton) loadMoreButton.style.display = "none";
+
+  try {
+    let data, total;
+
+    if (API_CONFIG.USE_LOCAL_DATA) {
+      const result = getLocalProducts(page, categoria, loja, busca, sort);
+      data = result.data;
+      total = result.total;
+      console.log(`📱 Dados locais: ${data.length} produtos de ${total} total`);
+    } else {
+      const url = buildApiUrl(page, categoria, loja, busca, sort);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      const response = await fetch(url, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      if (!response.ok) throw new Error(`Erro HTTP: ${response.status} - ${await response.text()}`);
+      const result = await response.json();
+      data = result.data || result.produtos || result;
+      total = result.total || data.length;
+      console.log(`🌐 API: ${data.length} produtos de ${total} total`);
+
+      localStorage.setItem(`produtos_page_${page}_${categoria}_${loja}_${busca}_${sort}`, JSON.stringify({ data, total, timestamp: Date.now() }));
+    }
+
+    if (!append) allProducts = [];
+    allProducts.push(...data);
+
+    if (allProducts.length === 0) {
+      showEmptyState();
+    } else {
+      renderProducts(data, append);
+      if (loadMoreButton && allProducts.length < total) {
+        loadMoreButton.style.display = "flex";
+      }
+    }
+
+    currentPage = page;
+    updateResultsTitle(categoria, loja, busca, allProducts.length, total);
+  } catch (error) {
+    console.error("❌ Erro ao carregar produtos:", error);
+    const cacheKey = `produtos_page_${page}_${categoria}_${loja}_${busca}_${sort}`;
+    const cachedData = localStorage.getItem(cacheKey);
+    if (cachedData) {
+      const { data, total, timestamp } = JSON.parse(cachedData);
+      if (Date.now() - timestamp < 24 * 60 * 60 * 1000) { // Cache válido por 24 horas
+        if (!append) allProducts = [];
+        allProducts.push(...data);
+        renderProducts(data, append);
+        updateResultsTitle(categoria, loja, busca, allProducts.length, total);
+        showConnectionStatus("offline");
+        isLoading = false;
+        return;
+      }
+    }
+
+    if (!API_CONFIG.USE_LOCAL_DATA) {
+      console.log("🔄 Tentando fallback para dados locais...");
+      API_CONFIG.USE_LOCAL_DATA = true;
+      showConnectionStatus("offline");
+      loadProducts(page, append);
+      return;
+    }
+
+    showErrorState(error.message);
+  } finally {
+    if (spinner) spinner.style.display = "none";
+    isLoading = false;
+  }
+}
+
+function getLocalProducts(page = 1, categoria = "todas", loja = "todas", busca = "", sort = "relevance") {
+  let filteredProducts = [...SAMPLE_PRODUCTS];
+
+  if (categoria !== "todas") {
+    filteredProducts = filteredProducts.filter((p) => p.categoria === categoria);
+  }
+
+  if (loja !== "todas") {
+    filteredProducts = filteredProducts.filter((p) => p.loja === loja);
+  }
+
+  if (busca) {
+    filteredProducts = filteredProducts.filter((p) =>
+      p.nome.toLowerCase().includes(busca.toLowerCase()) ||
+      p.descricao.toLowerCase().includes(busca.toLowerCase())
+    );
+  }
+
+  if (sort === "price-low") {
+    filteredProducts.sort((a, b) => a.preco - b.preco);
+  } else if (sort === "price-high") {
+    filteredProducts.sort((a, b) => b.preco - a.preco);
+  } else if (sort === "newest") {
+    filteredProducts.sort((a, b) => b.id - a.id);
+  }
+
+  const start = (page - 1) * 12;
+  const end = start + 12;
+  return {
+    data: filteredProducts.slice(start, end),
+    total: filteredProducts.length,
+  };
+}
+
+function buildApiUrl(page, categoria, loja, busca, sort) {
+  let url = `${API_CONFIG.REAL_API}/api/produtos?page=${page}&limit=12`;
+  if (categoria !== "todas") url += `&categoria=${encodeURIComponent(categoria)}`;
+  if (loja !== "todas") url += `&loja=${encodeURIComponent(loja)}`;
+  if (busca) url += `&busca=${encodeURIComponent(busca)}`;
+  if (sort !== "relevance") url += `&sort=${sort}`;
+  return url;
+}
+
+function updateResultsTitle(categoria, loja, busca, count, total) {
+  const title = document.getElementById("ofertas-titulo");
+  if (!title) return;
+
+  let titleText = "Ofertas do Dia";
+  if (busca) titleText = `Resultados para "${busca}"`;
+  else if (categoria !== "todas") titleText = `Ofertas em ${categoria.charAt(0).toUpperCase() + categoria.slice(1)}`;
+  else if (loja !== "todas") titleText = `Ofertas da ${loja.charAt(0).toUpperCase() + loja.slice(1)}`;
+
+  title.innerHTML = `<i class="fas fa-fire"></i> ${titleText} (${count} de ${total})`;
+}
+
+function showEmptyState() {
+  const mensagemVazia = document.getElementById("mensagem-vazia");
+  if (mensagemVazia) mensagemVazia.style.display = "block";
+}
+
+function showErrorState(message) {
+  const errorMessage = document.getElementById("error-message");
+  if (errorMessage) {
+    errorMessage.querySelector("p").textContent = message || "Não foi possível carregar os produtos. Verifique sua conexão.";
+    errorMessage.style.display = "block";
+  }
+}
+
+function renderProducts(products, append) {
+  const gridProdutos = document.getElementById("grid-produtos");
+  if (!gridProdutos) return;
+
+  const viewType = document.querySelector(".view-btn.active")?.dataset.view || "grid";
+
+  products.forEach((product) => {
+    const imagens = Array.isArray(product.imagens) ? product.imagens : JSON.parse(product.imagens || '[]');
+    const productCard = document.createElement("div");
+    productCard.className = viewType === "grid" ? "product-card" : "product-card list-view";
+    productCard.innerHTML = `
+      <div class="product-image">
+        <div class="image-carousel">
+          <div class="carousel-images" data-id="${product.id}">
+            ${imagens.length > 0
+              ? imagens.map((img, index) => `<img src="${img}" alt="${product.nome}" class="${index === 0 ? 'active' : ''}" loading="lazy">`).join("")
+              : `<img src="${createImagePlaceholder(300, 200, product.nome)}" alt="${product.nome}" loading="lazy">`
+            }
+          </div>
+          ${imagens.length > 1
+            ? `
+              <button class="carousel-btn prev" data-id="${product.id}">
+                <i class="fas fa-chevron-left"></i>
+              </button>
+              <button class="carousel-btn next" data-id="${product.id}">
+                <i class="fas fa-chevron-right"></i>
+              </button>
+              <div class="carousel-dots">
+                ${imagens.map((_, index) => `<span class="dot ${index === 0 ? 'active' : ''}" data-index="${index}"></span>`).join("")}
+              </div>
+            `
+            : ""
+          }
         </div>
-    </main>
-
-    <!-- Modal de Imagem -->
-    <div class="image-modal" id="imageModal">
-        <div class="modal-backdrop"></div>
-        <div class="modal-container">
-            <button class="modal-close" id="modal-close">
-                <i class="fas fa-times"></i>
-            </button>
-            <div class="modal-content">
-                <div class="modal-carousel" id="modalCarrossel">
-                    <div class="carousel-images" id="modalCarrosselImagens"></div>
-                    <button class="carousel-btn prev" id="modalPrev">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <button class="carousel-btn next" id="modalNext">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                    <div class="carousel-dots" id="modalCarrosselDots"></div>
-                </div>
-            </div>
+      </div>
+      <div class="product-info">
+        <h3 class="product-title">${product.nome}</h3>
+        <p class="product-description">${product.descricao.slice(0, 100)}${product.descricao.length > 100 ? "..." : ""}</p>
+        <div class="product-price">
+          <span class="price">R$ ${Number(product.preco).toFixed(2)}</span>
         </div>
-    </div>
-
-    <!-- Footer -->
-    <footer class="main-footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h4>Centro de Compras</h4>
-                    <p>Sua plataforma de ofertas e descontos nas melhores lojas online do Brasil.</p>
-                    <div class="social-links">
-                        <a href="https://www.instagram.com/cdccentrodecompras/" target="_blank" class="social-link instagram">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="https://www.tiktok.com/@cdc.centraldecompas" target="_blank" class="social-link tiktok">
-                            <i class="fab fa-tiktok"></i>
-                        </a>
-                        <a href="https://x.com/ComprasCdc" target="_blank" class="social-link twitter">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="https://www.youtube.com/channel/UCaKHlI-hWqwdAXS6Xsv3ZzA" target="_blank" class="social-link youtube">
-                            <i class="fab fa-youtube"></i>
-                        </a>
-                    </div>
-                </div>
-                
-                <div class="footer-section">
-                    <h4>Atendimento</h4>
-                    <ul>
-                        <li><a href="https://wa.me/5521975179737" target="_blank">WhatsApp</a></li>
-                        <li><a href="https://t.me/boost/centraldecomprascdc" target="_blank">Telegram</a></li>
-                        <li><a href="#">Central de Ajuda</a></li>
-                        <li><a href="#">Contato</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-section">
-                    <h4>Institucional</h4>
-                    <ul>
-                        <li><a href="#">Sobre Nós</a></li>
-                        <li><a href="#">Política de Privacidade</a></li>
-                        <li><a href="#">Termos de Uso</a></li>
-                        <li><a href="#">Como Funciona</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-section">
-                    <h4>Categorias</h4>
-                    <ul>
-                        <li><a href="#">Eletrônicos</a></li>
-                        <li><a href="#">Moda</a></li>
-                        <li><a href="#">Casa e Decoração</a></li>
-                        <li><a href="#">Beleza</a></li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="footer-bottom">
-                <div class="footer-disclaimer">
-                    <p><i class="fas fa-info-circle"></i> Este site contém links de afiliados. Ao comprar através dos nossos links, você nos ajuda a manter o site funcionando sem custo adicional para você.</p>
-                </div>
-                <div class="footer-copyright">
-                    <p>&copy; <span id="year"></span> Centro de Compras. Todos os direitos reservados.</p>
-                </div>
-            </div>
+        <div class="product-meta">
+          <span class="store">${product.loja.charAt(0).toUpperCase() + product.loja.slice(1)}</span>
+          <span class="category">${product.categoria.charAt(0).toUpperCase() + product.categoria.slice(1)}</span>
         </div>
-    </footer>
-
-    <!-- Botão Flutuante -->
-    <div class="floating-assistant">
-        <a href="https://wa.me/5521975179737" target="_blank" class="floating-btn">
-            <i class="fab fa-whatsapp"></i>
-            <div class="floating-tooltip">
-                <span>Precisa de ajuda?</span>
-                <small>Fale conosco no WhatsApp</small>
-            </div>
+        <a href="${product.link}" target="_blank" class="btn-primary buy-btn" rel="noopener noreferrer">
+          <i class="fas fa-shopping-cart"></i>
+          Comprar Agora
         </a>
-    </div>
+      </div>
+    `;
+    gridProdutos.appendChild(productCard);
 
-    <script src="script.js"></script>
-</body>
-</html>
+    if (imagens.length > 1) {
+      const carousel = productCard.querySelector(`.carousel-images[data-id="${product.id}"]`);
+      const prevBtn = productCard.querySelector(`.carousel-btn.prev[data-id="${product.id}"]`);
+      const nextBtn = productCard.querySelector(`.carousel-btn.next[data-id="${product.id}"]`);
+      const dots = productCard.querySelectorAll(`.carousel-dots .dot`);
+
+      let currentIndex = 0;
+
+      const updateCarousel = (index) => {
+        const images = carousel.querySelectorAll("img");
+        images.forEach((img, i) => img.classList.toggle("active", i === index));
+        dots.forEach((dot, i) => dot.classList.toggle("active", i === index));
+        carousel.style.transform = `translateX(-${index * 100}%)`;
+      };
+
+      if (prevBtn) prevBtn.addEventListener("click", () => {
+        currentIndex = (currentIndex - 1 + imagens.length) % imagens.length;
+        updateCarousel(currentIndex);
+      });
+
+      if (nextBtn) nextBtn.addEventListener("click", () => {
+        currentIndex = (currentIndex + 1) % imagens.length;
+        updateCarousel(currentIndex);
+      });
+
+      dots.forEach((dot) => {
+        dot.addEventListener("click", () => {
+          currentIndex = parseInt(dot.dataset.index);
+          updateCarousel(currentIndex);
+        });
+      });
+    }
+
+    const imageContainer = productCard.querySelector(".product-image");
+    imageContainer.addEventListener("click", () => {
+      showModal(product);
+      incrementProductView(product.id);
+    });
+  });
+}
+
+function showModal(product) {
+  const modal = document.getElementById("imageModal");
+  const modalCarrosselImagens = document.getElementById("modalCarrosselImagens");
+  const modalCarrosselDots = document.getElementById("modalCarrosselDots");
+
+  if (!modal || !modalCarrosselImagens || !modalCarrosselDots) return;
+
+  const imagens = Array.isArray(product.imagens) ? product.imagens : JSON.parse(product.imagens || '[]');
+  currentImageIndex = 0;
+
+  modalCarrosselImagens.innerHTML = imagens.length > 0
+    ? imagens.map((img, index) => `<img src="${img}" alt="${product.nome}" class="${index === 0 ? 'active' : ''}">`).join("")
+    : `<img src="${createImagePlaceholder(600, 400, product.nome)}" alt="${product.nome}">`;
+
+  modalCarrosselDots.innerHTML = imagens.length > 0
+    ? imagens.map((_, index) => `<span class="dot ${index === 0 ? 'active' : ''}" data-index="${index}"></span>`).join("")
+    : "";
+
+  modal.style.display = "flex";
+  document.body.style.overflow = "hidden";
+
+  const dots = modalCarrosselDots.querySelectorAll(".dot");
+  dots.forEach((dot) => {
+    dot.addEventListener("click", () => {
+      currentImageIndex = parseInt(dot.dataset.index);
+      window.moveModalCarousel(0);
+    });
+  });
+}
+
+function updateFooterYear() {
+  const yearSpan = document.getElementById("year");
+  if (yearSpan) yearSpan.textContent = new Date().getFullYear();
+}
+
+function setupLazyLoading() {
+  const images = document.querySelectorAll("img[loading='lazy']");
+  if ("IntersectionObserver" in window) {
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          img.src = img.dataset.src || img.src;
+          observer.unobserve(img);
+        }
+      });
+    });
+
+    images.forEach((img) => imageObserver.observe(img));
+  }
+}
+
+function setupServiceWorker() {
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/service-worker.js").then(() => {
+      console.log("Service Worker registrado com sucesso");
+    }).catch((error) => {
+      console.error("Erro ao registrar Service Worker:", error);
+    });
+  }
+}
