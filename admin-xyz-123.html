@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administração - Centro de Compras</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -1358,7 +1359,7 @@
                     const controller = new AbortController();
                     const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-                    const response = await fetch(`${this.baseURL}/api/produtos?limit=1`, {
+                    const response = await fetch(`${this.baseURL}/api/health`, {
                         method: 'GET',
                         headers: this.getHeaders(),
                         signal: controller.signal
@@ -1437,7 +1438,7 @@
 
                     if (!response.ok) {
                         const errorData = await response.json().catch(() => ({}));
-                        throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+                        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
                     }
 
                     return await response.json();
@@ -1450,9 +1451,9 @@
                 }
             }
 
-            async getAllProducts(page = 1, limit = 50) {
+            async getAllProducts(page = 1, limit = 50, search = '') {
                 console.log(`📦 Buscando produtos da API - Página: ${page}`);
-                return await this.makeRequest(`/api/produtos?page=${page}&limit=${limit}`);
+                return await this.makeRequest(`/api/produtos?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`);
             }
 
             async addProduct(productData) {
@@ -1464,7 +1465,7 @@
             }
 
             async updateProduct(id, productData) {
-                console.log(`✏️ Atualizando produto ${id} via API...`);
+                console.log(`✏️ Atualizando produto ${id} via API...');
                 return await this.makeRequest(`/api/produtos/${id}`, {
                     method: 'PUT',
                     body: productData
@@ -1472,8 +1473,15 @@
             }
 
             async deleteProduct(id) {
-                console.log(`🗑️ Excluindo produto ${id} via API...`);
+                console.log(`🗑️ Excluindo produto ${id} via API...');
                 return await this.makeRequest(`/api/produtos/${id}`, {
+                    method: 'DELETE'
+                });
+            }
+
+            async deleteImage(publicId) {
+                console.log(`🗑️ Excluindo imagem ${publicId} via API...`);
+                return await this.makeRequest(`/api/imagem/${publicId}`, {
                     method: 'DELETE'
                 });
             }
@@ -1487,12 +1495,46 @@
         // Inicializar gerenciador de produtos
         const productManager = new APIProductManager();
 
+        // Configuração do Socket.IO
+        const socket = io(API_CONFIG.BASE_URL, {
+            transports: ['websocket'],
+            auth: { token: API_CONFIG.TOKEN }
+        });
+
+        socket.on('connect', () => {
+            console.log('✅ Conectado ao Socket.IO');
+        });
+
+        socket.on('novoProduto', (produto) => {
+            console.log('📦 Novo produto adicionado:', produto);
+            carregarProdutos();
+            updateDashboard();
+        });
+
+        socket.on('produtoAtualizado', (produto) => {
+            console.log('✏️ Produto atualizado:', produto);
+            carregarProdutos();
+            updateDashboard();
+        });
+
+        socket.on('produtoExcluido', ({ id }) => {
+            console.log('🗑️ Produto excluído:', id);
+            carregarProdutos();
+            updateDashboard();
+        });
+
+        socket.on('connect_error', (error) => {
+            console.error('❌ Erro na conexão Socket.IO:', error);
+            showFeedback('Erro na conexão em tempo real', 'error');
+        });
+
         document.addEventListener('DOMContentLoaded', () => {
             console.log('🚀 Iniciando painel administrativo conectado à API...');
             
             initializeImageUpload();
             initializeForm();
             initializeSearch();
+            setupServiceWorker();
             
             // Aguardar conexão antes de carregar produtos
             setTimeout(() => {
@@ -1500,6 +1542,23 @@
                 updateDashboard();
             }, 2000);
         });
+
+        function setupServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker
+                        .register('/sw.js')
+                        .then(registration => {
+                            console.log('✅ Service Worker registrado:', registration);
+                        })
+                        .catch(error => {
+                            console.error('❌ Falha no Service Worker:', error);
+                        });
+                });
+            } else {
+                console.log('⚠️ Service Worker não suportado no navegador');
+            }
+        }
 
         function initializeImageUpload() {
             const imagensInput = document.getElementById('imagens');
@@ -1520,7 +1579,7 @@
             imagensPreview.innerHTML = '';
             
             Array.from(e.target.files).forEach((file, index) => {
-                if (file.type.startsWith('image/')) {
+                if (file.type.startsWith('image/') && file.size <= 5 * 1024 * 1024) {
                     const reader = new FileReader();
                     reader.onload = (e) => {
                         const previewItem = document.createElement('div');
@@ -1538,6 +1597,8 @@
                         imagensPreview.appendChild(previewItem);
                     };
                     reader.readAsDataURL(file);
+                } else {
+                    showFeedback('Imagem inválida ou maior que 5MB', 'error');
                 }
             });
         }
@@ -1605,7 +1666,6 @@
             const originalText = submitBtn.innerHTML;
             
             try {
-                // Desabilitar botão e mostrar loading
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Processando...</span>';
                 
@@ -1622,8 +1682,23 @@
                     }
                 }
 
+                // Validar URL
+                const link = formData.get('link');
+                try {
+                    new URL(link);
+                } catch {
+                    throw new Error('Link inválido');
+                }
+
+                // Validar preço
+                const preco = parseFloat(formData.get('preco'));
+                if (isNaN(preco) || preco <= 0) {
+                    throw new Error('Preço deve ser maior que 0');
+                }
+
                 let result;
                 if (id) {
+                    formData.append('imagensExistentes', JSON.stringify(window.existingImages || []));
                     result = await productManager.updateProduct(id, formData);
                     showFeedback('Produto atualizado com sucesso!', 'success');
                 } else {
@@ -1641,7 +1716,6 @@
                 console.error('❌ Erro ao salvar produto:', error);
                 showFeedback(`Erro: ${error.message}`, 'error');
             } finally {
-                // Reabilitar botão
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalText;
             }
@@ -1650,21 +1724,17 @@
         function initializeSearch() {
             const searchInput = document.getElementById('search-produtos');
             if (searchInput) {
+                let debounceTimeout;
                 searchInput.addEventListener('input', (e) => {
-                    const searchTerm = e.target.value.toLowerCase();
-                    const productCards = document.querySelectorAll('.product-admin-card');
-                    
-                    productCards.forEach(card => {
-                        const productName = card.querySelector('h4').textContent.toLowerCase();
-                        const productDesc = card.querySelector('.product-info').textContent.toLowerCase();
-                        const isVisible = productName.includes(searchTerm) || productDesc.includes(searchTerm);
-                        card.style.display = isVisible ? 'block' : 'none';
-                    });
+                    clearTimeout(debounceTimeout);
+                    debounceTimeout = setTimeout(() => {
+                        carregarProdutos(e.target.value);
+                    }, 300);
                 });
             }
         }
 
-        async function carregarProdutos() {
+        async function carregarProdutos(searchTerm = '') {
             const produtosLista = document.getElementById('produtos-lista');
             if (!produtosLista) return;
 
@@ -1680,10 +1750,10 @@
             `;
             
             try {
-                const response = await productManager.getAllProducts();
+                const response = await productManager.getAllProducts(1, 50, searchTerm);
                 
-                if (!response.success) {
-                    throw new Error(response.message || 'Erro ao carregar produtos');
+                if (!response.data) {
+                    throw new Error(response.error || 'Erro ao carregar produtos');
                 }
                 
                 const produtos = response.data || [];
@@ -1707,7 +1777,6 @@
                     const productCard = document.createElement('div');
                     productCard.className = 'product-admin-card';
                     
-                    // Processar imagens
                     let imagemPrincipal = 'https://via.placeholder.com/300x200/f0f0f0/999999?text=Sem+Imagem';
                     
                     if (produto.imagens && produto.imagens.length > 0) {
@@ -1725,6 +1794,7 @@
                         <div class="product-image">
                             <img src="${imagemPrincipal}" 
                                  alt="${produto.nome}"
+                                 loading="lazy"
                                  onerror="this.src='https://via.placeholder.com/300x200/f0f0f0/999999?text=Sem+Imagem'">
                         </div>
                         <div class="product-info">
@@ -1769,7 +1839,7 @@
             try {
                 const response = await productManager.getAllProducts();
                 
-                if (response.success) {
+                if (response.data) {
                     const produtos = response.data || [];
                     const totalProdutos = document.getElementById('total-produtos');
                     
@@ -1777,14 +1847,12 @@
                         totalProdutos.textContent = produtos.length;
                     }
 
-                    // Atualizar outras estatísticas
                     const categorias = [...new Set(produtos.map(p => p.categoria))];
                     const totalCategorias = document.getElementById('total-categorias');
                     if (totalCategorias) {
                         totalCategorias.textContent = categorias.length;
                     }
 
-                    // Simular visualizações baseadas no número de produtos
                     const totalVisualizacoes = document.getElementById('total-visualizacoes');
                     if (totalVisualizacoes) {
                         const views = Math.floor(produtos.length * 150 + Math.random() * 500);
@@ -1804,13 +1872,12 @@
                 
                 const response = await productManager.getProduct(id);
                 
-                if (!response.success) {
-                    throw new Error(response.message || 'Produto não encontrado');
+                if (!response) {
+                    throw new Error('Produto não encontrado');
                 }
                 
-                const produto = response.data;
+                const produto = response;
 
-                // Preencher formulário
                 document.getElementById('produto-id').value = produto.id;
                 document.getElementById('nome').value = produto.nome;
                 document.getElementById('descricao').value = produto.descricao || '';
@@ -1819,14 +1886,14 @@
                 document.getElementById('loja').value = produto.loja;
                 document.getElementById('link').value = produto.link;
 
-                // Mostrar imagens atuais
                 const imagensPreview = document.getElementById('imagens-preview');
+                window.existingImages = [];
                 if (produto.imagens && produto.imagens.length > 0) {
                     try {
                         const imagens = typeof produto.imagens === 'string' 
                             ? JSON.parse(produto.imagens) 
                             : produto.imagens;
-                            
+                        window.existingImages = imagens;
                         imagensPreview.innerHTML = imagens.map((img, index) => `
                             <div class="preview-item">
                                 <img src="${img}" alt="Imagem atual ${index + 1}">
@@ -1834,6 +1901,9 @@
                                     <span class="file-name">Imagem atual ${index + 1}</span>
                                     <span class="file-size">Atual</span>
                                 </div>
+                                <button type="button" class="remove-preview" onclick="removeExistingImage(this, ${index}, '${img}')">
+                                    <i class="fas fa-times"></i>
+                                </button>
                             </div>
                         `).join('');
                     } catch (e) {
@@ -1844,13 +1914,25 @@
                 document.getElementById('cancelar-edicao').style.display = 'inline-flex';
                 document.querySelector('#produto-form button[type="submit"] span').textContent = 'Atualizar Produto';
                 
-                // Scroll para o formulário
                 document.querySelector('.product-form').scrollIntoView({ behavior: 'smooth' });
                 
                 showFeedback('Produto carregado para edição', 'success');
                 
             } catch (error) {
                 console.error('Erro ao carregar produto:', error);
+                showFeedback(`Erro: ${error.message}`, 'error');
+            }
+        }
+
+        async function removeExistingImage(button, index, imageUrl) {
+            try {
+                const publicId = imageUrl.split('/').pop().split('.')[0];
+                await productManager.deleteImage(publicId);
+                window.existingImages.splice(index, 1);
+                button.parentElement.remove();
+                showFeedback('Imagem removida com sucesso', 'success');
+            } catch (error) {
+                console.error('Erro ao remover imagem:', error);
                 showFeedback(`Erro: ${error.message}`, 'error');
             }
         }
@@ -1865,12 +1947,12 @@
                 
                 const response = await productManager.deleteProduct(id);
                 
-                if (response.success) {
+                if (response.message) {
                     showFeedback('Produto excluído com sucesso!', 'success');
                     carregarProdutos();
                     updateDashboard();
                 } else {
-                    throw new Error(response.message || 'Erro ao excluir produto');
+                    throw new Error(response.error || 'Erro ao excluir produto');
                 }
                 
             } catch (error) {
@@ -1890,6 +1972,7 @@
             document.getElementById('produto-form').reset();
             document.getElementById('imagens-preview').innerHTML = '';
             document.getElementById('produto-id').value = '';
+            window.existingImages = [];
             showFeedback('', '');
         }
 
@@ -1921,11 +2004,10 @@
             }
         }
 
-        // Função para exportar dados (funcionalidade extra)
         async function exportarDados() {
             try {
                 const response = await productManager.getAllProducts();
-                if (response.success) {
+                if (response.data) {
                     const produtos = response.data;
                     const dataStr = JSON.stringify(produtos, null, 2);
                     const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
@@ -1942,10 +2024,6 @@
                 showFeedback('Erro ao exportar dados', 'error');
             }
         }
-
-        console.log('✅ Painel administrativo conectado à API carregado com sucesso!');
-        console.log('🌐 API Base URL:', API_CONFIG.BASE_URL);
-        console.log('🔐 Autenticação configurada');
     </script>
 </body>
 </html>
