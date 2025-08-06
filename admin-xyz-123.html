@@ -321,6 +321,18 @@
       outline: 2px solid var(--primary-color);
     }
 
+    .btn-secondary {
+      background: var(--background-tertiary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover,
+    .btn-secondary:focus {
+      background: var(--border-light);
+      transform: translateY(-1px);
+    }
+
     .products-table {
       width: 100%;
       border-collapse: collapse;
@@ -380,6 +392,70 @@
     .btn-delete:focus {
       background: #d32f2f;
       outline: 2px solid var(--error-color);
+    }
+
+    .image-preview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-sm);
+      margin-top: var(--spacing-sm);
+    }
+
+    .image-preview-item {
+      position: relative;
+      width: 100px;
+      height: 100px;
+    }
+
+    .image-preview-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: var(--radius-sm);
+    }
+
+    .image-preview-item .remove-image {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: var(--error-color);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.75rem;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: var(--spacing-md);
+      margin-top: var(--spacing-lg);
+    }
+
+    .pagination button {
+      padding: var(--spacing-sm) var(--spacing-md);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      background: var(--background-primary);
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+
+    .pagination button:hover {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .pagination button:disabled {
+      background: var(--background-tertiary);
+      cursor: not-allowed;
+      color: var(--text-muted);
     }
 
     .feedback-message {
@@ -585,6 +661,7 @@
         <div class="form-section">
           <h3>Adicionar/Editar Produto</h3>
           <form id="product-form" aria-label="Formulário para adicionar ou editar produto">
+            <input type="hidden" id="imagens-existentes" name="imagensExistentes">
             <div class="form-group">
               <label for="nome">Nome do Produto</label>
               <input type="text" id="nome" name="nome" required aria-required="true" placeholder="Digite o nome do produto" />
@@ -636,10 +713,16 @@
               <label for="imagens">Imagens (JPEG/PNG, máx. 5MB cada)</label>
               <input type="file" id="imagens" name="imagens" multiple accept="image/jpeg,image/png" aria-describedby="image-help" />
               <small id="image-help" class="form-text">Formatos aceitos: JPEG, PNG. Tamanho máximo: 5MB por imagem.</small>
+              <div class="image-preview" id="image-preview"></div>
             </div>
-            <button type="submit" class="btn btn-primary" aria-label="Salvar produto">
-              <i class="fas fa-save"></i> Salvar Produto
-            </button>
+            <div class="form-group">
+              <button type="submit" class="btn btn-primary" aria-label="Salvar produto">
+                <i class="fas fa-save"></i> <span id="submit-btn-text">Salvar Produto</span>
+              </button>
+              <button type="button" class="btn btn-secondary" id="cancel-btn" style="display: none;" aria-label="Cancelar edição">
+                <i class="fas fa-times"></i> Cancelar
+              </button>
+            </div>
           </form>
         </div>
 
@@ -661,6 +744,7 @@
           </thead>
           <tbody id="products-tbody"></tbody>
         </table>
+        <div class="pagination" id="pagination"></div>
       </section>
 
       <section class="analytics-section hidden" id="analytics-section">
@@ -690,26 +774,28 @@
         this.token = API_CONFIG.TOKEN;
       }
 
-      async makeRequest(endpoint, method = "GET", data = null) {
-        const headers = {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${this.token}`,
-        };
-
+      async makeRequest(endpoint, method = "GET", data = null, useFormData = false) {
         const config = {
           method,
-          headers,
+          headers: {
+            Authorization: `Bearer ${this.token}`,
+          },
           signal: AbortSignal.timeout(API_CONFIG.TIMEOUT),
         };
 
         if (data) {
-          config.body = JSON.stringify(data);
+          if (useFormData) {
+            config.body = data;
+          } else {
+            config.headers['Content-Type'] = 'application/json';
+            config.body = JSON.stringify(data);
+          }
         }
 
         try {
           const response = await fetch(`${this.baseUrl}${endpoint}`, config);
           if (!response.ok) {
-            throw new Error(`Erro HTTP: ${response.status}`);
+            throw new Error(`Erro HTTP: ${response.status} - ${await response.text()}`);
           }
           return await response.json();
         } catch (error) {
@@ -727,20 +813,11 @@
         return this.makeRequest("/api/stats");
       }
 
-      async addProduct(productData) {
-        return this.makeRequest("/api/produtos", "POST", productData);
-      }
-
-      async updateProduct(id, productData) {
-        return this.makeRequest(`/api/produtos/${id}`, "PUT", productData);
-      }
-
-      async deleteProduct(id) {
-        return this.makeRequest(`/api/produtos/${id}`, "DELETE");
-      }
-
-      async uploadImages(files) {
+      async addProduct(productData, files) {
         const formData = new FormData();
+        for (const [key, value] of Object.entries(productData)) {
+          formData.append(key, value);
+        }
         for (const file of files) {
           if (file.size > 5 * 1024 * 1024) {
             throw new Error("Imagem excede o limite de 5MB");
@@ -750,25 +827,41 @@
           }
           formData.append("imagens", file);
         }
+        return this.makeRequest("/api/produtos", "POST", formData, true);
+      }
 
-        const response = await fetch(`${this.baseUrl}/api/upload`, {
-          method: "POST",
-          headers: { Authorization: `Bearer ${this.token}` },
-          body: formData,
-        });
-
-        if (!response.ok) {
-          throw new Error(`Erro no upload: ${response.status}`);
+      async updateProduct(id, productData, files) {
+        const formData = new FormData();
+        for (const [key, value] of Object.entries(productData)) {
+          formData.append(key, value);
         }
+        for (const file of files) {
+          if (file.size > 5 * 1024 * 1024) {
+            throw new Error("Imagem excede o limite de 5MB");
+          }
+          if (!["image/jpeg", "image/png"].includes(file.type)) {
+            throw new Error("Formato de imagem inválido. Use JPEG ou PNG.");
+          }
+          formData.append("imagens", file);
+        }
+        return this.makeRequest(`/api/produtos/${id}`, "PUT", formData, true);
+      }
 
-        return await response.json();
+      async deleteProduct(id) {
+        return this.makeRequest(`/api/produtos/${id}`, "DELETE");
+      }
+
+      async deleteImage(publicId) {
+        return this.makeRequest(`/api/imagem/${publicId}`, "DELETE");
       }
     }
 
     document.addEventListener("DOMContentLoaded", () => {
       const productManager = new APIProductManager();
       let currentPage = 1;
+      let totalPages = 1;
       let editingProductId = null;
+      let existingImages = [];
 
       const feedbackMessage = document.getElementById("feedback-message");
       const productForm = document.getElementById("product-form");
@@ -778,6 +871,11 @@
       const totalProducts = document.getElementById("total-products");
       const totalViews = document.getElementById("total-views");
       const totalSales = document.getElementById("total-sales");
+      const imagePreview = document.getElementById("image-preview");
+      const imagesInput = document.getElementById("imagens");
+      const submitBtnText = document.getElementById("submit-btn-text");
+      const cancelBtn = document.getElementById("cancel-btn");
+      const pagination = document.getElementById("pagination");
 
       function showFeedback(message, type) {
         feedbackMessage.textContent = message;
@@ -787,6 +885,46 @@
           feedbackMessage.style.display = "none";
         }, 5000);
       }
+
+      function renderImagePreview(images) {
+        imagePreview.innerHTML = "";
+        images.forEach((url, index) => {
+          const previewItem = document.createElement("div");
+          previewItem.className = "image-preview-item";
+          previewItem.innerHTML = `
+            <img src="${url}" alt="Imagem ${index + 1}" />
+            <button class="remove-image" data-url="${url}" aria-label="Remover imagem ${index + 1}">
+              <i class="fas fa-times"></i>
+            </button>
+          `;
+          imagePreview.appendChild(previewItem);
+        });
+      }
+
+      imagesInput.addEventListener("change", (e) => {
+        const files = Array.from(e.target.files);
+        const newImages = files.map(file => URL.createObjectURL(file));
+        renderImagePreview([...existingImages, ...newImages]);
+      });
+
+      imagePreview.addEventListener("click", async (e) => {
+        if (e.target.closest(".remove-image")) {
+          const url = e.target.closest(".remove-image").dataset.url;
+          existingImages = existingImages.filter(img => img !== url);
+          document.getElementById("imagens-existentes").value = JSON.stringify(existingImages);
+          renderImagePreview(existingImages);
+
+          if (url.includes("res.cloudinary.com")) {
+            try {
+              const publicId = url.split('/').pop().split('.')[0];
+              await productManager.deleteImage(publicId);
+              showFeedback("Imagem removida do Cloudinary", "success");
+            } catch (error) {
+              showFeedback("Erro ao remover imagem do Cloudinary", "error");
+            }
+          }
+        }
+      });
 
       async function loadStats() {
         try {
@@ -805,9 +943,10 @@
           const response = await productManager.getProducts(page, search);
           productsTableBody.innerHTML = "";
           response.data.forEach((product) => {
+            const imagens = Array.isArray(product.imagens) ? product.imagens : JSON.parse(product.imagens || '[]');
             const row = document.createElement("tr");
             row.innerHTML = `
-              <td><img src="${product.imagens[0] || "https://via.placeholder.com/50"}" alt="${product.nome}" /></td>
+              <td><img src="${imagens[0] || "https://via.placeholder.com/50"}" alt="${product.nome}" /></td>
               <td>${product.nome}</td>
               <td>R$ ${Number.parseFloat(product.preco).toFixed(2)}</td>
               <td>${product.categoria}</td>
@@ -823,11 +962,21 @@
             `;
             productsTableBody.appendChild(row);
           });
+          totalPages = Math.ceil(response.total / 10);
+          renderPagination(page);
         } catch (error) {
           showFeedback("Erro ao carregar produtos", "error");
         } finally {
           loadingSpinner.style.display = "none";
         }
+      }
+
+      function renderPagination(currentPage) {
+        pagination.innerHTML = `
+          <button ${currentPage === 1 ? 'disabled' : ''} onclick="loadProducts(${currentPage - 1})">Anterior</button>
+          <span>Página ${currentPage} de ${totalPages}</span>
+          <button ${currentPage === totalPages ? 'disabled' : ''} onclick="loadProducts(${currentPage + 1})">Próxima</button>
+        `;
       }
 
       productForm.addEventListener("submit", async (e) => {
@@ -840,27 +989,25 @@
           categoria: formData.get("categoria"),
           loja: formData.get("loja"),
           link: formData.get("link"),
+          imagensExistentes: formData.get("imagensExistentes") || JSON.stringify(existingImages),
         };
+        const files = formData.getAll("imagens");
 
         try {
           loadingSpinner.style.display = "block";
-          const files = formData.getAll("imagens");
-          let imagens = [];
-          if (files.length > 0 && files[0].size > 0) {
-            const uploadResponse = await productManager.uploadImages(files);
-            imagens = uploadResponse.urls;
-          }
-
           if (editingProductId) {
-            await productManager.updateProduct(editingProductId, { ...productData, imagens });
+            await productManager.updateProduct(editingProductId, productData, files);
             showFeedback("Produto atualizado com sucesso!", "success");
           } else {
-            await productManager.addProduct({ ...productData, imagens });
+            await productManager.addProduct(productData, files);
             showFeedback("Produto adicionado com sucesso!", "success");
           }
-
           productForm.reset();
+          imagePreview.innerHTML = "";
+          existingImages = [];
           editingProductId = null;
+          submitBtnText.textContent = "Salvar Produto";
+          cancelBtn.style.display = "none";
           await loadProducts();
           await loadStats();
         } catch (error) {
@@ -874,18 +1021,21 @@
         if (e.target.closest(".btn-edit")) {
           const id = e.target.closest(".btn-edit").dataset.id;
           try {
-            const response = await productManager.getProducts();
-            const product = response.data.find((p) => p.id == id);
-            if (product) {
-              document.getElementById("nome").value = product.nome;
-              document.getElementById("descricao").value = product.descricao;
-              document.getElementById("preco").value = product.preco;
-              document.getElementById("categoria").value = product.categoria;
-              document.getElementById("loja").value = product.loja;
-              document.getElementById("link").value = product.link;
-              editingProductId = id;
-              showFeedback("Editando produto...", "info");
-            }
+            const response = await productManager.makeRequest(`/api/produtos/${id}`);
+            const product = response;
+            document.getElementById("nome").value = product.nome;
+            document.getElementById("descricao").value = product.descricao;
+            document.getElementById("preco").value = product.preco;
+            document.getElementById("categoria").value = product.categoria;
+            document.getElementById("loja").value = product.loja;
+            document.getElementById("link").value = product.link;
+            existingImages = Array.isArray(product.imagens) ? product.imagens : JSON.parse(product.imagens || '[]');
+            document.getElementById("imagens-existentes").value = JSON.stringify(existingImages);
+            renderImagePreview(existingImages);
+            editingProductId = id;
+            submitBtnText.textContent = "Atualizar Produto";
+            cancelBtn.style.display = "inline-flex";
+            showFeedback("Editando produto...", "info");
           } catch (error) {
             showFeedback("Erro ao carregar produto", "error");
           }
@@ -906,9 +1056,20 @@
         }
       });
 
+      cancelBtn.addEventListener("click", () => {
+        productForm.reset();
+        imagePreview.innerHTML = "";
+        existingImages = [];
+        editingProductId = null;
+        submitBtnText.textContent = "Salvar Produto";
+        cancelBtn.style.display = "none";
+        showFeedback("Edição cancelada", "info");
+      });
+
       searchInput.addEventListener("input", async () => {
+        currentPage = 1;
         const search = searchInput.value.trim();
-        await loadProducts(1, search);
+        await loadProducts(currentPage, search);
       });
 
       document.querySelectorAll(".nav-item").forEach((item) => {
