@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🎟️ Cupons Promocionais - Descontos Exclusivos</title>
-  <meta name="description" content="Encontre cupons de desconto exclusivos para Amazon, Shopee, Magalu e mais. Economize com códigos promocionais válidos até 2025!">
-  <meta name="keywords" content="cupons de desconto, promoções, Amazon, Shopee, Magalu, Black Friday 2025">
+  <meta name="description" content="Encontre cupons de desconto para Eletrônicos, Moda, Viagens e mais. Economize com códigos exclusivos válidos até 2025!">
+  <meta name="keywords" content="cupons de desconto, promoções, Amazon, Shopee, Eletrônicos, Moda, Black Friday 2025">
   <meta name="robots" content="index, follow">
   <meta name="author" content="Seu Nome">
   <link rel="icon" type="image/png" href="logos/favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
-    /* Reset básico */
     * {
       margin: 0;
       padding: 0;
@@ -24,7 +24,6 @@
       line-height: 1.6;
     }
 
-    /* Cabeçalho */
     header {
       background: #1e3a8a;
       color: white;
@@ -56,7 +55,6 @@
       color: #ff9800;
     }
 
-    /* Container principal */
     .cupons-container {
       max-width: 1000px;
       margin: 0 auto;
@@ -72,16 +70,34 @@
 
     .cupons-container p {
       font-size: 1.1em;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
       color: #555;
     }
 
-    /* Grid de cupons */
+    .categorias-filtro {
+      margin-bottom: 30px;
+    }
+
+    .categorias-filtro button {
+      background: #e0e0e0;
+      border: none;
+      padding: 10px 20px;
+      margin: 5px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+
+    .categorias-filtro button.active, .categorias-filtro button:hover {
+      background: #ff9800;
+      color: white;
+    }
+
     .cupons-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 20px;
-      margin-top: 20px;
     }
 
     .cupom-card {
@@ -91,6 +107,11 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       text-align: center;
       transition: transform 0.3s;
+      display: none; /* Oculta por padrão, controlado por JS */
+    }
+
+    .cupom-card.active {
+      display: block; /* Mostra apenas os cupons da categoria selecionada */
     }
 
     .cupom-card:hover {
@@ -136,7 +157,6 @@
       margin-top: 10px;
     }
 
-    /* Rodapé */
     footer {
       background: #1e3a8a;
       color: white;
@@ -163,7 +183,6 @@
       color: #ff9800;
     }
 
-    /* Responsividade */
     @media (max-width: 600px) {
       .cupons-grid {
         grid-template-columns: 1fr;
@@ -176,6 +195,11 @@
       nav ul {
         flex-direction: column;
         gap: 10px;
+      }
+
+      .categorias-filtro button {
+        width: 100%;
+        margin: 5px 0;
       }
     }
   </style>
@@ -198,10 +222,14 @@
   <!-- Conteúdo principal -->
   <main class="cupons-container">
     <h1>Os Melhores Cupons de Desconto</h1>
-    <p>Use nossos cupons exclusivos nos sites oficiais e economize em suas compras!</p>
-    <div class="cupons-grid" id="cupons-grid">
-      <!-- Cupons serão inseridos dinamicamente pelo JavaScript -->
+    <p>Escolha uma categoria e economize com nossos cupons exclusivos!</p>
+    <div class="categorias-filtro">
+      <button onclick="filtrarCupons('todos')" class="active">Todos</button>
+      <button onclick="filtrarCupons('eletronicos')">Eletrônicos</button>
+      <button onclick="filtrarCupons('moda')">Moda</button>
+      <button onclick="filtrarCupons('viagens')">Viagens</button>
     </div>
+    <div class="cupons-grid" id="cupons-grid"></div>
   </main>
 
   <!-- Rodapé -->
@@ -214,31 +242,41 @@
   </footer>
 
   <script>
-    // Array de cupons (substitua os links pelos seus links de afiliados)
+    // Array de cupons com categorias e datas de validade
     const cupons = [
-      { id: 'cupom1', loja: 'Amazon', codigo: 'AMAZON10', imagem: 'logos/amazon.png', link: 'https://seusite.com/cupom-amazon', validade: '31/12/2025' },
-      { id: 'cupom2', loja: 'Shopee', codigo: 'DESCONTO10', imagem: 'logos/shopee.png', link: 'https://seusite.com/cupom-shopee', validade: '15/08/2025' },
-      { id: 'cupom3', loja: 'Magalu', codigo: 'MAGALU15', imagem: 'logos/magalu.png', link: 'https://seusite.com/cupom-magalu', validade: '30/11/2025' },
-      { id: 'cupom4', loja: 'Mercado Livre', codigo: 'MERCADO20', imagem: 'logos/mercadolivre.jpg', link: 'https://seusite.com/cupom-mercadolivre', validade: '20/12/2025' },
-      { id: 'cupom5', loja: 'Shein', codigo: 'SHEIN25', imagem: 'logos/shein.png', link: 'https://seusite.com/cupom-shein', validade: '10/09/2025' },
-      { id: 'cupom6', loja: 'AliExpress', codigo: 'ALIEX10', imagem: 'logos/aliexpress.png', link: 'https://seusite.com/cupom-aliexpress', validade: '31/10/2025' }
+      { id: 'cupom1', loja: 'Amazon', codigo: 'AMAZON10', imagem: 'logos/amazon.png', link: 'https://seusite.com/cupom-amazon', validade: '2025-12-31', categoria: 'eletronicos' },
+      { id: 'cupom2', loja: 'Shopee', codigo: 'DESCONTO10', imagem: 'logos/shopee.png', link: 'https://seusite.com/cupom-shopee', validade: '2025-08-15', categoria: 'eletronicos' },
+      { id: 'cupom3', loja: 'Magalu', codigo: 'MAGALU15', imagem: 'logos/magalu.png', link: 'https://seusite.com/cupom-magalu', validade: '2025-11-30', categoria: 'eletronicos' },
+      { id: 'cupom4', loja: 'Mercado Livre', codigo: 'MERCADO20', imagem: 'logos/mercadolivre.jpg', link: 'https://seusite.com/cupom-mercadolivre', validade: '2025-12-20', categoria: 'eletronicos' },
+      { id: 'cupom5', loja: 'Shein', codigo: 'SHEIN25', imagem: 'logos/shein.png', link: 'https://seusite.com/cupom-shein', validade: '2025-09-10', categoria: 'moda' },
+      { id: 'cupom6', loja: 'AliExpress', codigo: 'ALIEX10', imagem: 'logos/aliexpress.png', link: 'https://seusite.com/cupom-aliexpress', validade: '2025-10-31', categoria: 'moda' },
+      { id: 'cupom7', loja: 'Decolar', codigo: 'VIAGEM15', imagem: 'logos/decolar.png', link: 'https://seusite.com/cupom-decolar', validade: '2025-09-30', categoria: 'viagens' }
     ];
 
+    // Função para verificar se o cupom está válido
+    function isCupomValido(validade) {
+      const hoje = new Date();
+      const dataValidade = new Date(validade + 'T23:59:59');
+      return hoje <= dataValidade;
+    }
+
     // Função para renderizar os cupons
-    function renderizarCupons() {
+    function renderizarCupons(categoria = 'todos') {
       const grid = document.getElementById('cupons-grid');
       grid.innerHTML = '';
 
       cupons.forEach(cupom => {
-        const cupomCard = document.createElement('div');
-        cupomCard.className = 'cupom-card';
-        cupomCard.innerHTML = `
-          <img src="${cupom.imagem}" alt="${cupom.loja}">
-          <div class="cupom-codigo" id="${cupom.id}">${cupom.codigo}</div>
-          <p class="validade">Válido até: ${cupom.validade}</p>
-          <a href="${cupom.link}" target="_blank" rel="nofollow" class="btn-copiar" onclick="copiarCupom('${cupom.id}')">Copiar Cupom</a>
-        `;
-        grid.appendChild(cupomCard);
+        if (isCupomValido(cupom.validade) && (categoria === 'todos' || cupom.categoria === categoria)) {
+          const cupomCard = document.createElement('div');
+          cupomCard.className = `cupom-card ${cupom.categoria} active`;
+          cupomCard.innerHTML = `
+            <img src="${cupom.imagem}" alt="${cupom.loja}">
+            <div class="cupom-codigo" id="${cupom.id}">${cupom.codigo}</div>
+            <p class="validade">Válido até: ${cupom.validade.split('-').reverse().join('/')}</p>
+            <a href="${cupom.link}" target="_blank" rel="nofollow" class="btn-copiar" onclick="copiarCupom('${cupom.id}')">Copiar Cupom</a>
+          `;
+          grid.appendChild(cupomCard);
+        }
       });
     }
 
@@ -252,6 +290,14 @@
       document.execCommand('copy');
       window.getSelection().removeAllRanges();
       alert('Cupom copiado: ' + cupom.innerText);
+    }
+
+    // Função para filtrar cupons por categoria
+    function filtrarCupons(categoria) {
+      renderizarCupons(categoria);
+      const botoes = document.querySelectorAll('.categorias-filtro button');
+      botoes.forEach(btn => btn.classList.remove('active'));
+      document.querySelector(`button[onclick="filtrarCupons('${categoria}')"]`).classList.add('active');
     }
 
     // Renderiza os cupons ao carregar a página
