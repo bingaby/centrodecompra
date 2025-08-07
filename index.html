@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🎟️ Cupons Promocionais - Descontos Exclusivos</title>
-  <meta name="description" content="Encontre cupons de desconto para Eletrônicos, Moda, Viagens e mais. Economize com códigos exclusivos válidos até 2025!">
-  <meta name="keywords" content="cupons de desconto, promoções, Amazon, Shopee, Eletrônicos, Moda, Black Friday 2025">
+  <meta name="description" content="Encontre cupons de desconto para Eletrônicos, Moda, Viagens, Casa, Beleza, Esportes e mais. Economize com códigos exclusivos válidos até 2025!">
+  <meta name="keywords" content="cupons de desconto, promoções, Amazon, Shopee, Eletrônicos, Moda, Viagens, Casa, Beleza, Black Friday 2025">
   <meta name="robots" content="index, follow">
   <meta name="author" content="Seu Nome">
   <link rel="icon" type="image/png" href="logos/favicon.png">
@@ -42,6 +42,7 @@
       display: flex;
       justify-content: center;
       gap: 20px;
+      flex-wrap: wrap;
     }
 
     nav ul li a {
@@ -56,7 +57,7 @@
     }
 
     .cupons-container {
-      max-width: 1000px;
+      max-width: 1200px;
       margin: 0 auto;
       padding: 30px 20px;
       text-align: center;
@@ -76,13 +77,16 @@
 
     .categorias-filtro {
       margin-bottom: 30px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
     }
 
     .categorias-filtro button {
       background: #e0e0e0;
       border: none;
       padding: 10px 20px;
-      margin: 5px;
       border-radius: 6px;
       cursor: pointer;
       font-size: 14px;
@@ -107,11 +111,11 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       text-align: center;
       transition: transform 0.3s;
-      display: none; /* Oculta por padrão, controlado por JS */
+      display: none;
     }
 
     .cupom-card.active {
-      display: block; /* Mostra apenas os cupons da categoria selecionada */
+      display: block;
     }
 
     .cupom-card:hover {
@@ -198,8 +202,8 @@
       }
 
       .categorias-filtro button {
-        width: 100%;
-        margin: 5px 0;
+        width: 45%;
+        margin: 5px;
       }
     }
   </style>
@@ -228,6 +232,15 @@
       <button onclick="filtrarCupons('eletronicos')">Eletrônicos</button>
       <button onclick="filtrarCupons('moda')">Moda</button>
       <button onclick="filtrarCupons('viagens')">Viagens</button>
+      <button onclick="filtrarCupons('casa')">Casa</button>
+      <button onclick="filtrarCupons('beleza')">Beleza</button>
+      <button onclick="filtrarCupons('esportes')">Esportes</button>
+      <button onclick="filtrarCupons('livros')">Livros</button>
+      <button onclick="filtrarCupons('alimentos')">Alimentos</button>
+      <button onclick="filtrarCupons('saude')">Saúde</button>
+      <button onclick="filtrarCupons('infantil')">Infantil</button>
+      <button onclick="filtrarCupons('pets')">Pets</button>
+      <button onclick="filtrarCupons('servicos')">Serviços</button>
     </div>
     <div class="cupons-grid" id="cupons-grid"></div>
   </main>
@@ -242,7 +255,7 @@
   </footer>
 
   <script>
-    // Array de cupons com categorias e datas de validade
+    // Array de cupons com mais categorias
     const cupons = [
       { id: 'cupom1', loja: 'Amazon', codigo: 'AMAZON10', imagem: 'logos/amazon.png', link: 'https://seusite.com/cupom-amazon', validade: '2025-12-31', categoria: 'eletronicos' },
       { id: 'cupom2', loja: 'Shopee', codigo: 'DESCONTO10', imagem: 'logos/shopee.png', link: 'https://seusite.com/cupom-shopee', validade: '2025-08-15', categoria: 'eletronicos' },
@@ -250,7 +263,16 @@
       { id: 'cupom4', loja: 'Mercado Livre', codigo: 'MERCADO20', imagem: 'logos/mercadolivre.jpg', link: 'https://seusite.com/cupom-mercadolivre', validade: '2025-12-20', categoria: 'eletronicos' },
       { id: 'cupom5', loja: 'Shein', codigo: 'SHEIN25', imagem: 'logos/shein.png', link: 'https://seusite.com/cupom-shein', validade: '2025-09-10', categoria: 'moda' },
       { id: 'cupom6', loja: 'AliExpress', codigo: 'ALIEX10', imagem: 'logos/aliexpress.png', link: 'https://seusite.com/cupom-aliexpress', validade: '2025-10-31', categoria: 'moda' },
-      { id: 'cupom7', loja: 'Decolar', codigo: 'VIAGEM15', imagem: 'logos/decolar.png', link: 'https://seusite.com/cupom-decolar', validade: '2025-09-30', categoria: 'viagens' }
+      { id: 'cupom7', loja: 'Decolar', codigo: 'VIAGEM15', imagem: 'logos/decolar.png', link: 'https://seusite.com/cupom-decolar', validade: '2025-09-30', categoria: 'viagens' },
+      { id: 'cupom8', loja: 'Americanas', codigo: 'CASA10', imagem: 'logos/americanas.png', link: 'https://seusite.com/cupom-americanas', validade: '2025-10-15', categoria: 'casa' },
+      { id: 'cupom9', loja: 'Natura', codigo: 'NATURA20', imagem: 'logos/natura.png', link: 'https://seusite.com/cupom-natura', validade: '2025-11-10', categoria: 'beleza' },
+      { id: 'cupom10', loja: 'Decathlon', codigo: 'ESPORTE15', imagem: 'logos/decathlon.png', link: 'https://seusite.com/cupom-decathlon', validade: '2025-12-01', categoria: 'esportes' },
+      { id: 'cupom11', loja: 'Livraria Cultura', codigo: 'LIVRO10', imagem: 'logos/cultura.png', link: 'https://seusite.com/cupom-cultura', validade: '2025-09-20', categoria: 'livros' },
+      { id: 'cupom12', loja: 'iFood', codigo: 'IFOOD5', imagem: 'logos/ifood.png', link: 'https://seusite.com/cupom-ifood', validade: '2025-08-31', categoria: 'alimentos' },
+      { id: 'cupom13', loja: 'Drogasil', codigo: 'SAUDE10', imagem: 'logos/drogasil.png', link: 'https://seusite.com/cupom-drogasil', validade: '2025-10-20', categoria: 'saude' },
+      { id: 'cupom14', loja: 'Ri Happy', codigo: 'INFANTIL15', imagem: 'logos/rihappy.png', link: 'https://seusite.com/cupom-rihappy', validade: '2025-11-15', categoria: 'infantil' },
+      { id: 'cupom15', loja: 'Petz', codigo: 'PETS10', imagem: 'logos/petz.png', link: 'https://seusite.com/cupom-petz', validade: '2025-12-10', categoria: 'pets' },
+      { id: 'cupom16', loja: 'Uber', codigo: 'UBER5', imagem: 'logos/uber.png', link: 'https://seusite.com/cupom-uber', validade: '2025-09-15', categoria: 'servicos' }
     ];
 
     // Função para verificar se o cupom está válido
