@@ -1,70 +1,261 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cupons de Desconto - Economize Hoje</title>
-    <meta name="description" content="Encontre os melhores cupons de desconto para eletrônicos, moda, viagens e mais. Economize agora com códigos exclusivos!">
-    <meta name="keywords" content="cupons de desconto, promoções, eletrônicos, moda, Black Friday 2025">
-    <meta name="robots" content="index, follow">
-    <link rel="stylesheet" href="styles.css"> <!-- Arquivo CSS para estilização -->
-    <!-- Favicon (ícone do site) -->
-    <link rel="icon" type="image/png" href="favicon.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎟️ Cupons Promocionais - Descontos Exclusivos</title>
+  <meta name="description" content="Encontre cupons de desconto exclusivos para Amazon, Shopee, Magalu e mais. Economize com códigos promocionais válidos até 2025!">
+  <meta name="keywords" content="cupons de desconto, promoções, Amazon, Shopee, Magalu, Black Friday 2025">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="Seu Nome">
+  <link rel="icon" type="image/png" href="logos/favicon.png">
+  <style>
+    /* Reset básico */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Roboto', Arial, sans-serif;
+      background: #f4f4f9;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    /* Cabeçalho */
+    header {
+      background: #1e3a8a;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    header h1 {
+      font-size: 2.2em;
+      margin-bottom: 10px;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    nav ul li a:hover {
+      color: #ff9800;
+    }
+
+    /* Container principal */
+    .cupons-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 30px 20px;
+      text-align: center;
+    }
+
+    .cupons-container h1 {
+      font-size: 2em;
+      margin-bottom: 15px;
+      color: #1e3a8a;
+    }
+
+    .cupons-container p {
+      font-size: 1.1em;
+      margin-bottom: 30px;
+      color: #555;
+    }
+
+    /* Grid de cupons */
+    .cupons-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .cupom-card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      text-align: center;
+      transition: transform 0.3s;
+    }
+
+    .cupom-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .cupom-card img {
+      max-width: 100px;
+      height: auto;
+      margin-bottom: 15px;
+    }
+
+    .cupom-codigo {
+      background: #ff9800;
+      color: white;
+      font-weight: bold;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 16px;
+      margin-bottom: 15px;
+      display: inline-block;
+    }
+
+    .btn-copiar {
+      background: #25d366;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background 0.3s;
+    }
+
+    .btn-copiar:hover {
+      background: #1ebe5c;
+    }
+
+    .validade {
+      font-size: 0.9em;
+      color: #666;
+      margin-top: 10px;
+    }
+
+    /* Rodapé */
+    footer {
+      background: #1e3a8a;
+      color: white;
+      text-align: center;
+      padding: 20px;
+      margin-top: 40px;
+    }
+
+    footer ul {
+      list-style: none;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 10px;
+    }
+
+    footer ul li a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    footer ul li a:hover {
+      color: #ff9800;
+    }
+
+    /* Responsividade */
+    @media (max-width: 600px) {
+      .cupons-grid {
+        grid-template-columns: 1fr;
+      }
+
+      header h1 {
+        font-size: 1.8em;
+      }
+
+      nav ul {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <!-- Cabeçalho -->
-    <header>
-        <h1>Cupons de Desconto</h1>
-        <nav>
-            <ul>
-                <li><a href="index.html">Início</a></li>
-                <li><a href="categorias.html">Categorias</a></li>
-                <li><a href="lojas.html">Lojas</a></li>
-                <li><a href="blog.html">Blog</a></li>
-                <li><a href="contato.html">Contato</a></li>
-            </ul>
-        </nav>
-    </header>
+  <!-- Cabeçalho -->
+  <header>
+    <h1>🎟️ Cupons Promocionais</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Início</a></li>
+        <li><a href="categorias.html">Categorias</a></li>
+        <li><a href="lojas.html">Lojas</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="contato.html">Contato</a></li>
+      </ul>
+    </nav>
+  </header>
 
-    <!-- Seção principal com cupons em destaque -->
-    <main>
-        <section id="cupons-destaque">
-            <h2>Melhores Cupons do Dia</h2>
-            <div class="cupom">
-                <h3>10% OFF na Shopee</h3>
-                <p>Código: <strong>DESCONTO10</strong></p>
-                <p>Válido até: 31/12/2025</p>
-                <a href="https://seusite.com/cupom-shopee" target="_blank" rel="nofollow">Pegar Cupom</a>
-            </div>
-            <div class="cupom">
-                <h3>15% OFF na Amazon</h3>
-                <p>Código: <strong>AMAZON15</strong></p>
-                <p>Válido até: 15/08/2025</p>
-                <a href="https://seusite.com/cupom-amazon" target="_blank" rel="nofollow">Pegar Cupom</a>
-            </div>
-        </section>
+  <!-- Conteúdo principal -->
+  <main class="cupons-container">
+    <h1>Os Melhores Cupons de Desconto</h1>
+    <p>Use nossos cupons exclusivos nos sites oficiais e economize em suas compras!</p>
+    <div class="cupons-grid" id="cupons-grid">
+      <!-- Cupons serão inseridos dinamicamente pelo JavaScript -->
+    </div>
+  </main>
 
-        <!-- Seção de categorias -->
-        <section id="categorias">
-            <h2>Categorias Populares</h2>
-            <ul>
-                <li><a href="eletronicos.html">Eletrônicos</a></li>
-                <li><a href="moda.html">Moda</a></li>
-                <li><a href="viagens.html">Viagens</a></li>
-            </ul>
-        </section>
-    </main>
+  <!-- Rodapé -->
+  <footer>
+    <p>&copy; 2025 Cupons Promocionais. Todos os direitos reservados.</p>
+    <ul>
+      <li><a href="politica-privacidade.html">Política de Privacidade</a></li>
+      <li><a href="declaracao-afiliados.html">Declaração de Afiliados</a></li>
+    </ul>
+  </footer>
 
-    <!-- Rodapé -->
-    <footer>
-        <p>&copy; 2025 Cupons de Desconto. Todos os direitos reservados.</p>
-        <ul>
-            <li><a href="politica-privacidade.html">Política de Privacidade</a></li>
-            <li><a href="declaracao-afiliados.html">Declaração de Afiliados</a></li>
-        </ul>
-    </footer>
+  <script>
+    // Array de cupons (substitua os links pelos seus links de afiliados)
+    const cupons = [
+      { id: 'cupom1', loja: 'Amazon', codigo: 'AMAZON10', imagem: 'logos/amazon.png', link: 'https://seusite.com/cupom-amazon', validade: '31/12/2025' },
+      { id: 'cupom2', loja: 'Shopee', codigo: 'DESCONTO10', imagem: 'logos/shopee.png', link: 'https://seusite.com/cupom-shopee', validade: '15/08/2025' },
+      { id: 'cupom3', loja: 'Magalu', codigo: 'MAGALU15', imagem: 'logos/magalu.png', link: 'https://seusite.com/cupom-magalu', validade: '30/11/2025' },
+      { id: 'cupom4', loja: 'Mercado Livre', codigo: 'MERCADO20', imagem: 'logos/mercadolivre.jpg', link: 'https://seusite.com/cupom-mercadolivre', validade: '20/12/2025' },
+      { id: 'cupom5', loja: 'Shein', codigo: 'SHEIN25', imagem: 'logos/shein.png', link: 'https://seusite.com/cupom-shein', validade: '10/09/2025' },
+      { id: 'cupom6', loja: 'AliExpress', codigo: 'ALIEX10', imagem: 'logos/aliexpress.png', link: 'https://seusite.com/cupom-aliexpress', validade: '31/10/2025' }
+    ];
 
-    <!-- Script para funcionalidades futuras (ex.: copiar cupom ao clicar) -->
-    <script src="scripts.js"></script>
+    // Função para renderizar os cupons
+    function renderizarCupons() {
+      const grid = document.getElementById('cupons-grid');
+      grid.innerHTML = '';
+
+      cupons.forEach(cupom => {
+        const cupomCard = document.createElement('div');
+        cupomCard.className = 'cupom-card';
+        cupomCard.innerHTML = `
+          <img src="${cupom.imagem}" alt="${cupom.loja}">
+          <div class="cupom-codigo" id="${cupom.id}">${cupom.codigo}</div>
+          <p class="validade">Válido até: ${cupom.validade}</p>
+          <a href="${cupom.link}" target="_blank" rel="nofollow" class="btn-copiar" onclick="copiarCupom('${cupom.id}')">Copiar Cupom</a>
+        `;
+        grid.appendChild(cupomCard);
+      });
+    }
+
+    // Função para copiar cupom
+    function copiarCupom(cupomId) {
+      const cupom = document.getElementById(cupomId);
+      const range = document.createRange();
+      range.selectNode(cupom);
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
+      document.execCommand('copy');
+      window.getSelection().removeAllRanges();
+      alert('Cupom copiado: ' + cupom.innerText);
+    }
+
+    // Renderiza os cupons ao carregar a página
+    renderizarCupons();
+  </script>
 </body>
 </html>
