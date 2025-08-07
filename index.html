@@ -1,168 +1,70 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Centro de Compras - Frontend Exemplo</title>
-<style>
-  body { font-family: Arial, sans-serif; margin: 20px; }
-  #login, #products, #chat { margin-bottom: 30px; }
-  #products { display: flex; flex-wrap: wrap; gap: 10px; }
-  .product-card { border: 1px solid #ccc; padding: 10px; width: 150px; }
-  #messages { border: 1px solid #ccc; height: 150px; overflow-y: auto; padding: 5px; margin-bottom: 10px; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cupons de Desconto - Economize Hoje</title>
+    <meta name="description" content="Encontre os melhores cupons de desconto para eletrônicos, moda, viagens e mais. Economize agora com códigos exclusivos!">
+    <meta name="keywords" content="cupons de desconto, promoções, eletrônicos, moda, Black Friday 2025">
+    <meta name="robots" content="index, follow">
+    <link rel="stylesheet" href="styles.css"> <!-- Arquivo CSS para estilização -->
+    <!-- Favicon (ícone do site) -->
+    <link rel="icon" type="image/png" href="favicon.png">
 </head>
 <body>
+    <!-- Cabeçalho -->
+    <header>
+        <h1>Cupons de Desconto</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Início</a></li>
+                <li><a href="categorias.html">Categorias</a></li>
+                <li><a href="lojas.html">Lojas</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="contato.html">Contato</a></li>
+            </ul>
+        </nav>
+    </header>
 
-<h1>Centro de Compras - Frontend Exemplo</h1>
+    <!-- Seção principal com cupons em destaque -->
+    <main>
+        <section id="cupons-destaque">
+            <h2>Melhores Cupons do Dia</h2>
+            <div class="cupom">
+                <h3>10% OFF na Shopee</h3>
+                <p>Código: <strong>DESCONTO10</strong></p>
+                <p>Válido até: 31/12/2025</p>
+                <a href="https://seusite.com/cupom-shopee" target="_blank" rel="nofollow">Pegar Cupom</a>
+            </div>
+            <div class="cupom">
+                <h3>15% OFF na Amazon</h3>
+                <p>Código: <strong>AMAZON15</strong></p>
+                <p>Válido até: 15/08/2025</p>
+                <a href="https://seusite.com/cupom-amazon" target="_blank" rel="nofollow">Pegar Cupom</a>
+            </div>
+        </section>
 
-<section id="login">
-  <h2>Login</h2>
-  <input id="username" type="text" placeholder="Usuário" />
-  <input id="password" type="password" placeholder="Senha" />
-  <button id="btnLogin">Entrar</button>
-  <p id="loginStatus" style="color:red;"></p>
-</section>
+        <!-- Seção de categorias -->
+        <section id="categorias">
+            <h2>Categorias Populares</h2>
+            <ul>
+                <li><a href="eletronicos.html">Eletrônicos</a></li>
+                <li><a href="moda.html">Moda</a></li>
+                <li><a href="viagens.html">Viagens</a></li>
+            </ul>
+        </section>
+    </main>
 
-<section id="products" style="display:none;">
-  <h2>Produtos</h2>
-  <div id="productsGrid"></div>
-  <button id="btnLoadMore">Carregar Mais</button>
-</section>
+    <!-- Rodapé -->
+    <footer>
+        <p>&copy; 2025 Cupons de Desconto. Todos os direitos reservados.</p>
+        <ul>
+            <li><a href="politica-privacidade.html">Política de Privacidade</a></li>
+            <li><a href="declaracao-afiliados.html">Declaração de Afiliados</a></li>
+        </ul>
+    </footer>
 
-<section id="chat" style="display:none;">
-  <h2>Chat Socket.io</h2>
-  <div id="messages"></div>
-  <input id="chatInput" type="text" placeholder="Digite uma mensagem" />
-  <button id="sendMsg">Enviar</button>
-</section>
-
-<script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
-<script>
-  const API_URL = 'https://minha-api-produtos.onrender.com/api';
-  let token = '';
-  let page = 1;
-
-  const loginSection = document.getElementById('login');
-  const productsSection = document.getElementById('products');
-  const chatSection = document.getElementById('chat');
-  const loginStatus = document.getElementById('loginStatus');
-  const productsGrid = document.getElementById('productsGrid');
-  const btnLoadMore = document.getElementById('btnLoadMore');
-  const messagesDiv = document.getElementById('messages');
-  const chatInput = document.getElementById('chatInput');
-
-  // Login
-  document.getElementById('btnLogin').addEventListener('click', async () => {
-    const username = document.getElementById('username').value.trim();
-    const password = document.getElementById('password').value.trim();
-    loginStatus.textContent = '';
-
-    if (!username || !password) {
-      loginStatus.textContent = 'Preencha usuário e senha.';
-      return;
-    }
-
-    try {
-      const res = await fetch(API_URL + '/login', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ username, password }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        token = data.token;
-        loginSection.style.display = 'none';
-        productsSection.style.display = 'block';
-        chatSection.style.display = 'block';
-        carregarProdutos();
-        iniciarSocket();
-      } else {
-        loginStatus.textContent = 'Usuário ou senha inválidos.';
-      }
-    } catch (err) {
-      loginStatus.textContent = 'Erro ao conectar com a API.';
-      console.error(err);
-    }
-  });
-
-  // Carregar produtos
-  async function carregarProdutos() {
-    try {
-      btnLoadMore.disabled = true;
-      const res = await fetch(`${API_URL}/produtos?page=${page}&limit=10`, {
-        headers: {
-          Authorization: 'Bearer ' + token,
-        },
-      });
-      const data = await res.json();
-      if (data.success) {
-        data.data.forEach(prod => {
-          const card = document.createElement('div');
-          card.className = 'product-card';
-          card.innerHTML = `<strong>${prod.nome}</strong><br><small>${prod.descricao || ''}</small>`;
-          productsGrid.appendChild(card);
-        });
-        if (data.data.length === 10) {
-          btnLoadMore.disabled = false;
-          page++;
-        } else {
-          btnLoadMore.style.display = 'none';
-        }
-      } else {
-        alert('Erro ao carregar produtos.');
-      }
-    } catch (err) {
-      alert('Erro na requisição.');
-      console.error(err);
-    }
-  }
-
-  btnLoadMore.addEventListener('click', carregarProdutos);
-
-  // Socket.io
-  let socket;
-  function iniciarSocket() {
-    socket = io('https://minha-api-produtos.onrender.com', {
-      withCredentials: true,
-      extraHeaders: {
-        Origin: window.location.origin
-      }
-    });
-
-    socket.on('connect', () => {
-      console.log('Conectado ao socket:', socket.id);
-      addMessage('Conectado ao chat.');
-    });
-
-    socket.on('mensagem', (msg) => {
-      addMessage('Outro: ' + msg);
-    });
-
-    socket.on('disconnect', () => {
-      addMessage('Desconectado do chat.');
-    });
-
-    socket.on('connect_error', (err) => {
-      addMessage('Erro no socket: ' + err.message);
-    });
-  }
-
-  document.getElementById('sendMsg').addEventListener('click', () => {
-    const msg = chatInput.value.trim();
-    if (!msg) return;
-    socket.emit('mensagem', msg);
-    addMessage('Você: ' + msg);
-    chatInput.value = '';
-  });
-
-  function addMessage(text) {
-    const p = document.createElement('p');
-    p.textContent = text;
-    messagesDiv.appendChild(p);
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-  }
-</script>
-
+    <!-- Script para funcionalidades futuras (ex.: copiar cupom ao clicar) -->
+    <script src="scripts.js"></script>
 </body>
 </html>
