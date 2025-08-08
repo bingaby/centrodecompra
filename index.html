@@ -15,7 +15,14 @@
 
   <script>
     const PLANILHA_ID = '1cQOP4Tpu-9lq1aG6FPNFTmO4C1E1WixGKlMXx_ybzR0';
-    const ABA = 'Produtos'; // nome da aba exata no Google Sheets
+    const ABA = 'Produtos'; // nome exato da aba no Google Sheets
+
+    function parseDateBR(dataStr) {
+      // Espera formato dd/mm/yyyy
+      const partes = dataStr.split('/');
+      if (partes.length !== 3) return null;
+      return new Date(`${partes[2]}-${partes[1]}-${partes[0]}`);
+    }
 
     fetch(`https://opensheet.vercel.app/${PLANILHA_ID}/${ABA}`)
       .then(res => {
@@ -29,8 +36,8 @@
 
         let count = 0;
         data.forEach(cupom => {
-          const validade = new Date(cupom.validade);
-          if (validade >= hoje) {
+          const validade = parseDateBR(cupom.validade);
+          if (validade && validade >= hoje) {
             count++;
             const div = document.createElement('div');
             div.className = 'cupom';
