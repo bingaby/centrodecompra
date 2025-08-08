@@ -1,36 +1,20 @@
 // Configuração da API
 const API_CONFIG = {
     BASE_URL: 'https://minha-api-produtos.onrender.com',
+    TOKEN: '098457098457',
     TIMEOUT: 15000
 };
 
-// Elementos do DOM
-const productsGrid = document.getElementById('grid-produtos');
-const loadingSpinner = document.getElementById('loading-spinner');
-const emptyState = document.getElementById('mensagem-vazia');
-const errorState = document.getElementById('error-message');
-const loadMoreBtn = document.getElementById('load-more');
-const searchInput = document.getElementById('busca');
-const searchSuggestions = document.getElementById('search-suggestions');
-const categoriesSidebar = document.getElementById('categories-sidebar');
-const categoriesToggle = document.getElementById('categories-toggle');
-const closeSidebar = document.getElementById('close-sidebar');
-const overlay = document.getElementById('overlay');
-const sortSelect = document.getElementById('sort-select');
-const viewButtons = document.querySelectorAll('.view-btn');
-const imageModal = document.getElementById('imageModal');
-const modalCarrosselImagens = document.getElementById('modalCarrosselImagens');
-const modalCarrosselDots = document.getElementById('modalCarrosselDots');
-const modalPrev = document.getElementById('modalPrev');
-const modalNext = document.getElementById('modalNext');
-const modalClose = document.getElementById('modal-close');
+// Elementos do DOM (ajuste conforme o HTML do painel)
+const productsGrid = document.getElementById('admin-products-grid');
+const loadingSpinner = document.getElementById('admin-loading-spinner');
+const emptyState = document.getElementById('admin-mensagem-vazia');
+const errorState = document.getElementById('admin-error-message');
+const productForm = document.getElementById('admin-product-form');
+const formFeedback = document.getElementById('admin-form-feedback');
 
 // Estado da página
 let currentPage = 1;
-let currentCategoria = 'todas';
-let currentLoja = 'todas';
-let currentBusca = '';
-let currentSort = 'relevance';
 let totalProdutos = 0;
 
 // Inicializar Socket.IO
@@ -39,23 +23,15 @@ const socket = io(API_CONFIG.BASE_URL);
 // Função para buscar produtos
 async function fetchProducts(page = 1, reset = false) {
     try {
-        loadingSpinner.style.display = 'block';
-        emptyState.style.display = 'none';
-        errorState.style.display = 'none';
+        if (loadingSpinner) loadingSpinner.style.display = 'block';
+        if (emptyState) emptyState.style.display = 'none';
+        if (errorState) errorState.style.display = 'none';
         if (reset) {
             currentPage = 1;
             productsGrid.innerHTML = '';
         }
 
-        const params = new URLSearchParams({
-            page,
-            limit: 12,
-            categoria: currentCategoria === 'todas' ? '' : currentCategoria,
-            loja: currentLoja === 'todas' ? '' : currentLoja,
-            busca: currentBusca,
-            sort: currentSort
-        });
-
+        const params = new URLSearchParams({ page, limit: 12 });
         const response = await fetch(`${API_CONFIG.BASE_URL}/api/produtos?${params}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
@@ -66,7 +42,6 @@ async function fetchProducts(page = 1, reset = false) {
         if (result.status === 'success') {
             totalProdutos = result.total;
             displayProducts(result.data, reset);
-            updateLoadMoreButton();
         } else {
             showError('Erro ao carregar produtos');
         }
@@ -74,7 +49,7 @@ async function fetchProducts(page = 1, reset = false) {
         console.error('Erro ao buscar produtos:', error);
         showError('Não foi possível carregar os produtos. Verifique sua conexão.');
     } finally {
-        loadingSpinner.style.display = 'none';
+        if (loadingSpinner) loadingSpinner.style.display = 'none';
     }
 }
 
@@ -85,180 +60,143 @@ function displayProducts(produtos, reset = false) {
     }
 
     if (produtos.length === 0 && currentPage === 1) {
-        emptyState.style.display = 'block';
+        if (emptyState) emptyState.style.display = 'block';
         return;
     }
 
     produtos.forEach(produto => {
         const card = document.createElement('div');
-        card.className = `product-card ${productsGrid.classList.contains('list-view') ? 'list-view' : ''}`;
+        card.className = 'admin-product-card';
         card.innerHTML = `
-            <div class="product-image-container">
-                <img src="${produto.imagens[0] || 'https://via.placeholder.com/300'}" alt="${produto.nome}" class="product-image" data-images='${JSON.stringify(produto.imagens)}'>
-            </div>
-            <div class="product-info">
-                <h3 class="product-title">${produto.nome}</h3>
-                <p class="product-price">R$ ${parseFloat(produto.preco).toFixed(2)}</p>
-                <p class="product-stats">Visualizações: ${produto.views} | Vendas: ${produto.sales}</p>
-                <div class="product-tags">
-                    <span class="tag category">${produto.categoria}</span>
-                    <span class="tag store">${produto.loja}</span>
-                </div>
-                <a href="${produto.link}" class="product-link" target="_blank">Ver na Loja</a>
+            <img src="${produto.imagens[0] || 'https://via.placeholder.com/300'}" alt="${produto.nome}" class="admin-product-image">
+            <div class="admin-product-info">
+                <h3>${produto.nome}</h3>
+                <p>R$ ${parseFloat(produto.preco).toFixed(2)}</p>
+                <p>Categoria: ${produto.categoria}</p>
+                <p>Loja: ${produto.loja}</p>
+                <p>Visualizações: ${produto.views} | Vendas: ${produto.sales}</p>
+                <button class="edit-btn" data-id="${produto.id}">Editar</button>
+                <button class="delete-btn" data-id="${produto.id}">Excluir</button>
             </div>
         `;
         productsGrid.appendChild(card);
 
-        // Adicionar evento para abrir modal de imagens
-        card.querySelector('.product-image').addEventListener('click', () => openImageModal(produto.imagens));
+        card.querySelector('.edit-btn').addEventListener('click', () => populateForm(produto));
+        card.querySelector('.delete-btn').addEventListener('click', () => deleteProduct(produto.id));
     });
-
-    updateProductGridView();
 }
 
-// Função para abrir modal de imagens
-function openImageModal(images) {
-    if (!images || images.length === 0) return;
+// Função para adicionar/editar produto
+async function saveProduct(event) {
+    event.preventDefault();
+    const formData = new FormData(productForm);
+    const id = formData.get('id');
+    const method = id ? 'PUT' : 'POST';
+    const url = id ? `${API_CONFIG.BASE_URL}/api/produtos/${id}` : `${API_CONFIG.BASE_URL}/api/produtos`;
 
-    modalCarrosselImagens.innerHTML = '';
-    modalCarrosselDots.innerHTML = '';
-    let currentIndex = 0;
-
-    images.forEach((image, index) => {
-        const imgElement = document.createElement('div');
-        imgElement.className = `carousel-image ${index === 0 ? 'active' : ''}`;
-        imgElement.innerHTML = `<img src="${image}" alt="Imagem do produto">`;
-        modalCarrosselImagens.appendChild(imgElement);
-
-        const dot = document.createElement('span');
-        dot.className = `carousel-dot ${index === 0 ? 'active' : ''}`;
-        dot.addEventListener('click', () => goToImage(index));
-        modalCarrosselDots.appendChild(dot);
-    });
-
-    imageModal.style.display = 'block';
-
-    function goToImage(index) {
-        document.querySelectorAll('.carousel-image').forEach((img, i) => {
-            img.classList.toggle('active', i === index);
+    try {
+        const response = await fetch(url, {
+            method,
+            headers: {
+                'Authorization': `Bearer ${API_CONFIG.TOKEN}`
+            },
+            body: formData,
+            timeout: API_CONFIG.TIMEOUT
         });
-        document.querySelectorAll('.carousel-dot').forEach((dot, i) => {
-            dot.classList.toggle('active', i === index);
-        });
-        currentIndex = index;
+
+        const result = await response.json();
+        if (result.status === 'success') {
+            showFeedback(`Produto ${id ? 'atualizado' : 'adicionado'} com sucesso!`, 'success');
+            productForm.reset();
+            fetchProducts(1, true);
+        } else {
+            showFeedback(result.message || 'Erro ao salvar produto', 'error');
+        }
+    } catch (error) {
+        console.error('Erro ao salvar produto:', error);
+        showFeedback('Não foi possível salvar o produto. Verifique sua conexão.', 'error');
     }
-
-    modalPrev.addEventListener('click', () => {
-        currentIndex = (currentIndex - 1 + images.length) % images.length;
-        goToImage(currentIndex);
-    });
-
-    modalNext.addEventListener('click', () => {
-        currentIndex = (currentIndex + 1) % images.length;
-        goToImage(currentIndex);
-    });
-
-    modalClose.addEventListener('click', () => {
-        imageModal.style.display = 'none';
-    });
 }
 
-// Função para atualizar botão "Carregar Mais"
-function updateLoadMoreButton() {
-    const productsDisplayed = document.querySelectorAll('.product-card').length;
-    loadMoreBtn.style.display = productsDisplayed < totalProdutos ? 'block' : 'none';
+// Função para excluir produto
+async function deleteProduct(id) {
+    if (!confirm('Tem certeza que deseja excluir este produto?')) return;
+
+    try {
+        const response = await fetch(`${API_CONFIG.BASE_URL}/api/produtos/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${API_CONFIG.TOKEN}`,
+                'Content-Type': 'application/json'
+            },
+            timeout: API_CONFIG.TIMEOUT
+        });
+
+        const result = await response.json();
+        if (result.status === 'success') {
+            showFeedback('Produto excluído com sucesso!', 'success');
+            fetchProducts(1, true);
+        } else {
+            showFeedback(result.message || 'Erro ao excluir produto', 'error');
+        }
+    } catch (error) {
+        console.error('Erro ao excluir produto:', error);
+        showFeedback('Não foi possível excluir o produto. Verifique sua conexão.', 'error');
+    }
+}
+
+// Função para preencher formulário ao editar
+function populateForm(produto) {
+    productForm.querySelector('#id').value = produto.id;
+    productForm.querySelector('#nome').value = produto.nome;
+    productForm.querySelector('#preco').value = produto.preco;
+    productForm.querySelector('#categoria').value = produto.categoria;
+    productForm.querySelector('#loja').value = produto.loja;
+    productForm.querySelector('#link').value = produto.link;
+    productForm.querySelector('#descricao').value = produto.descricao || '';
+}
+
+// Função para exibir feedback
+function showFeedback(message, type) {
+    if (formFeedback) {
+        formFeedback.textContent = message;
+        formFeedback.className = `feedback ${type}`;
+        formFeedback.style.display = 'block';
+        setTimeout(() => {
+            formFeedback.style.display = 'none';
+        }, 3000);
+    }
 }
 
 // Função para exibir erro
 function showError(message) {
-    errorState.querySelector('h3').textContent = 'Ops! Algo deu errado';
-    errorState.querySelector('p').textContent = message;
-    errorState.style.display = 'block';
+    if (errorState) {
+        errorState.querySelector('h3').textContent = 'Ops! Algo deu errado';
+        errorState.querySelector('p').textContent = message;
+        errorState.style.display = 'block';
+    }
 }
 
-// Função para atualizar visualização (grid/list)
-function updateProductGridView() {
-    const isListView = productsGrid.classList.contains('list-view');
-    document.querySelectorAll('.product-card').forEach(card => {
-        card.classList.toggle('list-view', isListView);
-    });
+// Eventos
+if (productForm) {
+    productForm.addEventListener('submit', saveProduct);
 }
-
-// Eventos de filtros e navegação
-categoriesToggle.addEventListener('click', () => {
-    categoriesSidebar.classList.add('active');
-    overlay.style.display = 'block';
-});
-
-closeSidebar.addEventListener('click', () => {
-    categoriesSidebar.classList.remove('active');
-    overlay.style.display = 'none';
-});
-
-overlay.addEventListener('click', () => {
-    categoriesSidebar.classList.remove('active');
-    overlay.style.display = 'none';
-});
-
-document.querySelectorAll('.category-item').forEach(item => {
-    item.addEventListener('click', () => {
-        document.querySelectorAll('.category-item').forEach(i => i.classList.remove('active'));
-        item.classList.add('active');
-        currentCategoria = item.dataset.categoria;
-        fetchProducts(1, true);
-        categoriesSidebar.classList.remove('active');
-        overlay.style.display = 'none';
-    });
-});
-
-document.querySelectorAll('.store-card').forEach(card => {
-    card.addEventListener('click', () => {
-        document.querySelectorAll('.store-card').forEach(c => c.classList.remove('active'));
-        card.classList.add('active');
-        currentLoja = card.dataset.loja;
-        fetchProducts(1, true);
-    });
-});
-
-searchInput.addEventListener('input', () => {
-    currentBusca = searchInput.value.trim();
-    fetchProducts(1, true);
-});
-
-sortSelect.addEventListener('change', () => {
-    currentSort = sortSelect.value;
-    fetchProducts(1, true);
-});
-
-viewButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        viewButtons.forEach(btn => btn.classList.remove('active'));
-        button.classList.add('active');
-        productsGrid.classList.toggle('list-view', button.dataset.view === 'list');
-        updateProductGridView();
-    });
-});
-
-loadMoreBtn.addEventListener('click', () => {
-    currentPage++;
-    fetchProducts(currentPage);
-});
 
 // Atualizações em tempo real via Socket.IO
 socket.on('novoProduto', () => {
     fetchProducts(1, true);
+    showFeedback('Novo produto adicionado!', 'success');
 });
 
 socket.on('produtoAtualizado', () => {
     fetchProducts(1, true);
+    showFeedback('Produto atualizado!', 'success');
 });
 
 socket.on('produtoExcluido', () => {
     fetchProducts(1, true);
+    showFeedback('Produto excluído!', 'success');
 });
-
-// Atualizar ano no footer
-document.getElementById('year').textContent = new Date().getFullYear();
 
 // Carregar produtos ao iniciar
 document.addEventListener('DOMContentLoaded', () => {
