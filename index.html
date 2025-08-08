@@ -4,54 +4,78 @@
   <meta charset="UTF-8" />
   <title>Cupons Ativos</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    .cupom { background: #eee; margin: 10px 0; padding: 10px; border-radius: 6px; }
-    .cupom a { color: blue; text-decoration: none; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f9f9f9;
+    }
+    .cupom {
+      background: #eee;
+      margin: 10px 0;
+      padding: 10px 15px;
+      border-radius: 6px;
+      box-shadow: 1px 1px 4px rgba(0,0,0,0.1);
+    }
+    .cupom a {
+      color: #007BFF;
+      text-decoration: none;
+    }
+    .cupom a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
   <h1>Cupons Ativos</h1>
   <div id="cupons-container">Carregando cupons...</div>
 
-  const PLANILHA_URL = 'https://opensheet.elk.sh/1cQOP4Tpu-9lq1aG6FPNFTmO4C1E1WixGKlMXx_ybzR0/Produtos';
+  <script>
+    const PLANILHA_URL = 'https://opensheet.elk.sh/1cQOP4Tpu-9lq1aG6FPNFTmO4C1E1WixGKlMXx_ybzR0/Produtos';
 
-async function carregarCupons() {
-  const container = document.getElementById('cupons-container');
-  container.innerHTML = 'Carregando cupons...';
-
-  try {
-    const res = await fetch(PLANILHA_URL);
-    if (!res.ok) throw new Error(`Erro HTTP: ${res.status}`);
-
-    const data = await res.json();
-    const hoje = new Date();
-    container.innerHTML = '';
-
-    let count = 0;
-    data.forEach(cupom => {
-      const validade = parseDateBR(cupom.validade);
-      if (validade && validade >= hoje) {
-        count++;
-        const div = document.createElement('div');
-        div.className = 'cupom';
-        div.innerHTML = `
-          <strong>${cupom.nome} (${cupom.loja})</strong><br/>
-          Código: <code>${cupom.codigo}</code><br/>
-          Válido até: ${cupom.validade}<br/>
-          <a href="${cupom.link}" target="_blank" rel="noopener">Usar cupom</a>
-        `;
-        container.appendChild(div);
-      }
-    });
-
-    if (count === 0) {
-      container.innerHTML = '<p>Não há cupons válidos no momento.</p>';
+    function parseDateBR(dataStr) {
+      if (!dataStr || typeof dataStr !== 'string') return null;
+      const partes = dataStr.split('/');
+      if (partes.length !== 3) return null;
+      return new Date(`${partes[2]}-${partes[1]}-${partes[0]}`);
     }
-  } catch (err) {
-    console.error('Erro ao carregar cupons:', err);
-    container.innerHTML = '<p>Erro ao carregar cupons.</p>';
-  }
-}
+
+    async function carregarCupons() {
+      const container = document.getElementById('cupons-container');
+      container.innerHTML = 'Carregando cupons...';
+
+      try {
+        const res = await fetch(PLANILHA_URL);
+        if (!res.ok) throw new Error(`Erro HTTP: ${res.status}`);
+
+        const data = await res.json();
+        const hoje = new Date();
+        container.innerHTML = '';
+
+        let count = 0;
+        data.forEach(cupom => {
+          const validade = parseDateBR(cupom.validade);
+          if (validade && validade >= hoje) {
+            count++;
+            const div = document.createElement('div');
+            div.className = 'cupom';
+            div.innerHTML = `
+              <strong>${cupom.nome} (${cupom.loja})</strong><br/>
+              Código: <code>${cupom.codigo}</code><br/>
+              Válido até: ${cupom.validade}<br/>
+              <a href="${cupom.link}" target="_blank" rel="noopener">Usar cupom</a>
+            `;
+            container.appendChild(div);
+          }
+        });
+
+        if (count === 0) {
+          container.innerHTML = '<p>Não há cupons válidos no momento.</p>';
+        }
+      } catch (err) {
+        console.error('Erro ao carregar cupons:', err);
+        container.innerHTML = '<p>Erro ao carregar cupons.</p>';
+      }
+    }
 
     carregarCupons();
   </script>
