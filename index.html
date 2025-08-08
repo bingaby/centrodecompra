@@ -15,23 +15,25 @@
 
   <script>
     const PLANILHA_ID = '1cQOP4Tpu-9lq1aG6FPNFTmO4C1E1WixGKlMXx_ybzR0';
-    const ABA = 'Produtos'; // nome exato da aba no Google Sheets
+    const ABA = 'Produtos'; // nome exato da aba na planilha
 
     function parseDateBR(dataStr) {
-      // Espera formato dd/mm/yyyy
+      if (!dataStr || typeof dataStr !== 'string') return null;
       const partes = dataStr.split('/');
       if (partes.length !== 3) return null;
-      return new Date(`${partes[2]}-${partes[1]}-${partes[0]}`);
+      return new Date(`${partes[2]}-${partes[1]}}-${partes[0]}`);
     }
 
-    fetch(`https://opensheet.vercel.app/${PLANILHA_ID}/${ABA}`)
-      .then(res => {
+    async function carregarCupons() {
+      const container = document.getElementById('cupons-container');
+      container.innerHTML = 'Carregando cupons...';
+
+      try {
+        const res = await fetch(`https://opensheet.vercel.app/${PLANILHA_ID}/${ABA}`);
         if (!res.ok) throw new Error(`Erro HTTP: ${res.status}`);
-        return res.json();
-      })
-      .then(data => {
+
+        const data = await res.json();
         const hoje = new Date();
-        const container = document.getElementById('cupons-container');
         container.innerHTML = '';
 
         let count = 0;
@@ -54,11 +56,13 @@
         if (count === 0) {
           container.innerHTML = '<p>Não há cupons válidos no momento.</p>';
         }
-      })
-      .catch(err => {
+      } catch (err) {
         console.error('Erro ao carregar cupons:', err);
-        document.getElementById('cupons-container').innerHTML = '<p>Erro ao carregar cupons.</p>';
-      });
+        container.innerHTML = '<p>Erro ao carregar cupons.</p>';
+      }
+    }
+
+    carregarCupons();
   </script>
 </body>
 </html>
