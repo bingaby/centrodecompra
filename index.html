@@ -14,11 +14,14 @@
   <div id="cupons-container">Carregando cupons...</div>
 
   <script>
-    const PLANILHA_ID = '1cQOP4Tpu-9lq1aG6FPNFTmO4C1E1WixGKlMXx_ybzR0'; // seu ID da planilha
-    const ABA = 'Produtos';
+    const PLANILHA_ID = '1cQOP4Tpu-9lq1aG6FPNFTmO4C1E1WixGKlMXx_ybzR0';
+    const ABA = 'Produtos'; // nome da aba exata no Google Sheets
 
     fetch(`https://opensheet.vercel.app/${PLANILHA_ID}/${ABA}`)
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error(`Erro HTTP: ${res.status}`);
+        return res.json();
+      })
       .then(data => {
         const hoje = new Date();
         const container = document.getElementById('cupons-container');
