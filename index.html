@@ -1,21 +1,54 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Cupons Ativos - Centro de Compras</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <title>Cupons Ativos</title>
   <style>
-    body { font-family: sans-serif; margin: 2rem; background: #f5f5f5; }
-    .cupom { background: #fff; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; box-shadow: 0 0 10px #ccc; }
-    .cupom h3 { margin: 0 0 0.5rem; }
-    .cupom p { margin: 0.25rem 0; }
-    .cupom a { display: inline-block; margin-top: 0.5rem; padding: 0.5rem 1rem; background: #28a745; color: white; text-decoration: none; border-radius: 4px; }
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .cupom { background: #eee; margin: 10px 0; padding: 10px; border-radius: 6px; }
+    .cupom a { color: blue; text-decoration: none; }
   </style>
 </head>
 <body>
   <h1>Cupons Ativos</h1>
   <div id="cupons-container">Carregando cupons...</div>
 
-  <script src="script.js"></script>
+  <script>
+    const PLANILHA_ID = '1cQOP4Tpu-9lq1aG6FPNFTmO4C1E1WixGKlMXx_ybzR0'; // seu ID da planilha
+    const ABA = 'Cupons';
+
+    fetch(`https://opensheet.vercel.app/${PLANILHA_ID}/${ABA}`)
+      .then(res => res.json())
+      .then(data => {
+        const hoje = new Date();
+        const container = document.getElementById('cupons-container');
+        container.innerHTML = '';
+
+        let count = 0;
+        data.forEach(cupom => {
+          const validade = new Date(cupom.validade);
+          if (validade >= hoje) {
+            count++;
+            const div = document.createElement('div');
+            div.className = 'cupom';
+            div.innerHTML = `
+              <strong>${cupom.nome} (${cupom.loja})</strong><br/>
+              Código: <code>${cupom.codigo}</code><br/>
+              Válido até: ${cupom.validade}<br/>
+              <a href="${cupom.link}" target="_blank" rel="noopener">Usar cupom</a>
+            `;
+            container.appendChild(div);
+          }
+        });
+
+        if (count === 0) {
+          container.innerHTML = '<p>Não há cupons válidos no momento.</p>';
+        }
+      })
+      .catch(err => {
+        console.error('Erro ao carregar cupons:', err);
+        document.getElementById('cupons-container').innerHTML = '<p>Erro ao carregar cupons.</p>';
+      });
+  </script>
 </body>
 </html>
