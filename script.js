@@ -1,176 +1,210 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // === Configuração e Seletores do DOM ===
     const apiBaseUrl = 'https://minha-api-produtos.onrender.com/api';
-    const productsGrid = document.getElementById('grid-produtos');
+    const gridProdutos = document.getElementById('grid-produtos');
     const loadingSpinner = document.getElementById('loading-spinner');
-    const emptyMessage = document.getElementById('mensagem-vazia');
+    const mensagemVazia = document.getElementById('mensagem-vazia');
     const errorMessage = document.getElementById('error-message');
-    const loadMoreBtn = document.getElementById('load-more');
-    const categoriesSidebar = document.getElementById('categories-sidebar');
-    const categoriesToggle = document.getElementById('categories-toggle');
-    const closeSidebarBtn = document.getElementById('close-sidebar');
-    const overlay = document.getElementById('overlay');
-    const searchInput = document.getElementById('busca');
-    const sortSelect = document.getElementById('sort-select');
-    const storesGrid = document.getElementById('stores-grid');
-    const categoriesList = document.getElementById('categories-list');
+    const buscaInput = document.getElementById('busca');
+    const paginacaoDiv = document.getElementById('paginacao');
+    const prevPageBtn = document.getElementById('prev-page');
+    const nextPageBtn = document.getElementById('next-page');
+    const pageInfoSpan = document.getElementById('page-info');
 
-    // Estado da Aplicação
+    // === Estado da Aplicação ===
     let currentPage = 1;
-    let currentCategory = 'todas';
-    let currentStore = 'todas';
-    let currentSearchTerm = '';
-    const productsPerPage = 12;
+    const produtosPorPagina = 12;
+    let totalProdutos = 0;
+    let termoBusca = '';
+    let categoriaAtual = 'todas';
+    let lojaAtual = 'todas';
     let isLoading = false;
-    let hasMoreProducts = true;
 
-    // --- Funções de API ---
-    const fetchProducts = async (isNewSearch = false) => {
-        if (isNewSearch) {
-            currentPage = 1;
-            productsGrid.innerHTML = '';
-            hasMoreProducts = true;
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-        if (isLoading || !hasMoreProducts) return;
+    // === Funções de API e Renderização ===
+
+    /**
+     * Busca os produtos na API com base nos filtros e paginação atuais.
+     */
+    const fetchProdutos = async () => {
+        if (isLoading) return;
 
         isLoading = true;
         loadingSpinner.style.display = 'block';
-        emptyMessage.style.display = 'none';
+        gridProdutos.innerHTML = ''; // Limpa a grade de produtos para a nova busca
+
+        // Resetar mensagens de erro/vazio
+        mensagemVazia.style.display = 'none';
         errorMessage.style.display = 'none';
-        loadMoreBtn.style.display = 'none';
+        paginacaoDiv.style.display = 'none';
 
         try {
             const url = new URL(`${apiBaseUrl}/produtos`);
             url.searchParams.append('page', currentPage);
-            url.searchParams.append('limit', productsPerPage);
-            url.searchParams.append('sort', sortSelect.value);
-
-            if (currentCategory !== 'todas') url.searchParams.append('categoria', currentCategory);
-            if (currentStore !== 'todas') url.searchParams.append('loja', currentStore);
-            if (currentSearchTerm) url.searchParams.append('busca', currentSearchTerm);
+            url.searchParams.append('limit', produtosPorPagina);
+            if (categoriaAtual !== 'todas') url.searchParams.append('categoria', categoriaAtual);
+            if (lojaAtual !== 'todas') url.searchParams.append('loja', lojaAtual);
+            if (termoBusca) url.searchParams.append('busca', termoBusca);
 
             const response = await fetch(url);
             const data = await response.json();
 
             if (response.ok) {
-                renderProducts(data.data, isNewSearch);
-                if (data.data.length < productsPerPage || (currentPage * productsPerPage) >= data.total) {
-                    hasMoreProducts = false;
-                } else {
-                    loadMoreBtn.style.display = 'block';
-                }
-                if (data.total === 0) {
-                    emptyMessage.style.display = 'block';
-                }
+                totalProdutos = data.total;
+                renderizarProdutos(data.data);
+                atualizarPaginacao();
             } else {
                 errorMessage.style.display = 'block';
             }
         } catch (error) {
-            errorMessage.style.display = 'block';
             console.error('Erro ao buscar produtos:', error);
+            errorMessage.style.display = 'block';
         } finally {
             isLoading = false;
             loadingSpinner.style.display = 'none';
         }
     };
 
-    // --- Renderização e Eventos ---
-    const renderProducts = (products) => {
-        products.forEach(product => {
+    /**
+     * Renderiza os produtos na grade.
+     * @param {Array} produtos - A lista de produtos a ser renderizada.
+     */
+    const renderizarProdutos = (produtos) => {
+        if (produtos.length === 0) {
+            mensagemVazia.style.display = 'block';
+            return;
+        }
+
+        produtos.forEach(produto => {
             const card = document.createElement('div');
-            card.className = 'product-card';
+            card.className = 'produto-card';
+            
+            // Usamos o primeiro link da array de imagens
+            const imagemUrl = produto.imagens && produto.imagens.length > 0 ? produto.imagens[0] : 'https://via.placeholder.com/200?text=Sem+Imagem';
+            
             card.innerHTML = `
-                <div class="product-card-image-container">
-                    <img src="${product.imagens[0]}" alt="${product.nome}">
+                <div class="carrossel" data-imagens='${JSON.stringify(produto.imagens)}'>
+                    <div class="carrossel-imagens">
+                        <img src="${imagemUrl}" alt="${produto.nome}" loading="lazy">
+                    </div>
                 </div>
-                <div class="product-card-content">
-                    <h3 class="product-card-title">${product.nome}</h3>
-                    <p class="product-card-price">R$ ${parseFloat(product.preco).toFixed(2)}</p>
-                    <p class="product-card-store">${product.loja}</p>
-                    <a href="${product.link}" target="_blank" class="buy-link"><i class="fas fa-shopping-cart"></i> Comprar</a>
+                <div class="produto-card-info">
+                    <h3>${produto.nome}</h3>
+                    <p class="descricao">${produto.descricao.substring(0, 70)}...</p>
+                    <p class="preco">R$ ${parseFloat(produto.preco).toFixed(2)}</p>
+                    <a href="${produto.link}" target="_blank" rel="noopener noreferrer" class="ver-na-loja">Ver na Loja</a>
                 </div>
-                <button class="btn-details" data-id="${product.id}">Detalhes</button>
             `;
-            productsGrid.appendChild(card);
+            gridProdutos.appendChild(card);
         });
     };
 
+    /**
+     * Atualiza a UI da paginação.
+     */
+    const atualizarPaginacao = () => {
+        const totalPaginas = Math.ceil(totalProdutos / produtosPorPagina);
+        if (totalProdutos > 0) {
+            paginacaoDiv.style.display = 'flex';
+        }
+
+        pageInfoSpan.textContent = `Página ${currentPage} de ${totalPaginas}`;
+        prevPageBtn.disabled = currentPage === 1;
+        nextPageBtn.disabled = currentPage >= totalPaginas;
+    };
+
+    // === Funções de Eventos ===
+
+    /**
+     * Altera a categoria de filtro e busca novos produtos.
+     * @param {string} categoria - A categoria selecionada.
+     */
+    const filtrarPorCategoria = (categoria) => {
+        categoriaAtual = categoria;
+        lojaAtual = 'todas'; // Reseta a loja ao mudar a categoria
+        currentPage = 1;
+        
+        document.querySelectorAll('.categoria-item').forEach(item => {
+            item.classList.toggle('ativa', item.dataset.categoria === categoria);
+        });
+        document.querySelectorAll('.loja').forEach(item => {
+            item.classList.remove('ativa');
+        });
+        document.querySelector('.loja-todas').classList.add('ativa');
+
+        fetchProdutos();
+    };
+
+    /**
+     * Altera a loja de filtro e busca novos produtos.
+     * @param {string} loja - A loja selecionada.
+     */
+    const filtrarPorLoja = (loja) => {
+        lojaAtual = loja;
+        categoriaAtual = 'todas'; // Reseta a categoria ao mudar a loja
+        currentPage = 1;
+
+        document.querySelectorAll('.loja').forEach(item => {
+            item.classList.toggle('ativa', item.dataset.loja === loja);
+        });
+        document.querySelectorAll('.categoria-item').forEach(item => {
+            item.classList.remove('ativa');
+        });
+        document.querySelector('.categoria-item[data-categoria="todas"]').classList.add('ativa');
+
+        fetchProdutos();
+    };
+
+    /**
+     * Lida com a busca de produtos.
+     */
+    const handleBusca = () => {
+        termoBusca = buscaInput.value;
+        currentPage = 1;
+        fetchProdutos();
+    };
+
+    // === Configuração de Event Listeners ===
     const setupEventListeners = () => {
-        loadMoreBtn.addEventListener('click', () => {
-            currentPage++;
-            fetchProducts();
-        });
-
-        // Eventos para filtros e ordenação
-        document.querySelectorAll('.store-card').forEach(card => {
-            card.addEventListener('click', () => {
-                const loja = card.dataset.loja;
-                currentStore = loja;
-                currentCategory = 'todas';
-                fetchProducts(true);
-            });
-        });
-
-        categoriesList.addEventListener('click', (e) => {
-            if (e.target.tagName === 'LI') {
-                currentCategory = e.target.dataset.categoria;
-                currentStore = 'todas';
-                fetchProducts(true);
-                categoriesSidebar.classList.remove('open');
-                overlay.classList.remove('visible');
+        // Eventos para navegação da paginação
+        prevPageBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                fetchProdutos();
             }
         });
 
-        searchInput.addEventListener('keypress', (e) => {
+        nextPageBtn.addEventListener('click', () => {
+            const totalPaginas = Math.ceil(totalProdutos / produtosPorPagina);
+            if (currentPage < totalPaginas) {
+                currentPage++;
+                fetchProdutos();
+            }
+        });
+
+        // Eventos para filtros de Categoria e Loja
+        document.querySelectorAll('.categoria-item').forEach(item => {
+            item.addEventListener('click', () => filtrarPorCategoria(item.dataset.categoria));
+        });
+
+        document.querySelectorAll('.loja').forEach(item => {
+            item.addEventListener('click', () => filtrarPorLoja(item.dataset.loja));
+        });
+
+        document.querySelector('.loja-todas').addEventListener('click', () => filtrarPorLoja('todas'));
+
+        // Evento para a barra de busca
+        buscaInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
-                currentSearchTerm = searchInput.value;
-                fetchProducts(true);
+                handleBusca();
             }
-        });
-
-        sortSelect.addEventListener('change', () => {
-            fetchProducts(true);
-        });
-
-        // Eventos de navegação e modals
-        categoriesToggle.addEventListener('click', () => {
-            categoriesSidebar.classList.add('open');
-            overlay.classList.add('visible');
-        });
-
-        closeSidebarBtn.addEventListener('click', () => {
-            categoriesSidebar.classList.remove('open');
-            overlay.classList.remove('visible');
-        });
-
-        overlay.addEventListener('click', () => {
-            categoriesSidebar.classList.remove('open');
-            overlay.classList.remove('visible');
         });
     };
-    
-    // Inicialização da Página
+
+    // === Inicialização ===
     const init = () => {
-        // Gerar categorias e lojas dinamicamente (para facilitar a manutenção)
-        const categorias = [
-            'todas', 'eletronicos', 'moda', 'casa', 'beleza', 'esportes',
-            'livros', 'infantil', 'celulares', 'eletrodomesticos', 'pet',
-            'jardinagem', 'automotivo', 'gastronomia', 'games'
-        ];
-        const lojas = ['todas', 'amazon', 'magalu', 'shein', 'shopee', 'mercadolivre', 'alibaba'];
-
-        categoriesList.innerHTML = categorias.map(c => `<li class="category-item" data-categoria="${c}">${c}</li>`).join('');
-        storesGrid.innerHTML = lojas.map(l => `
-            <div class="store-card" data-loja="${l}">
-                <div class="store-logo">
-                    <i class="fas fa-store store-icon"></i>
-                </div>
-                <div class="store-name">${l}</div>
-            </div>
-        `).join('');
-
         setupEventListeners();
-        fetchProducts();
+        fetchProdutos();
+        // Atualiza o ano no footer
         document.getElementById('year').textContent = new Date().getFullYear();
     };
 
