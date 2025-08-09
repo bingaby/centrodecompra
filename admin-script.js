@@ -1,233 +1,275 @@
-// admin-script.js
-const API_CONFIG = {
-  BASE_URL: 'https://minha-api-produtos.onrender.com',
-  TOKEN: '098457098457', // Substitua pelo token correto
-  TIMEOUT: 15000
-};
-
-const productsGrid = document.getElementById('admin-products-grid');
-const loadingSpinner = document.getElementById('admin-loading-spinner');
-const emptyState = document.getElementById('admin-mensagem-vazia');
-const errorState = document.getElementById('admin-error-message');
-const productForm = document.getElementById('admin-product-form');
-const formFeedback = document.getElementById('admin-form-feedback');
-const connectionStatus = document.querySelector('.connection-status');
-const statusMessage = document.getElementById('status-message');
-
-let currentPage = 1;
-let totalProdutos = 0;
-
-const socket = io(API_CONFIG.BASE_URL, { transports: ['websocket'], reconnectionAttempts: 5 });
-
-function updateConnectionStatus(isOnline) {
-  if (connectionStatus) {
-    connectionStatus.classList.toggle('online', isOnline);
-    connectionStatus.classList.toggle('offline', !isOnline);
-    statusMessage.textContent = isOnline ? 'Conectado ao servidor' : 'Sem conexão com o servidor';
-    connectionStatus.classList.remove('hidden');
-    console.log('Status de conexão atualizado:', isOnline ? 'Online' : 'Offline');
-  }
-}
-
-async function checkConnection() {
-  try {
-    const response = await fetch(`${API_CONFIG.BASE_URL}/api/health`, { method: 'GET', timeout: 5000 });
-    const result = await response.json();
-    updateConnectionStatus(result.status === 'success');
-    console.log('Health check:', result);
-  } catch (error) {
-    console.error('Erro ao verificar conexão:', error);
-    updateConnectionStatus(false);
-  }
-}
-
-async function fetchProducts(page = 1, reset = false) {
-  try {
-    if (loadingSpinner) loadingSpinner.style.display = 'block';
-    if (emptyState) emptyState.style.display = 'none';
-    if (errorState) errorState.style.display = 'none';
-    if (reset) {
-      currentPage = 1;
-      productsGrid.innerHTML = '';
-    }
-
-    const params = new URLSearchParams({ page, limit: 12, t: Date.now() });
-    const response = await fetch(`${API_CONFIG.BASE_URL}/api/produtos?${params}`, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-      timeout: API_CONFIG.TIMEOUT
-    });
-
-    const result = await response.json();
-    console.log('Resposta da API /api/produtos (admin):', result);
-    if (result.status === 'success') {
-      totalProdutos = result.total;
-      if (result.data.length === 0 && currentPage === 1) {
-        if (emptyState) emptyState.style.display = 'flex';
-      } else {
-        displayProducts(result.data, reset);
-      }
-    } else {
-      showError('Erro ao carregar produtos');
-    }
-  } catch (error) {
-    console.error('Erro ao buscar produtos:', error);
-    showError('Não foi possível carregar os produtos. Verifique sua conexão.');
-    updateConnectionStatus(false);
-  } finally {
-    if (loadingSpinner) loadingSpinner.style.display = 'none';
-  }
-}
-
-function displayProducts(produtos, reset = false) {
-  console.log('Produtos a serem exibidos (admin):', produtos);
-  if (reset) {
-    productsGrid.innerHTML = '';
-  }
-
-  produtos.forEach(produto => {
-    const card = document.createElement('div');
-    card.className = 'admin-product-card';
-    card.innerHTML = `
-      <img src="${produto.imagens[0] || 'https://via.placeholder.com/300'}" alt="${produto.nome}" class="admin-product-image">
-      <div class="admin-product-info">
-        <h3>${produto.nome}</h3>
-        <p>R$ ${parseFloat(produto.preco).toFixed(2)}</p>
-        <p>Categoria: ${produto.categoria}</p>
-        <p>Loja: ${produto.loja}</p>
-        <p>Visualizações: ${produto.views} | Vendas: ${produto.sales}</p>
-        <button class="edit-btn" data-id="${produto.id}">Editar</button>
-        <button class="delete-btn" data-id="${produto.id}">Excluir</button>
-      </div>
-    `;
-    productsGrid.appendChild(card);
-
-    card.querySelector('.edit-btn').addEventListener('click', () => populateForm(produto));
-    card.querySelector('.delete-btn').addEventListener('click', () => deleteProduct(produto.id));
-  });
-}
-
-async function saveProduct(event) {
-  event.preventDefault();
-  const formData = new FormData(productForm);
-  const id = formData.get('id');
-  const method = id ? 'PUT' : 'POST';
-  const url = id ? `${API_CONFIG.BASE_URL}/api/produtos/${id}` : `${API_CONFIG.BASE_URL}/api/produtos`;
-
-  try {
-    console.log('Enviando dados do formulário:', Object.fromEntries(formData));
-    const response = await fetch(url, {
-      method,
-      headers: { 'Authorization': `Bearer ${API_CONFIG.TOKEN}` },
-      body: formData,
-      timeout: API_CONFIG.TIMEOUT
-    });
-
-    const result = await response.json();
-    console.log('Resposta ao salvar produto:', result);
-    if (result.status === 'success') {
-      showFeedback(`Produto ${id ? 'atualizado' : 'adicionado'} com sucesso!`, 'success');
-      productForm.reset();
-      fetchProducts(1, true);
-    } else {
-      showFeedback(result.message || 'Erro ao salvar produto', 'error');
-    }
-  } catch (error) {
-    console.error('Erro ao salvar produto:', error);
-    showFeedback('Não foi possível salvar o produto. Verifique sua conexão.', 'error');
-    updateConnectionStatus(false);
-  }
-}
-
-async function deleteProduct(id) {
-  if (!confirm('Tem certeza que deseja excluir este produto?')) return;
-
-  try {
-    const response = await fetch(`${API_CONFIG.BASE_URL}/api/produtos/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${API_CONFIG.TOKEN}`,
-        'Content-Type': 'application/json'
-      },
-      timeout: API_CONFIG.TIMEOUT
-    });
-
-    const result = await response.json();
-    console.log('Resposta ao excluir produto:', result);
-    if (result.status === 'success') {
-      showFeedback('Produto excluído com sucesso!', 'success');
-      fetchProducts(1, true);
-    } else {
-      showFeedback(result.message || 'Erro ao excluir produto', 'error');
-    }
-  } catch (error) {
-    console.error('Erro ao excluir produto:', error);
-    showFeedback('Não foi possível excluir o produto. Verifique sua conexão.', 'error');
-    updateConnectionStatus(false);
-  }
-}
-
-function populateForm(produto) {
-  productForm.querySelector('#id').value = produto.id;
-  productForm.querySelector('#nome').value = produto.nome;
-  productForm.querySelector('#preco').value = produto.preco;
-  productForm.querySelector('#categoria').value = produto.categoria;
-  productForm.querySelector('#loja').value = produto.loja;
-  productForm.querySelector('#link').value = produto.link;
-  productForm.querySelector('#descricao').value = produto.descricao || '';
-}
-
-function showFeedback(message, type) {
-  if (formFeedback) {
-    formFeedback.textContent = message;
-    formFeedback.className = `feedback ${type}`;
-    formFeedback.classList.remove('hidden');
-    setTimeout(() => {
-      formFeedback.classList.add('hidden');
-    }, 3000);
-  }
-}
-
-function showError(message) {
-  if (errorState) {
-    errorState.querySelector('p').textContent = message;
-    errorState.style.display = 'flex';
-  }
-}
-
-if (productForm) {
-  productForm.addEventListener('submit', saveProduct);
-}
-
-socket.on('connect', () => {
-  updateConnectionStatus(true);
-  console.log('Socket.IO conectado (admin)');
-});
-
-socket.on('disconnect', () => {
-  updateConnectionStatus(false);
-  console.log('Socket.IO desconectado (admin)');
-});
-
-socket.on('novoProduto', (produto) => {
-  console.log('Novo produto recebido via Socket.IO (admin):', produto);
-  fetchProducts(1, true);
-  showFeedback('Novo produto adicionado!', 'success');
-});
-
-socket.on('produtoAtualizado', () => {
-  fetchProducts(1, true);
-  showFeedback('Produto atualizado!', 'success');
-});
-
-socket.on('produtoExcluido', () => {
-  fetchProducts(1, true);
-  showFeedback('Produto excluído!', 'success');
-});
-
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('Painel administrativo carregado');
-  checkConnection();
-  fetchProducts();
-  setInterval(checkConnection, 30000);
+    const apiBaseUrl = 'https://minha-api-produtos.onrender.com/api';
+    const socket = io(apiBaseUrl);
+
+    // Variáveis do DOM
+    const statusEl = document.querySelector('.connection-status');
+    const statusMessageEl = document.getElementById('status-message');
+    const loginForm = document.getElementById('login-form');
+    const loginSection = document.getElementById('login-section');
+    const loginFeedbackEl = document.getElementById('login-feedback');
+    const adminPanelContent = document.getElementById('admin-panel-content');
+    const logoutBtn = document.getElementById('logout-btn');
+    const adminProductForm = document.getElementById('admin-product-form');
+    const adminFormFeedback = document.getElementById('admin-form-feedback');
+    const productsGrid = document.getElementById('admin-products-grid');
+    const loadingSpinner = document.getElementById('admin-loading-spinner');
+    const emptyMessage = document.getElementById('admin-mensagem-vazia');
+    const errorMessage = document.getElementById('admin-error-message');
+
+    let token = localStorage.getItem('jwt_token');
+
+    const updateConnectionStatus = (status, message) => {
+        statusEl.classList.remove('online', 'offline', 'connecting');
+        statusEl.classList.add(status);
+        statusMessageEl.textContent = message;
+        statusEl.classList.remove('hidden');
+    };
+
+    const toggleAdminPanel = (isLoggedIn) => {
+        if (isLoggedIn) {
+            loginSection.style.display = 'none';
+            adminPanelContent.style.display = 'block';
+            logoutBtn.style.display = 'block';
+        } else {
+            loginSection.style.display = 'block';
+            adminPanelContent.style.display = 'none';
+            logoutBtn.style.display = 'none';
+        }
+    };
+
+    const checkAuthStatus = () => {
+        token = localStorage.getItem('jwt_token');
+        if (token) {
+            toggleAdminPanel(true);
+            fetchProducts();
+        } else {
+            toggleAdminPanel(false);
+        }
+    };
+
+    // --- Conexão e Status do Servidor ---
+    socket.on('connect', () => {
+        updateConnectionStatus('online', 'Online');
+        console.log('Socket.IO conectado (admin)');
+    });
+
+    socket.on('disconnect', () => {
+        updateConnectionStatus('offline', 'Desconectado');
+    });
+
+    // --- Lógica de Login e Logout ---
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = e.target.username.value;
+        const password = e.target.password.value;
+
+        try {
+            const response = await fetch(`${apiBaseUrl}/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            });
+            const result = await response.json();
+            if (response.ok) {
+                localStorage.setItem('jwt_token', result.token);
+                loginFeedbackEl.classList.remove('error');
+                loginFeedbackEl.classList.add('success');
+                loginFeedbackEl.textContent = 'Login bem-sucedido!';
+                loginFeedbackEl.style.display = 'block';
+                checkAuthStatus();
+            } else {
+                loginFeedbackEl.classList.remove('success');
+                loginFeedbackEl.classList.add('error');
+                loginFeedbackEl.textContent = result.message || 'Erro no login.';
+                loginFeedbackEl.style.display = 'block';
+            }
+        } catch (error) {
+            loginFeedbackEl.classList.remove('success');
+            loginFeedbackEl.classList.add('error');
+            loginFeedbackEl.textContent = 'Erro ao conectar com o servidor.';
+            loginFeedbackEl.style.display = 'block';
+        }
+    });
+
+    logoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('jwt_token');
+        checkAuthStatus();
+    });
+
+    // --- Funções de API ---
+    const fetchProducts = async () => {
+        loadingSpinner.style.display = 'block';
+        productsGrid.innerHTML = '';
+        emptyMessage.style.display = 'none';
+        errorMessage.style.display = 'none';
+
+        try {
+            const response = await fetch(`${apiBaseUrl}/produtos`);
+            const data = await response.json();
+            if (response.ok) {
+                renderProducts(data.data);
+                if (data.data.length === 0) {
+                    emptyMessage.style.display = 'block';
+                }
+            } else {
+                errorMessage.style.display = 'block';
+            }
+        } catch (error) {
+            errorMessage.style.display = 'block';
+        } finally {
+            loadingSpinner.style.display = 'none';
+        }
+    };
+
+    const saveProduct = async (formData, isEditing) => {
+        const url = isEditing ? `${apiBaseUrl}/produtos/${formData.get('id')}` : `${apiBaseUrl}/produtos`;
+        const method = isEditing ? 'PUT' : 'POST';
+
+        const formBody = new FormData();
+        formData.forEach((value, key) => {
+            // Ignora o ID se estiver adicionando um produto
+            if (!isEditing && key === 'id') return;
+            formBody.append(key, value);
+        });
+
+        // Adiciona as imagens ao FormData
+        const imageFiles = formData.getAll('imagens');
+        imageFiles.forEach(file => {
+            if (file instanceof File) {
+                formBody.append('imagens', file);
+            }
+        });
+
+        try {
+            const response = await fetch(url, {
+                method,
+                headers: {
+                    'Authorization': `Bearer ${token}`, // CORREÇÃO AQUI
+                },
+                body: formBody,
+            });
+            const result = await response.json();
+            console.log('Resposta ao salvar produto:', result);
+            adminFormFeedback.textContent = result.message;
+            if (response.ok) {
+                adminFormFeedback.classList.remove('error');
+                adminFormFeedback.classList.add('success');
+                adminProductForm.reset();
+                adminProductForm.querySelector('button').textContent = 'Salvar Produto';
+                document.getElementById('id').value = '';
+            } else {
+                adminFormFeedback.classList.remove('success');
+                adminFormFeedback.classList.add('error');
+            }
+            adminFormFeedback.style.display = 'block';
+        } catch (error) {
+            console.error('Erro ao salvar produto:', error);
+            adminFormFeedback.textContent = 'Erro ao conectar com o servidor.';
+            adminFormFeedback.classList.remove('success');
+            adminFormFeedback.classList.add('error');
+            adminFormFeedback.style.display = 'block';
+        }
+    };
+
+    const deleteProduct = async (id) => {
+        const userConfirmed = confirm('Tem certeza que deseja excluir este produto?');
+        if (!userConfirmed) return;
+
+        try {
+            const response = await fetch(`${apiBaseUrl}/produtos/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`, // CORREÇÃO AQUI
+                },
+            });
+            if (!response.ok) {
+                const result = await response.json();
+                alert(`Erro ao excluir produto: ${result.message}`);
+            }
+        } catch (error) {
+            console.error('Erro ao excluir produto:', error);
+            alert('Erro ao conectar com o servidor.');
+        }
+    };
+
+    // --- Renderização e Eventos ---
+    const renderProducts = (products) => {
+        productsGrid.innerHTML = '';
+        products.forEach(product => {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.innerHTML = `
+                <img src="${product.imagens[0]}" alt="${product.nome}">
+                <div class="product-info">
+                    <h3>${product.nome}</h3>
+                    <p>Preço: R$ ${product.preco}</p>
+                    <p>Categoria: ${product.categoria}</p>
+                    <p>Loja: ${product.loja}</p>
+                </div>
+                <div class="product-actions">
+                    <button class="btn-edit" data-id="${product.id}">Editar</button>
+                    <button class="btn-delete" data-id="${product.id}">Excluir</button>
+                </div>
+            `;
+            productsGrid.appendChild(card);
+        });
+
+        document.querySelectorAll('.btn-edit').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const id = e.target.dataset.id;
+                const product = products.find(p => p.id == id);
+                if (product) {
+                    fillFormForEdit(product);
+                }
+            });
+        });
+
+        document.querySelectorAll('.btn-delete').forEach(button => {
+            button.addEventListener('click', (e) => {
+                deleteProduct(e.target.dataset.id);
+            });
+        });
+    };
+
+    const fillFormForEdit = (product) => {
+        document.getElementById('id').value = product.id;
+        document.getElementById('nome').value = product.nome;
+        document.getElementById('preco').value = parseFloat(product.preco);
+        document.getElementById('categoria').value = product.categoria;
+        document.getElementById('loja').value = product.loja;
+        document.getElementById('link').value = product.link;
+        document.getElementById('descricao').value = product.descricao || '';
+        adminProductForm.querySelector('button').textContent = 'Atualizar Produto';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    adminProductForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const id = document.getElementById('id').value;
+        const isEditing = !!id;
+        const formData = new FormData(adminProductForm);
+        saveProduct(formData, isEditing);
+    });
+
+    // --- Escuta de Eventos em Tempo Real ---
+    socket.on('novoProduto', (product) => {
+        console.log('Novo produto adicionado em tempo real:', product);
+        fetchProducts(); // Atualiza a lista completa
+    });
+
+    socket.on('produtoAtualizado', (product) => {
+        console.log('Produto atualizado em tempo real:', product);
+        fetchProducts();
+    });
+
+    socket.on('produtoExcluido', (data) => {
+        console.log('Produto excluído em tempo real:', data.id);
+        fetchProducts();
+    });
+
+    // --- Início da Aplicação ---
+    checkAuthStatus();
 });
