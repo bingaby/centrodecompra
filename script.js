@@ -1,335 +1,178 @@
-// main-script.js
-const API_CONFIG = {
-  BASE_URL: 'https://minha-api-produtos.onrender.com',
-  TIMEOUT: 15000
-};
-
-const productsGrid = document.getElementById('grid-produtos');
-const loadingSpinner = document.getElementById('loading-spinner');
-const emptyState = document.getElementById('mensagem-vazia');
-const errorState = document.getElementById('error-message');
-const loadMoreBtn = document.getElementById('load-more');
-const searchInput = document.getElementById('busca');
-const searchSuggestions = document.getElementById('search-suggestions');
-const categoriesSidebar = document.getElementById('categories-sidebar');
-const categoriesToggle = document.getElementById('categories-toggle');
-const closeSidebar = document.getElementById('close-sidebar');
-const overlay = document.getElementById('overlay');
-const sortSelect = document.getElementById('sort-select');
-const viewButtons = document.querySelectorAll('.view-btn');
-const imageModal = document.getElementById('imageModal');
-const modalCarrosselImagens = document.getElementById('modalCarrosselImagens');
-const modalCarrosselDots = document.getElementById('modalCarrosselDots');
-const modalPrev = document.getElementById('modalPrev');
-const modalNext = document.getElementById('modalNext');
-const modalClose = document.getElementById('modal-close');
-const connectionStatus = document.querySelector('.connection-status');
-const statusMessage = document.getElementById('status-message');
-
-let currentPage = 1;
-let currentCategoria = 'todas';
-let currentLoja = 'todas';
-let currentBusca = '';
-let currentSort = 'relevance';
-let totalProdutos = 0;
-
-const socket = io(API_CONFIG.BASE_URL, { transports: ['websocket'], reconnectionAttempts: 5 });
-
-function updateConnectionStatus(isOnline) {
-  if (connectionStatus) {
-    connectionStatus.classList.toggle('online', isOnline);
-    connectionStatus.classList.toggle('offline', !isOnline);
-    statusMessage.textContent = isOnline ? 'Conectado ao servidor' : 'Sem conexão com o servidor';
-    connectionStatus.classList.remove('hidden');
-    console.log('Status de conexão atualizado:', isOnline ? 'Online' : 'Offline');
-  }
-}
-
-async function checkConnection() {
-  try {
-    const response = await fetch(`${API_CONFIG.BASE_URL}/api/health`, { method: 'GET', timeout: 5000 });
-    const result = await response.json();
-    updateConnectionStatus(result.status === 'success');
-    console.log('Health check:', result);
-  } catch (error) {
-    console.error('Erro ao verificar conexão:', error);
-    updateConnectionStatus(false);
-  }
-}
-
-async function fetchProducts(page = 1, reset = false) {
-  try {
-    loadingSpinner.style.display = 'block';
-    emptyState.style.display = 'none';
-    errorState.style.display = 'none';
-    if (reset) {
-      currentPage = 1;
-      productsGrid.innerHTML = '';
-    }
-
-    const params = new URLSearchParams({
-      page,
-      limit: 12,
-      categoria: currentCategoria === 'todas' ? '' : currentCategoria,
-      loja: currentLoja === 'todas' ? '' : currentLoja,
-      busca: currentBusca,
-      sort: currentSort,
-      t: Date.now() // Evitar cache
-    });
-    console.log('Parâmetros da requisição:', params.toString());
-
-    const response = await fetch(`${API_CONFIG.BASE_URL}/api/produtos?${params}`, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-      timeout: API_CONFIG.TIMEOUT
-    });
-
-    const result = await response.json();
-    console.log('Resposta da API /api/produtos:', result);
-    if (result.status === 'success') {
-      totalProdutos = result.total;
-      if (result.data.length === 0 && currentPage === 1) {
-        console.log('Nenhum produto encontrado para os filtros:', { currentCategoria, currentLoja, currentBusca });
-        emptyState.style.display = 'flex';
-      } else {
-        displayProducts(result.data, reset);
-      }
-      updateLoadMoreButton();
-    } else {
-      showError('Erro ao carregar produtos');
-    }
-  } catch (error) {
-    console.error('Erro ao buscar produtos:', error);
-    showError('Não foi possível carregar os produtos. Verifique sua conexão.');
-    updateConnectionStatus(false);
-  } finally {
-    loadingSpinner.style.display = 'none';
-  }
-}
-
-function displayProducts(produtos, reset = false) {
-  console.log('Produtos a serem exibidos:', produtos);
-  if (reset) {
-    productsGrid.innerHTML = '';
-  }
-
-  produtos.forEach(produto => {
-    console.log('Adicionando produto ao grid:', produto);
-    const card = document.createElement('div');
-    card.className = `produto-card ${productsGrid.classList.contains('list-view') ? 'list-view' : ''}`;
-    card.innerHTML = `
-      <div class="carrossel">
-        <div class="carrossel-imagens">
-          ${produto.imagens && produto.imagens.length > 0 
-            ? produto.imagens.map(img => `<img src="${img}" alt="${produto.nome}">`).join('')
-            : `<img src="https://via.placeholder.com/300" alt="${produto.nome}">`}
-        </div>
-        <button class="carrossel-prev"><i class="fas fa-chevron-left"></i></button>
-        <button class="carrossel-next"><i class="fas fa-chevron-right"></i></button>
-        <div class="carrossel-dots">
-          ${produto.imagens && produto.imagens.length > 0 
-            ? produto.imagens.map((_, i) => `<span class="carrossel-dot ${i === 0 ? 'ativo' : ''}"></span>`).join('')
-            : '<span class="carrossel-dot ativo"></span>'}
-        </div>
-      </div>
-      <h3 class="produto-nome">${produto.nome}</h3>
-      <p class="descricao">${produto.descricao || 'Sem descrição'}</p>
-      <a href="${produto.link}" class="tarja-preco tarja-${produto.loja}" target="_blank">
-        <span>R$ ${parseFloat(produto.preco).toFixed(2)}</span>
-        <i class="fas fa-shopping-cart"></i>
-      </a>
-    `;
-    productsGrid.appendChild(card);
-
-    const carrossel = card.querySelector('.carrossel-imagens');
-    const prevBtn = card.querySelector('.carrossel-prev');
-    const nextBtn = card.querySelector('.carrossel-next');
-    const dots = card.querySelectorAll('.carrossel-dot');
-    let currentImage = 0;
-
-    if (produto.imagens && produto.imagens.length > 1) {
-      prevBtn.addEventListener('click', () => {
-        currentImage = (currentImage - 1 + produto.imagens.length) % produto.imagens.length;
-        carrossel.style.transform = `translateX(-${currentImage * 100}%)`;
-        dots.forEach((dot, i) => dot.classList.toggle('ativo', i === currentImage));
-      });
-
-      nextBtn.addEventListener('click', () => {
-        currentImage = (currentImage + 1) % produto.imagens.length;
-        carrossel.style.transform = `translateX(-${currentImage * 100}%)`;
-        dots.forEach((dot, i) => dot.classList.toggle('ativo', i === currentImage));
-      });
-
-      dots.forEach((dot, i) => {
-        dot.addEventListener('click', () => {
-          currentImage = i;
-          carrossel.style.transform = `translateX(-${currentImage * 100}%)`;
-          dots.forEach((d, j) => d.classList.toggle('ativo', j === i));
-        });
-      });
-    } else {
-      prevBtn.style.display = 'none';
-      nextBtn.style.display = 'none';
-      dots.forEach(dot => dot.style.display = 'none');
-    }
-
-    carrossel.querySelectorAll('img').forEach(img => {
-      img.addEventListener('click', () => openImageModal(produto.imagens || ['https://via.placeholder.com/300']));
-    });
-  });
-
-  updateProductGridView();
-}
-
-function openImageModal(images) {
-  if (!images || images.length === 0) return;
-
-  modalCarrosselImagens.innerHTML = '';
-  modalCarrosselDots.innerHTML = '';
-  let currentIndex = 0;
-
-  images.forEach((image, index) => {
-    const imgElement = document.createElement('div');
-    imgElement.className = `carousel-image ${index === 0 ? 'active' : ''}`;
-    imgElement.innerHTML = `<img src="${image}" alt="Imagem do produto">`;
-    modalCarrosselImagens.appendChild(imgElement);
-
-    const dot = document.createElement('span');
-    dot.className = `carrossel-dot ${index === 0 ? 'ativo' : ''}`;
-    dot.addEventListener('click', () => goToImage(index));
-    modalCarrosselDots.appendChild(dot);
-  });
-
-  imageModal.style.display = 'flex';
-
-  function goToImage(index) {
-    document.querySelectorAll('.carousel-image').forEach((img, i) => {
-      img.classList.toggle('active', i === index);
-    });
-    document.querySelectorAll('.carrossel-dot').forEach((dot, i) => {
-      dot.classList.toggle('ativo', i === index);
-    });
-    currentIndex = index;
-  }
-
-  modalPrev.addEventListener('click', () => {
-    currentIndex = (currentIndex - 1 + images.length) % images.length;
-    goToImage(currentIndex);
-  });
-
-  modalNext.addEventListener('click', () => {
-    currentIndex = (currentIndex + 1) % images.length;
-    goToImage(currentIndex);
-  });
-
-  modalClose.addEventListener('click', () => {
-    imageModal.style.display = 'none';
-  });
-}
-
-function updateLoadMoreButton() {
-  const productsDisplayed = document.querySelectorAll('.produto-card').length;
-  loadMoreBtn.style.display = productsDisplayed < totalProdutos ? 'flex' : 'none';
-  console.log('Botão "Carregar Mais":', productsDisplayed < totalProdutos ? 'Visível' : 'Oculto');
-}
-
-function showError(message) {
-  errorState.querySelector('h3').textContent = 'Ops! Algo deu errado';
-  errorState.querySelector('p').textContent = message;
-  errorState.style.display = 'flex';
-}
-
-function updateProductGridView() {
-  const isListView = productsGrid.classList.contains('list-view');
-  document.querySelectorAll('.produto-card').forEach(card => {
-    card.classList.toggle('list-view', isListView);
-  });
-}
-
-categoriesToggle.addEventListener('click', () => {
-  categoriesSidebar.classList.add('active');
-  overlay.style.display = 'block';
-});
-
-closeSidebar.addEventListener('click', () => {
-  categoriesSidebar.classList.remove('active');
-  overlay.style.display = 'none';
-});
-
-overlay.addEventListener('click', () => {
-  categoriesSidebar.classList.remove('active');
-  overlay.style.display = 'none';
-});
-
-document.querySelectorAll('.category-item').forEach(item => {
-  item.addEventListener('click', () => {
-    document.querySelectorAll('.category-item').forEach(i => i.classList.remove('active'));
-    item.classList.add('active');
-    currentCategoria = item.dataset.categoria;
-    console.log('Categoria selecionada:', currentCategoria);
-    fetchProducts(1, true);
-    categoriesSidebar.classList.remove('active');
-    overlay.style.display = 'none';
-  });
-});
-
-document.querySelectorAll('.store-card').forEach(card => {
-  card.addEventListener('click', () => {
-    document.querySelectorAll('.store-card').forEach(c => c.classList.remove('active'));
-    card.classList.add('active');
-    currentLoja = card.dataset.loja;
-    console.log('Loja selecionada:', currentLoja);
-    fetchProducts(1, true);
-  });
-});
-
-searchInput.addEventListener('input', () => {
-  currentBusca = searchInput.value.trim();
-  console.log('Busca digitada:', currentBusca);
-  fetchProducts(1, true);
-});
-
-sortSelect.addEventListener('change', () => {
-  currentSort = sortSelect.value;
-  console.log('Ordenação selecionada:', currentSort);
-  fetchProducts(1, true);
-});
-
-viewButtons.forEach(button => {
-  button.addEventListener('click', () => {
-    viewButtons.forEach(btn => btn.classList.remove('active'));
-    button.classList.add('active');
-    productsGrid.classList.toggle('list-view', button.dataset.view === 'list');
-    updateProductGridView();
-  });
-});
-
-loadMoreBtn.addEventListener('click', () => {
-  currentPage++;
-  console.log('Carregando mais produtos, página:', currentPage);
-  fetchProducts(currentPage);
-});
-
-socket.on('connect', () => {
-  updateConnectionStatus(true);
-  console.log('Socket.IO conectado');
-});
-
-socket.on('disconnect', () => {
-  updateConnectionStatus(false);
-  console.log('Socket.IO desconectado');
-});
-
-socket.on('novoProduto', (produto) => {
-  console.log('Novo produto recebido via Socket.IO:', produto);
-  fetchProducts(1, true); // Atualiza a lista de produtos
-});
-
-document.getElementById('year').textContent = new Date().getFullYear();
-
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('Página principal carregada');
-  checkConnection();
-  fetchProducts();
-  setInterval(checkConnection, 30000);
+    const apiBaseUrl = 'https://minha-api-produtos.onrender.com/api';
+    const productsGrid = document.getElementById('grid-produtos');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const emptyMessage = document.getElementById('mensagem-vazia');
+    const errorMessage = document.getElementById('error-message');
+    const loadMoreBtn = document.getElementById('load-more');
+    const categoriesSidebar = document.getElementById('categories-sidebar');
+    const categoriesToggle = document.getElementById('categories-toggle');
+    const closeSidebarBtn = document.getElementById('close-sidebar');
+    const overlay = document.getElementById('overlay');
+    const searchInput = document.getElementById('busca');
+    const sortSelect = document.getElementById('sort-select');
+    const storesGrid = document.getElementById('stores-grid');
+    const categoriesList = document.getElementById('categories-list');
+
+    // Estado da Aplicação
+    let currentPage = 1;
+    let currentCategory = 'todas';
+    let currentStore = 'todas';
+    let currentSearchTerm = '';
+    const productsPerPage = 12;
+    let isLoading = false;
+    let hasMoreProducts = true;
+
+    // --- Funções de API ---
+    const fetchProducts = async (isNewSearch = false) => {
+        if (isNewSearch) {
+            currentPage = 1;
+            productsGrid.innerHTML = '';
+            hasMoreProducts = true;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        if (isLoading || !hasMoreProducts) return;
+
+        isLoading = true;
+        loadingSpinner.style.display = 'block';
+        emptyMessage.style.display = 'none';
+        errorMessage.style.display = 'none';
+        loadMoreBtn.style.display = 'none';
+
+        try {
+            const url = new URL(`${apiBaseUrl}/produtos`);
+            url.searchParams.append('page', currentPage);
+            url.searchParams.append('limit', productsPerPage);
+            url.searchParams.append('sort', sortSelect.value);
+
+            if (currentCategory !== 'todas') url.searchParams.append('categoria', currentCategory);
+            if (currentStore !== 'todas') url.searchParams.append('loja', currentStore);
+            if (currentSearchTerm) url.searchParams.append('busca', currentSearchTerm);
+
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if (response.ok) {
+                renderProducts(data.data, isNewSearch);
+                if (data.data.length < productsPerPage || (currentPage * productsPerPage) >= data.total) {
+                    hasMoreProducts = false;
+                } else {
+                    loadMoreBtn.style.display = 'block';
+                }
+                if (data.total === 0) {
+                    emptyMessage.style.display = 'block';
+                }
+            } else {
+                errorMessage.style.display = 'block';
+            }
+        } catch (error) {
+            errorMessage.style.display = 'block';
+            console.error('Erro ao buscar produtos:', error);
+        } finally {
+            isLoading = false;
+            loadingSpinner.style.display = 'none';
+        }
+    };
+
+    // --- Renderização e Eventos ---
+    const renderProducts = (products) => {
+        products.forEach(product => {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.innerHTML = `
+                <div class="product-card-image-container">
+                    <img src="${product.imagens[0]}" alt="${product.nome}">
+                </div>
+                <div class="product-card-content">
+                    <h3 class="product-card-title">${product.nome}</h3>
+                    <p class="product-card-price">R$ ${parseFloat(product.preco).toFixed(2)}</p>
+                    <p class="product-card-store">${product.loja}</p>
+                    <a href="${product.link}" target="_blank" class="buy-link"><i class="fas fa-shopping-cart"></i> Comprar</a>
+                </div>
+                <button class="btn-details" data-id="${product.id}">Detalhes</button>
+            `;
+            productsGrid.appendChild(card);
+        });
+    };
+
+    const setupEventListeners = () => {
+        loadMoreBtn.addEventListener('click', () => {
+            currentPage++;
+            fetchProducts();
+        });
+
+        // Eventos para filtros e ordenação
+        document.querySelectorAll('.store-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const loja = card.dataset.loja;
+                currentStore = loja;
+                currentCategory = 'todas';
+                fetchProducts(true);
+            });
+        });
+
+        categoriesList.addEventListener('click', (e) => {
+            if (e.target.tagName === 'LI') {
+                currentCategory = e.target.dataset.categoria;
+                currentStore = 'todas';
+                fetchProducts(true);
+                categoriesSidebar.classList.remove('open');
+                overlay.classList.remove('visible');
+            }
+        });
+
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                currentSearchTerm = searchInput.value;
+                fetchProducts(true);
+            }
+        });
+
+        sortSelect.addEventListener('change', () => {
+            fetchProducts(true);
+        });
+
+        // Eventos de navegação e modals
+        categoriesToggle.addEventListener('click', () => {
+            categoriesSidebar.classList.add('open');
+            overlay.classList.add('visible');
+        });
+
+        closeSidebarBtn.addEventListener('click', () => {
+            categoriesSidebar.classList.remove('open');
+            overlay.classList.remove('visible');
+        });
+
+        overlay.addEventListener('click', () => {
+            categoriesSidebar.classList.remove('open');
+            overlay.classList.remove('visible');
+        });
+    };
+    
+    // Inicialização da Página
+    const init = () => {
+        // Gerar categorias e lojas dinamicamente (para facilitar a manutenção)
+        const categorias = [
+            'todas', 'eletronicos', 'moda', 'casa', 'beleza', 'esportes',
+            'livros', 'infantil', 'celulares', 'eletrodomesticos', 'pet',
+            'jardinagem', 'automotivo', 'gastronomia', 'games'
+        ];
+        const lojas = ['todas', 'amazon', 'magalu', 'shein', 'shopee', 'mercadolivre', 'alibaba'];
+
+        categoriesList.innerHTML = categorias.map(c => `<li class="category-item" data-categoria="${c}">${c}</li>`).join('');
+        storesGrid.innerHTML = lojas.map(l => `
+            <div class="store-card" data-loja="${l}">
+                <div class="store-logo">
+                    <i class="fas fa-store store-icon"></i>
+                </div>
+                <div class="store-name">${l}</div>
+            </div>
+        `).join('');
+
+        setupEventListeners();
+        fetchProducts();
+        document.getElementById('year').textContent = new Date().getFullYear();
+    };
+
+    init();
 });
