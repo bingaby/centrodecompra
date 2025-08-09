@@ -4,12 +4,15 @@ const { Pool } = require('pg');
 const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
 const { Server } = require('socket.io');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const { body, validationResult } = require('express-validator');
 require('dotenv').config();
 
 const app = express();
 const upload = multer({ storage: multer.memoryStorage() });
 
-// Lista de categorias e lojas permitidas (alinhada com o frontend)
+// Lista de categorias e lojas permitidas
 const CATEGORIAS_PERMITIDAS = [
     'eletronicos', 'moda', 'fitness', 'casa', 'beleza', 'esportes', 'livros',
     'infantil', 'Celulares', 'Eletrodomésticos', 'pet', 'jardinagem', 'automotivo',
@@ -22,7 +25,6 @@ const allowedOrigins = [
     'http://localhost:3000',
     'https://www.centrodecompra.com.br',
     'https://minha-api-produtos.onrender.com',
-    // Adicione o domínio do frontend hospedado no Render, se diferente
 ];
 app.use(cors({
     origin: (origin, callback) => {
@@ -35,23 +37,13 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Middleware de autenticação básica
-const authenticate = (req, res, next) => {
-    const authHeader = req.headers['authorization'];
-    const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'seu_token_secreto';
-    if (!authHeader || authHeader !== `Bearer ${ADMIN_TOKEN}`) {
-        return res.status(401).json({ status: 'error', message: 'Autenticação necessária' });
-    }
-    next();
-};
-
 // Configuração do banco de dados
 const pool = new Pool({
-    user: 'centrodecompra_db_user',
-    host: 'dpg-d25392idbo4c73a974pg-a.oregon-postgres.render.com',
-    database: 'centrodecompra_db',
-    password: 'cIqUg4jtqXIxlDmyWMruasKU5OLxbrcd',
-    port: 5432,
+    user: process.env.DB_USER || 'centrodecompra_db_user',
+    host: process.env.DB_HOST || 'dpg-d25392idbo4c73a974pg-a.oregon-postgres.render.com',
+    database: process.env.DB_NAME || 'centrodecompra_db',
+    password: process.env.DB_PASSWORD || 'cIqUg4jtqXIxlDmyWMruasKU5OLxbrcd',
+    port: process.env.DB_PORT || 5432,
     ssl: { rejectUnauthorized: false },
 });
 
@@ -73,20 +65,36 @@ pool.connect((err) => {
             loja TEXT NOT NULL,
             link TEXT NOT NULL
         );
-    `, (err) => {
+        CREATE TABLE IF NOT EXISTS admin_users (
+            id SERIAL PRIMARY KEY,
+            username TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL
+        );
+    `, async (err) => {
         if (err) {
-            console.error('Erro ao criar tabela produtos:', err);
+            console.error('Erro ao criar tabelas:', err);
             process.exit(1);
         }
-        console.log('Tabela produtos criada ou verificada');
+        console.log('Tabelas criadas ou verificadas');
+        // Insere o usuário admin padrão se ele não existir
+        const defaultUsername = 'admin';
+        const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD || 'sua_senha_secreta', 10);
+        pool.query(`
+            INSERT INTO admin_users (username, password)
+            VALUES ($1, $2)
+            ON CONFLICT (username) DO NOTHING;
+        `, [defaultUsername, hashedPassword], (err) => {
+            if (err) console.error('Erro ao inserir usuário admin padrão:', err);
+            else console.log('Usuário admin padrão verificado/criado');
+        });
     });
 });
 
 // Configuração do Cloudinary
 cloudinary.config({
-    cloud_name: 'damasyarq',
-    api_key: '156799321846881',
-    api_secret: 'bmqmdKA5PTbmkfWExr8SUr_FtTI',
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'damasyarq',
+    api_key: process.env.CLOUDINARY_API_KEY || '156799321846881',
+    api_secret: process.env.CLOUDINARY_API_SECRET || 'bmqmdKA5PTbmkfWExr8SUr_FtTI',
 });
 
 // Configuração do Socket.IO
@@ -105,18 +113,65 @@ io.on('connection', (socket) => {
     });
 });
 
+// Middleware de autenticação JWT
+const authenticateJWT = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    if (!authHeader) {
+        return res.status(401).json({ status: 'error', message: 'Token de autenticação é necessário.' });
+    }
+
+    const token = authHeader.split(' ')[1];
+    if (!token) {
+        return res.status(401).json({ status: 'error', message: 'Formato do token inválido.' });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded;
+        next();
+    } catch (err) {
+        return res.status(403).json({ status: 'error', message: 'Token de autenticação inválido ou expirado.' });
+    }
+};
+
 // Cache simples em memória
 const cache = new Map();
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+
+// --- Rotas Públicas ---
+// Rota para login de admin
+app.post('/api/login', [
+    body('username').trim().notEmpty().withMessage('Nome de usuário é obrigatório.'),
+    body('password').notEmpty().withMessage('Senha é obrigatória.')
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ status: 'error', errors: errors.array() });
+    }
+
+    const { username, password } = req.body;
+    try {
+        const { rows } = await pool.query('SELECT * FROM admin_users WHERE username = $1', [username]);
+        const user = rows[0];
+
+        if (user && await bcrypt.compare(password, user.password)) {
+            const token = jwt.sign({ username: user.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            return res.json({ status: 'success', token });
+        } else {
+            return res.status(401).json({ status: 'error', message: 'Nome de usuário ou senha inválidos.' });
+        }
+    } catch (error) {
+        console.error('Erro durante o login:', error);
+        res.status(500).json({ status: 'error', message: 'Erro no servidor.' });
+    }
+});
 
 // Rota para buscar produtos
 app.get('/api/produtos', async (req, res) => {
     try {
         const { categoria, loja, busca, page = 1, limit = 12 } = req.query;
         const offset = (page - 1) * limit;
-        console.log('Parâmetros recebidos:', { categoria, loja, busca, page, limit });
 
-        // Validação de categoria e loja
         if (categoria && categoria !== 'todas' && !CATEGORIAS_PERMITIDAS.includes(categoria)) {
             return res.status(400).json({ status: 'error', message: 'Categoria inválida' });
         }
@@ -124,14 +179,10 @@ app.get('/api/produtos', async (req, res) => {
             return res.status(400).json({ status: 'error', message: 'Loja inválida' });
         }
 
-        // Chave para cache
         const cacheKey = `${categoria || 'todas'}-${loja || 'todas'}-${busca || ''}-${page}-${limit}`;
-        if (cache.has(cacheKey)) {
-            const cached = cache.get(cacheKey);
-            if (Date.now() - cached.timestamp < CACHE_DURATION) {
-                console.log('Retornando dados do cache');
-                return res.json(cached.data);
-            }
+        if (cache.has(cacheKey) && Date.now() - cache.get(cacheKey).timestamp < CACHE_DURATION) {
+            console.log('Retornando dados do cache');
+            return res.json(cache.get(cacheKey).data);
         }
 
         let query = 'SELECT * FROM produtos';
@@ -169,9 +220,7 @@ app.get('/api/produtos', async (req, res) => {
             total: parseInt(countResult.rows[0].count),
         };
 
-        // Armazenar no cache
         cache.set(cacheKey, { data: responseData, timestamp: Date.now() });
-
         res.json(responseData);
     } catch (error) {
         console.error('Erro ao buscar produtos:', error);
@@ -179,21 +228,36 @@ app.get('/api/produtos', async (req, res) => {
     }
 });
 
+// --- Rotas de Administrador (Protegidas por JWT) ---
+
 // Rota para adicionar produto
-app.post('/api/produtos', authenticate, upload.array('imagens', 5), async (req, res) => {
+app.post('/api/produtos', authenticateJWT, upload.array('imagens', 5), [
+    body('nome').trim().notEmpty().escape(),
+    body('descricao').trim().optional().escape(),
+    body('preco').isNumeric().toFloat().withMessage('Preço deve ser um número.'),
+    body('categoria').custom(value => CATEGORIAS_PERMITIDAS.includes(value)).withMessage('Categoria inválida.'),
+    body('loja').custom(value => LOJAS_PERMITIDAS.includes(value)).withMessage('Loja inválida.'),
+    body('link').isURL().withMessage('Link inválido.')
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ status: 'error', errors: errors.array() });
+    }
+
+    if (!req.files || req.files.length === 0) {
+        return res.status(400).json({ status: 'error', message: 'Pelo menos uma imagem é obrigatória.' });
+    }
+
+    const { nome, descricao, preco, categoria, loja, link } = req.body;
+    
+    // Validação de tipo de arquivo
+    const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    const invalidFiles = req.files.filter(file => !allowedMimeTypes.includes(file.mimetype));
+    if (invalidFiles.length > 0) {
+        return res.status(400).json({ status: 'error', message: 'Apenas arquivos de imagem (JPEG, PNG, WEBP) são permitidos.' });
+    }
+
     try {
-        const { nome, descricao, preco, categoria, loja, link } = req.body;
-        if (!nome || !preco || !categoria || !loja || !link || !req.files || req.files.length === 0) {
-            return res.status(400).json({ status: 'error', message: 'Todos os campos são obrigatórios, incluindo pelo menos uma imagem' });
-        }
-
-        if (!CATEGORIAS_PERMITIDAS.includes(categoria)) {
-            return res.status(400).json({ status: 'error', message: 'Categoria inválida' });
-        }
-        if (!LOJAS_PERMITIDAS.includes(loja)) {
-            return res.status(400).json({ status: 'error', message: 'Loja inválida' });
-        }
-
         const imageUrls = [];
         for (const file of req.files) {
             const result = await new Promise((resolve, reject) => {
@@ -213,11 +277,11 @@ app.post('/api/produtos', authenticate, upload.array('imagens', 5), async (req, 
             INSERT INTO produtos (nome, descricao, preco, imagens, categoria, loja, link)
             VALUES ($1, $2, $3, $4, $5, $6, $7)
             RETURNING *`;
-        const values = [nome, descricao, parseFloat(preco), imageUrls, categoria, loja, link];
+        const values = [nome, descricao, preco, imageUrls, categoria, loja, link];
         const { rows } = await pool.query(query, values);
 
         io.emit('novoProduto', rows[0]);
-        cache.clear(); // Limpar cache ao adicionar produto
+        cache.clear();
         res.json({ status: 'success', data: rows[0], message: 'Produto adicionado com sucesso' });
     } catch (error) {
         console.error('Erro ao adicionar produto:', error);
@@ -226,22 +290,31 @@ app.post('/api/produtos', authenticate, upload.array('imagens', 5), async (req, 
 });
 
 // Rota para editar produto
-app.put('/api/produtos/:id', authenticate, upload.array('imagens', 5), async (req, res) => {
+app.put('/api/produtos/:id', authenticateJWT, upload.array('imagens', 5), [
+    body('nome').trim().notEmpty().escape(),
+    body('descricao').trim().optional().escape(),
+    body('preco').isNumeric().toFloat().withMessage('Preço deve ser um número.'),
+    body('categoria').custom(value => CATEGORIAS_PERMITIDAS.includes(value)).withMessage('Categoria inválida.'),
+    body('loja').custom(value => LOJAS_PERMITIDAS.includes(value)).withMessage('Loja inválida.'),
+    body('link').isURL().withMessage('Link inválido.')
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ status: 'error', errors: errors.array() });
+    }
+    
+    const { id } = req.params;
+    const { nome, descricao, preco, categoria, loja, link } = req.body;
+
+    // Validação de tipo de arquivo
+    const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    const invalidFiles = req.files ? req.files.filter(file => !allowedMimeTypes.includes(file.mimetype)) : [];
+    if (invalidFiles.length > 0) {
+        return res.status(400).json({ status: 'error', message: 'Apenas arquivos de imagem (JPEG, PNG, WEBP) são permitidos.' });
+    }
+
     try {
-        const { id } = req.params;
-        const { nome, descricao, preco, categoria, loja, link } = req.body;
-        if (!nome || !preco || !categoria || !loja || !link) {
-            return res.status(400).json({ status: 'error', message: 'Todos os campos são obrigatórios' });
-        }
-
-        if (!CATEGORIAS_PERMITIDAS.includes(categoria)) {
-            return res.status(400).json({ status: 'error', message: 'Categoria inválida' });
-        }
-        if (!LOJAS_PERMITIDAS.includes(loja)) {
-            return res.status(400).json({ status: 'error', message: 'Loja inválida' });
-        }
-
-        const imageUrls = [];
+        let imageUrls = [];
         if (req.files && req.files.length > 0) {
             for (const file of req.files) {
                 const result = await new Promise((resolve, reject) => {
@@ -256,6 +329,12 @@ app.put('/api/produtos/:id', authenticate, upload.array('imagens', 5), async (re
                 });
                 imageUrls.push(result.secure_url);
             }
+        } else {
+            // Se nenhuma nova imagem for enviada, mantenha as imagens existentes
+            const { rows } = await pool.query('SELECT imagens FROM produtos WHERE id = $1', [id]);
+            if (rows.length > 0) {
+                imageUrls = rows[0].imagens;
+            }
         }
 
         const query = `
@@ -263,23 +342,15 @@ app.put('/api/produtos/:id', authenticate, upload.array('imagens', 5), async (re
             SET nome = $1, descricao = $2, preco = $3, imagens = $4, categoria = $5, loja = $6, link = $7
             WHERE id = $8
             RETURNING *`;
-        const values = [
-            nome,
-            descricao,
-            parseFloat(preco),
-            imageUrls.length > 0 ? imageUrls : (await pool.query('SELECT imagens FROM produtos WHERE id = $1', [id])).rows[0].imagens,
-            categoria,
-            loja,
-            link,
-            id
-        ];
+        const values = [nome, descricao, preco, imageUrls, categoria, loja, link, id];
         const { rows } = await pool.query(query, values);
+
         if (rows.length === 0) {
             return res.status(404).json({ status: 'error', message: 'Produto não encontrado' });
         }
 
         io.emit('produtoAtualizado', rows[0]);
-        cache.clear(); // Limpar cache ao atualizar produto
+        cache.clear();
         res.json({ status: 'success', data: rows[0], message: 'Produto atualizado com sucesso' });
     } catch (error) {
         console.error('Erro ao atualizar produto:', error);
@@ -288,7 +359,7 @@ app.put('/api/produtos/:id', authenticate, upload.array('imagens', 5), async (re
 });
 
 // Rota para excluir produto
-app.delete('/api/produtos/:id', authenticate, async (req, res) => {
+app.delete('/api/produtos/:id', authenticateJWT, async (req, res) => {
     try {
         const { id } = req.params;
         const query = 'DELETE FROM produtos WHERE id = $1 RETURNING *';
@@ -297,7 +368,7 @@ app.delete('/api/produtos/:id', authenticate, async (req, res) => {
             return res.status(404).json({ status: 'error', message: 'Produto não encontrado' });
         }
         io.emit('produtoExcluido', { id });
-        cache.clear(); // Limpar cache ao excluir produto
+        cache.clear();
         res.json({ status: 'success', message: 'Produto excluído com sucesso' });
     } catch (error) {
         console.error('Erro ao excluir produto:', error);
