@@ -1,132 +1,110 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel Administrativo - Centro de Compras</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centro de Compras - Melhores Ofertas da Internet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
 </head>
 <body>
-  <div class="connection-status hidden">
-    <div class="status-content">
-      <span><i class="fas fa-circle"></i> Status da Conexão</span>
-      <small id="status-message">Conectando...</small>
-    </div>
-  </div>
+    <div class="connection-status hidden">
+        <div class="status-content">
+            <span><i class="fas fa-circle"></i> Status da Conexão</span>
+            <small id="status-message">Conectando...</small>
+        </div>
+    </div>
 
-  <header class="main-header">
-    <div class="container">
-      <h1>Painel Administrativo</h1>
-      <button id="logout-btn" class="btn-secondary" style="display:none;">Sair</button>
-    </div>
-  </header>
+    <header class="main-header">
+        <div class="container">
+            <h1 class="logo">Centro de Compras</h1>
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Buscar produtos...">
+                <button id="search-btn" class="btn-search"><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+    </header>
 
- <main class="main-content">
-  <div class="container">
-    <section class="admin-login" id="login-section">
-      <h2>Login de Administrador</h2>
-      <form id="login-form">
-        <div class="form-group">
-          <label for="username">Usuário</label>
-          <input type="text" id="username" name="username" required>
-        </div>
-        <div class="form-group">
-          <label for="password">Senha</label>
-          <input type="password" id="password" name="password" required>
-        </div>
-        <button type="submit" class="btn-primary">Entrar</button>
-        <div id="login-feedback" class="feedback hidden"></div>
-      </form>
-    </section>
-  </div>
-</main>
+    <main class="main-content">
+        <div class="container">
+            <aside class="sidebar">
+                <div class="filter-section">
+                    <h3>Filtrar por</h3>
+                    <div class="filter-group">
+                        <label for="filter-category">Categoria</label>
+                        <select id="filter-category" name="categoria">
+                            <option value="todas">Todas</option>
+                            <option value="eletronicos">Eletrônicos</option>
+                            <option value="moda">Moda</option>
+                            <option value="casa">Casa</option>
+                            <option value="beleza">Beleza</option>
+                            <option value="esportes">Esportes</option>
+                            <option value="livros">Livros</option>
+                            <option value="infantil">Infantil</option>
+                            <option value="Celulares">Celulares</option>
+                            <option value="Eletrodomésticos">Eletrodomésticos</option>
+                            <option value="pet">Pet</option>
+                            <option value="jardinagem">Jardinagem</option>
+                            <option value="automotivo">Automotivo</option>
+                            <option value="gastronomia">Gastronomia</option>
+                            <option value="games">Games</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-store">Loja</label>
+                        <select id="filter-store" name="loja">
+                            <option value="todas">Todas</option>
+                            <option value="amazon">Amazon</option>
+                            <option value="magalu">Magalu</option>
+                            <option value="shein">Shein</option>
+                            <option value="shopee">Shopee</option>
+                            <option value="mercadolivre">Mercado Livre</option>
+                            <option value="alibaba">Alibaba</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="sort-by">Ordenar por</label>
+                        <select id="sort-by" name="sort">
+                            <option value="default">Mais recentes</option>
+                            <option value="price-asc">Menor preço</option>
+                            <option value="price-desc">Maior preço</option>
+                        </select>
+                    </div>
+                    <button id="apply-filters-btn" class="btn-primary">Aplicar Filtros</button>
+                </div>
+            </aside>
+            <section class="product-list">
+                <div class="products-grid" id="products-grid"></div>
+                <div class="loading-container" id="loading-spinner">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Carregando produtos...</p>
+                    </div>
+                </div>
+                <div class="empty-state" id="mensagem-vazia" style="display:none;">
+                    <i class="fas fa-box-open empty-icon"></i>
+                    <h3>Nenhum produto encontrado</h3>
+                    <p>Tente ajustar os filtros ou a busca.</p>
+                </div>
+                <div class="error-state" id="error-message" style="display:none;">
+                    <i class="fas fa-exclamation-circle error-icon"></i>
+                    <h3>Ops! Algo deu errado</h3>
+                    <p>Não foi possível carregar os produtos. Verifique sua conexão.</p>
+                    <button class="btn-primary" onclick="fetchProducts()">Tentar Novamente</button>
+                </div>
+            </section>
+        </div>
+    </main>
 
-      <div id="admin-panel-content" style="display:none;">
-        <section class="admin-form">
-          <h2>Adicionar/Editar Produto</h2>
-          <form id="admin-product-form">
-            <input type="hidden" id="id" name="id">
-            <div class="form-group">
-              <label for="nome">Nome do Produto</label>
-              <input type="text" id="nome" name="nome" required>
-            </div>
-            <div class="form-group">
-              <label for="preco">Preço (R$)</label>
-              <input type="number" id="preco" name="preco" step="0.01" required>
-            </div>
-            <div class="form-group">
-              <label for="categoria">Categoria</label>
-              <select id="categoria" name="categoria" required>
-                <option value="eletronicos">Eletrônicos</option>
-                <option value="moda">Moda</option>
-                <option value="casa">Casa</option>
-                <option value="beleza">Beleza</option>
-                <option value="esportes">Esportes</option>
-                <option value="livros">Livros</option>
-                <option value="infantil">Infantil</option>
-                <option value="Celulares">Celulares</option>
-                <option value="Eletrodomésticos">Eletrodomésticos</option>
-                <option value="pet">Pet</option>
-                <option value="jardinagem">Jardinagem</option>
-                <option value="automotivo">Automotivo</option>
-                <option value="gastronomia">Gastronomia</option>
-                <option value="games">Games</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="loja">Loja</label>
-              <select id="loja" name="loja" required>
-                <option value="amazon">Amazon</option>
-                <option value="magalu">Magalu</option>
-                <option value="shein">Shein</option>
-                <option value="shopee">Shopee</option>
-                <option value="mercadolivre">Mercado Livre</option>
-                <option value="alibaba">Alibaba</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="link">Link do Produto</label>
-              <input type="url" id="link" name="link" required>
-            </div>
-            <div class="form-group">
-              <label for="descricao">Descrição</label>
-              <textarea id="descricao" name="descricao"></textarea>
-            </div>
-            <div class="form-group">
-              <label for="imagens">Imagens</label>
-              <input type="file" id="imagens" name="imagens" multiple accept="image/*">
-            </div>
-            <button type="submit" class="btn-primary">Salvar Produto</button>
-            <div id="admin-form-feedback" class="feedback hidden"></div>
-          </form>
-        </section>
-        <section>
-          <h2>Produtos Cadastrados</h2>
-          <div class="products-grid" id="admin-products-grid"></div>
-          <div class="loading-container" id="admin-loading-spinner">
-            <div class="loading-spinner">
-              <div class="spinner"></div>
-              <p>Carregando produtos...</p>
-            </div>
-          </div>
-          <div class="empty-state" id="admin-mensagem-vazia">
-            <i class="fas fa-box-open empty-icon"></i>
-            <h3>Nenhum produto encontrado</h3>
-            <p>Adicione um novo produto usando o formulário acima.</p>
-          </div>
-          <div class="error-state" id="admin-error-message">
-            <i class="fas fa-exclamation-circle error-icon"></i>
-            <h3>Ops! Algo deu errado</h3>
-            <p>Não foi possível carregar os produtos. Verifique sua conexão.</p>
-            <button class="btn-primary" onclick="fetchProducts()">Tentar Novamente</button>
-          </div>
-        </section>
-      </div>
-    </div>
-  </main>
-  <script src="admin-script.js"></script>
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <div id="modal-product-details"></div>
+        </div>
+    </div>
+
+    <script src="main-script.js"></script>
 </body>
 </html>
