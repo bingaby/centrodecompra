@@ -1,17 +1,15 @@
 const express = require('express');
-const path = require('path');
 const cors = require('cors');
 const { Pool } = require('pg');
 const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
 const { Server } = require('socket.io');
-const http = require('http');
 require('dotenv').config();
 
 const app = express();
 const upload = multer({ storage: multer.memoryStorage() });
 
-// Lista de categorias e lojas permitidas
+// Lista de categorias e lojas permitidas (alinhada com o frontend)
 const CATEGORIAS_PERMITIDAS = [
     'eletronicos', 'moda', 'fitness', 'casa', 'beleza', 'esportes', 'livros',
     'infantil', 'Celulares', 'Eletrodomésticos', 'pet', 'jardinagem', 'automotivo',
@@ -24,6 +22,7 @@ const allowedOrigins = [
     'http://localhost:3000',
     'https://www.centrodecompra.com.br',
     'https://minha-api-produtos.onrender.com',
+    // Adicione o domínio do frontend hospedado no Render, se diferente
 ];
 app.use(cors({
     origin: (origin, callback) => {
@@ -39,24 +38,24 @@ app.use(express.json());
 // Middleware de autenticação básica
 const authenticate = (req, res, next) => {
     const authHeader = req.headers['authorization'];
-    const ADMIN_TOKEN = process.env.ADMIN_TOKEN;
+    const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'seu_token_secreto';
     if (!authHeader || authHeader !== `Bearer ${ADMIN_TOKEN}`) {
         return res.status(401).json({ status: 'error', message: 'Autenticação necessária' });
     }
     next();
 };
 
-// Configuração do banco de dados (usando variáveis de ambiente)
+// Configuração do banco de dados
 const pool = new Pool({
-    user: process.env.DB_USER,
-    host: process.env.DB_HOST,
-    database: process.env.DB_NAME,
-    password: process.env.DB_PASSWORD,
-    port: process.env.DB_PORT,
+    user: 'centrodecompra_db_user',
+    host: 'dpg-d25392idbo4c73a974pg-a.oregon-postgres.render.com',
+    database: 'centrodecompra_db',
+    password: 'cIqUg4jtqXIxlDmyWMruasKU5OLxbrcd',
+    port: 5432,
     ssl: { rejectUnauthorized: false },
 });
 
-// Conectar e criar a tabela
+// Criar tabela produtos se não existir
 pool.connect((err) => {
     if (err) {
         console.error('Erro ao conectar ao PostgreSQL:', err);
@@ -83,15 +82,15 @@ pool.connect((err) => {
     });
 });
 
-// Configuração do Cloudinary (usando variáveis de ambiente)
+// Configuração do Cloudinary
 cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
+    cloud_name: 'damasyarq',
+    api_key: '156799321846881',
+    api_secret: 'bmqmdKA5PTbmkfWExr8SUr_FtTI',
 });
 
 // Configuração do Socket.IO
-const server = http.createServer(app);
+const server = require('http').createServer(app);
 const io = new Server(server, {
     cors: {
         origin: allowedOrigins,
@@ -110,65 +109,14 @@ io.on('connection', (socket) => {
 const cache = new Map();
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
 
-// --- ROTAS DO FRONTEND ---
-// Servindo arquivos estáticos diretamente do diretório raiz
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-app.get('/contato.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'contato.html'));
-});
-
-app.get('/admin-xyz-123.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'admin-xyz-123.html'));
-});
-
-// Servir arquivos JavaScript
-app.get('/admin.js', (req, res) => {
-    res.sendFile(path.join(__dirname, 'admin.js'));
-});
-
-// Servir arquivos CSS do Font Awesome
-app.get('/css/all.min.css', (req, res) => {
-    res.sendFile(path.join(__dirname, 'node_modules/@fortawesome/fontawesome-free/css/all.min.css'));
-});
-
-// Servir outros arquivos de pastas (ex: imagens, logos)
-app.use('/imagens', express.static(path.join(__dirname, 'imagens')));
-app.use('/logos', express.static(path.join(__dirname, 'logos')));
-
-
-// --- ROTAS DA API ---
-
-// Rota para buscar estatísticas
-app.get('/api/stats', async (req, res) => {
-    try {
-        const totalProductsQuery = 'SELECT COUNT(*) FROM produtos';
-        const { rows } = await pool.query(totalProductsQuery);
-        const totalProducts = parseInt(rows[0].count);
-
-        const totalViews = Math.floor(Math.random() * 5000) + totalProducts;
-        const totalSales = Math.floor(Math.random() * 200) + 1;
-
-        res.json({
-            status: 'success',
-            totalProducts,
-            totalViews,
-            totalSales,
-        });
-    } catch (error) {
-        console.error('Erro ao buscar estatísticas:', error);
-        res.status(500).json({ status: 'error', message: 'Erro ao buscar estatísticas' });
-    }
-});
-
 // Rota para buscar produtos
 app.get('/api/produtos', async (req, res) => {
     try {
         const { categoria, loja, busca, page = 1, limit = 12 } = req.query;
         const offset = (page - 1) * limit;
+        console.log('Parâmetros recebidos:', { categoria, loja, busca, page, limit });
 
+        // Validação de categoria e loja
         if (categoria && categoria !== 'todas' && !CATEGORIAS_PERMITIDAS.includes(categoria)) {
             return res.status(400).json({ status: 'error', message: 'Categoria inválida' });
         }
@@ -176,10 +124,12 @@ app.get('/api/produtos', async (req, res) => {
             return res.status(400).json({ status: 'error', message: 'Loja inválida' });
         }
 
+        // Chave para cache
         const cacheKey = `${categoria || 'todas'}-${loja || 'todas'}-${busca || ''}-${page}-${limit}`;
         if (cache.has(cacheKey)) {
             const cached = cache.get(cacheKey);
             if (Date.now() - cached.timestamp < CACHE_DURATION) {
+                console.log('Retornando dados do cache');
                 return res.json(cached.data);
             }
         }
@@ -219,7 +169,9 @@ app.get('/api/produtos', async (req, res) => {
             total: parseInt(countResult.rows[0].count),
         };
 
+        // Armazenar no cache
         cache.set(cacheKey, { data: responseData, timestamp: Date.now() });
+
         res.json(responseData);
     } catch (error) {
         console.error('Erro ao buscar produtos:', error);
@@ -231,11 +183,8 @@ app.get('/api/produtos', async (req, res) => {
 app.post('/api/produtos', authenticate, upload.array('imagens', 5), async (req, res) => {
     try {
         const { nome, descricao, preco, categoria, loja, link } = req.body;
-        if (!nome || !preco || !categoria || !loja || !link) {
-            return res.status(400).json({ status: 'error', message: 'Todos os campos são obrigatórios' });
-        }
-        if (!req.files || req.files.length === 0) {
-            return res.status(400).json({ status: 'error', message: 'Pelo menos uma imagem é obrigatória' });
+        if (!nome || !preco || !categoria || !loja || !link || !req.files || req.files.length === 0) {
+            return res.status(400).json({ status: 'error', message: 'Todos os campos são obrigatórios, incluindo pelo menos uma imagem' });
         }
 
         if (!CATEGORIAS_PERMITIDAS.includes(categoria)) {
@@ -292,7 +241,7 @@ app.put('/api/produtos/:id', authenticate, upload.array('imagens', 5), async (re
             return res.status(400).json({ status: 'error', message: 'Loja inválida' });
         }
 
-        let imageUrls = [];
+        const imageUrls = [];
         if (req.files && req.files.length > 0) {
             for (const file of req.files) {
                 const result = await new Promise((resolve, reject) => {
@@ -307,20 +256,23 @@ app.put('/api/produtos/:id', authenticate, upload.array('imagens', 5), async (re
                 });
                 imageUrls.push(result.secure_url);
             }
-        } else {
-             // Buscar imagens existentes se nenhuma nova for enviada
-            const existingProduct = await pool.query('SELECT imagens FROM produtos WHERE id = $1', [id]);
-            if (existingProduct.rows.length > 0) {
-                imageUrls = existingProduct.rows[0].imagens;
-            }
         }
-        
+
         const query = `
             UPDATE produtos
             SET nome = $1, descricao = $2, preco = $3, imagens = $4, categoria = $5, loja = $6, link = $7
             WHERE id = $8
             RETURNING *`;
-        const values = [nome, descricao, parseFloat(preco), imageUrls, categoria, loja, link, id];
+        const values = [
+            nome,
+            descricao,
+            parseFloat(preco),
+            imageUrls.length > 0 ? imageUrls : (await pool.query('SELECT imagens FROM produtos WHERE id = $1', [id])).rows[0].imagens,
+            categoria,
+            loja,
+            link,
+            id
+        ];
         const { rows } = await pool.query(query, values);
         if (rows.length === 0) {
             return res.status(404).json({ status: 'error', message: 'Produto não encontrado' });
