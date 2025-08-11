@@ -1,4 +1,4 @@
-const API_URL = 'https://minha-api-produtos.onrender.com'; // Ajuste conforme necessário
+const API_URL = 'https://minha-api-produtos.onrender.com';
 
 async function cadastrarProduto(event) {
   event.preventDefault();
