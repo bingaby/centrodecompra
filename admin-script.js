@@ -155,3 +155,4 @@ document.addEventListener('DOMContentLoaded', () => {
     adminPanelContent.style.display = 'block';
     fetchProducts();
 });
+
