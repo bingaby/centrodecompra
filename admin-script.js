@@ -4,12 +4,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const cancelarBtn = document.getElementById('cancelar');
   const imagePreview = document.getElementById('image-preview');
   const imagensInput = document.getElementById('imagens');
+  const BASE_URL = 'https://centro-de-compras-backend.onrender.com'; // URL do backend
 
   // Carregar produtos
   async function loadProdutos() {
     try {
-      const response = await fetch('/api/produtos');
-      if (!response.ok) throw new Error('Erro ao carregar produtos');
+      const response = await fetch(`${BASE_URL}/api/produtos`);
+      console.log('Requisição GET:', response.status, response.statusText);
+      if (!response.ok) {
+        const text = await response.text();
+        console.error('Resposta não-JSON:', text);
+        throw new Error('Erro ao carregar produtos');
+      }
       const { data: produtos } = await response.json();
       console.log('Produtos carregados no admin:', produtos);
       const container = document.getElementById('admin-produtos');
@@ -77,34 +83,12 @@ document.addEventListener('DOMContentLoaded', () => {
       categoria: formData.get('categoria')
     };
 
-    // Validação de comprimento
-    if (produto.nome.length > 255) {
-      errorMessage.textContent = 'O nome do produto deve ter no máximo 255 caracteres.';
-      errorMessage.style.display = 'block';
-      return;
-    }
-    if (produto.descricao.length > 255) {
-      errorMessage.textContent = 'A descrição deve ter no máximo 255 caracteres.';
-      errorMessage.style.display = 'block';
-      return;
-    }
-    if (produto.link.length > 255) {
-      errorMessage.textContent = 'O link deve ter no máximo 255 caracteres.';
-      errorMessage.style.display = 'block';
-      return;
-    }
-    if (produto.loja.length > 255) {
-      errorMessage.textContent = 'A loja deve ter no máximo 255 caracteres.';
-      errorMessage.style.display = 'block';
-      return;
-    }
-    if (produto.categoria.length > 255) {
-      errorMessage.textContent = 'A categoria deve ter no máximo 255 caracteres.';
+    if (produto.nome.length > 255 || produto.descricao.length > 255 || produto.link.length > 255 || produto.loja.length > 255 || produto.categoria.length > 255) {
+      errorMessage.textContent = 'Os campos devem ter no máximo 255 caracteres.';
       errorMessage.style.display = 'block';
       return;
     }
 
-    // Validação de preço
     const precoNum = parseFloat(produto.preco);
     if (isNaN(precoNum) || precoNum < 0) {
       errorMessage.textContent = 'O preço deve ser um número válido maior ou igual a zero.';
@@ -114,16 +98,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       const method = produto.id ? 'PUT' : 'POST';
-      const url = produto.id ? `/api/produtos/${produto.id}` : '/api/produtos';
+      const url = produto.id ? `${BASE_URL}/api/produtos/${produto.id}` : `${BASE_URL}/api/produtos`;
       console.log('Enviando requisição:', { method, url, produto });
       const response = await fetch(url, {
         method,
         body: formData
       });
+      console.log('Resposta recebida:', response.status, response.statusText);
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Erro ao salvar produto');
+        const text = await response.text();
+        console.error('Resposta não-JSON:', text);
+        throw new Error(`Erro ao salvar produto: ${text}`);
       }
+      const data = await response.json();
       alert(produto.id ? 'Produto atualizado com sucesso!' : 'Produto cadastrado com sucesso!');
       form.reset();
       imagePreview.innerHTML = '';
@@ -140,8 +127,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Editar produto
   async function editProduto(id) {
     try {
-      const response = await fetch(`/api/produtos/${id}`);
-      if (!response.ok) throw new Error('Erro ao carregar produto');
+      const response = await fetch(`${BASE_URL}/api/produtos/${id}`);
+      if (!response.ok) {
+        const text = await response.text();
+        console.error('Resposta não-JSON:', text);
+        throw new Error('Erro ao carregar produto');
+      }
       const produto = await response.json();
       console.log('Carregando produto para edição:', produto);
       document.getElementById('id').value = produto.id;
@@ -166,8 +157,12 @@ document.addEventListener('DOMContentLoaded', () => {
   async function deleteProduto(id) {
     if (!confirm('Tem certeza que deseja excluir este produto?')) return;
     try {
-      const response = await fetch(`/api/produtos/${id}`, { method: 'DELETE' });
-      if (!response.ok) throw new Error('Erro ao excluir produto');
+      const response = await fetch(`${BASE_URL}/api/produtos/${id}`, { method: 'DELETE' });
+      if (!response.ok) {
+        const text = await response.text();
+        console.error('Resposta não-JSON:', text);
+        throw new Error('Erro ao excluir produto');
+      }
       alert('Produto excluído com sucesso!');
       loadProdutos();
       localStorage.setItem('produtoAtualizado', Date.now());
