@@ -9,14 +9,20 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch(`${apiBaseUrl}/produtos`);
             if (!response.ok) {
-                throw new Error(`Erro HTTP! Status: ${response.status}`);
+                const errorText = await response.text();
+                throw new Error(`Erro HTTP! Status: ${response.status}, Mensagem: ${errorText}`);
             }
             const produtos = await response.json();
-            renderizarProdutos(produtos.data || produtos); // Compatível com backend atualizado ou anterior
+            // Verifica se a resposta é um array ou tem a propriedade 'data'
+            if (!Array.isArray(produtos) && (!produtos.data || !Array.isArray(produtos.data))) {
+                throw new Error('Formato de dados inválido: a resposta deve ser um array ou um objeto com propriedade "data"');
+            }
+            const produtosArray = Array.isArray(produtos) ? produtos : produtos.data;
+            renderizarProdutos(produtosArray);
         } catch (error) {
             console.error('Erro ao buscar produtos:', error);
             errorMessage.style.display = 'block';
-            errorMessage.textContent = 'Erro ao carregar produtos.';
+            errorMessage.textContent = `Erro ao carregar produtos: ${error.message}`;
         }
     };
 
