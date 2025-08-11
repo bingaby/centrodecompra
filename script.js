@@ -30,38 +30,51 @@ document.addEventListener('DOMContentLoaded', () => {
 
         isLoading = true;
         loadingSpinner.style.display = 'block';
-        gridProdutos.innerHTML = ''; // Limpa a grade de produtos para a nova busca
-
-        // Resetar mensagens de erro/vazio
+        gridProdutos.innerHTML = ''; // Limpa a grade de produtos
         mensagemVazia.style.display = 'none';
         errorMessage.style.display = 'none';
         paginacaoDiv.style.display = 'none';
 
         try {
-            const url = new URL(`${apiBaseUrl}/produtos`);
-            url.searchParams.append('page', currentPage);
-            url.searchParams.append('limit', produtosPorPagina);
-            if (categoriaAtual !== 'todas') url.searchParams.append('categoria', categoriaAtual);
-            if (lojaAtual !== 'todas') url.searchParams.append('loja', lojaAtual);
-            if (termoBusca) url.searchParams.append('busca', termoBusca);
-
-            const response = await fetch(url);
-            const data = await response.json();
-
-            if (response.ok) {
-                totalProdutos = data.total;
-                renderizarProdutos(data.data);
-                atualizarPaginacao();
-            } else {
-                errorMessage.style.display = 'block';
+            // Como o backend atual não suporta paginação/filtros, buscamos todos os produtos
+            // e filtramos no frontend (ajuste no backend será sugerido abaixo)
+            const response = await fetch(`${apiBaseUrl}/produtos`);
+            if (!response.ok) {
+                throw new Error(`Erro HTTP! Status: ${response.status}`);
             }
+            const produtos = await response.json();
+            totalProdutos = produtos.length;
+            const filteredProdutos = filterProdutos(produtos);
+            const paginatedProdutos = filteredProdutos.slice(
+                (currentPage - 1) * produtosPorPagina,
+                currentPage * produtosPorPagina
+            );
+            renderizarProdutos(paginatedProdutos);
+            atualizarPaginacao();
         } catch (error) {
             console.error('Erro ao buscar produtos:', error);
             errorMessage.style.display = 'block';
+            errorMessage.textContent = 'Erro ao carregar produtos.';
         } finally {
             isLoading = false;
             loadingSpinner.style.display = 'none';
         }
+    };
+
+    /**
+     * Filtra produtos no frontend com base em categoria, loja e busca.
+     * @param {Array} produtos - Lista completa de produtos.
+     * @returns {Array} Produtos filtrados.
+     */
+    const filterProdutos = (produtos) => {
+        return produtos.filter(produto => {
+            const matchCategoria = categoriaAtual === 'todas' || produto.categoria.toLowerCase() === categoriaAtual;
+            const matchLoja = lojaAtual === 'todas' || produto.loja.toLowerCase() === lojaAtual;
+            const matchBusca = !termoBusca || 
+                produto.nome.toLowerCase().includes(termoBusca.toLowerCase()) || 
+                produto.descricao.toLowerCase().includes(termoBusca.toLowerCase());
+            return matchCategoria && matchLoja && matchBusca;
+        });
     };
 
     /**
@@ -77,14 +90,14 @@ document.addEventListener('DOMContentLoaded', () => {
         produtos.forEach(produto => {
             const card = document.createElement('div');
             card.className = 'produto-card';
-            
-            // Usamos o primeiro link da array de imagens
-            const imagemUrl = produto.imagens && produto.imagens.length > 0 ? produto.imagens[0] : 'https://via.placeholder.com/200?text=Sem+Imagem';
+            const imagemUrl = produto.imagens && produto.imagens.length > 0 
+                ? produto.imagens[0] 
+                : 'https://via.placeholder.com/300?text=Sem+Imagem';
             
             card.innerHTML = `
                 <div class="carrossel" data-imagens='${JSON.stringify(produto.imagens)}'>
                     <div class="carrossel-imagens">
-                        <img src="${imagemUrl}" alt="${produto.nome}" loading="lazy">
+                        <img src="${imagemUrl}" alt="${produto.nome}" loading="lazy" style="width: 300px; height: 300px; object-fit: cover;">
                     </div>
                 </div>
                 <div class="produto-card-info">
@@ -95,6 +108,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
             gridProdutos.appendChild(card);
+
+            // Adiciona evento para abrir o modal de imagens
+            card.querySelector('.carrossel').addEventListener('click', () => openModal(produto.imagens));
         });
     };
 
@@ -106,10 +122,68 @@ document.addEventListener('DOMContentLoaded', () => {
         if (totalProdutos > 0) {
             paginacaoDiv.style.display = 'flex';
         }
-
-        pageInfoSpan.textContent = `Página ${currentPage} de ${totalPaginas}`;
+        pageInfoSpan.textContent = `Página ${currentPage} de ${totalPaginas || 1}`;
         prevPageBtn.disabled = currentPage === 1;
         nextPageBtn.disabled = currentPage >= totalPaginas;
+    };
+
+    /**
+     * Abre o modal de imagens.
+     * @param {Array} imagens - Lista de URLs das imagens.
+     */
+    const openModal = (imagens) => {
+        const modal = document.getElementById('imageModal');
+        const carrossel = document.getElementById('modalCarrosselImagens');
+        const dotsContainer = document.getElementById('modalCarrosselDots');
+        carrossel.innerHTML = '';
+        dotsContainer.innerHTML = '';
+        let currentImageIndex = 0;
+
+        imagens.forEach((img, index) => {
+            const imgElement = document.createElement('img');
+            imgElement.src = img;
+            imgElement.className = 'carrossel-imagem';
+            imgElement.style.display = index === 0 ? 'block' : 'none';
+            carrossel.appendChild(imgElement);
+
+            const dot = document.createElement('span');
+            dot.className = 'dot' + (index === 0 ? ' active' : '');
+            dot.addEventListener('click', () => {
+                document.querySelectorAll('.carrossel-imagem').forEach((i, idx) => {
+                    i.style.display = idx === index ? 'block' : 'none';
+                });
+                document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
+                dot.classList.add('active');
+                currentImageIndex = index;
+            });
+            dotsContainer.appendChild(dot);
+        });
+
+        modal.style.display = 'block';
+    };
+
+    /**
+     * Move o carrossel do modal.
+     * @param {number} direction - Direção do movimento (1 para próxima, -1 para anterior).
+     */
+    window.moveModalCarrossel = (direction) => {
+        const images = document.querySelectorAll('.carrossel-imagem');
+        const dots = document.querySelectorAll('.dot');
+        let newIndex = currentImageIndex + direction;
+        if (newIndex < 0) newIndex = images.length - 1;
+        if (newIndex >= images.length) newIndex = 0;
+        images[currentImageIndex].style.display = 'none';
+        dots[currentImageIndex].classList.remove('active');
+        images[newIndex].style.display = 'block';
+        dots[newIndex].classList.add('active');
+        currentImageIndex = newIndex;
+    };
+
+    /**
+     * Fecha o modal de imagens.
+     */
+    window.closeModal = () => {
+        document.getElementById('imageModal').style.display = 'none';
     };
 
     // === Funções de Eventos ===
@@ -120,9 +194,8 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     const filtrarPorCategoria = (categoria) => {
         categoriaAtual = categoria;
-        lojaAtual = 'todas'; // Reseta a loja ao mudar a categoria
+        lojaAtual = 'todas';
         currentPage = 1;
-        
         document.querySelectorAll('.categoria-item').forEach(item => {
             item.classList.toggle('ativa', item.dataset.categoria === categoria);
         });
@@ -130,7 +203,6 @@ document.addEventListener('DOMContentLoaded', () => {
             item.classList.remove('ativa');
         });
         document.querySelector('.loja-todas').classList.add('ativa');
-
         fetchProdutos();
     };
 
@@ -140,9 +212,8 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     const filtrarPorLoja = (loja) => {
         lojaAtual = loja;
-        categoriaAtual = 'todas'; // Reseta a categoria ao mudar a loja
+        categoriaAtual = 'todas';
         currentPage = 1;
-
         document.querySelectorAll('.loja').forEach(item => {
             item.classList.toggle('ativa', item.dataset.loja === loja);
         });
@@ -150,7 +221,6 @@ document.addEventListener('DOMContentLoaded', () => {
             item.classList.remove('ativa');
         });
         document.querySelector('.categoria-item[data-categoria="todas"]').classList.add('ativa');
-
         fetchProdutos();
     };
 
@@ -165,7 +235,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // === Configuração de Event Listeners ===
     const setupEventListeners = () => {
-        // Eventos para navegação da paginação
         prevPageBtn.addEventListener('click', () => {
             if (currentPage > 1) {
                 currentPage--;
@@ -181,7 +250,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Eventos para filtros de Categoria e Loja
         document.querySelectorAll('.categoria-item').forEach(item => {
             item.addEventListener('click', () => filtrarPorCategoria(item.dataset.categoria));
         });
@@ -192,7 +260,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.querySelector('.loja-todas').addEventListener('click', () => filtrarPorLoja('todas'));
 
-        // Evento para a barra de busca
         buscaInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 handleBusca();
@@ -204,7 +271,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const init = () => {
         setupEventListeners();
         fetchProdutos();
-        // Atualiza o ano no footer
         document.getElementById('year').textContent = new Date().getFullYear();
     };
 
