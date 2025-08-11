@@ -3,6 +3,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const productContainer = document.getElementById('admin-product-container');
     const errorMessage = document.getElementById('admin-error-message');
     const productForm = document.getElementById('product-form');
+    const formTitle = document.getElementById('form-title');
+    const submitButton = document.getElementById('submit-button');
+    const cancelButton = document.getElementById('cancel-button');
+    let isEditing = false;
 
     // Função para buscar e exibir produtos
     const fetchProdutos = async () => {
@@ -13,10 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(`Erro HTTP! Status: ${response.status}, Mensagem: ${errorText}`);
             }
             const produtos = await response.json();
-            // Verifica se a resposta é um array ou tem a propriedade 'data'
-            if (!Array.isArray(produtos) && (!produtos.data || !Array.isArray(produtos.data))) {
-                throw new Error('Formato de dados inválido: a resposta deve ser um array ou um objeto com propriedade "data"');
-            }
             const produtosArray = Array.isArray(produtos) ? produtos : produtos.data;
             renderizarProdutos(produtosArray);
         } catch (error) {
@@ -46,13 +46,50 @@ document.addEventListener('DOMContentLoaded', () => {
                 <h3>${produto.nome}</h3>
                 <p>${produto.descricao.substring(0, 50)}...</p>
                 <p>R$ ${parseFloat(produto.preco).toFixed(2)}</p>
+                <button class="editar" onclick="editProduct(${produto.id})">Editar</button>
                 <button onclick="deleteProduct(${produto.id})">Excluir</button>
             `;
             productContainer.appendChild(card);
         });
     };
 
-    // Função para cadastrar um novo produto
+    // Função para preencher o formulário para edição
+    window.editProduct = async (id) => {
+        try {
+            const response = await fetch(`${apiBaseUrl}/produtos/${id}`);
+            if (!response.ok) {
+                throw new Error(`Erro HTTP! Status: ${response.status}`);
+            }
+            const produto = await response.json();
+            document.getElementById('produto-id').value = produto.id;
+            document.getElementById('nome').value = produto.nome;
+            document.getElementById('descricao').value = produto.descricao;
+            document.getElementById('preco').value = produto.preco;
+            document.getElementById('link').value = produto.link;
+            document.getElementById('categoria').value = produto.categoria;
+            document.getElementById('loja').value = produto.loja;
+            formTitle.textContent = 'Editar Produto';
+            submitButton.textContent = 'Salvar Alterações';
+            cancelButton.style.display = 'inline-block';
+            isEditing = true;
+        } catch (error) {
+            console.error('Erro ao carregar produto para edição:', error);
+            errorMessage.style.display = 'block';
+            errorMessage.textContent = error.message || 'Erro ao carregar produto.';
+        }
+    };
+
+    // Função para cancelar edição
+    cancelButton.addEventListener('click', () => {
+        productForm.reset();
+        formTitle.textContent = 'Cadastrar Novo Produto';
+        submitButton.textContent = 'Cadastrar Produto';
+        cancelButton.style.display = 'none';
+        isEditing = false;
+        document.getElementById('produto-id').value = '';
+    });
+
+    // Função para cadastrar ou atualizar um produto
     productForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const formData = new FormData();
@@ -68,22 +105,29 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            const response = await fetch(`${apiBaseUrl}/produtos`, {
-                method: 'POST',
+            const url = isEditing ? `${apiBaseUrl}/produtos/${document.getElementById('produto-id').value}` : `${apiBaseUrl}/produtos`;
+            const method = isEditing ? 'PUT' : 'POST';
+            const response = await fetch(url, {
+                method,
                 body: formData
             });
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.error || `Erro HTTP! Status: ${response.status}`);
             }
-            const novoProduto = await response.json();
-            alert('Produto cadastrado com sucesso!');
+            const message = isEditing ? 'Produto atualizado com sucesso!' : 'Produto cadastrado com sucesso!';
+            alert(message);
             productForm.reset();
+            formTitle.textContent = 'Cadastrar Novo Produto';
+            submitButton.textContent = 'Cadastrar Produto';
+            cancelButton.style.display = 'none';
+            isEditing = false;
+            document.getElementById('produto-id').value = '';
             fetchProdutos();
         } catch (error) {
-            console.error('Erro ao cadastrar produto:', error);
+            console.error(`Erro ao ${isEditing ? 'atualizar' : 'cadastrar'} produto:`, error);
             errorMessage.style.display = 'block';
-            errorMessage.textContent = error.message || 'Erro ao cadastrar produto.';
+            errorMessage.textContent = error.message || `Erro ao ${isEditing ? 'atualizar' : 'cadastrar'} produto.`;
         }
     });
 
