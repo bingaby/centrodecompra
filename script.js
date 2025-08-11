@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let categoriaSelecionada = 'todas';
   let lojaSelecionada = 'todas';
   let buscaTermo = '';
+  let sortBy = 'relevance';
 
   // Carregar produtos
   async function loadProdutos() {
@@ -13,46 +14,45 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('mensagem-vazia').style.display = 'none';
       document.getElementById('error-message').style.display = 'none';
 
-      const response = await fetch('/api/produtos');
-      if (!response.ok) throw new Error('Erro ao carregar produtos');
-      const { data } = await response.json();
+      const params = new URLSearchParams({
+        page: currentPage,
+        limit: perPage,
+        categoria: categoriaSelecionada,
+        loja: lojaSelecionada,
+        busca: buscaTermo,
+        sort: sortBy
+      });
+      const response = await fetch(`/api/produtos?${params}`);
+      if (!response.ok) throw new Error(`Erro ao carregar produtos: ${response.statusText}`);
+      const { data, total } = await response.json();
+      console.log('Produtos carregados:', data); // Log para depuração
       produtos = data;
-      renderProdutos();
+      renderProdutos(total);
     } catch (err) {
-      console.error(err);
+      console.error('Erro ao carregar produtos:', err);
       document.getElementById('loading-spinner').style.display = 'none';
       document.getElementById('error-message').style.display = 'block';
     }
   }
 
   // Renderizar produtos
-  function renderProdutos() {
+  function renderProdutos(total) {
     const grid = document.getElementById('grid-produtos');
     grid.innerHTML = '';
-    const filteredProdutos = produtos.filter(p => {
-      const matchCategoria = categoriaSelecionada === 'todas' || p.categoria === categoriaSelecionada;
-      const matchLoja = lojaSelecionada === 'todas' || p.loja === lojaSelecionada;
-      const matchBusca = !buscaTermo || p.nome.toLowerCase().includes(buscaTermo.toLowerCase()) || p.descricao.toLowerCase().includes(buscaTermo.toLowerCase());
-      return matchCategoria && matchLoja && matchBusca;
-    });
 
-    if (filteredProdutos.length === 0) {
+    if (produtos.length === 0) {
       document.getElementById('loading-spinner').style.display = 'none';
       document.getElementById('mensagem-vazia').style.display = 'block';
       return;
     }
 
-    const start = (currentPage - 1) * perPage;
-    const end = start + perPage;
-    const paginatedProdutos = filteredProdutos.slice(start, end);
-
-    paginatedProdutos.forEach(produto => {
+    produtos.forEach(produto => {
       const card = document.createElement('div');
       card.className = 'produto-card';
       card.innerHTML = `
         <div class="carrossel">
           <div class="carrossel-imagens">
-            ${produto.imagens.map(img => `<img src="${img}" alt="${produto.nome}">`).join('')}
+            ${produto.imagens.map(img => `<img src="${img.replace('/upload/', '/upload/w_300,h_300,c_fill/')}" alt="${produto.nome}">`).join('')}
           </div>
           <button class="carrossel-prev"><i class="fas fa-chevron-left"></i></button>
           <button class="carrossel-next"><i class="fas fa-chevron-right"></i></button>
@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('loading-spinner').style.display = 'none';
-    document.getElementById('load-more').style.display = end < filteredProdutos.length ? 'block' : 'none';
+    document.getElementById('load-more').style.display = currentPage * perPage < total ? 'block' : 'none';
     initCarrossel();
   }
 
@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalCarrossel = document.getElementById('modalCarrosselImagens');
     const modalDots = document.getElementById('modalCarrosselDots');
     const imagens = card.querySelectorAll('.carrossel-imagens img');
-    modalCarrossel.innerHTML = Array.from(imagens).map(img => `<img src="${img.src}" alt="${img.alt}">`).join('');
+    modalCarrossel.innerHTML = Array.from(imagens).map(img => `<img src="${img.src.replace('/w_300,h_300,c_fill/', '/w_600,h_600,c_fill/')}" alt="${img.alt}">`).join('');
     modalDots.innerHTML = Array.from(imagens).map((_, i) => `<div class="carrossel-dot ${i === 0 ? 'ativo' : ''}"></div>`).join('');
     modal.style.display = 'flex';
 
@@ -156,13 +156,15 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Filtros e busca
-  document.querySelectorAll('.category-item').forEach(item => {
-    item.addEventListener('click', () => {
-      document.querySelectorAll('.category-item').forEach(i => i.classList.remove('active'));
+  document.querySelectorAll('.category-item, .nav-link').forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.querySelectorAll('.category-item, .nav-link').forEach(i => i.classList.remove('active'));
       item.classList.add('active');
       categoriaSelecionada = item.dataset.categoria;
       currentPage = 1;
-      renderProdutos();
+      document.getElementById('ofertas-titulo').textContent = item.textContent;
+      loadProdutos();
     });
   });
 
@@ -172,19 +174,25 @@ document.addEventListener('DOMContentLoaded', () => {
       item.classList.add('active');
       lojaSelecionada = item.dataset.loja;
       currentPage = 1;
-      renderProdutos();
+      loadProdutos();
     });
   });
 
   document.getElementById('busca').addEventListener('input', (e) => {
     buscaTermo = e.target.value;
     currentPage = 1;
-    renderProdutos();
+    loadProdutos();
+  });
+
+  document.getElementById('sort-select').addEventListener('change', (e) => {
+    sortBy = e.target.value;
+    currentPage = 1;
+    loadProdutos();
   });
 
   document.getElementById('load-more').addEventListener('click', () => {
     currentPage++;
-    renderProdutos();
+    loadProdutos();
   });
 
   document.getElementById('categories-toggle').addEventListener('click', () => {
@@ -202,6 +210,29 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('overlay').classList.remove('active');
   });
 
+  // Atualizar ano no footer
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Escutar mudanças no localStorage
+  window.addEventListener('storage', (event) => {
+    if (event.key === 'produtoAtualizado') {
+      console.log('Mudança detectada, recarregando produtos...');
+      currentPage = 1;
+      loadProdutos();
+    }
+  });
+
+  // Verificar mudanças ao carregar a página
+  const checkForUpdates = () => {
+    const lastUpdate = localStorage.getItem('produtoAtualizado');
+    if (lastUpdate) {
+      console.log('Atualização detectada ao carregar, recarregando produtos...');
+      loadProdutos();
+    }
+    setTimeout(checkForUpdates, 5000); // Verificar a cada 5 segundos
+  };
+
   // Carregar produtos ao iniciar
   loadProdutos();
+  checkForUpdates();
 });
