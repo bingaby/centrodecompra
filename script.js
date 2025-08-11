@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // === Configuração e Seletores do DOM ===
+    // Configuração e Seletores do DOM
     const apiBaseUrl = 'https://minha-api-produtos.onrender.com/api';
     const gridProdutos = document.getElementById('grid-produtos');
     const loadingSpinner = document.getElementById('loading-spinner');
@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const nextPageBtn = document.getElementById('next-page');
     const pageInfoSpan = document.getElementById('page-info');
 
-    // === Estado da Aplicação ===
+    // Estado da Aplicação
     let currentPage = 1;
     const produtosPorPagina = 12;
     let totalProdutos = 0;
@@ -20,36 +20,32 @@ document.addEventListener('DOMContentLoaded', () => {
     let lojaAtual = 'todas';
     let isLoading = false;
 
-    // === Funções de API e Renderização ===
-
-    /**
-     * Busca os produtos na API com base nos filtros e paginação atuais.
-     */
+    // Função para buscar produtos na API
     const fetchProdutos = async () => {
         if (isLoading) return;
 
         isLoading = true;
         loadingSpinner.style.display = 'block';
-        gridProdutos.innerHTML = ''; // Limpa a grade de produtos
+        gridProdutos.innerHTML = '';
         mensagemVazia.style.display = 'none';
         errorMessage.style.display = 'none';
         paginacaoDiv.style.display = 'none';
 
         try {
-            // Como o backend atual não suporta paginação/filtros, buscamos todos os produtos
-            // e filtramos no frontend (ajuste no backend será sugerido abaixo)
-            const response = await fetch(`${apiBaseUrl}/produtos`);
+            const url = new URL(`${apiBaseUrl}/produtos`);
+            url.searchParams.append('page', currentPage);
+            url.searchParams.append('limit', produtosPorPagina);
+            if (categoriaAtual !== 'todas') url.searchParams.append('categoria', categoriaAtual);
+            if (lojaAtual !== 'todas') url.searchParams.append('loja', lojaAtual);
+            if (termoBusca) url.searchParams.append('busca', termoBusca);
+
+            const response = await fetch(url);
             if (!response.ok) {
                 throw new Error(`Erro HTTP! Status: ${response.status}`);
             }
-            const produtos = await response.json();
-            totalProdutos = produtos.length;
-            const filteredProdutos = filterProdutos(produtos);
-            const paginatedProdutos = filteredProdutos.slice(
-                (currentPage - 1) * produtosPorPagina,
-                currentPage * produtosPorPagina
-            );
-            renderizarProdutos(paginatedProdutos);
+            const data = await response.json();
+            totalProdutos = data.total;
+            renderizarProdutos(data.data);
             atualizarPaginacao();
         } catch (error) {
             console.error('Erro ao buscar produtos:', error);
@@ -61,26 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    /**
-     * Filtra produtos no frontend com base em categoria, loja e busca.
-     * @param {Array} produtos - Lista completa de produtos.
-     * @returns {Array} Produtos filtrados.
-     */
-    const filterProdutos = (produtos) => {
-        return produtos.filter(produto => {
-            const matchCategoria = categoriaAtual === 'todas' || produto.categoria.toLowerCase() === categoriaAtual;
-            const matchLoja = lojaAtual === 'todas' || produto.loja.toLowerCase() === lojaAtual;
-            const matchBusca = !termoBusca || 
-                produto.nome.toLowerCase().includes(termoBusca.toLowerCase()) || 
-                produto.descricao.toLowerCase().includes(termoBusca.toLowerCase());
-            return matchCategoria && matchLoja && matchBusca;
-        });
-    };
-
-    /**
-     * Renderiza os produtos na grade.
-     * @param {Array} produtos - A lista de produtos a ser renderizada.
-     */
+    // Função para renderizar produtos na grade
     const renderizarProdutos = (produtos) => {
         if (produtos.length === 0) {
             mensagemVazia.style.display = 'block';
@@ -97,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
             card.innerHTML = `
                 <div class="carrossel" data-imagens='${JSON.stringify(produto.imagens)}'>
                     <div class="carrossel-imagens">
-                        <img src="${imagemUrl}" alt="${produto.nome}" loading="lazy" style="width: 300px; height: 300px; object-fit: cover;">
+                        <img src="${imagemUrl}" alt="${produto.nome}" loading="lazy">
                     </div>
                 </div>
                 <div class="produto-card-info">
@@ -108,15 +85,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
             gridProdutos.appendChild(card);
-
-            // Adiciona evento para abrir o modal de imagens
-            card.querySelector('.carrossel').addEventListener('click', () => openModal(produto.imagens));
         });
     };
 
-    /**
-     * Atualiza a UI da paginação.
-     */
+    // Função para atualizar a UI da paginação
     const atualizarPaginacao = () => {
         const totalPaginas = Math.ceil(totalProdutos / produtosPorPagina);
         if (totalProdutos > 0) {
@@ -127,10 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
         nextPageBtn.disabled = currentPage >= totalPaginas;
     };
 
-    /**
-     * Abre o modal de imagens.
-     * @param {Array} imagens - Lista de URLs das imagens.
-     */
+    // Função para abrir o modal de imagens
     const openModal = (imagens) => {
         const modal = document.getElementById('imageModal');
         const carrossel = document.getElementById('modalCarrosselImagens');
@@ -162,10 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.style.display = 'block';
     };
 
-    /**
-     * Move o carrossel do modal.
-     * @param {number} direction - Direção do movimento (1 para próxima, -1 para anterior).
-     */
+    // Função para mover o carrossel do modal
     window.moveModalCarrossel = (direction) => {
         const images = document.querySelectorAll('.carrossel-imagem');
         const dots = document.querySelectorAll('.dot');
@@ -179,19 +145,12 @@ document.addEventListener('DOMContentLoaded', () => {
         currentImageIndex = newIndex;
     };
 
-    /**
-     * Fecha o modal de imagens.
-     */
+    // Função para fechar o modal
     window.closeModal = () => {
         document.getElementById('imageModal').style.display = 'none';
     };
 
-    // === Funções de Eventos ===
-
-    /**
-     * Altera a categoria de filtro e busca novos produtos.
-     * @param {string} categoria - A categoria selecionada.
-     */
+    // Funções de eventos
     const filtrarPorCategoria = (categoria) => {
         categoriaAtual = categoria;
         lojaAtual = 'todas';
@@ -206,10 +165,6 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchProdutos();
     };
 
-    /**
-     * Altera a loja de filtro e busca novos produtos.
-     * @param {string} loja - A loja selecionada.
-     */
     const filtrarPorLoja = (loja) => {
         lojaAtual = loja;
         categoriaAtual = 'todas';
@@ -224,16 +179,13 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchProdutos();
     };
 
-    /**
-     * Lida com a busca de produtos.
-     */
     const handleBusca = () => {
         termoBusca = buscaInput.value;
         currentPage = 1;
         fetchProdutos();
     };
 
-    // === Configuração de Event Listeners ===
+    // Configuração de Event Listeners
     const setupEventListeners = () => {
         prevPageBtn.addEventListener('click', () => {
             if (currentPage > 1) {
@@ -265,9 +217,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 handleBusca();
             }
         });
+
+        // Adiciona evento de clique para abrir o modal
+        gridProdutos.addEventListener('click', (e) => {
+            const carrossel = e.target.closest('.carrossel');
+            if (carrossel) {
+                const imagens = JSON.parse(carrossel.dataset.imagens);
+                openModal(imagens);
+            }
+        });
     };
 
-    // === Inicialização ===
+    // Inicialização
     const init = () => {
         setupEventListeners();
         fetchProdutos();
