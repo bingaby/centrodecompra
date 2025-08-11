@@ -30,16 +30,21 @@ async function cadastrarProduto(event) {
     errorMessage.style.display = 'none';
     successMessage.style.display = 'none';
 
+    console.log('Enviando dados para:', `${API_URL}/api/produtos`);
     const response = await fetch(`${API_URL}/api/produtos`, {
       method: 'POST',
-      body: formData
+      body: formData,
     });
 
+    console.log('Status da resposta:', response.status);
+    const text = await response.text();
+    console.log('Resposta bruta:', text);
+
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.details || 'Erro ao cadastrar produto');
+      throw new Error(`Erro HTTP ${response.status}: ${text}`);
     }
 
+    const data = JSON.parse(text);
     successMessage.textContent = 'Produto cadastrado com sucesso! Redirecionando...';
     successMessage.style.display = 'block';
     form.reset();
@@ -55,6 +60,7 @@ async function cadastrarProduto(event) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('admin.js carregado com sucesso');
   const form = document.getElementById('cadastro-produto');
   if (form) {
     form.addEventListener('submit', cadastrarProduto);
