@@ -1,156 +1,182 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const apiBaseUrl = 'https://minha-api-produtos.onrender.com/api';
-    const productContainer = document.getElementById('admin-product-container');
-    const errorMessage = document.getElementById('admin-error-message');
-    const productForm = document.getElementById('product-form');
-    const formTitle = document.getElementById('form-title');
-    const submitButton = document.getElementById('submit-button');
-    const cancelButton = document.getElementById('cancel-button');
-    let isEditing = false;
+  const form = document.getElementById('form-produto');
+  const errorMessage = document.getElementById('error-message');
+  const cancelarBtn = document.getElementById('cancelar');
+  const imagePreview = document.getElementById('image-preview');
 
-    // Função para buscar e exibir produtos
-    const fetchProdutos = async () => {
-        try {
-            const response = await fetch(`${apiBaseUrl}/produtos`);
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Erro HTTP! Status: ${response.status}, Mensagem: ${errorText}`);
-            }
-            const produtos = await response.json();
-            const produtosArray = Array.isArray(produtos) ? produtos : produtos.data;
-            renderizarProdutos(produtosArray);
-        } catch (error) {
-            console.error('Erro ao buscar produtos:', error);
-            errorMessage.style.display = 'block';
-            errorMessage.textContent = `Erro ao carregar produtos: ${error.message}`;
-        }
-    };
+  // Carregar produtos
+  async function loadProdutos() {
+    try {
+      const response = await fetch('/api/produtos');
+      if (!response.ok) throw new Error('Erro ao carregar produtos');
+      const { data: produtos } = await response.json();
+      const container = document.getElementById('admin-produtos');
+      container.innerHTML = '';
+      produtos.forEach(produto => {
+        const card = document.createElement('div');
+        card.className = 'admin-product-card';
+        card.innerHTML = `
+          <img src="${produto.imagens[0] || 'https://via.placeholder.com/100'}" alt="${produto.nome}">
+          <h3>${produto.nome}</h3>
+          <p>${produto.descricao}</p>
+          <p><strong>Preço:</strong> R$ ${parseFloat(produto.preco).toFixed(2)}</p>
+          <p><strong>Loja:</strong> ${produto.loja}</p>
+          <p><strong>Categoria:</strong> ${produto.categoria}</p>
+          <button class="editar" data-id="${produto.id}"><i class="fas fa-edit"></i> Editar</button>
+          <button class="excluir" data-id="${produto.id}"><i class="fas fa-trash"></i> Excluir</button>
+        `;
+        container.appendChild(card);
+      });
 
-    // Função para renderizar produtos com imagens menores
-    const renderizarProdutos = (produtos) => {
-        productContainer.innerHTML = '';
-        if (produtos.length === 0) {
-            productContainer.innerHTML = '<p>Nenhum produto cadastrado.</p>';
-            return;
-        }
+      // Eventos de edição e exclusão
+      document.querySelectorAll('.editar').forEach(btn => {
+        btn.addEventListener('click', () => editProduto(btn.dataset.id));
+      });
+      document.querySelectorAll('.excluir').forEach(btn => {
+        btn.addEventListener('click', () => deleteProduto(btn.dataset.id));
+      });
+    } catch (err) {
+      console.error(err);
+      errorMessage.textContent = 'Erro ao carregar produtos';
+      errorMessage.style.display = 'block';
+    }
+  }
 
-        produtos.forEach(produto => {
-            const card = document.createElement('div');
-            card.className = 'admin-product-card';
-            const imagemUrl = produto.imagens && produto.imagens.length > 0 
-                ? produto.imagens[0] 
-                : 'https://via.placeholder.com/100?text=Sem+Imagem';
-            
-            card.innerHTML = `
-                <img src="${imagemUrl}" alt="${produto.nome}" loading="lazy">
-                <h3>${produto.nome}</h3>
-                <p>${produto.descricao.substring(0, 50)}...</p>
-                <p>R$ ${parseFloat(produto.preco).toFixed(2)}</p>
-                <button class="editar" onclick="editProduct(${produto.id})">Editar</button>
-                <button onclick="deleteProduct(${produto.id})">Excluir</button>
-            `;
-            productContainer.appendChild(card);
-        });
-    };
-
-    // Função para preencher o formulário para edição
-    window.editProduct = async (id) => {
-        try {
-            const response = await fetch(`${apiBaseUrl}/produtos/${id}`);
-            if (!response.ok) {
-                throw new Error(`Erro HTTP! Status: ${response.status}`);
-            }
-            const produto = await response.json();
-            document.getElementById('produto-id').value = produto.id;
-            document.getElementById('nome').value = produto.nome;
-            document.getElementById('descricao').value = produto.descricao;
-            document.getElementById('preco').value = produto.preco;
-            document.getElementById('link').value = produto.link;
-            document.getElementById('categoria').value = produto.categoria;
-            document.getElementById('loja').value = produto.loja;
-            formTitle.textContent = 'Editar Produto';
-            submitButton.textContent = 'Salvar Alterações';
-            cancelButton.style.display = 'inline-block';
-            isEditing = true;
-        } catch (error) {
-            console.error('Erro ao carregar produto para edição:', error);
-            errorMessage.style.display = 'block';
-            errorMessage.textContent = error.message || 'Erro ao carregar produto.';
-        }
-    };
-
-    // Função para cancelar edição
-    cancelButton.addEventListener('click', () => {
-        productForm.reset();
-        formTitle.textContent = 'Cadastrar Novo Produto';
-        submitButton.textContent = 'Cadastrar Produto';
-        cancelButton.style.display = 'none';
-        isEditing = false;
-        document.getElementById('produto-id').value = '';
+  // Pré-visualização de imagens
+  document.getElementById('imagens').addEventListener('change', (e) => {
+    imagePreview.innerHTML = '';
+    Array.from(e.target.files).forEach(file => {
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(file);
+      img.style.width = '100px';
+      img.style.height = '100px';
+      img.style.margin = '4px';
+      imagePreview.appendChild(img);
     });
+  });
 
-    // Função para cadastrar ou atualizar um produto
-    productForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const formData = new FormData();
-        formData.append('nome', document.getElementById('nome').value);
-        formData.append('descricao', document.getElementById('descricao').value);
-        formData.append('preco', document.getElementById('preco').value);
-        formData.append('link', document.getElementById('link').value);
-        formData.append('categoria', document.getElementById('categoria').value);
-        formData.append('loja', document.getElementById('loja').value);
-        const imagens = document.getElementById('imagens').files;
-        for (let i = 0; i < imagens.length; i++) {
-            formData.append('imagens', imagens[i]);
-        }
+  // Enviar formulário
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorMessage.textContent = '';
+    errorMessage.style.display = 'none';
 
-        try {
-            const url = isEditing ? `${apiBaseUrl}/produtos/${document.getElementById('produto-id').value}` : `${apiBaseUrl}/produtos`;
-            const method = isEditing ? 'PUT' : 'POST';
-            const response = await fetch(url, {
-                method,
-                body: formData
-            });
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || `Erro HTTP! Status: ${response.status}`);
-            }
-            const message = isEditing ? 'Produto atualizado com sucesso!' : 'Produto cadastrado com sucesso!';
-            alert(message);
-            productForm.reset();
-            formTitle.textContent = 'Cadastrar Novo Produto';
-            submitButton.textContent = 'Cadastrar Produto';
-            cancelButton.style.display = 'none';
-            isEditing = false;
-            document.getElementById('produto-id').value = '';
-            fetchProdutos();
-        } catch (error) {
-            console.error(`Erro ao ${isEditing ? 'atualizar' : 'cadastrar'} produto:`, error);
-            errorMessage.style.display = 'block';
-            errorMessage.textContent = error.message || `Erro ao ${isEditing ? 'atualizar' : 'cadastrar'} produto.`;
-        }
-    });
-
-    // Função para excluir um produto
-    window.deleteProduct = async (id) => {
-        if (!confirm('Tem certeza que deseja excluir este produto?')) return;
-        try {
-            const response = await fetch(`${apiBaseUrl}/produtos/${id}`, {
-                method: 'DELETE'
-            });
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || `Erro HTTP! Status: ${response.status}`);
-            }
-            alert('Produto excluído com sucesso!');
-            fetchProdutos();
-        } catch (error) {
-            console.error('Erro ao excluir produto:', error);
-            errorMessage.style.display = 'block';
-            errorMessage.textContent = error.message || 'Erro ao excluir produto.';
-        }
+    const formData = new FormData(form);
+    const produto = {
+      id: formData.get('id'),
+      nome: formData.get('nome'),
+      descricao: formData.get('descricao'),
+      preco: formData.get('preco'),
+      link: formData.get('link'),
+      loja: formData.get('loja'),
+      categoria: formData.get('categoria')
     };
 
-    // Inicialização
-    fetchProdutos();
+    // Validação de comprimento
+    if (produto.nome.length > 255) {
+      errorMessage.textContent = 'O nome do produto deve ter no máximo 255 caracteres.';
+      errorMessage.style.display = 'block';
+      return;
+    }
+    if (produto.descricao.length > 255) {
+      errorMessage.textContent = 'A descrição deve ter no máximo 255 caracteres.';
+      errorMessage.style.display = 'block';
+      return;
+    }
+    if (produto.link.length > 255) {
+      errorMessage.textContent = 'O link deve ter no máximo 255 caracteres.';
+      errorMessage.style.display = 'block';
+      return;
+    }
+    if (produto.loja.length > 255) {
+      errorMessage.textContent = 'A loja deve ter no máximo 255 caracteres.';
+      errorMessage.style.display = 'block';
+      return;
+    }
+    if (produto.categoria.length > 255) {
+      errorMessage.textContent = 'A categoria deve ter no máximo 255 caracteres.';
+      errorMessage.style.display = 'block';
+      return;
+    }
+
+    // Validação de preço
+    const precoNum = parseFloat(produto.preco);
+    if (isNaN(precoNum) || precoNum < 0) {
+      errorMessage.textContent = 'O preço deve ser um número válido maior ou igual a zero.';
+      errorMessage.style.display = 'block';
+      return;
+    }
+
+    try {
+      const method = produto.id ? 'PUT' : 'POST';
+      const url = produto.id ? `/api/produtos/${produto.id}` : '/api/produtos';
+      const response = await fetch(url, {
+        method,
+        body: formData
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Erro ao salvar produto');
+      }
+      alert(produto.id ? 'Produto atualizado com sucesso!' : 'Produto cadastrado com sucesso!');
+      form.reset();
+      imagePreview.innerHTML = '';
+      cancelarBtn.style.display = 'none';
+      loadProdutos();
+    } catch (err) {
+      console.error(err);
+      errorMessage.textContent = err.message;
+      errorMessage.style.display = 'block';
+    }
+  });
+
+  // Editar produto
+  async function editProduto(id) {
+    try {
+      const response = await fetch(`/api/produtos/${id}`);
+      if (!response.ok) throw new Error('Erro ao carregar produto');
+      const produto = await response.json();
+      document.getElementById('id').value = produto.id;
+      document.getElementById('nome').value = produto.nome;
+      document.getElementById('descricao').value = produto.descricao;
+      document.getElementById('preco').value = produto.preco;
+      document.getElementById('link').value = produto.link;
+      document.getElementById('loja').value = produto.loja;
+      document.getElementById('categoria').value = produto.categoria;
+      imagePreview.innerHTML = produto.imagens.map(img => `
+        <img src="${img}" style="width: 100px; height: 100px; margin: 4px;">
+      `).join('');
+      cancelarBtn.style.display = 'inline-flex';
+    } catch (err) {
+      console.error(err);
+      errorMessage.textContent = 'Erro ao carregar produto';
+      errorMessage.style.display = 'block';
+    }
+  }
+
+  // Excluir produto
+  async function deleteProduto(id) {
+    if (!confirm('Tem certeza que deseja excluir este produto?')) return;
+    try {
+      const response = await fetch(`/api/produtos/${id}`, { method: 'DELETE' });
+      if (!response.ok) throw new Error('Erro ao excluir produto');
+      alert('Produto excluído com sucesso!');
+      loadProdutos();
+    } catch (err) {
+      console.error(err);
+      errorMessage.textContent = 'Erro ao excluir produto';
+      errorMessage.style.display = 'block';
+    }
+  }
+
+  // Cancelar edição
+  cancelarBtn.addEventListener('click', () => {
+    form.reset();
+    imagePreview.innerHTML = '';
+    cancelarBtn.style.display = 'none';
+    errorMessage.style.display = 'none';
+  });
+
+  // Carregar produtos ao iniciar
+  loadProdutos();
 });
