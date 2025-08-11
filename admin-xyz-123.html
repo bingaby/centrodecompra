@@ -1,114 +1,143 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel Administrativo - Centro de Compras</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Produtos - Centro de Compras</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .admin-product-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        .admin-product-card {
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            text-align: center;
+            border-radius: 8px;
+            background-color: var(--background-primary);
+            box-shadow: var(--shadow-sm);
+        }
+        .admin-product-card img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .admin-product-card h3 {
+            font-size: 1em;
+            margin: 10px 0;
+        }
+        .admin-product-card p {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+        }
+        .admin-product-card button {
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: var(--transition-fast);
+        }
+        .admin-product-card button:hover {
+            background-color: #cc0000;
+        }
+        .form-container {
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--background-primary);
+            box-shadow: var(--shadow-sm);
+        }
+        .form-container input, .form-container textarea, .form-container select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+        }
+        .form-container button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+        .form-container button:hover {
+            background-color: var(--primary-hover);
+        }
+        .error-message {
+            color: #ff4444;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
 </head>
 <body>
-  <div class="connection-status hidden">
-    <div class="status-content">
-      <span><i class="fas fa-circle"></i> Status da Conexão</span>
-      <small id="status-message">Conectando...</small>
-    </div>
-  </div>
+    <header class="site-header">
+        <div class="container">
+            <div class="logo-container">
+                <img src="logos/cdc.png" alt="Logo Centro de Compras" width="150" height="50">
+            </div>
+            <h1>Gerenciar Produtos</h1>
+        </div>
+    </header>
 
-  <header class="main-header">
     <div class="container">
-      <h1>Painel Administrativo</h1>
-    </div>
-  </header>
+        <div class="form-container">
+            <h2>Cadastrar Novo Produto</h2>
+            <form id="product-form">
+                <input type="text" id="nome" placeholder="Nome do produto" required>
+                <textarea id="descricao" placeholder="Descrição do produto" required></textarea>
+                <input type="number" id="preco" placeholder="Preço" step="0.01" required>
+                <input type="url" id="link" placeholder="Link da loja" required>
+                <select id="categoria" required>
+                    <option value="">Selecione a categoria</option>
+                    <option value="eletronicos">Eletrônicos</option>
+                    <option value="moda">Moda</option>
+                    <option value="fitness">Fitness</option>
+                    <option value="casa">Casa</option>
+                    <option value="beleza">Beleza</option>
+                    <option value="esportes">Esportes</option>
+                    <option value="livros">Livros</option>
+                    <option value="infantil">Infantil</option>
+                    <option value="celulares">Celulares</option>
+                    <option value="eletrodomesticos">Eletrodomésticos</option>
+                    <option value="pet">Pet</option>
+                    <option value="jardinagem">Jardinagem</option>
+                    <option value="automotivo">Automotivo</option>
+                    <option value="gastronomia">Gastronomia</option>
+                    <option value="games">Games</option>
+                </select>
+                <select id="loja" required>
+                    <option value="">Selecione a loja</option>
+                    <option value="amazon">Amazon</option>
+                    <option value="magalu">Magalu</option>
+                    <option value="shein">Shein</option>
+                    <option value="shopee">Shopee</option>
+                    <option value="mercadolivre">Mercado Livre</option>
+                    <option value="alibaba">Alibaba</option>
+                </select>
+                <input type="file" id="imagens" multiple accept="image/*" required>
+                <button type="submit">Cadastrar Produto</button>
+            </form>
+            <p id="admin-error-message" class="error-message"></p>
+        </div>
 
-  <main class="main-content">
-    <div class="container">
-      <!-- Seção de login removida -->
-      <div id="admin-panel-content">
-        <section class="admin-form">
-          <h2>Adicionar/Editar Produto</h2>
-          <form id="admin-product-form">
-            <input type="hidden" id="id" name="id">
-            <div class="form-group">
-              <label for="nome">Nome do Produto</label>
-              <input type="text" id="nome" name="nome" required>
-            </div>
-            <div class="form-group">
-              <label for="preco">Preço (R$)</label>
-              <input type="number" id="preco" name="preco" step="0.01" required>
-            </div>
-            <div class="form-group">
-              <label for="categoria">Categoria</label>
-              <select id="categoria" name="categoria" required>
-                <option value="eletronicos">Eletrônicos</option>
-                <option value="moda">Moda</option>
-                <option value="casa">Casa</option>
-                <option value="beleza">Beleza</option>
-                <option value="esportes">Esportes</option>
-                <option value="livros">Livros</option>
-                <option value="infantil">Infantil</option>
-                <option value="Celulares">Celulares</option>
-                <option value="Eletrodomésticos">Eletrodomésticos</option>
-                <option value="pet">Pet</option>
-                <option value="jardinagem">Jardinagem</option>
-                <option value="automotivo">Automotivo</option>
-                <option value="gastronomia">Gastronomia</option>
-                <option value="games">Games</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="loja">Loja</label>
-              <select id="loja" name="loja" required>
-                <option value="amazon">Amazon</option>
-                <option value="magalu">Magalu</option>
-                <option value="shein">Shein</option>
-                <option value="shopee">Shopee</option>
-                <option value="mercadolivre">Mercado Livre</option>
-                <option value="alibaba">Alibaba</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="link">Link do Produto</label>
-              <input type="url" id="link" name="link" required>
-            </div>
-            <div class="form-group">
-              <label for="descricao">Descrição</label>
-              <textarea id="descricao" name="descricao"></textarea>
-            </div>
-            <div class="form-group">
-              <label for="imagens">Imagens</label>
-              <input type="file" id="imagens" name="imagens" multiple accept="image/*">
-            </div>
-            <button type="submit" class="btn-primary">Salvar Produto</button>
-            <div id="admin-form-feedback" class="feedback hidden"></div>
-          </form>
-        </section>
-        <section>
-          <h2>Produtos Cadastrados</h2>
-          <div class="products-grid" id="admin-products-grid"></div>
-          <div class="loading-container" id="admin-loading-spinner">
-            <div class="loading-spinner">
-              <div class="spinner"></div>
-              <p>Carregando produtos...</p>
-            </div>
-          </div>
-          <div class="empty-state" id="admin-mensagem-vazia">
-            <i class="fas fa-box-open empty-icon"></i>
-            <h3>Nenhum produto encontrado</h3>
-            <p>Adicione um novo produto usando o formulário acima.</p>
-          </div>
-          <div class="error-state" id="admin-error-message">
-            <i class="fas fa-exclamation-circle error-icon"></i>
-            <h3>Ops! Algo deu errado</h3>
-            <p>Não foi possível carregar os produtos. Verifique sua conexão.</p>
-            <button class="btn-primary" onclick="fetchProducts()">Tentar Novamente</button>
-          </div>
-        </section>
-      </div>
+        <h2>Produtos Cadastrados</h2>
+        <div id="admin-product-container" class="admin-product-container"></div>
     </div>
-  </main>
-  <script src="admin-script.js"></script>
+
+    <script src="admin-script.js"></script>
 </body>
 </html>
