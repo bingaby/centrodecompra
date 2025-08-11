@@ -1,17 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const apiBaseUrl = 'https://minha-api-produtos.onrender.com/api';
-    let socket; // Inicializar socket condicionalmente
-
-    // Tentar conectar ao Socket.IO
-    try {
-        socket = io(apiBaseUrl);
-    } catch (error) {
-        console.error('Erro ao inicializar Socket.IO:', error);
-    }
 
     // Variáveis do DOM
-    const statusEl = document.querySelector('.connection-status');
-    const statusMessageEl = document.getElementById('status-message');
     const adminPanelContent = document.getElementById('admin-panel-content');
     const adminProductForm = document.getElementById('admin-product-form');
     const adminFormFeedback = document.getElementById('admin-form-feedback');
@@ -20,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const emptyMessage = document.getElementById('admin-mensagem-vazia');
     const errorMessage = document.getElementById('admin-error-message');
 
-    // Função fetchProducts ajustada
+    // Buscar produtos
     const fetchProducts = async () => {
         loadingSpinner.style.display = 'block';
         productsGrid.innerHTML = '';
@@ -28,30 +18,19 @@ document.addEventListener('DOMContentLoaded', () => {
         errorMessage.style.display = 'none';
 
         try {
-            console.log('Tentando buscar produtos em:', `${apiBaseUrl}/produtos`);
             const response = await fetch(`${apiBaseUrl}/produtos`);
-            console.log('Resposta da API:', response);
-
-            if (!response.ok) {
-                throw new Error(`Erro HTTP ${response.status}: ${response.statusText}`);
-            }
+            if (!response.ok) throw new Error(`Erro HTTP ${response.status}`);
 
             const data = await response.json();
-            console.log('Dados recebidos:', data);
 
-            // Verificar se a resposta contém produtos ou indica que não há produtos
-            if (data.data && Array.isArray(data.data)) {
-                if (data.data.length === 0) {
-                    console.log('Nenhum produto encontrado (array vazio)');
+            if (Array.isArray(data)) {
+                if (data.length === 0) {
                     emptyMessage.style.display = 'block';
                 } else {
-                    renderProducts(data.data);
+                    renderProducts(data);
                 }
-            } else if (data.message && data.message.includes('sem produto cadastrado')) {
-                console.log('API retornou mensagem de produtos não cadastrados');
-                emptyMessage.style.display = 'block';
             } else {
-                throw new Error('Formato de dados inválido: resposta inesperada da API');
+                throw new Error('Formato de dados inválido');
             }
         } catch (error) {
             console.error('Erro ao buscar produtos:', error.message);
@@ -61,47 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Exibir o painel administrativo por padrão
-    adminPanelContent.style.display = 'block';
-    fetchProducts(); // Chamar a função após sua definição
-
-    const updateConnectionStatus = (status, message) => {
-        statusEl.classList.remove('online', 'offline', 'connecting');
-        statusEl.classList.add(status);
-        statusMessageEl.textContent = message;
-        statusEl.classList.remove('hidden');
-    };
-
-    // --- Conexão e Status do Servidor ---
-    if (socket) {
-        socket.on('connect', () => {
-            updateConnectionStatus('online', 'Online');
-            console.log('Socket.IO conectado (admin)');
-        });
-
-        socket.on('disconnect', () => {
-            updateConnectionStatus('offline', 'Desconectado');
-        });
-
-        socket.on('novoProduto', (product) => {
-            console.log('Novo produto adicionado em tempo real:', product);
-            fetchProducts();
-        });
-
-        socket.on('produtoAtualizado', (product) => {
-            console.log('Produto atualizado em tempo real:', product);
-            fetchProducts();
-        });
-
-        socket.on('produtoExcluido', (data) => {
-            console.log('Produto excluído em tempo real:', data.id);
-            fetchProducts();
-        });
-    } else {
-        updateConnectionStatus('offline', 'Socket.IO não disponível');
-    }
-
-    // --- Funções de API ---
+    // Salvar produto (novo ou edição)
     const saveProduct = async (formData, isEditing) => {
         const url = isEditing ? `${apiBaseUrl}/produtos/${formData.get('id')}` : `${apiBaseUrl}/produtos`;
         const method = isEditing ? 'PUT' : 'POST';
@@ -112,57 +51,40 @@ document.addEventListener('DOMContentLoaded', () => {
             formBody.append(key, value);
         });
 
-        const imageFiles = formData.getAll('imagens');
-        imageFiles.forEach(file => {
-            if (file instanceof File) {
-                formBody.append('imagens', file);
-            }
-        });
-
         try {
-            console.log(`Enviando ${method} para ${url}`);
-            const response = await fetch(url, {
-                method,
-                body: formBody,
-            });
-            const result = await response.json();
-            console.log('Resposta ao salvar produto:', result);
-            adminFormFeedback.textContent = result.message;
-            if (response.ok) {
-                adminFormFeedback.classList.remove('error');
-                adminFormFeedback.classList.add('success');
-                adminProductForm.reset();
-                adminProductForm.querySelector('button').textContent = 'Salvar Produto';
-                document.getElementById('id').value = '';
-                fetchProducts(); // Atualizar a lista após salvar
-            } else {
-                adminFormFeedback.classList.remove('success');
-                adminFormFeedback.classList.add('error');
+            const response = await fetch(url, { method, body: formBody });
+            if (!response.ok) {
+                const msg = await response.text();
+                throw new Error(msg || 'Erro ao salvar produto');
             }
-            adminFormFeedback.style.display = 'block';
+
+            adminFormFeedback.textContent = isEditing ? 'Produto atualizado com sucesso!' : 'Produto cadastrado com sucesso!';
+            adminFormFeedback.classList.remove('error');
+            adminFormFeedback.classList.add('success');
+            adminProductForm.reset();
+            adminProductForm.querySelector('button').textContent = 'Salvar Produto';
+            document.getElementById('id').value = '';
+            fetchProducts();
         } catch (error) {
             console.error('Erro ao salvar produto:', error);
-            adminFormFeedback.textContent = 'Erro ao conectar com o servidor.';
+            adminFormFeedback.textContent = error.message;
             adminFormFeedback.classList.remove('success');
             adminFormFeedback.classList.add('error');
+        } finally {
             adminFormFeedback.style.display = 'block';
         }
     };
 
+    // Excluir produto
     const deleteProduct = async (id) => {
-        const userConfirmed = confirm('Tem certeza que deseja excluir este produto?');
-        if (!userConfirmed) return;
-
+        if (!confirm('Tem certeza que deseja excluir este produto?')) return;
         try {
-            console.log(`Enviando DELETE para ${apiBaseUrl}/produtos/${id}`);
-            const response = await fetch(`${apiBaseUrl}/produtos/${id}`, {
-                method: 'DELETE',
-            });
+            const response = await fetch(`${apiBaseUrl}/produtos/${id}`, { method: 'DELETE' });
             if (!response.ok) {
-                const result = await response.json();
-                alert(`Erro ao excluir produto: ${result.message}`);
+                const msg = await response.text();
+                alert(`Erro ao excluir produto: ${msg}`);
             } else {
-                fetchProducts(); // Atualizar a lista após excluir
+                fetchProducts();
             }
         } catch (error) {
             console.error('Erro ao excluir produto:', error);
@@ -170,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // --- Renderização e Eventos ---
+    // Renderizar produtos
     const renderProducts = (products) => {
         productsGrid.innerHTML = '';
         products.forEach(product => {
@@ -193,22 +115,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         document.querySelectorAll('.btn-edit').forEach(button => {
-            button.addEventListener('click', (e) => {
+            button.addEventListener('click', e => {
                 const id = e.target.dataset.id;
                 const product = products.find(p => p.id == id);
-                if (product) {
-                    fillFormForEdit(product);
-                }
+                if (product) fillFormForEdit(product);
             });
         });
 
         document.querySelectorAll('.btn-delete').forEach(button => {
-            button.addEventListener('click', (e) => {
+            button.addEventListener('click', e => {
                 deleteProduct(e.target.dataset.id);
             });
         });
     };
 
+    // Preencher formulário para edição
     const fillFormForEdit = (product) => {
         document.getElementById('id').value = product.id;
         document.getElementById('nome').value = product.nome;
@@ -221,11 +142,16 @@ document.addEventListener('DOMContentLoaded', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    adminProductForm.addEventListener('submit', (e) => {
+    // Evento do formulário
+    adminProductForm.addEventListener('submit', e => {
         e.preventDefault();
         const id = document.getElementById('id').value;
         const isEditing = !!id;
         const formData = new FormData(adminProductForm);
         saveProduct(formData, isEditing);
     });
+
+    // Exibir painel e carregar produtos
+    adminPanelContent.style.display = 'block';
+    fetchProducts();
 });
