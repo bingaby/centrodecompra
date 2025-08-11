@@ -1,590 +1,688 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Ofertas com descontos reais nas principais lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliado seguros e atualizados.">
-    <meta property="og:title" content="Centro de Compras - Ofertas e Descontos">
-    <meta property="og:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliados seguros e atualizados!">
-    <meta property="og:image" content="logos/centrodecompras.jpg">
-    <meta property="og:url" content="https://centrodecompra.com.br/">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Centro de Compras - Ofertas e Descontos">
-    <meta name="twitter:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliados seguros e atualizados!">
-    <meta name="twitter:image" content="logos/centrodecompras.jpg">
-    <title>Centro de Compras - Ofertas do Dia</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <style>
-        /* Estilos mantidos como no código original */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content {
-            position: relative;
-            max-width: 90%;
-            max-height: 90%;
-            width: auto;
-            height: auto;
-        }
-        .modal-content .carrossel-imagens {
-            display: flex;
-            overflow: hidden;
-            width: 100%;
-            height: 100%;
-        }
-        .modal-content .carrossel-imagens img {
-            width: 100%;
-            height: auto;
-            max-width: 800px;
-            max-height: 600px;
-            object-fit: contain;
-            flex: 0 0 100%;
-            transition: transform 0.3s ease;
-        }
-        .modal-close {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #ff6200;
-            color: #fff;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        .carrossel-prev,
-        .carrossel-next {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(0, 0, 0, 0.5);
-            color: #fff;
-            border: none;
-            padding: 10px;
-            cursor: pointer;
-            font-size: 18px;
-            border-radius: 4px;
-            display: none;
-        }
-        .carrossel-prev.visible,
-        .carrossel-next.visible {
-            display: block;
-        }
-        .carrossel-prev { left: 10px; }
-        .carrossel-next { right: 10px; }
-        .carrossel-dots {
-            position: absolute;
-            bottom: 10px;
-            width: 100%;
-            text-align: center;
-        }
-        .carrossel-dot {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            background: #ccc;
-            border-radius: 50%;
-            margin: 0 5px;
-            cursor: pointer;
-        }
-        .carrossel-dot.ativo { background: #ff6200; }
-        .modal-error {
-            color: red;
-            text-align: center;
-            margin-top: 10px;
-            font-size: 14px;
-        }
-        .error-message {
-            color: red;
-            text-align: center;
-            margin-top: 10px;
-        }
-        .tarja-preco {
-            display: inline-block;
-            background: #ff6200;
-            color: white;
-            padding: 6px 10px;
-            margin: 8px 0;
-            border-radius: 4px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 12px;
-        }
-        .tarja-preco:hover { background: #e55a00; }
-        #load-more {
-            display: none;
-            margin: 20px auto;
-            padding: 10px 20px;
-            background: #ff6200;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        #load-more:hover { background: #e55a00; }
-        .produto-card {
-            transition: transform 0.2s;
-            background: white;
-            border-radius: 8px;
-            padding: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            max-height: 300px;
-        }
-        .produto-card:hover { transform: translateY(-5px); }
-        .produto-card span {
-            font-size: 14px;
-            display: block;
-            margin: 5px 0;
-        }
-        .carrossel {
-            position: relative;
-            width: 100%;
-            max-height: 150px;
-            overflow: hidden;
-        }
-        .carrossel-imagens {
-            display: flex;
-            width: 100%;
-            height: 100%;
-        }
-        .carrossel-imagens img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            flex: 0 0 100%;
-            transition: transform 0.3s ease;
-        }
-        .grid-produtos {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-        @media (max-width: 600px) {
-            .grid-produtos {
-                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            }
-            .produto-card {
-                max-height: 250px;
-            }
-            .carrossel-imagens img {
-                height: 120px;
-            }
-            .tarja-preco {
-                font-size: 10px;
-                padding: 5px 8px;
-            }
-            .produto-card span {
-                font-size: 12px;
-            }
-            .modal-content .carrossel-imagens img {
-                max-width: 100%;
-                max-height: 400px;
-            }
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Ofertas com descontos reais nas principais lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliado seguros e atualizados.">
+    <meta property="og:title" content="Centro de Compras - Ofertas e Descontos">
+    <meta property="og:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliados seguros e atualizados!">
+    <meta property="og:image" content="logos/centrodecompras.jpg">
+    <meta property="og:url" content="https://centrodecompra.com.br/">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Centro de Compras - Ofertas e Descontos">
+    <meta name="twitter:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliados seguros e atualizados!">
+    <meta name="twitter:image" content="logos/centrodecompras.jpg">
+    <title>Centro de Compras - Ofertas do Dia</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilos mantidos e ajustados */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            position: relative;
+            max-width: 90vw;
+            max-height: 90vh;
+            width: auto;
+            height: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content .carrossel-imagens {
+            display: flex;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+        }
+        .modal-content .carrossel-imagens img {
+            width: 100%;
+            height: auto;
+            max-width: 900px;
+            max-height: 80vh;
+            object-fit: contain;
+            flex: 0 0 100%;
+            transition: transform 0.3s ease;
+            border-radius: 8px;
+        }
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #ff6200;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            z-index: 1001;
+        }
+        .carrossel-prev,
+        .carrossel-next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            border: none;
+            padding: 12px 15px;
+            cursor: pointer;
+            font-size: 20px;
+            border-radius: 4px;
+            transition: background 0.2s;
+            display: none;
+        }
+        .carrossel-prev.visible,
+        .carrossel-next.visible {
+            display: block;
+        }
+        .carrossel-prev:hover,
+        .carrossel-next:hover {
+            background: rgba(0, 0, 0, 0.8);
+        }
+        .carrossel-prev { left: 15px; }
+        .carrossel-next { right: 15px; }
+        .carrossel-dots {
+            position: absolute;
+            bottom: 15px;
+            width: 100%;
+            text-align: center;
+        }
+        .carrossel-dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: #ccc;
+            border-radius: 50%;
+            margin: 0 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .carrossel-dot.ativo { background: #ff6200; }
+        .modal-error {
+            color: red;
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .tarja-preco {
+            display: inline-block;
+            background: #ff6200;
+            color: white;
+            padding: 6px 10px;
+            margin: 8px 0;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        .tarja-preco:hover { background: #e55a00; }
+        #load-more {
+            display: none;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background: #ff6200;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #load-more:hover { background: #e55a00; }
+        .produto-card {
+            transition: transform 0.2s;
+            background: white;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-height: 300px;
+        }
+        .produto-card:hover { transform: translateY(-5px); }
+        .produto-card span {
+            font-size: 14px;
+            display: block;
+            margin: 5px 0;
+        }
+        .carrossel {
+            position: relative;
+            width: 100%;
+            max-height: 150px;
+            overflow: hidden;
+        }
+        .carrossel-imagens {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+        .carrossel-imagens img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            flex: 0 0 100%;
+            transition: transform 0.3s ease;
+        }
+        .grid-produtos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .grid-lojas {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            padding: 10px;
+            justify-items: center;
+            align-items: center;
+        }
+        .loja, .loja-todas {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .loja img {
+            max-width: 80px;
+            max-height: 40px;
+            object-fit: contain;
+            margin-bottom: 5px;
+        }
+        .loja span, .loja-todas span {
+            font-size: 14px;
+            color: #333;
+        }
+        .loja.ativa, .loja-todas.ativa {
+            background: #ff6200;
+            color: white;
+        }
+        @media (max-width: 600px) {
+            .grid-produtos {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+            .produto-card {
+                max-height: 250px;
+            }
+            .carrossel-imagens img {
+                height: 120px;
+            }
+            .tarja-preco {
+                font-size: 10px;
+                padding: 5px 8px;
+            }
+            .produto-card span {
+                font-size: 12px;
+            }
+            .modal-content .carrossel-imagens img {
+                max-width: 100%;
+                max-height: 70vh;
+            }
+            .grid-lojas {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            }
+            .loja img {
+                max-width: 60px;
+                max-height: 30px;
+            }
+            .loja span, .loja-todas span {
+                font-size: 12px;
+            }
+            .modal-close {
+                padding: 8px 12px;
+                font-size: 16px;
+            }
+            .carrossel-prev,
+            .carrossel-next {
+                padding: 10px 12px;
+                font-size: 16px;
+            }
+            .carrossel-dot {
+                width: 10px;
+                height: 10px;
+                margin: 0 4px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <header class="site-header">
-        <div class="logo-container">
-            <a href="#" aria-label="Voltar para a página inicial"><img src="logos/centrodecompras.jpg" alt="Centro de Compras" loading="lazy" id="site-logo"></a>
-        </div>
-        <div class="header-text">
-            <h1>Centro de Compras</h1>
-            <p>O maior portal de ofertas do Brasil! Descubra as melhores oportunidades nos maiores sites de venda, com links diretos para sua compra.</p>
-        </div>
-    </header>
-    <nav aria-label="Navegação principal">
-        <a href="index.html">Promoções</a>
-        <a href="cupom.html">Cupom de desconto</a>
-        <a href="sobre.html">Sobre</a>
-        <a href="contato.html">Contato</a>
-    </nav>
-    <div class="container">
-        <aside class="sidebar-categorias">
-            <h3>Categorias</h3>
-            <ul role="listbox">
-                <li class="categoria-item ativa" data-categoria="todas" onclick="filtrarPorCategoria('todas')" role="option" aria-selected="true" tabindex="0">Todas as Categorias</li>
-                <li class="categoria-item" data-categoria="eletronicos" onclick="filtrarPorCategoria('eletronicos')" role="option" aria-selected="false" tabindex="0">Eletrônicos</li>
-                <li class="categoria-item" data-categoria="moda" onclick="filtrarPorCategoria('moda')" role="option" aria-selected="false" tabindex="0">Moda</li>
-                <li class="categoria-item" data-categoria="fitness" onclick="filtrarPorCategoria('fitness')" role="option" aria-selected="false" tabindex="0">Fitness</li>
-                <li class="categoria-item" data-categoria="casa" onclick="filtrarPorCategoria('casa')" role="option" aria-selected="false" tabindex="0">Casa e Decoração</li>
-                <li class="categoria-item" data-categoria="beleza" onclick="filtrarPorCategoria('beleza')" role="option" aria-selected="false" tabindex="0">Beleza</li>
-                <li class="categoria-item" data-categoria="esportes" onclick="filtrarPorCategoria('esportes')" role="option" aria-selected="false" tabindex="0">Esportes</li>
-                <li class="categoria-item" data-categoria="livros" onclick="filtrarPorCategoria('livros')" role="option" aria-selected="false" tabindex="0">Livros</li>
-                <li class="categoria-item" data-categoria="infantil" onclick="filtrarPorCategoria('infantil')" role="option" aria-selected="false" tabindex="0">Infantil</li>
-                <li class="categoria-item" data-categoria="Celulares" onclick="filtrarPorCategoria('Celulares')" role="option" aria-selected="false" tabindex="0">Celulares</li>
-                <li class="categoria-item" data-categoria="Eletrodomésticos" onclick="filtrarPorCategoria('Eletrodomésticos')" role="option" aria-selected="false" tabindex="0">Eletrodomésticos</li>
-            </ul>
-        </aside>
-        <main>
-            <section id="ofertas-section" aria-live="polite">
-                <h2 id="ofertas-titulo">🛍️ Ofertas do Dia</h2>
-                <div class="lojas-parceiras">
-                    <h3>🌟 Lojas Parceiras</h3>
-                    <div class="grid-lojas" role="group" aria-label="Filtro por lojas parceiras">
-                        <div class="loja-todas ativa" data-loja="todas" onclick="filtrarPorLoja('todas')" role="button" aria-pressed="true" tabindex="0"><span>Todas as Lojas</span></div>
-                        <div class="loja" data-loja="amazon" onclick="filtrarPorLoja('amazon')" role="button" aria-pressed="false" tabindex="0"><img src="logos/amazon.png" alt="Logo da Amazon" loading="lazy"><span class="amazon">Amazon</span></div>
-                        <div class="loja" data-loja="magalu" onclick="filtrarPorLoja('magalu')" role="button" aria-pressed="false" tabindex="0"><img src="logos/magalu.png" alt="Logo da Magalu" loading="lazy"><span class="magalu">Magalu</span></div>
-                        <div class="loja" data-loja="shein" onclick="filtrarPorLoja('shein')" role="button" aria-pressed="false" tabindex="0"><img src="logos/shein.png" alt="Logo da Shein" loading="lazy"><span class="shein">Shein</span></div>
-                        <div class="loja" data-loja="shopee" onclick="filtrarPorLoja('shopee')" role="button" aria-pressed="false" tabindex="0"><img src="logos/shopee.png" alt="Logo da Shopee" loading="lazy"><span class="shopee">Shopee</span></div>
-                        <div class="loja" data-loja="mercadolivre" onclick="filtrarPorLoja('mercadolivre')" role="button" aria-pressed="false" tabindex="0"><img src="logos/mercadolivre.jpg" alt="Logo do Mercado Livre" loading="lazy"><span class="mercadolivre">Mercado Livre</span></div>
-                        <div class="loja" data-loja="alibaba" onclick="filtrarPorLoja('alibaba')" role="button" aria-pressed="false" tabindex="0"><img src="logos/alibaba.png" alt="Logo da Alibaba" loading="lazy"><span class="alibaba">Alibaba</span></div>
-                    </div>
-                </div>
-                <input type="text" id="busca" placeholder="Busque por produtos..." class="barra-busca" aria-label="Buscar produtos" aria-describedby="busca-instrucao">
-                <span id="busca-instrucao" class="sr-only">Digite o nome do produto para filtrar os resultados.</span>
-                <div id="busca-feedback" class="busca-feedback">Buscando...</div>
-                <div class="loading-spinner" id="loading-spinner"></div>
-                <div class="grid-produtos" id="grid-produtos"></div>
-                <button id="load-more" onclick="carregarMaisProdutos()">Carregar Mais</button>
-                <p class="mensagem-vazia" id="mensagem-vazia" aria-live="polite">Nenhum produto encontrado.</p>
-                <p class="error-message" id="error-message" style="display: none;" aria-live="assertive"></p>
-            </section>
-            <a class="whatsapp" href="https://wa.me/5521975179737" target="_blank">📲 Atendimento via WhatsApp</a>
-            <a class="telegram" href="https://t.me/boost/centraldecomprascdc" target="_blank">📢 Canal no Telegram</a>
-            <div class="social-links">
-                <a href="https://www.tiktok.com/@cdc.centraldecompas?_t=ZM-8vYQlF9u1dH&_r=1" target="_blank" aria-label="Nosso TikTok">
-                    <div class="icon"><img src="logos/tiktok.png" alt="" loading="lazy"></div>
-                    <span>TikTok</span>
-                </a>
-                <a href="https://www.instagram.com/cdccentrodecompras/?utm_source=qr&r=nametag" target="_blank" aria-label="Nosso Instagram">
-                    <div class="icon"><img src="logos/instagram.png" alt="" loading="lazy" onerror="this.src='imagens/placeholder.jpg'"></div>
-                    <span>Instagram</span>
-                </a>
-                <a href="https://x.com/ComprasCdc" target="_blank" aria-label="Nosso perfil no X">
-                    <div class="icon"><img src="logos/x.png" alt="" loading="lazy" onerror="this.src='imagens/placeholder.jpg'"></div>
-                    <span>X</span>
-                </a>
-                <a href="https://www.youtube.com/channel/UCaKHlI-hWqwdAXS6Xsv3ZzA" target="_blank" aria-label="Nosso canal no YouTube">
-                    <div class="icon"><img src="logos/youtube.png" alt="" loading="lazy"></div>
-                    <span>YouTube</span>
-                </a>
-            </div>
-        </main>
-    </div>
-    <div class="modal" id="imageModal" role="dialog" aria-labelledby="modal-titulo" aria-modal="true" tabindex="-1">
-        <h2 id="modal-titulo" class="sr-only">Visualizador de imagens do produto</h2>
-        <button class="modal-close" onclick="closeModal()" aria-label="Fechar visualizador de imagens">✕</button>
-        <div class="modal-content" id="modalCarrossel">
-            <div class="carrossel-imagens" id="modalCarrosselImagens"></div>
-            <button class="carrossel-prev" id="modalPrev" onclick="moveModalCarrossel(-1)" aria-label="Imagem anterior">◄</button>
-            <button class="carrossel-next" id="modalNext" onclick="moveModalCarrossel(1)" aria-label="Próxima imagem">►</button>
-            <div class="carrossel-dots" id="modalCarrosselDots"></div>
-            <p class="modal-error" id="modalError" style="display: none;" aria-live="assertive"></p>
-        </div>
-    </div>
-    <footer>
-        <p>🔧 Todos os direitos reservados <strong>Grupo Centro de Compra "CdC"</strong> © <span id="year"></span></p>
-    </footer>
-    <div class="robo-assistente">
-        <a href="https://wa.me/5521975179737" target="_blank" aria-label="Falar com o assistente virtual no WhatsApp">
-            <img src="imagens/robo.jpg" alt="Robô Assistente" class="robo-imagem">
-            <div class="robo-texto">Posso ajudar?</div>
-        </a>
-    </div>
-    <script>
-        const VERSION = "1.0.8"; // Atualizado
-        const API_URL = 'https://minha-api-produtos.onrender.com';
-        let currentImages = [];
-        let currentImageIndex = 0;
-        let currentPage = 1;
-        const productsPerPage = 12;
-        let allProducts = [];
-        let isLoading = false;
-        let currentCategory = "todas";
-        let currentStore = "todas";
-        let currentSearch = "";
+    <header class="site-header">
+        <div class="logo-container">
+            <a href="#" aria-label="Voltar para a página inicial"><img src="logos/centrodecompras.jpg" alt="Centro de Compras" loading="lazy" id="site-logo"></a>
+        </div>
+        <div class="header-text">
+            <h1>Centro de Compras</h1>
+            <p>O maior portal de ofertas do Brasil! Descubra as melhores oportunidades nos maiores sites de venda, com links diretos para sua compra.</p>
+        </div>
+    </header>
+    <nav aria-label="Navegação principal">
+        <a href="index.html">Promoções</a>
+        <a href="cupom.html">Cupom de desconto</a>
+        <a href="sobre.html">Sobre</a>
+        <a href="contato.html">Contato</a>
+    </nav>
+    <div class="container">
+        <aside class="sidebar-categorias">
+            <h3>Categorias</h3>
+            <ul role="listbox">
+                <li class="categoria-item ativa" data-categoria="todas" onclick="filtrarPorCategoria('todas')" role="option" aria-selected="true" tabindex="0">Todas as Categorias</li>
+                <li class="categoria-item" data-categoria="eletronicos" onclick="filtrarPorCategoria('eletronicos')" role="option" aria-selected="false" tabindex="0">Eletrônicos</li>
+                <li class="categoria-item" data-categoria="moda" onclick="filtrarPorCategoria('moda')" role="option" aria-selected="false" tabindex="0">Moda</li>
+                <li class="categoria-item" data-categoria="fitness" onclick="filtrarPorCategoria('fitness')" role="option" aria-selected="false" tabindex="0">Fitness</li>
+                <li class="categoria-item" data-categoria="casa" onclick="filtrarPorCategoria('casa')" role="option" aria-selected="false" tabindex="0">Casa e Decoração</li>
+                <li class="categoria-item" data-categoria="beleza" onclick="filtrarPorCategoria('beleza')" role="option" aria-selected="false" tabindex="0">Beleza</li>
+                <li class="categoria-item" data-categoria="esportes" onclick="filtrarPorCategoria('esportes')" role="option" aria-selected="false" tabindex="0">Esportes</li>
+                <li class="categoria-item" data-categoria="livros" onclick="filtrarPorCategoria('livros')" role="option" aria-selected="false" tabindex="0">Livros</li>
+                <li class="categoria-item" data-categoria="infantil" onclick="filtrarPorCategoria('infantil')" role="option" aria-selected="false" tabindex="0">Infantil</li>
+                <li class="categoria-item" data-categoria="Celulares" onclick="filtrarPorCategoria('Celulares')" role="option" aria-selected="false" tabindex="0">Celulares</li>
+                <li class="categoria-item" data-categoria="Eletrodomésticos" onclick="filtrarPorCategoria('Eletrodomésticos')" role="option" aria-selected="false" tabindex="0">Eletrodomésticos</li>
+            </ul>
+        </aside>
+        <main>
+            <section id="ofertas-section" aria-live="polite">
+                <h2 id="ofertas-titulo">🛍️ Ofertas do Dia</h2>
+                <div class="lojas-parceiras">
+                    <h3>🌟 Lojas Parceiras</h3>
+                    <div class="grid-lojas" role="group" aria-label="Filtro por lojas parceiras">
+                        <div class="loja-todas ativa" data-loja="todas" onclick="filtrarPorLoja('todas')" role="button" aria-pressed="true" tabindex="0"><span>Todas as Lojas</span></div>
+                        <div class="loja" data-loja="amazon" onclick="filtrarPorLoja('amazon')" role="button" aria-pressed="false" tabindex="0"><img src="logos/amazon.png" alt="Logo da Amazon" loading="lazy"><span class="amazon">Amazon</span></div>
+                        <div class="loja" data-loja="magalu" onclick="filtrarPorLoja('magalu')" role="button" aria-pressed="false" tabindex="0"><img src="logos/magalu.png" alt="Logo da Magalu" loading="lazy"><span class="magalu">Magalu</span></div>
+                        <div class="loja" data-loja="shein" onclick="filtrarPorLoja('shein')" role="button" aria-pressed="false" tabindex="0"><img src="logos/shein.png" alt="Logo da Shein" loading="lazy"><span class="shein">Shein</span></div>
+                        <div class="loja" data-loja="shopee" onclick="filtrarPorLoja('shopee')" role="button" aria-pressed="false" tabindex="0"><img src="logos/shopee.png" alt="Logo da Shopee" loading="lazy"><span class="shopee">Shopee</span></div>
+                        <div class="loja" data-loja="mercadolivre" onclick="filtrarPorLoja('mercadolivre')" role="button" aria-pressed="false" tabindex="0"><img src="logos/mercadolivre.jpg" alt="Logo do Mercado Livre" loading="lazy"><span class="mercadolivre">Mercado Livre</span></div>
+                        <div class="loja" data-loja="alibaba" onclick="filtrarPorLoja('alibaba')" role="button" aria-pressed="false" tabindex="0"><img src="logos/alibaba.png" alt="Logo da Alibaba" loading="lazy"><span class="alibaba">Alibaba</span></div>
+                    </div>
+                </div>
+                <input type="text" id="busca" placeholder="Busque por produtos..." class="barra-busca" aria-label="Buscar produtos" aria-describedby="busca-instrucao">
+                <span id="busca-instrucao" class="sr-only">Digite o nome do produto para filtrar os resultados.</span>
+                <div class="busca-feedback" id="busca-feedback">Buscando...</div>
+                <div class="loading-spinner" id="loading-spinner"></div>
+                <div class="grid-produtos" id="grid-produtos"></div>
+                <button id="load-more" onclick="carregarMaisProdutos()">Carregar Mais</button>
+                <p class="mensagem-vazia" id="mensagem-vazia" aria-live="polite">Nenhum produto encontrado.</p>
+                <p class="error-message" id="error-message" style="display: none;" aria-live="assertive"></p>
+            </section>
+            <a class="whatsapp" href="https://wa.me/5521975179737" target="_blank">📲 Atendimento via WhatsApp</a>
+            <a class="telegram" href="https://t.me/boost/centraldecomprascdc" target="_blank">📢 Canal no Telegram</a>
+            <div class="social-links">
+                <a href="https://www.tiktok.com/@cdc.centraldecompas?_t=ZM-8vYQlF9u1dH&_r=1" target="_blank" aria-label="Nosso TikTok">
+                    <div class="icon"><img src="logos/tiktok.png" alt="" loading="lazy"></div>
+                    <span>TikTok</span>
+                </a>
+                <a href="https://www.instagram.com/cdccentrodecompras/?utm_source=qr&r=nametag" target="_blank" aria-label="Nosso Instagram">
+                    <div class="icon"><img src="logos/instagram.png" alt="" loading="lazy" onerror="this.src='imagens/placeholder.jpg'"></div>
+                    <span>Instagram</span>
+                </a>
+                <a href="https://x.com/ComprasCdc" target="_blank" aria-label="Nosso perfil no X">
+                    <div class="icon"><img src="logos/x.png" alt="" loading="lazy" onerror="this.src='imagens/placeholder.jpg'"></div>
+                    <span>X</span>
+                </a>
+                <a href="https://www.youtube.com/channel/UCaKHlI-hWqwdAXS6Xsv3ZzA" target="_blank" aria-label="Nosso canal no YouTube">
+                    <div class="icon"><img src="logos/youtube.png" alt="" loading="lazy"></div>
+                    <span>YouTube</span>
+                </a>
+            </div>
+        </main>
+    </div>
+    <div class="modal" id="imageModal" role="dialog" aria-labelledby="modal-titulo" aria-modal="true" tabindex="-1">
+        <h2 id="modal-titulo" class="sr-only">Visualizador de imagens do produto</h2>
+        <button class="modal-close" onclick="closeModal()" aria-label="Fechar visualizador de imagens">✕</button>
+        <div class="modal-content" id="modalCarrossel">
+            <div class="carrossel-imagens" id="modalCarrosselImagens"></div>
+            <button class="carrossel-prev" id="modalPrev" onclick="moveModalCarrossel(-1)" aria-label="Imagem anterior">◄</button>
+            <button class="carrossel-next" id="modalNext" onclick="moveModalCarrossel(1)" aria-label="Próxima imagem">►</button>
+            <div class="carrossel-dots" id="modalCarrosselDots"></div>
+            <p class="modal-error" id="modalError" style="display: none;" aria-live="assertive"></p>
+        </div>
+    </div>
+    <footer>
+        <p>🔧 Todos os direitos reservados <strong>Grupo Centro de Compra "CdC"</strong> © <span id="year"></span></p>
+    </footer>
+    <div class="robo-assistente">
+        <a href="https://wa.me/5521975179737" target="_blank" aria-label="Falar com o assistente virtual no WhatsApp">
+            <img src="imagens/robo.jpg" alt="Robô Assistente" class="robo-imagem">
+            <div class="robo-texto">Posso ajudar?</div>
+        </a>
+    </div>
+    <script>
+        const VERSION = "1.0.8";
+        const API_URL = 'https://minha-api-produtos.onrender.com';
+        let currentImages = [];
+        let currentImageIndex = 0;
+        let currentPage = 1;
+        const productsPerPage = 12;
+        let allProducts = [];
+        let isLoading = false;
+        let currentCategory = "todas";
+        let currentStore = "todas";
+        let currentSearch = "";
 
-        document.getElementById("year").textContent = new Date().getFullYear();
+        document.getElementById("year").textContent = new Date().getFullYear();
 
-        const logo = document.getElementById("site-logo");
-        let clickCount = 0, clickTimeout = null;
-        logo.addEventListener("click", (e) => {
-            e.stopPropagation();
-            clickCount++;
-            if (clickCount === 1) {
-                clickTimeout = setTimeout(() => { clickCount = 0; }, 500);
-            } else if (clickCount === 3) {
-                clearTimeout(clickTimeout);
-                window.location.href = "admin-xyz-123.html";
-                clickCount = 0;
-            }
-        });
+        const logo = document.getElementById("site-logo");
+        let clickCount = 0, clickTimeout = null;
+        logo.addEventListener("click", (e) => {
+            e.stopPropagation();
+            clickCount++;
+            if (clickCount === 1) {
+                clickTimeout = setTimeout(() => { clickCount = 0; }, 500);
+            } else if (clickCount === 3) {
+                clearTimeout(clickTimeout);
+                window.location.href = "admin-xyz-123.html";
+                clickCount = 0;
+            }
+        });
 
-        async function carregarProdutos(categoria = "todas", loja = "todas", busca = "", page = 1) {
-            const gridProdutos = document.getElementById("grid-produtos");
-            const mensagemVazia = document.getElementById("mensagem-vazia");
-            const errorMessage = document.getElementById("error-message");
-            const loadingSpinner = document.getElementById("loading-spinner");
-            const loadMoreButton = document.getElementById("load-more");
+        async function carregarProdutos(categoria = "todas", loja = "todas", busca = "", page = 1) {
+            const gridProdutos = document.getElementById("grid-produtos");
+            const mensagemVazia = document.getElementById("mensagem-vazia");
+            const errorMessage = document.getElementById("error-message");
+            const loadingSpinner = document.getElementById("loading-spinner");
+            const loadMoreButton = document.getElementById("load-more");
 
-            if (isLoading) return;
-            isLoading = true;
+            if (isLoading) return;
+            isLoading = true;
 
-            loadingSpinner.style.display = "block";
-            if (page === 1) {
-                gridProdutos.innerHTML = "";
-                allProducts = [];
-            }
-            mensagemVazia.style.display = "none";
-            errorMessage.style.display = "none";
-            loadMoreButton.style.display = "none";
+            loadingSpinner.style.display = "block";
+            if (page === 1) {
+                gridProdutos.innerHTML = "";
+                allProducts = [];
+            }
+            mensagemVazia.style.display = "none";
+            errorMessage.style.display = "none";
+            loadMoreButton.style.display = "none";
 
-            const maxRetries = 3;
-            let attempt = 1;
+            const maxRetries = 3;
+            let attempt = 1;
 
-            while (attempt <= maxRetries) {
-                try {
-                    console.log(`Tentativa ${attempt}: Carregando de ${API_URL}/api/produtos?page=${page}&limit=${productsPerPage}`);
-                    const response = await fetch(
-                        `${API_URL}/api/produtos?page=${page}&limit=${productsPerPage}`,
-                        { cache: "no-store" }
-                    );
-                    if (!response.ok) {
-                        const errorText = await response.text();
-                        throw new Error(`Erro HTTP ${response.status}: ${errorText || 'Resposta vazia'}`);
-                    }
-                    const data = await response.json();
-                    if (!data || !Array.isArray(data.produtos)) {
-                        throw new Error('Resposta inválida: produtos não é um array');
-                    }
+            while (attempt <= maxRetries) {
+                try {
+                    console.log(`Tentativa ${attempt}: Carregando de ${API_URL}/api/produtos?page=${page}&limit=${productsPerPage}`);
+                    const response = await fetch(
+                        `${API_URL}/api/produtos?page=${page}&limit=${productsPerPage}`,
+                        { cache: "no-store" }
+                    );
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(`Erro HTTP ${response.status}: ${errorText || 'Resposta vazia'}`);
+                    }
+                    const data = await response.json();
+                    if (!data || !Array.isArray(data.produtos)) {
+                        throw new Error('Resposta inválida: produtos não é um array');
+                    }
 
-                    const filteredProducts = data.produtos.filter(p =>
-                        p &&
-                        typeof p.nome === 'string' &&
-                        typeof p.categoria === 'string' &&
-                        typeof p.loja === 'string' &&
-                        Array.isArray(p.imagens) &&
-                        (categoria === "todas" || p.categoria.toLowerCase() === categoria.toLowerCase()) &&
-                        (loja === "todas" || p.loja.toLowerCase() === loja.toLowerCase()) &&
-                        (!busca || p.nome.toLowerCase().includes(busca.toLowerCase()))
-                    );
-                    allProducts = [...allProducts, ...filteredProducts];
+                    const filteredProducts = data.produtos.filter(p =>
+                        p &&
+                        typeof p.nome === 'string' &&
+                        typeof p.categoria === 'string' &&
+                        typeof p.loja === 'string' &&
+                        Array.isArray(p.imagens) &&
+                        (categoria === "todas" || p.categoria.toLowerCase() === categoria.toLowerCase()) &&
+                        (loja === "todas" || p.loja.toLowerCase() === loja.toLowerCase()) &&
+                        (!busca || p.nome.toLowerCase().includes(busca.toLowerCase()))
+                    );
+                    allProducts = [...allProducts, ...filteredProducts];
 
-                    if (allProducts.length === 0) {
-                        mensagemVazia.style.display = "block";
-                        gridProdutos.style.display = "none";
-                    } else {
-                        mensagemVazia.style.display = "none";
-                        gridProdutos.style.display = "grid";
-                        
-                        const productsToRender = filteredProducts;
+                    if (allProducts.length === 0) {
+                        mensagemVazia.style.display = "block";
+                        gridProdutos.style.display = "none";
+                    } else {
+                        mensagemVazia.style.display = "none";
+                        gridProdutos.style.display = "grid";
+                        
+                        const productsToRender = filteredProducts;
 
-                        productsToRender.forEach((produto, index) => {
-                            const card = document.createElement("div");
-                            card.classList.add("produto-card", "visible");
-                            card.setAttribute("data-categoria", produto.categoria.toLowerCase());
-                            card.setAttribute("data-loja", produto.loja.toLowerCase());
-                            const globalIndex = allProducts.indexOf(produto);
-                            
-                            const imagens = produto.imagens && produto.imagens.length > 0
-                                ? produto.imagens.map(img => img.startsWith('http') ? img : `${API_URL}${img}`)
-                                : ["imagens/placeholder.jpg"];
-                            const carrosselId = `carrossel-${globalIndex}`;
-                            card.innerHTML = `
-                                <div class="carrossel" id="${carrosselId}">
-                                    <div class="carrossel-imagens">
-                                        ${imagens.map((img, idx) => `<img src="${img}" alt="${produto.nome}" loading="lazy" onerror="this.src='imagens/placeholder.jpg'" onclick="event.stopPropagation(); openModal(${globalIndex}, ${idx})">`).join("")}
-                                    </div>
-                                    ${imagens.length > 1 ? `
-                                        <button class="carrossel-prev" onclick="event.stopPropagation(); moveCarrossel('${carrosselId}', -1)" aria-label="Imagem anterior">◄</button>
-                                        <button class="carrossel-next" onclick="event.stopPropagation(); moveCarrossel('${carrosselId}', 1)" aria-label="Próxima imagem">►</button>
-                                        <div class="carrossel-dots">
-                                            ${imagens.map((_, idx) => `<span class="carrossel-dot ${idx === 0 ? "ativo" : ""}" onclick="event.stopPropagation(); setCarrosselImage('${carrosselId}', ${idx})" aria-label="Selecionar imagem ${idx + 1}"></span>`).join("")}
-                                        </div>
-                                    ` : ""}
-                                </div>
-                                <span>${produto.nome}</span>
-                                <span class="descricao">Loja: ${produto.loja}</span>
-                                <a href="${produto.link}" target="_blank" class="tarja-preco" aria-label="Clique para ver o preço de ${produto.nome} na loja">Clique para ver o preço</a>
-                            `;
-                            gridProdutos.appendChild(card);
-                        });
-                    }
-                    
-                    loadMoreButton.style.display = data.total > allProducts.length ? "block" : "none";
-                    isLoading = false;
-                    return;
-                } catch (error) {
-                    console.error(`⚠️ Tentativa ${attempt} falhou: ${error.message}`);
-                    if (attempt === maxRetries) {
-                        errorMessage.textContent = "Erro ao carregar os produtos. Tente novamente mais tarde.";
-                        errorMessage.style.display = "block";
-                        mensagemVazia.style.display = "none";
-                        gridProdutos.style.display = "none";
-                    }
-                    attempt++;
-                    await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
-                } finally {
-                    loadingSpinner.style.display = "none";
-                    isLoading = false;
-                }
-            }
-        }
+                        productsToRender.forEach((produto, index) => {
+                            const card = document.createElement("div");
+                            card.classList.add("produto-card", "visible");
+                            card.setAttribute("data-categoria", produto.categoria.toLowerCase());
+                            card.setAttribute("data-loja", produto.loja.toLowerCase());
+                            const globalIndex = allProducts.indexOf(produto);
+                            
+                            const imagens = produto.imagens && produto.imagens.length > 0
+                                ? produto.imagens.map(img => img.startsWith('http') ? img : `${API_URL}${img}`)
+                                : ["imagens/placeholder.jpg"];
+                            const carrosselId = `carrossel-${globalIndex}`;
+                            card.innerHTML = `
+                                <div class="carrossel" id="${carrosselId}">
+                                    <div class="carrossel-imagens">
+                                        ${imagens.map((img, idx) => `<img src="${img}" alt="${produto.nome}" loading="lazy" onerror="this.src='imagens/placeholder.jpg'" onclick="event.stopPropagation(); openModal(${globalIndex}, ${idx})">`).join("")}
+                                    </div>
+                                    ${imagens.length > 1 ? `
+                                        <button class="carrossel-prev" onclick="event.stopPropagation(); moveCarrossel('${carrosselId}', -1)" aria-label="Imagem anterior">◄</button>
+                                        <button class="carrossel-next" onclick="event.stopPropagation(); moveCarrossel('${carrosselId}', 1)" aria-label="Próxima imagem">►</button>
+                                        <div class="carrossel-dots">
+                                            ${imagens.map((_, idx) => `<span class="carrossel-dot ${idx === 0 ? "ativo" : ""}" onclick="event.stopPropagation(); setCarrosselImage('${carrosselId}', ${idx})" aria-label="Selecionar imagem ${idx + 1}"></span>`).join("")}
+                                        </div>
+                                    ` : ""}
+                                </div>
+                                <span>${produto.nome}</span>
+                                <span class="descricao">Loja: ${produto.loja}</span>
+                                <a href="${produto.link}" target="_blank" class="tarja-preco" aria-label="Clique para ver o preço de ${produto.nome} na loja">Clique para ver o preço</a>
+                            `;
+                            gridProdutos.appendChild(card);
+                        });
+                    }
+                    
+                    loadMoreButton.style.display = data.total > allProducts.length ? "block" : "none";
+                    isLoading = false;
+                    return;
+                } catch (error) {
+                    console.error(`⚠️ Tentativa ${attempt} falhou: ${error.message}`);
+                    if (attempt === maxRetries) {
+                        errorMessage.textContent = "Erro ao carregar os produtos. Tente novamente mais tarde.";
+                        errorMessage.style.display = "block";
+                        mensagemVazia.style.display = "none";
+                        gridProdutos.style.display = "none";
+                    }
+                    attempt++;
+                    await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+                } finally {
+                    loadingSpinner.style.display = "none";
+                    isLoading = false;
+                }
+            }
+        }
 
-        function carregarMaisProdutos() {
-            currentPage++;
-            carregarProdutos(currentCategory, currentStore, currentSearch, currentPage);
-        }
+        function carregarMaisProdutos() {
+            currentPage++;
+            carregarProdutos(currentCategory, currentStore, currentSearch, currentPage);
+        }
 
-        function moveCarrossel(id, direction) {
-            const carrossel = document.getElementById(id);
-            if (!carrossel) return;
-            const imagens = carrossel.querySelector(".carrossel-imagens");
-            const dots = carrossel.querySelectorAll(".carrossel-dot");
-            let index = parseInt(imagens.dataset.index || 0);
-            const total = imagens.children.length;
-            index = (index + direction + total) % total;
-            imagens.style.transform = `translateX(-${index * 100}%)`;
-            imagens.dataset.index = index;
-            dots.forEach((dot, i) => dot.classList.toggle("ativo", i === index));
-        }
+        function moveCarrossel(id, direction) {
+            const carrossel = document.getElementById(id);
+            if (!carrossel) return;
+            const imagens = carrossel.querySelector(".carrossel-imagens");
+            const dots = carrossel.querySelectorAll(".carrossel-dot");
+            let index = parseInt(imagens.dataset.index || 0);
+            const total = imagens.children.length;
+            index = (index + direction + total) % total;
+            imagens.style.transform = `translateX(-${index * 100}%)`;
+            imagens.dataset.index = index;
+            dots.forEach((dot, i) => dot.classList.toggle("ativo", i === index));
+        }
 
-        function setCarrosselImage(id, index) {
-            const carrossel = document.getElementById(id);
-            if (!carrossel) return;
-            const imagens = carrossel.querySelector(".carrossel-imagens");
-            const dots = carrossel.querySelectorAll(".carrossel-dot");
-            imagens.style.transform = `translateX(-${index * 100}%)`;
-            imagens.dataset.index = index;
-            dots.forEach((dot, i) => dot.classList.toggle("ativo", i === index));
-        }
+        function setCarrosselImage(id, index) {
+            const carrossel = document.getElementById(id);
+            if (!carrossel) return;
+            const imagens = carrossel.querySelector(".carrossel-imagens");
+            const dots = carrossel.querySelectorAll(".carrossel-dot");
+            imagens.style.transform = `translateX(-${index * 100}%)`;
+            imagens.dataset.index = index;
+            dots.forEach((dot, i) => dot.classList.toggle("ativo", i === index));
+        }
 
-        async function openModal(index, imageIndex) {
-            const modal = document.getElementById("imageModal");
-            const carrosselImagens = document.getElementById("modalCarrosselImagens");
-            const carrosselDots = document.getElementById("modalCarrosselDots");
-            const modalError = document.getElementById("modalError");
-            const prevButton = document.getElementById("modalPrev");
-            const nextButton = document.getElementById("modalNext");
-            if (!modal || !carrosselImagens || !carrosselDots || !modalError || !prevButton || !nextButton) {
-                console.error("Elementos do modal não encontrados");
-                return;
-            }
+        async function openModal(index, imageIndex) {
+            const modal = document.getElementById("imageModal");
+            const carrosselImagens = document.getElementById("modalCarrosselImagens");
+            const carrosselDots = document.getElementById("modalCarrosselDots");
+            const modalError = document.getElementById("modalError");
+            const prevButton = document.getElementById("modalPrev");
+            const nextButton = document.getElementById("modalNext");
 
-            modalError.style.display = "none";
-            carrosselImagens.innerHTML = "";
-            carrosselDots.innerHTML = "";
-            prevButton.classList.remove("visible");
-            nextButton.classList.remove("visible");
-            
-            const produto = allProducts[index];
-            if (!produto || !produto.imagens || produto.imagens.length === 0) {
-                modalError.textContent = "Nenhuma imagem disponível para este produto.";
-                modalError.style.display = "block";
-                modal.style.display = "flex";
-                return;
-            }
+            if (!modal || !carrosselImagens || !carrosselDots || !modalError || !prevButton || !nextButton) {
+                console.error("Elementos do modal não encontrados");
+                return;
+            }
 
-            try {
-                currentImages = produto.imagens.map(img => img.startsWith('http') ? img : `${API_URL}${img}`);
-                currentImageIndex = Math.max(0, Math.min(imageIndex, currentImages.length - 1));
+            modalError.style.display = "none";
+            carrosselImagens.innerHTML = "";
+            carrosselDots.innerHTML = "";
+            prevButton.classList.remove("visible");
+            nextButton.classList.remove("visible");
 
-                carrosselImagens.innerHTML = currentImages.map((img, idx) => `<img src="${img}" alt="${produto.nome} - Imagem ${idx + 1}" loading="lazy" onerror="this.src='imagens/placeholder.jpg'">`).join("");
-                carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+            const produto = allProducts[index];
+            if (!produto || !produto.imagens || produto.imagens.length === 0) {
+                modalError.textContent = "Nenhuma imagem disponível para este produto.";
+                modalError.style.display = "block";
+                modal.style.display = "flex";
+                modal.focus();
+                return;
+            }
 
-                carrosselDots.innerHTML = currentImages.map((_, i) => `<span class="carrossel-dot ${i === currentImageIndex ? "ativo" : ""}" onclick="setModalCarrosselImage(${i})" aria-label="Selecionar imagem ${i + 1}"></span>`).join("");
+            try {
+                currentImages = produto.imagens.map(img => img.startsWith('http') ? img : `${API_URL}${img}`);
+                currentImageIndex = Math.max(0, Math.min(imageIndex, currentImages.length - 1));
 
-                prevButton.classList.toggle("visible", currentImages.length > 1);
-                nextButton.classList.toggle("visible", currentImages.length > 1);
-                modal.style.display = "flex";
-            } catch (error) {
-                console.error("Erro ao abrir modal:", error);
-                modalError.textContent = "Erro ao carregar as imagens. Tente novamente.";
-                modalError.style.display = "block";
-                modal.style.display = "flex";
-            }
-        }
+                const validImages = await Promise.all(currentImages.map(async (img, idx) => {
+                    try {
+                        const response = await fetch(img, { method: 'HEAD' });
+                        return response.ok ? img : 'imagens/placeholder.jpg';
+                    } catch {
+                        return 'imagens/placeholder.jpg';
+                    }
+                }));
 
-        function moveModalCarrossel(direction) {
-            const carrosselImagens = document.getElementById("modalCarrosselImagens");
-            const carrosselDots = document.getElementById("modalCarrosselDots")?.children;
-            if (!carrosselImagens || !carrosselDots || !currentImages.length) return;
+                carrosselImagens.innerHTML = validImages.map((img, idx) => 
+                    `<img src="${img}" alt="${produto.nome} - Imagem ${idx + 1}" loading="lazy" onerror="this.src='imagens/placeholder.jpg'">`
+                ).join("");
+                carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
 
-            const total = currentImages.length;
-            currentImageIndex = (currentImageIndex + direction + total) % total;
-            
-            carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
-            Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle("ativo", i === currentImageIndex));
-        }
+                carrosselDots.innerHTML = validImages.map((_, i) => 
+                    `<span class="carrossel-dot ${i === currentImageIndex ? "ativo" : ""}" onclick="setModalCarrosselImage(${i})" aria-label="Selecionar imagem ${i + 1}" role="button" tabindex="0"></span>`
+                ).join("");
 
-        function setModalCarrosselImage(index) {
-            if (index < 0 || index >= currentImages.length) return;
-            
-            currentImageIndex = index;
-            const carrosselImagens = document.getElementById("modalCarrosselImagens");
-            const carrosselDots = document.getElementById("modalCarrosselDots")?.children;
-            if (!carrosselImagens || !carrosselDots) return;
-            
-            carrosselImagens.style.transform = `translateX(-${index * 100}%)`;
-            Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle("ativo", i === index));
-        }
+                prevButton.classList.toggle("visible", validImages.length > 1);
+                nextButton.classList.toggle("visible", validImages.length > 1);
+                modal.style.display = "flex";
+                modal.focus();
+            } catch (error) {
+                console.error("Erro ao abrir modal:", error);
+                modalError.textContent = "Erro ao carregar as imagens. Tente novamente.";
+                modalError.style.display = "block";
+                modal.style.display = "flex";
+                modal.focus();
+            }
+        }
 
-        function closeModal() {
-            const modal = document.getElementById("imageModal");
-            if (modal) modal.style.display = "none";
-            currentImages = [];
-            currentImageIndex = 0;
-        }
+        function moveModalCarrossel(direction) {
+            const carrosselImagens = document.getElementById("modalCarrosselImagens");
+            const carrosselDots = document.getElementById("modalCarrosselDots")?.children;
+            if (!carrosselImagens || !carrosselDots || !currentImages.length) return;
 
-        function filtrarPorCategoria(categoria) {
-            document.querySelectorAll(".categoria-item").forEach(item => {
-                const isActive = item.dataset.categoria === categoria;
-                item.classList.toggle("ativa", isActive);
-                item.setAttribute("aria-selected", isActive);
-            });
-            currentCategory = categoria;
-            currentPage = 1;
-            carregarProdutos(currentCategory, currentStore, currentSearch, currentPage);
-        }
+            const total = currentImages.length;
+            currentImageIndex = (currentImageIndex + direction + total) % total;
+            
+            carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+            Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle("ativo", i === currentImageIndex));
+        }
 
-        function filtrarPorLoja(loja) {
-            document.querySelectorAll(".loja, .loja-todas").forEach(item => {
-                const isActive = item.dataset.loja === loja;
-                item.classList.toggle("ativa", isActive);
-                item.setAttribute("aria-pressed", isActive);
-            });
-            currentStore = loja;
-            currentPage = 1;
-            carregarProdutos(currentCategory, currentStore, currentSearch, currentPage);
-        }
+        function setModalCarrosselImage(index) {
+            if (index < 0 || index >= currentImages.length) return;
+            
+            currentImageIndex = index;
+            const carrosselImagens = document.getElementById("modalCarrosselImagens");
+            const carrosselDots = document.getElementById("modalCarrosselDots")?.children;
+            if (!carrosselImagens || !carrosselDots) return;
+            
+            carrosselImagens.style.transform = `translateX(-${index * 100}%)`;
+            Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle("ativo", i === index));
+        }
 
-        document.addEventListener("DOMContentLoaded", () => {
-            const buscaInput = document.getElementById("busca");
-            if (buscaInput) {
-                buscaInput.addEventListener("input", (e) => {
-                    currentSearch = e.target.value.toLowerCase();
-                    currentPage = 1;
-                    carregarProdutos(currentCategory, currentStore, currentSearch, currentPage);
-                });
-            }
-            carregarProdutos();
-        });
+        function closeModal() {
+            const modal = document.getElementById("imageModal");
+            if (modal) {
+                modal.style.display = "none";
+                currentImages = [];
+                currentImageIndex = 0;
+            }
+        }
 
-        window.addEventListener('keyup', (event) => {
-            const modal = document.getElementById('imageModal');
-            if (modal.style.display === 'flex') {
-                if (event.key === 'ArrowLeft') {
-                    moveModalCarrossel(-1);
-                } else if (event.key === 'ArrowRight') {
-                    moveModalCarrossel(1);
-                } else if (event.key === 'Escape') {
-                    closeModal();
-                }
-            }
-        });
-    </script>
+        function filtrarPorCategoria(categoria) {
+            document.querySelectorAll(".categoria-item").forEach(item => {
+                const isActive = item.dataset.categoria === categoria;
+                item.classList.toggle("ativa", isActive);
+                item.setAttribute("aria-selected", isActive);
+            });
+            currentCategory = categoria;
+            currentPage = 1;
+            carregarProdutos(currentCategory, currentStore, currentSearch, currentPage);
+        }
+
+        function filtrarPorLoja(loja) {
+            document.querySelectorAll(".loja, .loja-todas").forEach(item => {
+                const isActive = item.dataset.loja === loja;
+                item.classList.toggle("ativa", isActive);
+                item.setAttribute("aria-pressed", isActive);
+            });
+            currentStore = loja;
+            currentPage = 1;
+            carregarProdutos(currentCategory, currentStore, currentSearch, currentPage);
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const buscaInput = document.getElementById("busca");
+            if (buscaInput) {
+                buscaInput.addEventListener("input", (e) => {
+                    currentSearch = e.target.value.toLowerCase();
+                    currentPage = 1;
+                    carregarProdutos(currentCategory, currentStore, currentSearch, currentPage);
+                });
+            }
+            carregarProdutos();
+        });
+
+        window.addEventListener('keyup', (event) => {
+            const modal = document.getElementById('imageModal');
+            if (modal.style.display === 'flex') {
+                if (event.key === 'ArrowLeft') {
+                    moveModalCarrossel(-1);
+                } else if (event.key === 'ArrowRight') {
+                    moveModalCarrossel(1);
+                } else if (event.key === 'Escape') {
+                    closeModal();
+                } else if (event.key === 'Tab') {
+                    const focusableElements = modal.querySelectorAll('button, [role="button"]');
+                    const firstElement = focusableElements[0];
+                    const lastElement = focusableElements[focusableElements.length - 1];
+                    if (event.shiftKey && document.activeElement === firstElement) {
+                        event.preventDefault();
+                        lastElement.focus();
+                    } else if (!event.shiftKey && document.activeElement === lastElement) {
+                        event.preventDefault();
+                        firstElement.focus();
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 </html>
