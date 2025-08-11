@@ -1,6 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
     const apiBaseUrl = 'https://minha-api-produtos.onrender.com/api';
-    const socket = io(apiBaseUrl);
+    let socket; // Inicializar socket condicionalmente
+
+    // Tentar conectar ao Socket.IO
+    try {
+        socket = io(apiBaseUrl);
+    } catch (error) {
+        console.error('Erro ao inicializar Socket.IO:', error);
+    }
 
     // Variáveis do DOM
     const statusEl = document.querySelector('.connection-status');
@@ -13,28 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const emptyMessage = document.getElementById('admin-mensagem-vazia');
     const errorMessage = document.getElementById('admin-error-message');
 
-    // Exibir o painel administrativo por padrão
-    adminPanelContent.style.display = 'block';
-    fetchProducts(); // Carregar produtos imediatamente
-
-    const updateConnectionStatus = (status, message) => {
-        statusEl.classList.remove('online', 'offline', 'connecting');
-        statusEl.classList.add(status);
-        statusMessageEl.textContent = message;
-        statusEl.classList.remove('hidden');
-    };
-
-    // --- Conexão e Status do Servidor ---
-    socket.on('connect', () => {
-        updateConnectionStatus('online', 'Online');
-        console.log('Socket.IO conectado (admin)');
-    });
-
-    socket.on('disconnect', () => {
-        updateConnectionStatus('offline', 'Desconectado');
-    });
-
-    // --- Funções de API ---
+    // Função fetchProducts movida para o topo
     const fetchProducts = async () => {
         loadingSpinner.style.display = 'block';
         productsGrid.innerHTML = '';
@@ -53,14 +39,57 @@ document.addEventListener('DOMContentLoaded', () => {
                 errorMessage.style.display = 'block';
             }
         } catch (error) {
+            console.error('Erro ao buscar produtos:', error);
             errorMessage.style.display = 'block';
         } finally {
             loadingSpinner.style.display = 'none';
         }
     };
 
+    // Exibir o painel administrativo por padrão
+    adminPanelContent.style.display = 'block';
+    fetchProducts(); // Chamar a função após sua definição
+
+    const updateConnectionStatus = (status, message) => {
+        statusEl.classList.remove('online', 'offline', 'connecting');
+        statusEl.classList.add(status);
+        statusMessageEl.textContent = message;
+        statusEl.classList.remove('hidden');
+    };
+
+    // --- Conexão e Status do Servidor ---
+    if (socket) {
+        socket.on('connect', () => {
+            updateConnectionStatus('online', 'Online');
+            console.log('Socket.IO conectado (admin)');
+        });
+
+        socket.on('disconnect', () => {
+            updateConnectionStatus('offline', 'Desconectado');
+        });
+
+        // --- Escuta de Eventos em Tempo Real ---
+        socket.on('novoProduto', (product) => {
+            console.log('Novo produto adicionado em tempo real:', product);
+            fetchProducts();
+        });
+
+        socket.on('produtoAtualizado', (product) => {
+            console.log('Produto atualizado em tempo real:', product);
+            fetchProducts();
+        });
+
+        socket.on('produtoExcluido', (data) => {
+            console.log('Produto excluído em tempo real:', data.id);
+            fetchProducts();
+        });
+    } else {
+        updateConnectionStatus('offline', 'Socket.IO não disponível');
+    }
+
+    // --- Funções de API ---
     const saveProduct = async (formData, isEditing) => {
-        const url = isEditing ? `${apiBaseUrl}/produtos/${formData.get('id')}` : `${apiBaseUrl}/produtos`;
+        const url = isEditing ? `${apiBaseUrl}/produtos/${form BongFormData.get('id')}` : `${apiBaseUrl}/produtos`;
         const method = isEditing ? 'PUT' : 'POST';
 
         const formBody = new FormData();
@@ -179,21 +208,5 @@ document.addEventListener('DOMContentLoaded', () => {
         const isEditing = !!id;
         const formData = new FormData(adminProductForm);
         saveProduct(formData, isEditing);
-    });
-
-    // --- Escuta de Eventos em Tempo Real ---
-    socket.on('novoProduto', (product) => {
-        console.log('Novo produto adicionado em tempo real:', product);
-        fetchProducts(); // Atualiza a lista completa
-    });
-
-    socket.on('produtoAtualizado', (product) => {
-        console.log('Produto atualizado em tempo real:', product);
-        fetchProducts();
-    });
-
-    socket.on('produtoExcluido', (data) => {
-        console.log('Produto excluído em tempo real:', data.id);
-        fetchProducts();
     });
 });
