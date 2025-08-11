@@ -1,65 +1,156 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Admin - Centro de Compras</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Produtos - Centro de Compras</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .admin-product-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        .admin-product-card {
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            text-align: center;
+            border-radius: 8px;
+            background-color: var(--background-primary);
+            box-shadow: var(--shadow-sm);
+        }
+        .admin-product-card img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .admin-product-card h3 {
+            font-size: 1em;
+            margin: 10px 0;
+        }
+        .admin-product-card p {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+        }
+        .admin-product-card button {
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+            transition: var(--transition-fast);
+        }
+        .admin-product-card button.editar {
+            background-color: var(--primary-color);
+        }
+        .admin-product-card button.editar:hover {
+            background-color: var(--primary-hover);
+        }
+        .admin-product-card button:hover {
+            background-color: #cc0000;
+        }
+        .form-container {
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--background-primary);
+            box-shadow: var(--shadow-sm);
+        }
+        .form-container input, .form-container textarea, .form-container select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+        }
+        .form-container button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+        .form-container button:hover {
+            background-color: var(--primary-hover);
+        }
+        .form-container button.cancelar {
+            background-color: #666;
+        }
+        .form-container button.cancelar:hover {
+            background-color: #555;
+        }
+        .error-message {
+            color: #ff4444;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
 </head>
 <body>
-    <header class="main-header">
+    <header class="site-header">
         <div class="container">
-            <h1>Admin - Centro de Compras</h1>
-            <a href="index.html" class="btn-primary"><i class="fas fa-arrow-left"></i> Voltar ao Site</a>
+            <div class="logo-container">
+                <img src="logos/cdc.png" alt="Logo Centro de Compras" width="150" height="50">
+            </div>
+            <h1>Gerenciar Produtos</h1>
         </div>
     </header>
 
-    <main class="main-content">
-        <div class="container">
-            <section class="form-container">
-                <h2><i class="fas fa-plus"></i> Cadastrar/Editar Produto</h2>
-                <form id="form-produto">
-                    <input type="hidden" id="id" name="id">
-                    <input type="text" id="nome" name="nome" maxlength="255" placeholder="Nome do produto" required>
-                    <textarea id="descricao" name="descricao" maxlength="255" placeholder="Descrição do produto" required></textarea>
-                    <input type="number" id="preco" name="preco" min="0" step="0.01" placeholder="Preço do produto" required>
-                    <input type="url" id="link" name="link" maxlength="255" placeholder="Link de afiliado" required>
-                    <select id="loja" name="loja" required>
-                        <option value="" disabled selected>Selecione a loja</option>
-                        <option value="amazon">Amazon</option>
-                        <option value="mercadolivre">Mercado Livre</option>
-                        <option value="shopee">Shopee</option>
-                        <option value="magalu">Magalu</option>
-                        <option value="shein">Shein</option>
-                        <option value="alibaba">Alibaba</option>
-                    </select>
-                    <select id="categoria" name="categoria" required>
-                        <option value="" disabled selected>Selecione a categoria</option>
-                        <option value="eletronicos">Eletrônicos</option>
-                        <option value="moda">Moda</option>
-                        <option value="casa">Casa</option>
-                        <option value="beleza">Beleza</option>
-                        <option value="esportes">Esportes</option>
-                        <option value="infantil">Infantil</option>
-                        <option value="automotivo">Automotivo</option>
-                        <option value="games">Games</option>
-                        <option value="livros">Livros</option>
-                    </select>
-                    <input type="file" id="imagens" name="imagens" accept="image/*" multiple>
-                    <div class="image-preview" id="image-preview"></div>
-                    <div class="error-message" id="error-message"></div>
-                    <div>
-                        <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Salvar</button>
-                        <button type="button" class="btn-primary cancelar" id="cancelar" style="display: none;"><i class="fas fa-times"></i> Cancelar</button>
-                    </div>
-                </form>
-            </section>
-
-            <section class="admin-product-container" id="admin-produtos"></section>
+    <div class="container">
+        <div class="form-container">
+            <h2 id="form-title">Cadastrar Novo Produto</h2>
+            <form id="product-form">
+                <input type="hidden" id="produto-id">
+                <input type="text" id="nome" placeholder="Nome do produto" required>
+                <textarea id="descricao" placeholder="Descrição do produto" required></textarea>
+                <input type="number" id="preco" placeholder="Preço" step="0.01" required>
+                <input type="url" id="link" placeholder="Link da loja" required>
+                <select id="categoria" required>
+                    <option value="">Selecione a categoria</option>
+                    <option value="eletronicos">Eletrônicos</option>
+                    <option value="moda">Moda</option>
+                    <option value="fitness">Fitness</option>
+                    <option value="casa">Casa</option>
+                    <option value="beleza">Beleza</option>
+                    <option value="esportes">Esportes</option>
+                    <option value="livros">Livros</option>
+                    <option value="infantil">Infantil</option>
+                    <option value="celulares">Celulares</option>
+                    <option value="eletrodomesticos">Eletrodomésticos</option>
+                    <option value="pet">Pet</option>
+                    <option value="jardinagem">Jardinagem</option>
+                    <option value="automotivo">Automotivo</option>
+                    <option value="gastronomia">Gastronomia</option>
+                    <option value="games">Games</option>
+                </select>
+                <select id="loja" required>
+                    <option value="">Selecione a loja</option>
+                    <option value="amazon">Amazon</option>
+                    <option value="magalu">Magalu</option>
+                    <option value="shein">Shein</option>
+                    <option value="shopee">Shopee</option>
+                    <option value="mercadolivre">Mercado Livre</option>
+                    <option value="alibaba">Alibaba</option>
+                </select>
+                <input type="file" id="imagens" multiple accept="image/*">
+                <button type="submit" id="submit-button">Cadastrar Produto</button>
+                <button type="button" id="cancel-button" style="display: none;" class="cancelar">Cancelar</button>
+            </form>
+            <p id="admin-error-message" class="error-message"></p>
         </div>
-    </main>
+
+        <h2>Produtos Cadastrados</h2>
+        <div id="admin-product-container" class="admin-product-container"></div>
+    </div>
 
     <script src="admin-script.js"></script>
 </body>
