@@ -1,253 +1,138 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Ofertas com descontos reais nas principais lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliado seguros e atualizados.">
-    <meta name="keywords" content="promoções, descontos, ofertas, Amazon, Shopee, Magalu, Mercado Livre, Shein, Alibaba">
-    <meta name="author" content="Centro de Compras">
-    <meta property="og:title" content="Centro de Compras - Ofertas do Dia">
-    <meta property="og:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliados seguros e atualizados!">
-    <meta property="og:image" content="https://via.placeholder.com/1200x630/3483fa/ffffff?text=Centro+de+Compras">
-    <meta property="og:url" content="https://centrodecompra.com.br/">
-    <meta name="twitter:card" content="summary_large_image">
-    <title>Centro de Compras - Ofertas do Dia</title>
-
-    <!-- Preload para performance -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="all">
-    <link rel="stylesheet" href="/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centro de Compras - Ofertas</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Status de Conexão -->
-    <div class="connection-status hidden" id="connection-status" role="status" aria-live="polite">
-        <div class="status-content">
-            <span><i class="fas fa-wifi"></i> Status da Conexão</span>
-            <small id="status-message">Conectado</small>
-        </div>
-    </div>
 
-    <!-- Header -->
-    <header class="main-header" role="banner">
-        <div class="header-top">
-            <div class="container">
-                <div class="header-info">
-                    <span><i class="fas fa-shipping-fast"></i> Frete grátis em milhares de produtos</span>
-                    <span><i class="fas fa-shield-alt"></i> Compra 100% segura</span>
-                </div>
-                <div class="header-links">
-                    <a href="#" class="header-link">Ajuda</a>
-                    <a href="#" class="header-link">Contato</a>
-                    <a href="/admin.html" class="header-link">Admin</a>
-                </div>
+    <header>
+        <div class="site-header">
+            <a href="/" class="logo-container">
+                <img src="/img/logo-placeholder.png" alt="Centro de Compras Logo" id="site-logo">
+            </a>
+            <div class="header-text">
+                <h1>Centro de Compras</h1>
+                <p>O melhor agregador de ofertas</p>
             </div>
+            <input type="text" id="busca" class="barra-busca" placeholder="Buscar produtos...">
         </div>
-        <div class="header-main">
+        <nav>
             <div class="container">
-                <div class="header-content">
-                    <div class="logo-section">
-                        <img src="/images/cdc.png" alt="Logo Centro de Compras" class="logo" loading="lazy" width="150" height="50">
-                    </div>
-                    <div class="search-section">
-                        <div class="search-container">
-                            <input type="search" id="busca" placeholder="Buscar produtos, marcas e mais..." class="search-input" aria-label="Buscar produtos">
-                            <button class="search-btn" type="button" aria-label="Pesquisar"><i class="fas fa-search"></i></button>
-                        </div>
-                        <div class="busca-feedback hidden" id="busca-feedback" role="alert"></div>
-                    </div>
-                    <div class="header-actions">
-                        <a href="https://wa.me/5521975179737" class="action-btn whatsapp-btn" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i> WhatsApp</a>
-                        <a href="https://t.me/boost/centraldecomprascdc" class="action-btn telegram-btn" target="_blank" rel="noopener"><i class="fab fa-telegram"></i> Telegram</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Navegação -->
-        <nav class="main-nav" role="navigation">
-            <div class="container">
-                <div class="nav-content">
-                    <button class="categories-btn" id="categories-toggle"><i class="fas fa-bars"></i> Categorias</button>
-                    <div class="nav-links">
-                        <a href="#" class="nav-link active" data-categoria="todas">Ofertas do Dia</a>
-                        <a href="#" class="nav-link" data-categoria="eletronicos">Eletrônicos</a>
-                        <a href="#" class="nav-link" data-categoria="moda">Moda</a>
-                        <a href="#" class="nav-link" data-categoria="fitness">Fitness</a>
-                        <a href="#" class="nav-link" data-categoria="casa">Casa</a>
-                        <a href="#" class="nav-link" data-categoria="beleza">Beleza</a>
-                        <a href="#" class="nav-link" data-categoria="esportes">Esportes</a>
-                        <a href="#" class="nav-link" data-categoria="livros">Livros</a>
-                        <a href="#" class="nav-link" data-categoria="infantil">Infantil</a>
-                        <a href="#" class="nav-link" data-categoria="celulares">Celulares</a>
-                        <a href="#" class="nav-link" data-categoria="eletrodomesticos">Eletrodomésticos</a>
-                        <a href="#" class="nav-link" data-categoria="pet">Pet</a>
-                        <a href="#" class="nav-link" data-categoria="jardinagem">Jardinagem</a>
-                        <a href="#" class="nav-link" data-categoria="automotivo">Automotivo</a>
-                        <a href="#" class="nav-link" data-categoria="gastronomia">Gastronomia</a>
-                        <a href="#" class="nav-link" data-categoria="games">Games</a>
-                    </div>
-                </div>
+                <a href="#">Início</a>
+                <a href="#">Ofertas</a>
+                <a href="#">Categorias</a>
+                <a href="#">Contato</a>
             </div>
         </nav>
     </header>
 
-    <!-- Sidebar -->
-    <aside class="categories-sidebar" id="categories-sidebar">
-        <div class="sidebar-header">
-            <h3><i class="fas fa-list"></i> Categorias</h3>
-            <button class="close-sidebar" id="close-sidebar" aria-label="Fechar categorias"><i class="fas fa-times"></i></button>
-        </div>
-        <ul class="categories-list">
-            <li class="category-item active" data-categoria="todas"><i class="fas fa-th-large"></i> Todas as Categorias</li>
-            <li class="category-item" data-categoria="eletronicos"><i class="fas fa-laptop"></i> Eletrônicos</li>
-            <li class="category-item" data-categoria="moda"><i class="fas fa-tshirt"></i> Moda</li>
-            <li class="category-item" data-categoria="fitness"><i class="fas fa-dumbbell"></i> Fitness</li>
-            <li class="category-item" data-categoria="casa"><i class="fas fa-home"></i> Casa e Decoração</li>
-            <li class="category-item" data-categoria="beleza"><i class="fas fa-heart"></i> Beleza e Cuidado</li>
-            <li class="category-item" data-categoria="esportes"><i class="fas fa-running"></i> Esportes</li>
-            <li class="category-item" data-categoria="livros"><i class="fas fa-book"></i> Livros</li>
-            <li class="category-item" data-categoria="infantil"><i class="fas fa-baby"></i> Bebês e Crianças</li>
-            <li class="category-item" data-categoria="celulares"><i class="fas fa-mobile-alt"></i> Celulares</li>
-            <li class="category-item" data-categoria="eletrodomesticos"><i class="fas fa-blender"></i> Eletrodomésticos</li>
-            <li class="category-item" data-categoria="pet"><i class="fas fa-paw"></i> Pet</li>
-            <li class="category-item" data-categoria="jardinagem"><i class="fas fa-leaf"></i> Jardinagem</li>
-            <li class="category-item" data-categoria="automotivo"><i class="fas fa-car"></i> Automotivo</li>
-            <li class="category-item" data-categoria="gastronomia"><i class="fas fa-utensils"></i> Gastronomia</li>
-            <li class="category-item" data-categoria="games"><i class="fas fa-gamepad"></i> Games</li>
-        </ul>
-    </aside>
+    <div class="container">
+        <aside class="sidebar-categorias">
+            <h3>Categorias</h3>
+            <ul>
+                <li class="categoria-item ativa" data-categoria="todas">Todas as Categorias</li>
+                <li class="categoria-item" data-categoria="eletronicos">Eletrônicos</li>
+                <li class="categoria-item" data-categoria="moda">Moda</li>
+                <li class="categoria-item" data-categoria="casa">Casa e Decoração</li>
+                <li class="categoria-item" data-categoria="beleza">Beleza e Cuidado</li>
+                <li class="categoria-item" data-categoria="esportes">Esportes e Fitness</li>
+                <li class="categoria-item" data-categoria="infantil">Bebês e Crianças</li>
+            </ul>
+        </aside>
 
-    <div class="overlay hidden" id="overlay"></div>
-
-    <!-- Conteúdo -->
-    <main class="main-content">
-        <div class="container">
-            <section class="offers-banner">
-                <div class="banner-content">
-                    <div class="banner-text">
-                        <h1><i class="fas fa-fire"></i> Ofertas Imperdíveis</h1>
-                        <p>Descontos de até <strong>70%</strong> nas melhores lojas do Brasil</p>
+        <main>
+            <section>
+                <h2>Selecione uma Loja</h2>
+                <div class="grid-lojas">
+                    <div class="loja ativa" data-loja="todas">
+                        <span class="loja-todas">Todas</span>
                     </div>
-                    <div class="banner-stats">
-                        <div class="stat-item"><span class="stat-number">1000+</span><span class="stat-label">Produtos</span></div>
-                        <div class="stat-item"><span class="stat-number">50+</span><span class="stat-label">Lojas</span></div>
-                        <div class="stat-item"><span class="stat-number">70%</span><span class="stat-label">Desconto</span></div>
+                    <div class="loja" data-loja="amazon">
+                        <img src="https://logodownload.org/wp-content/uploads/2014/04/amazon-logo-1.png" alt="Amazon Logo">
+                        <span class="amazon">Amazon</span>
+                    </div>
+                    <div class="loja" data-loja="mercadolivre">
+                        <img src="https://logodownload.org/wp-content/uploads/2017/04/mercado-livre-logo-1.png" alt="Mercado Livre Logo">
+                        <span class="mercadolivre">Mercado Livre</span>
+                    </div>
+                    <div class="loja" data-loja="shopee">
+                        <img src="https://down-br.img.susercontent.com/file/a4f3b7f13cf4a4086d5e754593441a13" alt="Shopee Logo">
+                        <span class="shopee">Shopee</span>
+                    </div>
+                    <div class="loja" data-loja="magalu">
+                        <img src="https://logodownload.org/wp-content/uploads/2019/08/magalu-logo.png" alt="Magalu Logo">
+                        <span class="magalu">Magalu</span>
+                    </div>
+                    <div class="loja" data-loja="shein">
+                        <img src="https://logodownload.org/wp-content/uploads/2021/04/shein-logo.png" alt="Shein Logo">
+                        <span class="shein">Shein</span>
+                    </div>
+                    <div class="loja" data-loja="alibaba">
+                        <img src="https://logodownload.org/wp-content/uploads/2019/12/alibaba-logo-0.png" alt="Alibaba Logo">
+                        <span class="alibaba">Alibaba</span>
                     </div>
                 </div>
             </section>
+            
+            <section>
+                <h2 id="ofertas-titulo">🔥 Ofertas do Dia</h2>
+                <p class="busca-feedback" id="busca-feedback"></p>
 
-            <section class="stores-section">
-                <div class="section-header">
-                    <h2><i class="fas fa-store"></i> Lojas Parceiras</h2>
-                    <p>Compre com segurança nas melhores lojas online</p>
+                <div class="loading-spinner" id="loading-spinner"></div>
+                <div class="mensagem-vazia" id="mensagem-vazia">Nenhum produto encontrado.</div>
+                <div class="error-state" id="error-message">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>Ocorreu um erro ao carregar os produtos.</p>
                 </div>
-                <div class="stores-grid">
-                    <div class="store-card active" data-loja="todas"><div class="store-icon"><i class="fas fa-th-large"></i></div><span class="store-name">Todas</span></div>
-                    <div class="store-card" data-loja="amazon"><div class="store-logo"><img src="https://via.placeholder.com/80x30/ff9900/ffffff?text=Amazon" alt="Amazon" loading="lazy"></div><span class="store-name">Amazon</span></div>
-                    <div class="store-card" data-loja="mercadolivre"><div class="store-logo"><img src="https://via.placeholder.com/80x30/ffe600/333333?text=ML" alt="Mercado Livre" loading="lazy"></div><span class="store-name">Mercado Livre</span></div>
-                    <div class="store-card" data-loja="shopee"><div class="store-logo"><img src="https://via.placeholder.com/80x30/ee4d2d/ffffff?text=Shopee" alt="Shopee" loading="lazy"></div><span class="store-name">Shopee</span></div>
-                    <div class="store-card" data-loja="magalu"><div class="store-logo"><img src="https://via.placeholder.com/80x30/0066cc/ffffff?text=Magalu" alt="Magalu" loading="lazy"></div><span class="store-name">Magalu</span></div>
-                    <div class="store-card" data-loja="shein"><div class="store-logo"><img src="https://via.placeholder.com/80x30/000000/ffffff?text=SHEIN" alt="Shein" loading="lazy"></div><span class="store-name">Shein</span></div>
-                    <div class="store-card" data-loja="alibaba"><div class="store-logo"><img src="https://via.placeholder.com/80x30/ff6a00/ffffff?text=Alibaba" alt="Alibaba" loading="lazy"></div><span class="store-name">Alibaba</span></div>
-                </div>
-            </section>
 
-            <div class="loading-container" id="loading-spinner">
-                <div class="loading-spinner">
-                    <div class="spinner"></div>
-                    <p>Carregando ofertas incríveis...</p>
-                </div>
-            </div>
-
-            <section class="products-section">
-                <div class="section-header">
-                    <h2 id="ofertas-titulo"><i class="fas fa-fire"></i> Ofertas do Dia</h2>
-                    <div class="section-actions">
-                        <div class="sort-dropdown">
-                            <label for="sort-select" class="sr-only">Ordenar por</label>
-                            <select id="sort-select">
-                                <option value="relevance">Mais Relevantes</option>
-                                <option value="price-low">Menor Preço</option>
-                                <option value="price-high">Maior Preço</option>
-                                <option value="newest">Mais Recentes</option>
-                            </select>
-                        </div>
+                <div id="grid-produtos">
                     </div>
-                </div>
-                <div class="products-grid" id="grid-produtos"></div>
+
                 <div class="load-more-container">
-                    <button id="load-more" class="load-more-btn"><i class="fas fa-plus"></i> Carregar Mais</button>
+                    <button id="load-more" class="load-more-btn" style="display: none;">
+                        <i class="fas fa-plus"></i>
+                        <span>Carregar Mais Produtos</span>
+                    </button>
                 </div>
             </section>
-
-            <div class="empty-state hidden" id="mensagem-vazia">
-                <div class="empty-icon"><i class="fas fa-search"></i></div>
-                <h3>Nenhum produto encontrado</h3>
-                <p>Tente ajustar os filtros ou buscar por outros termos</p>
-                <button class="btn-primary" onclick="location.reload()"><i class="fas fa-refresh"></i> Limpar Filtros</button>
-            </div>
-            <div class="error-state hidden" id="error-message">
-                <div class="error-icon"><i class="fas fa-exclamation-triangle"></i></div>
-                <h3>Ops! Algo deu errado</h3>
-                <p>Não foi possível carregar os produtos. Verifique sua conexão.</p>
-                <button class="btn-primary" onclick="location.reload()"><i class="fas fa-redo"></i> Tentar Novamente</button>
-            </div>
-        </div>
-    </main>
-
-    <footer class="main-footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h4>Centro de Compras</h4>
-                    <p>Sua plataforma de ofertas e descontos nas melhores lojas online do Brasil.</p>
-                    <div class="social-links">
-                        <a href="https://www.instagram.com/cdccentrodecompras/" target="_blank" class="social-link instagram" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                        <a href="https://www.tiktok.com/@cdc.centraldecompas" target="_blank" class="social-link tiktok" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
-                        <a href="https://x.com/ComprasCdc" target="_blank" class="social-link twitter" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                        <a href="https://www.youtube.com/channel/UCaKHlI-hWqwdAXS6Xsv3ZzA" target="_blank" class="social-link youtube" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
-                    </div>
-                </div>
-                <div class="footer-section">
-                    <h4>Atendimento</h4>
-                    <ul>
-                        <li><a href="https://wa.me/5521975179737" target="_blank" rel="noopener">WhatsApp</a></li>
-                        <li><a href="https://t.me/boost/centraldecomprascdc" target="_blank" rel="noopener">Telegram</a></li>
-                        <li><a href="#">Central de Ajuda</a></li>
-                        <li><a href="#">Contato</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Institucional</h4>
-                    <ul>
-                        <li><a href="#">Sobre Nós</a></li>
-                        <li><a href="#">Política de Privacidade</a></li>
-                        <li><a href="#">Termos de Uso</a></li>
-                        <li><a href="#">Como Funciona</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <div class="footer-disclaimer">
-                    <p><i class="fas fa-info-circle"></i> Este site contém links de afiliados. Ao comprar através dos nossos links, você nos ajuda a manter o site funcionando sem custo adicional para você.</p>
-                </div>
-                <div class="footer-copyright">
-                    <p>&copy; <span id="year"></span> Centro de Compras. Todos os direitos reservados.</p>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <div class="floating-assistant">
-        <a href="https://wa.me/5521975179737" target="_blank" class="floating-btn" rel="noopener">
-            <i class="fab fa-whatsapp"></i>
-            <div class="floating-tooltip">
-                <span>Precisa de ajuda?</span>
-                <small>Fale conosco no WhatsApp</small>
-            </div>
-        </a>
+        </main>
     </div>
 
-    <script src="/script.js" defer></script>
+    <footer>
+        <p>&copy; <span id="year">2023</span> Centro de Compras. Todos os direitos reservados.</p>
+    </footer>
+
+    <div id="imageModal" class="image-modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-container">
+            <button class="modal-close" id="modal-close" aria-label="Fechar">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-carousel">
+                <div class="carousel-images" id="modalCarrosselImagens"></div>
+                <button class="carousel-btn prev" id="modalPrev" aria-label="Imagem anterior">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="carousel-btn next" id="modalNext" aria-label="Próxima imagem">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                <div class="carrossel-dots" id="modalCarrosselDots"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="robo-assistente">
+        <img src="https://raw.githubusercontent.com/leoribeiro-dev/centro-de-compras-agregador/main/img/chat.png" alt="Robô assistente" class="robo-imagem">
+        <div class="robo-texto">Olá! Precisa de ajuda?</div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
