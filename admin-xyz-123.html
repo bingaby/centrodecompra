@@ -6,14 +6,22 @@
   <title>Painel Administrativo - Cadastro de Produtos</title>
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; }
-    .form-container { max-width: 600px; margin: 0 auto; }
+    .form-container, .produtos-container { max-width: 800px; margin: 0 auto 20px; }
     label { display: block; margin: 10px 0 5px; }
-    input, select, textarea { width: 100%; padding: 8px; margin-bottom: 10px; }
-    button { padding: 10px 20px; background: #28a745; color: white; border: none; cursor: pointer; }
+    input, select, textarea { width: 100%; padding: 8px; margin-bottom: 10px; box-sizing: border-box; }
+    button { padding: 8px 16px; background: #28a745; color: white; border: none; cursor: pointer; }
     button:hover { background: #218838; }
     #error-message, #success-message { display: none; margin-top: 10px; padding: 10px; }
     #error-message { background: #f8d7da; color: #721c24; }
     #success-message { background: #d4edda; color: #155724; }
+    .produtos-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    .produtos-table th, .produtos-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    .produtos-table th { background: #f2f2f2; }
+    .produto-imagem { width: 50px; height: 50px; object-fit: contain; }
+    .btn-editar { background: #007bff; }
+    .btn-editar:hover { background: #0056b3; }
+    .btn-excluir { background: #dc3545; }
+    .btn-excluir:hover { background: #b02a37; }
   </style>
 </head>
 <body>
@@ -50,25 +58,80 @@
       </select>
 
       <label for="imagens">Imagens do Produto (máximo 5, JPEG/PNG/GIF)</label>
-      <input type="file" id="imagens" name="imagens" accept="image/jpeg,image/png,image/gif" multiple required aria-required="true">
+      <input type="file" id="imagens" name="imagens" accept="image/jpeg,image/png,image/gif" multiple>
 
       <label for="link">Link do Produto</label>
       <input type="url" id="link" name="link" placeholder="https://exemplo.com/produto">
 
-      <button type="submit">Cadastrar Produto</button>
+      <input type="hidden" id="produto-id" name="id">
+      <button type="submit" id="submit-btn">Cadastrar Produto</button>
     </form>
     <div id="error-message"></div>
     <div id="success-message"></div>
   </div>
 
+  <div class="produtos-container">
+    <h2>Produtos Cadastrados</h2>
+    <table class="produtos-table">
+      <thead>
+        <tr>
+          <th>Imagem</th>
+          <th>Nome</th>
+          <th>Categoria</th>
+          <th>Loja</th>
+          <th>Link</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="produtos-lista"></tbody>
+    </table>
+  </div>
+
   <script>
     const API_URL = 'https://minha-api-produtos.onrender.com';
+
+    async function carregarProdutos() {
+      const lista = document.getElementById('produtos-lista');
+      const errorMessage = document.getElementById('error-message');
+      if (!lista || !errorMessage) return;
+
+      try {
+        const response = await fetch(`${API_URL}/api/produtos?page=1&limit=1000`, { cache: 'no-store' });
+        if (!response.ok) throw new Error(`Erro ${response.status}`);
+        const data = await response.json();
+        const produtos = data.produtos || [];
+        lista.innerHTML = '';
+
+        produtos.forEach(produto => {
+          const tr = document.createElement('tr');
+          const imagem = produto.imagens && produto.imagens[0] ? produto.imagens[0] : 'https://www.centrodecompra.com.br/imagens/placeholder.jpg';
+          tr.innerHTML = `
+            <td><img src="${imagem}" class="produto-imagem" alt="${produto.nome}" onerror="this.src='https://www.centrodecompra.com.br/imagens/placeholder.jpg'"></td>
+            <td>${produto.nome || 'Sem nome'}</td>
+            <td>${produto.categoria || 'Sem categoria'}</td>
+            <td>${produto.loja || 'Sem loja'}</td>
+            <td><a href="${produto.link || '#'}" target="_blank">Link</a></td>
+            <td>
+              <button class="btn-editar" onclick="editarProduto('${produto.id}')">Editar</button>
+              <button class="btn-excluir" onclick="excluirProduto('${produto.id}')">Excluir</button>
+            </td>
+          `;
+          lista.appendChild(tr);
+        });
+      } catch (error) {
+        console.error('Erro ao carregar produtos:', error);
+        errorMessage.textContent = `Erro ao carregar produtos: ${error.message}`;
+        errorMessage.style.display = 'block';
+      }
+    }
 
     async function cadastrarProduto(event) {
       event.preventDefault();
       const form = document.getElementById('cadastro-produto');
       const errorMessage = document.getElementById('error-message');
       const successMessage = document.getElementById('success-message');
+      const submitBtn = document.getElementById('submit-btn');
+      const produtoId = document.getElementById('produto-id').value;
 
       if (!form || !errorMessage || !successMessage) {
         console.error('Elementos do formulário não encontrados');
@@ -85,7 +148,7 @@
         successMessage.style.display = 'none';
         return;
       }
-      if (imagens.length === 0) {
+      if (!produtoId && imagens.length === 0) {
         errorMessage.textContent = 'Selecione pelo menos uma imagem.';
         errorMessage.style.display = 'block';
         successMessage.style.display = 'none';
@@ -95,31 +158,70 @@
       try {
         errorMessage.style.display = 'none';
         successMessage.style.display = 'none';
+        const url = produtoId ? `${API_URL}/api/produtos/${produtoId}` : `${API_URL}/api/produtos`;
+        const method = produtoId ? 'PUT' : 'POST';
 
-        console.log('Enviando para:', `${API_URL}/api/produtos`);
-        const response = await fetch(`${API_URL}/api/produtos`, {
-          method: 'POST',
-          body: formData
-        });
-
+        console.log(`Enviando para ${url} com método ${method}`);
+        const response = await fetch(url, { method, body: formData });
         console.log('Resposta:', response.status);
         if (!response.ok) {
           const text = await response.text();
           console.log('Erro da API:', text);
-          throw new Error(`Erro ${response.status}: ${text}`);
+          throw new Error(`Erro ${response.status}`);
         }
 
-        successMessage.textContent = 'Produto cadastrado! Redirecionando...';
+        successMessage.textContent = produtoId ? 'Produto atualizado com sucesso!' : 'Produto cadastrado! Redirecionando...';
         successMessage.style.display = 'block';
         form.reset();
-        setTimeout(() => {
-          window.location.href = '/index.html';
-        }, 2000);
+        submitBtn.textContent = 'Cadastrar Produto';
+        document.getElementById('produto-id').value = '';
+        carregarProdutos();
+        if (!produtoId) {
+          setTimeout(() => { window.location.href = '/index.html'; }, 2000);
+        }
       } catch (error) {
         console.error('Erro:', error);
-        errorMessage.textContent = `Erro ao cadastrar: ${error.message}`;
+        errorMessage.textContent = `Erro ao ${produtoId ? 'atualizar' : 'cadastrar'}: ${error.message}`;
         errorMessage.style.display = 'block';
         successMessage.style.display = 'none';
+      }
+    }
+
+    async function editarProduto(id) {
+      try {
+        const response = await fetch(`${API_URL}/api/produtos?page=1&limit=1000`, { cache: 'no-store' });
+        if (!response.ok) throw new Error(`Erro ${response.status}`);
+        const data = await response.json();
+        const produto = data.produtos.find(p => p.id == id);
+        if (!produto) throw new Error('Produto não encontrado');
+
+        document.getElementById('nome').value = produto.nome || '';
+        document.getElementById('categoria').value = produto.categoria || 'todas';
+        document.getElementById('loja').value = produto.loja || 'todas';
+        document.getElementById('link').value = produto.link || '';
+        document.getElementById('produto-id').value = produto.id;
+        document.getElementById('submit-btn').textContent = 'Atualizar Produto';
+        window.scrollTo(0, 0);
+      } catch (error) {
+        console.error('Erro ao carregar produto para edição:', error);
+        document.getElementById('error-message').textContent = `Erro ao carregar produto: ${error.message}`;
+        document.getElementById('error-message').style.display = 'block';
+      }
+    }
+
+    async function excluirProduto(id) {
+      if (!confirm('Tem certeza que deseja excluir este produto?')) return;
+
+      try {
+        const response = await fetch(`${API_URL}/api/produtos/${id}`, { method: 'DELETE' });
+        if (!response.ok) throw new Error(`Erro ${response.status}`);
+        document.getElementById('success-message').textContent = 'Produto excluído com sucesso!';
+        document.getElementById('success-message').style.display = 'block';
+        carregarProdutos();
+      } catch (error) {
+        console.error('Erro ao excluir produto:', error);
+        document.getElementById('error-message').textContent = `Erro ao excluir: ${error.message}`;
+        document.getElementById('error-message').style.display = 'block';
       }
     }
 
@@ -131,6 +233,7 @@
       } else {
         console.error('Formulário não encontrado');
       }
+      carregarProdutos();
     });
   </script>
 </body>
