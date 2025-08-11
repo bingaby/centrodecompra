@@ -1,239 +1,207 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Configuração e Seletores do DOM
-    const apiBaseUrl = 'https://minha-api-produtos.onrender.com/api';
-    const gridProdutos = document.getElementById('grid-produtos');
-    const loadingSpinner = document.getElementById('loading-spinner');
-    const mensagemVazia = document.getElementById('mensagem-vazia');
-    const errorMessage = document.getElementById('error-message');
-    const buscaInput = document.getElementById('busca');
-    const paginacaoDiv = document.getElementById('paginacao');
-    const prevPageBtn = document.getElementById('prev-page');
-    const nextPageBtn = document.getElementById('next-page');
-    const pageInfoSpan = document.getElementById('page-info');
+  let produtos = [];
+  let currentPage = 1;
+  const perPage = 12;
+  let categoriaSelecionada = 'todas';
+  let lojaSelecionada = 'todas';
+  let buscaTermo = '';
 
-    // Estado da Aplicação
-    let currentPage = 1;
-    const produtosPorPagina = 12;
-    let totalProdutos = 0;
-    let termoBusca = '';
-    let categoriaAtual = 'todas';
-    let lojaAtual = 'todas';
-    let isLoading = false;
+  // Carregar produtos
+  async function loadProdutos() {
+    try {
+      document.getElementById('loading-spinner').style.display = 'block';
+      document.getElementById('mensagem-vazia').style.display = 'none';
+      document.getElementById('error-message').style.display = 'none';
 
-    // Função para buscar produtos na API
-    const fetchProdutos = async () => {
-        if (isLoading) return;
+      const response = await fetch('/api/produtos');
+      if (!response.ok) throw new Error('Erro ao carregar produtos');
+      const { data } = await response.json();
+      produtos = data;
+      renderProdutos();
+    } catch (err) {
+      console.error(err);
+      document.getElementById('loading-spinner').style.display = 'none';
+      document.getElementById('error-message').style.display = 'block';
+    }
+  }
 
-        isLoading = true;
-        loadingSpinner.style.display = 'block';
-        gridProdutos.innerHTML = '';
-        mensagemVazia.style.display = 'none';
-        errorMessage.style.display = 'none';
-        paginacaoDiv.style.display = 'none';
+  // Renderizar produtos
+  function renderProdutos() {
+    const grid = document.getElementById('grid-produtos');
+    grid.innerHTML = '';
+    const filteredProdutos = produtos.filter(p => {
+      const matchCategoria = categoriaSelecionada === 'todas' || p.categoria === categoriaSelecionada;
+      const matchLoja = lojaSelecionada === 'todas' || p.loja === lojaSelecionada;
+      const matchBusca = !buscaTermo || p.nome.toLowerCase().includes(buscaTermo.toLowerCase()) || p.descricao.toLowerCase().includes(buscaTermo.toLowerCase());
+      return matchCategoria && matchLoja && matchBusca;
+    });
 
-        try {
-            const url = new URL(`${apiBaseUrl}/produtos`);
-            url.searchParams.append('page', currentPage);
-            url.searchParams.append('limit', produtosPorPagina);
-            if (categoriaAtual !== 'todas') url.searchParams.append('categoria', categoriaAtual);
-            if (lojaAtual !== 'todas') url.searchParams.append('loja', lojaAtual);
-            if (termoBusca) url.searchParams.append('busca', termoBusca);
+    if (filteredProdutos.length === 0) {
+      document.getElementById('loading-spinner').style.display = 'none';
+      document.getElementById('mensagem-vazia').style.display = 'block';
+      return;
+    }
 
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`Erro HTTP! Status: ${response.status}`);
-            }
-            const data = await response.json();
-            totalProdutos = data.total;
-            renderizarProdutos(data.data);
-            atualizarPaginacao();
-        } catch (error) {
-            console.error('Erro ao buscar produtos:', error);
-            errorMessage.style.display = 'block';
-            errorMessage.textContent = 'Erro ao carregar produtos.';
-        } finally {
-            isLoading = false;
-            loadingSpinner.style.display = 'none';
-        }
-    };
+    const start = (currentPage - 1) * perPage;
+    const end = start + perPage;
+    const paginatedProdutos = filteredProdutos.slice(start, end);
 
-    // Função para renderizar produtos na grade
-    const renderizarProdutos = (produtos) => {
-        if (produtos.length === 0) {
-            mensagemVazia.style.display = 'block';
-            return;
-        }
+    paginatedProdutos.forEach(produto => {
+      const card = document.createElement('div');
+      card.className = 'produto-card';
+      card.innerHTML = `
+        <div class="carrossel">
+          <div class="carrossel-imagens">
+            ${produto.imagens.map(img => `<img src="${img}" alt="${produto.nome}">`).join('')}
+          </div>
+          <button class="carrossel-prev"><i class="fas fa-chevron-left"></i></button>
+          <button class="carrossel-next"><i class="fas fa-chevron-right"></i></button>
+          <div class="carrossel-dots">
+            ${produto.imagens.map((_, i) => `<div class="carrossel-dot ${i === 0 ? 'ativo' : ''}"></div>`).join('')}
+          </div>
+        </div>
+        <h3 class="produto-nome">${produto.nome}</h3>
+        <p class="produto-preco">${parseFloat(produto.preco).toFixed(2)}</p>
+        <p class="descricao">${produto.descricao}</p>
+        <a href="${produto.link}?utm_source=centrocompras&utm_medium=card&utm_campaign=produto" target="_blank" class="tarja-preco tarja-${produto.loja.toLowerCase()}">
+          Clique aqui para ver o preço
+        </a>
+      `;
+      grid.appendChild(card);
+    });
 
-        produtos.forEach(produto => {
-            const card = document.createElement('div');
-            card.className = 'produto-card';
-            const imagemUrl = produto.imagens && produto.imagens.length > 0 
-                ? produto.imagens[0] 
-                : 'https://via.placeholder.com/300?text=Sem+Imagem';
-            
-            card.innerHTML = `
-                <div class="carrossel" data-imagens='${JSON.stringify(produto.imagens)}'>
-                    <div class="carrossel-imagens">
-                        <img src="${imagemUrl}" alt="${produto.nome}" loading="lazy">
-                    </div>
-                </div>
-                <div class="produto-card-info">
-                    <h3>${produto.nome}</h3>
-                    <p class="descricao">${produto.descricao.substring(0, 70)}...</p>
-                    <p class="preco">R$ ${parseFloat(produto.preco).toFixed(2)}</p>
-                    <a href="${produto.link}" target="_blank" rel="noopener noreferrer" class="ver-na-loja">Ver na Loja</a>
-                </div>
-            `;
-            gridProdutos.appendChild(card);
+    document.getElementById('loading-spinner').style.display = 'none';
+    document.getElementById('load-more').style.display = end < filteredProdutos.length ? 'block' : 'none';
+    initCarrossel();
+  }
+
+  // Inicializar carrossel
+  function initCarrossel() {
+    document.querySelectorAll('.produto-card').forEach(card => {
+      const carrossel = card.querySelector('.carrossel-imagens');
+      const prev = card.querySelector('.carrossel-prev');
+      const next = card.querySelector('.carrossel-next');
+      const dots = card.querySelectorAll('.carrossel-dot');
+      let currentIndex = 0;
+
+      prev.addEventListener('click', () => {
+        currentIndex = currentIndex > 0 ? currentIndex - 1 : dots.length - 1;
+        updateCarrossel(carrossel, dots, currentIndex);
+      });
+
+      next.addEventListener('click', () => {
+        currentIndex = currentIndex < dots.length - 1 ? currentIndex + 1 : 0;
+        updateCarrossel(carrossel, dots, currentIndex);
+      });
+
+      dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+          currentIndex = index;
+          updateCarrossel(carrossel, dots, currentIndex);
         });
-    };
+      });
 
-    // Função para atualizar a UI da paginação
-    const atualizarPaginacao = () => {
-        const totalPaginas = Math.ceil(totalProdutos / produtosPorPagina);
-        if (totalProdutos > 0) {
-            paginacaoDiv.style.display = 'flex';
-        }
-        pageInfoSpan.textContent = `Página ${currentPage} de ${totalPaginas || 1}`;
-        prevPageBtn.disabled = currentPage === 1;
-        nextPageBtn.disabled = currentPage >= totalPaginas;
-    };
+      card.querySelectorAll('.carrossel-imagens img').forEach(img => {
+        img.addEventListener('click', () => openModal(card));
+      });
+    });
+  }
 
-    // Função para abrir o modal de imagens
-    const openModal = (imagens) => {
-        const modal = document.getElementById('imageModal');
-        const carrossel = document.getElementById('modalCarrosselImagens');
-        const dotsContainer = document.getElementById('modalCarrosselDots');
-        carrossel.innerHTML = '';
-        dotsContainer.innerHTML = '';
-        let currentImageIndex = 0;
+  function updateCarrossel(carrossel, dots, index) {
+    carrossel.style.transform = `translateX(-${index * 100}%)`;
+    dots.forEach(d => d.classList.remove('ativo'));
+    dots[index].classList.add('ativo');
+  }
 
-        imagens.forEach((img, index) => {
-            const imgElement = document.createElement('img');
-            imgElement.src = img;
-            imgElement.className = 'carrossel-imagem';
-            imgElement.style.display = index === 0 ? 'block' : 'none';
-            carrossel.appendChild(imgElement);
+  // Modal de imagens
+  function openModal(card) {
+    const modal = document.getElementById('imageModal');
+    const modalCarrossel = document.getElementById('modalCarrosselImagens');
+    const modalDots = document.getElementById('modalCarrosselDots');
+    const imagens = card.querySelectorAll('.carrossel-imagens img');
+    modalCarrossel.innerHTML = Array.from(imagens).map(img => `<img src="${img.src}" alt="${img.alt}">`).join('');
+    modalDots.innerHTML = Array.from(imagens).map((_, i) => `<div class="carrossel-dot ${i === 0 ? 'ativo' : ''}"></div>`).join('');
+    modal.style.display = 'flex';
 
-            const dot = document.createElement('span');
-            dot.className = 'dot' + (index === 0 ? ' active' : '');
-            dot.addEventListener('click', () => {
-                document.querySelectorAll('.carrossel-imagem').forEach((i, idx) => {
-                    i.style.display = idx === index ? 'block' : 'none';
-                });
-                document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
-                dot.classList.add('active');
-                currentImageIndex = index;
-            });
-            dotsContainer.appendChild(dot);
-        });
+    let currentIndex = 0;
+    const modalImagens = modalCarrossel.querySelectorAll('img');
+    const modalDotsItems = modalDots.querySelectorAll('.carrossel-dot');
 
-        modal.style.display = 'block';
-    };
+    document.getElementById('modalPrev').addEventListener('click', () => {
+      currentIndex = currentIndex > 0 ? currentIndex - 1 : modalImagens.length - 1;
+      modalCarrossel.style.transform = `translateX(-${currentIndex * 100}%)`;
+      modalDotsItems.forEach(d => d.classList.remove('ativo'));
+      modalDotsItems[currentIndex].classList.add('ativo');
+    });
 
-    // Função para mover o carrossel do modal
-    window.moveModalCarrossel = (direction) => {
-        const images = document.querySelectorAll('.carrossel-imagem');
-        const dots = document.querySelectorAll('.dot');
-        let newIndex = currentImageIndex + direction;
-        if (newIndex < 0) newIndex = images.length - 1;
-        if (newIndex >= images.length) newIndex = 0;
-        images[currentImageIndex].style.display = 'none';
-        dots[currentImageIndex].classList.remove('active');
-        images[newIndex].style.display = 'block';
-        dots[newIndex].classList.add('active');
-        currentImageIndex = newIndex;
-    };
+    document.getElementById('modalNext').addEventListener('click', () => {
+      currentIndex = currentIndex < modalImagens.length - 1 ? currentIndex + 1 : 0;
+      modalCarrossel.style.transform = `translateX(-${currentIndex * 100}%)`;
+      modalDotsItems.forEach(d => d.classList.remove('ativo'));
+      modalDotsItems[currentIndex].classList.add('ativo');
+    });
 
-    // Função para fechar o modal
-    window.closeModal = () => {
-        document.getElementById('imageModal').style.display = 'none';
-    };
+    modalDotsItems.forEach((dot, index) => {
+      dot.addEventListener('click', () => {
+        currentIndex = index;
+        modalCarrossel.style.transform = `translateX(-${currentIndex * 100}%)`;
+        modalDotsItems.forEach(d => d.classList.remove('ativo'));
+        modalDotsItems[index].classList.add('ativo');
+      });
+    });
 
-    // Funções de eventos
-    const filtrarPorCategoria = (categoria) => {
-        categoriaAtual = categoria;
-        lojaAtual = 'todas';
-        currentPage = 1;
-        document.querySelectorAll('.categoria-item').forEach(item => {
-            item.classList.toggle('ativa', item.dataset.categoria === categoria);
-        });
-        document.querySelectorAll('.loja').forEach(item => {
-            item.classList.remove('ativa');
-        });
-        document.querySelector('.loja-todas').classList.add('ativa');
-        fetchProdutos();
-    };
+    document.getElementById('modal-close').addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+  }
 
-    const filtrarPorLoja = (loja) => {
-        lojaAtual = loja;
-        categoriaAtual = 'todas';
-        currentPage = 1;
-        document.querySelectorAll('.loja').forEach(item => {
-            item.classList.toggle('ativa', item.dataset.loja === loja);
-        });
-        document.querySelectorAll('.categoria-item').forEach(item => {
-            item.classList.remove('ativa');
-        });
-        document.querySelector('.categoria-item[data-categoria="todas"]').classList.add('ativa');
-        fetchProdutos();
-    };
+  // Filtros e busca
+  document.querySelectorAll('.category-item').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.category-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+      categoriaSelecionada = item.dataset.categoria;
+      currentPage = 1;
+      renderProdutos();
+    });
+  });
 
-    const handleBusca = () => {
-        termoBusca = buscaInput.value;
-        currentPage = 1;
-        fetchProdutos();
-    };
+  document.querySelectorAll('.store-card').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.store-card').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+      lojaSelecionada = item.dataset.loja;
+      currentPage = 1;
+      renderProdutos();
+    });
+  });
 
-    // Configuração de Event Listeners
-    const setupEventListeners = () => {
-        prevPageBtn.addEventListener('click', () => {
-            if (currentPage > 1) {
-                currentPage--;
-                fetchProdutos();
-            }
-        });
+  document.getElementById('busca').addEventListener('input', (e) => {
+    buscaTermo = e.target.value;
+    currentPage = 1;
+    renderProdutos();
+  });
 
-        nextPageBtn.addEventListener('click', () => {
-            const totalPaginas = Math.ceil(totalProdutos / produtosPorPagina);
-            if (currentPage < totalPaginas) {
-                currentPage++;
-                fetchProdutos();
-            }
-        });
+  document.getElementById('load-more').addEventListener('click', () => {
+    currentPage++;
+    renderProdutos();
+  });
 
-        document.querySelectorAll('.categoria-item').forEach(item => {
-            item.addEventListener('click', () => filtrarPorCategoria(item.dataset.categoria));
-        });
+  document.getElementById('categories-toggle').addEventListener('click', () => {
+    document.getElementById('categories-sidebar').classList.add('active');
+    document.getElementById('overlay').classList.add('active');
+  });
 
-        document.querySelectorAll('.loja').forEach(item => {
-            item.addEventListener('click', () => filtrarPorLoja(item.dataset.loja));
-        });
+  document.getElementById('close-sidebar').addEventListener('click', () => {
+    document.getElementById('categories-sidebar').classList.remove('active');
+    document.getElementById('overlay').classList.remove('active');
+  });
 
-        document.querySelector('.loja-todas').addEventListener('click', () => filtrarPorLoja('todas'));
+  document.getElementById('overlay').addEventListener('click', () => {
+    document.getElementById('categories-sidebar').classList.remove('active');
+    document.getElementById('overlay').classList.remove('active');
+  });
 
-        buscaInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                handleBusca();
-            }
-        });
-
-        // Adiciona evento de clique para abrir o modal
-        gridProdutos.addEventListener('click', (e) => {
-            const carrossel = e.target.closest('.carrossel');
-            if (carrossel) {
-                const imagens = JSON.parse(carrossel.dataset.imagens);
-                openModal(imagens);
-            }
-        });
-    };
-
-    // Inicialização
-    const init = () => {
-        setupEventListeners();
-        fetchProdutos();
-        document.getElementById('year').textContent = new Date().getFullYear();
-    };
-
-    init();
+  // Carregar produtos ao iniciar
+  loadProdutos();
 });
