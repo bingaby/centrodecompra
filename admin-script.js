@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const emptyMessage = document.getElementById('admin-mensagem-vazia');
     const errorMessage = document.getElementById('admin-error-message');
 
-    // Função fetchProducts movida para o topo
+    // Função fetchProducts ajustada
     const fetchProducts = async () => {
         loadingSpinner.style.display = 'block';
         productsGrid.innerHTML = '';
@@ -28,18 +28,33 @@ document.addEventListener('DOMContentLoaded', () => {
         errorMessage.style.display = 'none';
 
         try {
+            console.log('Tentando buscar produtos em:', `${apiBaseUrl}/produtos`);
             const response = await fetch(`${apiBaseUrl}/produtos`);
+            console.log('Resposta da API:', response);
+
+            if (!response.ok) {
+                throw new Error(`Erro HTTP ${response.status}: ${response.statusText}`);
+            }
+
             const data = await response.json();
-            if (response.ok) {
-                renderProducts(data.data);
+            console.log('Dados recebidos:', data);
+
+            // Verificar se a resposta contém produtos ou indica que não há produtos
+            if (data.data && Array.isArray(data.data)) {
                 if (data.data.length === 0) {
+                    console.log('Nenhum produto encontrado (array vazio)');
                     emptyMessage.style.display = 'block';
+                } else {
+                    renderProducts(data.data);
                 }
+            } else if (data.message && data.message.includes('sem produto cadastrado')) {
+                console.log('API retornou mensagem de produtos não cadastrados');
+                emptyMessage.style.display = 'block';
             } else {
-                errorMessage.style.display = 'block';
+                throw new Error('Formato de dados inválido: resposta inesperada da API');
             }
         } catch (error) {
-            console.error('Erro ao buscar produtos:', error);
+            console.error('Erro ao buscar produtos:', error.message);
             errorMessage.style.display = 'block';
         } finally {
             loadingSpinner.style.display = 'none';
@@ -68,7 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
             updateConnectionStatus('offline', 'Desconectado');
         });
 
-        // --- Escuta de Eventos em Tempo Real ---
         socket.on('novoProduto', (product) => {
             console.log('Novo produto adicionado em tempo real:', product);
             fetchProducts();
@@ -106,6 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         try {
+            console.log(`Enviando ${method} para ${url}`);
             const response = await fetch(url, {
                 method,
                 body: formBody,
@@ -119,6 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 adminProductForm.reset();
                 adminProductForm.querySelector('button').textContent = 'Salvar Produto';
                 document.getElementById('id').value = '';
+                fetchProducts(); // Atualizar a lista após salvar
             } else {
                 adminFormFeedback.classList.remove('success');
                 adminFormFeedback.classList.add('error');
@@ -138,12 +154,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!userConfirmed) return;
 
         try {
+            console.log(`Enviando DELETE para ${apiBaseUrl}/produtos/${id}`);
             const response = await fetch(`${apiBaseUrl}/produtos/${id}`, {
                 method: 'DELETE',
             });
             if (!response.ok) {
                 const result = await response.json();
                 alert(`Erro ao excluir produto: ${result.message}`);
+            } else {
+                fetchProducts(); // Atualizar a lista após excluir
             }
         } catch (error) {
             console.error('Erro ao excluir produto:', error);
