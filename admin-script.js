@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Funções de API ---
     const saveProduct = async (formData, isEditing) => {
-        const url = isEditing ? `${apiBaseUrl}/produtos/${form BongFormData.get('id')}` : `${apiBaseUrl}/produtos`;
+        const url = isEditing ? `${apiBaseUrl}/produtos/${formData.get('id')}` : `${apiBaseUrl}/produtos`;
         const method = isEditing ? 'PUT' : 'POST';
 
         const formBody = new FormData();
