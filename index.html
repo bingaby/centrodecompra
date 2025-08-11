@@ -27,7 +27,7 @@
         </div>
     </div>
 
-    <!-- Header Principal -->
+    <!-- Header -->
     <header class="main-header" role="banner">
         <div class="header-top">
             <div class="container">
@@ -63,7 +63,7 @@
             </div>
         </div>
 
-        <!-- Menu de Categorias -->
+        <!-- Navegação -->
         <nav class="main-nav" role="navigation">
             <div class="container">
                 <div class="nav-content">
@@ -91,7 +91,7 @@
         </nav>
     </header>
 
-    <!-- Sidebar de Categorias -->
+    <!-- Sidebar -->
     <aside class="categories-sidebar" id="categories-sidebar">
         <div class="sidebar-header">
             <h3><i class="fas fa-list"></i> Categorias</h3>
@@ -117,13 +117,11 @@
         </ul>
     </aside>
 
-    <!-- Overlay -->
     <div class="overlay hidden" id="overlay"></div>
 
-    <!-- Conteúdo Principal -->
+    <!-- Conteúdo -->
     <main class="main-content">
         <div class="container">
-            <!-- Banner de Ofertas -->
             <section class="offers-banner">
                 <div class="banner-content">
                     <div class="banner-text">
@@ -131,18 +129,125 @@
                         <p>Descontos de até <strong>70%</strong> nas melhores lojas do Brasil</p>
                     </div>
                     <div class="banner-stats">
-                        <div class="stat-item">
-                            <span class="stat-number">1000+</span>
-                            <span class="stat-label">Produtos</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-number">50+</span>
-                            <span class="stat-label">Lojas</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-number">70%</span>
-                            <span class="stat-label">Desconto</span>
-                        </div>
+                        <div class="stat-item"><span class="stat-number">1000+</span><span class="stat-label">Produtos</span></div>
+                        <div class="stat-item"><span class="stat-number">50+</span><span class="stat-label">Lojas</span></div>
+                        <div class="stat-item"><span class="stat-number">70%</span><span class="stat-label">Desconto</span></div>
                     </div>
                 </div>
             </section>
+
+            <section class="stores-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-store"></i> Lojas Parceiras</h2>
+                    <p>Compre com segurança nas melhores lojas online</p>
+                </div>
+                <div class="stores-grid">
+                    <div class="store-card active" data-loja="todas"><div class="store-icon"><i class="fas fa-th-large"></i></div><span class="store-name">Todas</span></div>
+                    <div class="store-card" data-loja="amazon"><div class="store-logo"><img src="https://via.placeholder.com/80x30/ff9900/ffffff?text=Amazon" alt="Amazon" loading="lazy"></div><span class="store-name">Amazon</span></div>
+                    <div class="store-card" data-loja="mercadolivre"><div class="store-logo"><img src="https://via.placeholder.com/80x30/ffe600/333333?text=ML" alt="Mercado Livre" loading="lazy"></div><span class="store-name">Mercado Livre</span></div>
+                    <div class="store-card" data-loja="shopee"><div class="store-logo"><img src="https://via.placeholder.com/80x30/ee4d2d/ffffff?text=Shopee" alt="Shopee" loading="lazy"></div><span class="store-name">Shopee</span></div>
+                    <div class="store-card" data-loja="magalu"><div class="store-logo"><img src="https://via.placeholder.com/80x30/0066cc/ffffff?text=Magalu" alt="Magalu" loading="lazy"></div><span class="store-name">Magalu</span></div>
+                    <div class="store-card" data-loja="shein"><div class="store-logo"><img src="https://via.placeholder.com/80x30/000000/ffffff?text=SHEIN" alt="Shein" loading="lazy"></div><span class="store-name">Shein</span></div>
+                    <div class="store-card" data-loja="alibaba"><div class="store-logo"><img src="https://via.placeholder.com/80x30/ff6a00/ffffff?text=Alibaba" alt="Alibaba" loading="lazy"></div><span class="store-name">Alibaba</span></div>
+                </div>
+            </section>
+
+            <div class="loading-container" id="loading-spinner">
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <p>Carregando ofertas incríveis...</p>
+                </div>
+            </div>
+
+            <section class="products-section">
+                <div class="section-header">
+                    <h2 id="ofertas-titulo"><i class="fas fa-fire"></i> Ofertas do Dia</h2>
+                    <div class="section-actions">
+                        <div class="sort-dropdown">
+                            <label for="sort-select" class="sr-only">Ordenar por</label>
+                            <select id="sort-select">
+                                <option value="relevance">Mais Relevantes</option>
+                                <option value="price-low">Menor Preço</option>
+                                <option value="price-high">Maior Preço</option>
+                                <option value="newest">Mais Recentes</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="products-grid" id="grid-produtos"></div>
+                <div class="load-more-container">
+                    <button id="load-more" class="load-more-btn"><i class="fas fa-plus"></i> Carregar Mais</button>
+                </div>
+            </section>
+
+            <div class="empty-state hidden" id="mensagem-vazia">
+                <div class="empty-icon"><i class="fas fa-search"></i></div>
+                <h3>Nenhum produto encontrado</h3>
+                <p>Tente ajustar os filtros ou buscar por outros termos</p>
+                <button class="btn-primary" onclick="location.reload()"><i class="fas fa-refresh"></i> Limpar Filtros</button>
+            </div>
+            <div class="error-state hidden" id="error-message">
+                <div class="error-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                <h3>Ops! Algo deu errado</h3>
+                <p>Não foi possível carregar os produtos. Verifique sua conexão.</p>
+                <button class="btn-primary" onclick="location.reload()"><i class="fas fa-redo"></i> Tentar Novamente</button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Centro de Compras</h4>
+                    <p>Sua plataforma de ofertas e descontos nas melhores lojas online do Brasil.</p>
+                    <div class="social-links">
+                        <a href="https://www.instagram.com/cdccentrodecompras/" target="_blank" class="social-link instagram" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.tiktok.com/@cdc.centraldecompas" target="_blank" class="social-link tiktok" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+                        <a href="https://x.com/ComprasCdc" target="_blank" class="social-link twitter" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="https://www.youtube.com/channel/UCaKHlI-hWqwdAXS6Xsv3ZzA" target="_blank" class="social-link youtube" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Atendimento</h4>
+                    <ul>
+                        <li><a href="https://wa.me/5521975179737" target="_blank" rel="noopener">WhatsApp</a></li>
+                        <li><a href="https://t.me/boost/centraldecomprascdc" target="_blank" rel="noopener">Telegram</a></li>
+                        <li><a href="#">Central de Ajuda</a></li>
+                        <li><a href="#">Contato</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Institucional</h4>
+                    <ul>
+                        <li><a href="#">Sobre Nós</a></li>
+                        <li><a href="#">Política de Privacidade</a></li>
+                        <li><a href="#">Termos de Uso</a></li>
+                        <li><a href="#">Como Funciona</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="footer-disclaimer">
+                    <p><i class="fas fa-info-circle"></i> Este site contém links de afiliados. Ao comprar através dos nossos links, você nos ajuda a manter o site funcionando sem custo adicional para você.</p>
+                </div>
+                <div class="footer-copyright">
+                    <p>&copy; <span id="year"></span> Centro de Compras. Todos os direitos reservados.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div class="floating-assistant">
+        <a href="https://wa.me/5521975179737" target="_blank" class="floating-btn" rel="noopener">
+            <i class="fab fa-whatsapp"></i>
+            <div class="floating-tooltip">
+                <span>Precisa de ajuda?</span>
+                <small>Fale conosco no WhatsApp</small>
+            </div>
+        </a>
+    </div>
+
+    <script src="/script.js" defer></script>
+</body>
+</html>
