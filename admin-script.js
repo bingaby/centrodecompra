@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const errorMessage = document.getElementById('error-message');
   const cancelarBtn = document.getElementById('cancelar');
   const imagePreview = document.getElementById('image-preview');
+  const imagensInput = document.getElementById('imagens');
 
   // Carregar produtos
   async function loadProdutos() {
@@ -10,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const response = await fetch('/api/produtos');
       if (!response.ok) throw new Error('Erro ao carregar produtos');
       const { data: produtos } = await response.json();
+      console.log('Produtos carregados no admin:', produtos);
       const container = document.getElementById('admin-produtos');
       container.innerHTML = '';
       produtos.forEach(produto => {
@@ -42,17 +44,21 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Pré-visualização de imagens
-  document.getElementById('imagens').addEventListener('change', (e) => {
-    imagePreview.innerHTML = '';
-    Array.from(e.target.files).forEach(file => {
-      const img = document.createElement('img');
-      img.src = URL.createObjectURL(file);
-      img.style.width = '100px';
-      img.style.height = '100px';
-      img.style.margin = '4px';
-      imagePreview.appendChild(img);
+  if (imagensInput) {
+    imagensInput.addEventListener('change', (e) => {
+      imagePreview.innerHTML = '';
+      Array.from(e.target.files).forEach(file => {
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        img.style.width = '100px';
+        img.style.height = '100px';
+        img.style.margin = '4px';
+        imagePreview.appendChild(img);
+      });
     });
-  });
+  } else {
+    console.error('Elemento #imagens não encontrado no DOM');
+  }
 
   // Enviar formulário
   form.addEventListener('submit', async (e) => {
@@ -109,6 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const method = produto.id ? 'PUT' : 'POST';
       const url = produto.id ? `/api/produtos/${produto.id}` : '/api/produtos';
+      console.log('Enviando requisição:', { method, url, produto });
       const response = await fetch(url, {
         method,
         body: formData
@@ -122,7 +129,6 @@ document.addEventListener('DOMContentLoaded', () => {
       imagePreview.innerHTML = '';
       cancelarBtn.style.display = 'none';
       loadProdutos();
-      // Notificar index.html para recarregar produtos
       localStorage.setItem('produtoAtualizado', Date.now());
     } catch (err) {
       console.error('Erro ao salvar produto:', err);
@@ -137,6 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const response = await fetch(`/api/produtos/${id}`);
       if (!response.ok) throw new Error('Erro ao carregar produto');
       const produto = await response.json();
+      console.log('Carregando produto para edição:', produto);
       document.getElementById('id').value = produto.id;
       document.getElementById('nome').value = produto.nome;
       document.getElementById('descricao').value = produto.descricao;
@@ -163,7 +170,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!response.ok) throw new Error('Erro ao excluir produto');
       alert('Produto excluído com sucesso!');
       loadProdutos();
-      // Notificar index.html para recarregar produtos
       localStorage.setItem('produtoAtualizado', Date.now());
     } catch (err) {
       console.error('Erro ao excluir produto:', err);
