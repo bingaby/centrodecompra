@@ -22,10 +22,11 @@ document.addEventListener('DOMContentLoaded', () => {
         busca: buscaTermo,
         sort: sortBy
       });
+      console.log('Requisição GET /api/produtos:', params.toString()); // Log para depuração
       const response = await fetch(`/api/produtos?${params}`);
       if (!response.ok) throw new Error(`Erro ao carregar produtos: ${response.statusText}`);
       const { data, total } = await response.json();
-      console.log('Produtos carregados:', data); // Log para depuração
+      console.log('Produtos recebidos:', data); // Log para depuração
       produtos = data;
       renderProdutos(total);
     } catch (err) {
@@ -43,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (produtos.length === 0) {
       document.getElementById('loading-spinner').style.display = 'none';
       document.getElementById('mensagem-vazia').style.display = 'block';
+      console.log('Nenhum produto encontrado para os filtros:', { categoriaSelecionada, lojaSelecionada, buscaTermo });
       return;
     }
 
@@ -72,6 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('loading-spinner').style.display = 'none';
     document.getElementById('load-more').style.display = currentPage * perPage < total ? 'block' : 'none';
+    console.log('Produtos renderizados:', produtos.length, 'Total:', total);
     initCarrossel();
   }
 
@@ -164,6 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
       categoriaSelecionada = item.dataset.categoria;
       currentPage = 1;
       document.getElementById('ofertas-titulo').textContent = item.textContent;
+      console.log('Categoria selecionada:', categoriaSelecionada); // Log para depuração
       loadProdutos();
     });
   });
@@ -174,6 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
       item.classList.add('active');
       lojaSelecionada = item.dataset.loja;
       currentPage = 1;
+      console.log('Loja selecionada:', lojaSelecionada); // Log para depuração
       loadProdutos();
     });
   });
@@ -181,17 +186,20 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('busca').addEventListener('input', (e) => {
     buscaTermo = e.target.value;
     currentPage = 1;
+    console.log('Termo de busca:', buscaTermo); // Log para depuração
     loadProdutos();
   });
 
   document.getElementById('sort-select').addEventListener('change', (e) => {
     sortBy = e.target.value;
     currentPage = 1;
+    console.log('Ordenação selecionada:', sortBy); // Log para depuração
     loadProdutos();
   });
 
   document.getElementById('load-more').addEventListener('click', () => {
     currentPage++;
+    console.log('Carregando mais produtos, página:', currentPage); // Log para depuração
     loadProdutos();
   });
 
