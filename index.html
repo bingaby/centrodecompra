@@ -16,6 +16,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
+        /* Estilos mantidos como no código original */
         .modal {
             display: none;
             position: fixed;
@@ -44,8 +45,8 @@
         .modal-content .carrossel-imagens img {
             width: 100%;
             height: auto;
-            max-width: 800px; /* Limita a resolução para evitar travamentos */
-            max-height: 600px; /* Limita a altura */
+            max-width: 800px;
+            max-height: 600px;
             object-fit: contain;
             flex: 0 0 100%;
             transition: transform 0.3s ease;
@@ -188,7 +189,7 @@
                 font-size: 12px;
             }
             .modal-content .carrossel-imagens img {
-                max-width: 100%; /* Ajusta para telas menores */
+                max-width: 100%;
                 max-height: 400px;
             }
         }
@@ -255,8 +256,8 @@
             <a class="telegram" href="https://t.me/boost/centraldecomprascdc" target="_blank">📢 Canal no Telegram</a>
             <div class="social-links">
                 <a href="https://www.tiktok.com/@cdc.centraldecompas?_t=ZM-8vYQlF9u1dH&_r=1" target="_blank"><div class="icon"><img src="logos/tiktok.png" alt="Ícone do TikTok" loading="lazy"></div><span>TikTok</span></a>
-                <a href="https://www.instagram.com/cdccentrodecompras/?utm_source=qr&r=nametag" target="_blank"><div class="icon"><img src="logos/instagram.png" alt="Ícone do Instagram" loading="lazy"></div><span>Instagram</span></a>
-                <a href="https://x.com/ComprasCdc" target="_blank"><div class="icon"><img src="logos/x.png" alt="Ícone do X" loading="lazy"></div><span>X</span></a>
+                <a href="https://www.instagram.com/cdccentrodecompras/?utm_source=qr&r=nametag" target="_blank"><div class="icon"><img src="logos/instagram.png" alt="Ícone do Instagram" loading="lazy" onerror="this.src='imagens/placeholder.jpg'"></div><span>Instagram</span></a>
+                <a href="https://x.com/ComprasCdc" target="_blank"><div class="icon"><img src="logos/x.png" alt="Ícone do X" loading="lazy" onerror="this.src='imagens/placeholder.jpg'"></div><span>X</span></a>
                 <a href="https://www.youtube.com/channel/UCaKHlI-hWqwdAXS6Xsv3ZzA" target="_blank"><div class="icon"><img src="logos/youtube.png" alt="Ícone do YouTube" loading="lazy"></div><span>YouTube</span></a>
             </div>
         </main>
@@ -281,7 +282,8 @@
         </a>
     </div>
     <script>
-        const VERSION = "1.0.6"; // Atualizado para depuração
+        const VERSION = "1.0.7"; // Atualizado para depuração
+        const API_URL = 'https://minha-api-produtos.onrender.com'; // URL da sua API
         let currentImages = [];
         let currentImageIndex = 0;
         let currentPage = 1;
@@ -319,71 +321,94 @@
             mensagemVazia.style.display = "none";
             errorMessage.style.display = "none";
 
-            try {
-                let produtos = JSON.parse(localStorage.getItem("produtos_cache")) || [];
-                if (!produtos.length) {
-                    const response = await fetch("https://raw.githubusercontent.com/bingaby/centrodecompra/main/produtos.json", { cache: "no-store" });
-                    if (!response.ok) throw new Error(`Erro ao carregar produtos.json: ${response.status}`);
-                    produtos = await response.json();
-                    if (!Array.isArray(produtos)) throw new Error("produtos.json não é uma lista válida");
-                    localStorage.setItem("produtos_cache", JSON.stringify(produtos));
-                }
+            const maxRetries = 3;
+            let attempt = 1;
 
-                allProducts = produtos.filter(p =>
-                    (categoria === "todas" || p.categoria.toLowerCase() === categoria.toLowerCase()) &&
-                    (loja === "todas" || p.loja.toLowerCase() === loja.toLowerCase()) &&
-                    (!busca || p.nome.toLowerCase().includes(busca.toLowerCase()))
-                );
+            while (attempt <= maxRetries) {
+                try {
+                    console.log(`Tentativa ${attempt}: Carregando de ${API_URL}/api/produtos?page=${page}&limit=${productsPerPage}`);
+                    const response = await fetch(
+                        `${API_URL}/api/produtos?page=${page}&limit=${productsPerPage}`,
+                        { cache: "no-store" }
+                    );
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(`Erro HTTP ${response.status}: ${errorText || 'Resposta vazia'}`);
+                    }
+                    const data = await response.json();
+                    if (!data || !Array.isArray(data.produtos)) {
+                        throw new Error('Resposta inválida: produtos não é um array');
+                    }
 
-                const start = (page - 1) * productsPerPage;
-                const end = start + productsPerPage;
-                const paginatedProducts = allProducts.slice(start, end);
+                    allProducts = data.produtos.filter(p =>
+                        p &&
+                        typeof p.nome === 'string' &&
+                        typeof p.categoria === 'string' &&
+                        typeof p.loja === 'string' &&
+                        Array.isArray(p.imagens) &&
+                        (categoria === "todas" || p.categoria.toLowerCase() === categoria.toLowerCase()) &&
+                        (loja === "todas" || p.loja.toLowerCase() === loja.toLowerCase()) &&
+                        (!busca || p.nome.toLowerCase().includes(busca.toLowerCase()))
+                    );
 
-                if (paginatedProducts.length === 0 && page === 1) {
-                    mensagemVazia.style.display = "block";
-                    gridProdutos.style.display = "none";
-                } else {
-                    mensagemVazia.style.display = "none";
-                    gridProdutos.style.display = "grid";
-                    paginatedProducts.forEach((produto, index) => {
-                        const globalIndex = start + index;
-                        const card = document.createElement("div");
-                        card.classList.add("produto-card", "visible");
-                        card.setAttribute("data-categoria", produto.categoria.toLowerCase());
-                        card.setAttribute("data-loja", produto.loja.toLowerCase());
-                        const imagens = produto.imagens && produto.imagens.length > 0 ? produto.imagens : ["imagens/placeholder.jpg"];
-                        const carrosselId = `carrossel-${globalIndex}`;
-                        card.innerHTML = `
-                            <div class="carrossel" id="${carrosselId}">
-                                <div class="carrossel-imagens">
-                                    ${imagens.map((img, idx) => `<img src="${img}" alt="${produto.nome}" loading="lazy" onclick="openModal(${globalIndex}, ${idx})">`).join("")}
-                                </div>
-                                ${imagens.length > 1 ? `
-                                    <button class="carrossel-prev" onclick="moveCarrossel('${carrosselId}', -1)" aria-label="Imagem anterior">◄</button>
-                                    <button class="carrossel-next" onclick="moveCarrossel('${carrosselId}', 1)" aria-label="Próxima imagem">►</button>
-                                    <div class="carrossel-dots">
-                                        ${imagens.map((_, idx) => `<span class="carrossel-dot ${idx === 0 ? "ativo" : ""}" onclick="setCarrosselImage('${carrosselId}', ${idx})" aria-label="Selecionar imagem ${idx + 1}"></span>`).join("")}
+                    const start = (page - 1) * productsPerPage;
+                    const end = start + productsPerPage;
+                    const paginatedProducts = allProducts.slice(start, end);
+
+                    if (paginatedProducts.length === 0 && page === 1) {
+                        mensagemVazia.style.display = "block";
+                        gridProdutos.style.display = "none";
+                    } else {
+                        mensagemVazia.style.display = "none";
+                        gridProdutos.style.display = "grid";
+                        paginatedProducts.forEach((produto, index) => {
+                            const globalIndex = start + index;
+                            const card = document.createElement("div");
+                            card.classList.add("produto-card", "visible");
+                            card.setAttribute("data-categoria", produto.categoria.toLowerCase());
+                            card.setAttribute("data-loja", produto.loja.toLowerCase());
+                            const imagens = produto.imagens && produto.imagens.length > 0
+                                ? produto.imagens.map(img => img.startsWith('http') ? img : `${API_URL}${img}`)
+                                : ["imagens/placeholder.jpg"];
+                            const carrosselId = `carrossel-${globalIndex}`;
+                            card.innerHTML = `
+                                <div class="carrossel" id="${carrosselId}">
+                                    <div class="carrossel-imagens">
+                                        ${imagens.map((img, idx) => `<img src="${img}" alt="${produto.nome}" loading="lazy" onerror="this.src='imagens/placeholder.jpg'" onclick="openModal(${globalIndex}, ${idx})">`).join("")}
                                     </div>
-                                ` : ""}
-                            </div>
-                            <span>${produto.nome}</span>
-                            <span class="descricao">Loja: ${produto.loja}</span>
-                            <a href="${produto.link}" target="_blank" class="tarja-preco" aria-label="Clique para ver o preço de ${produto.nome} na loja">Clique para ver o preço</a>
-                        `;
-                        gridProdutos.appendChild(card);
-                    });
-                }
+                                    ${imagens.length > 1 ? `
+                                        <button class="carrossel-prev" onclick="moveCarrossel('${carrosselId}', -1)" aria-label="Imagem anterior">◄</button>
+                                        <button class="carrossel-next" onclick="moveCarrossel('${carrosselId}', 1)" aria-label="Próxima imagem">►</button>
+                                        <div class="carrossel-dots">
+                                            ${imagens.map((_, idx) => `<span class="carrossel-dot ${idx === 0 ? "ativo" : ""}" onclick="setCarrosselImage('${carrosselId}', ${idx})" aria-label="Selecionar imagem ${idx + 1}"></span>`).join("")}
+                                        </div>
+                                    ` : ""}
+                                </div>
+                                <span>${produto.nome}</span>
+                                <span class="descricao">Loja: ${produto.loja}</span>
+                                <a href="${produto.link}" target="_blank" class="tarja-preco" aria-label="Clique para ver o preço de ${produto.nome} na loja">Clique para ver o preço</a>
+                            `;
+                            gridProdutos.appendChild(card);
+                        });
+                    }
 
-                const loadMoreButton = document.getElementById("load-more");
-                loadMoreButton.style.display = end < allProducts.length ? "block" : "none";
-            } catch (error) {
-                console.error("Erro ao carregar produtos:", error);
-                errorMessage.textContent = "Erro ao carregar os produtos. Tente novamente mais tarde.";
-                errorMessage.style.display = "block";
-                mensagemVazia.style.display = "none";
-                gridProdutos.style.display = "none";
+                    const loadMoreButton = document.getElementById("load-more");
+                    loadMoreButton.style.display = data.total > end ? "block" : "none";
+                    return;
+                } catch (error) {
+                    console.error(`⚠️ Tentativa ${attempt} falhou: ${error.message}`);
+                    if (attempt === maxRetries) {
+                        errorMessage.textContent = "Erro ao carregar os produtos. Tente novamente mais tarde.";
+                        errorMessage.style.display = "block";
+                        mensagemVazia.style.display = "none";
+                        gridProdutos.style.display = "none";
+                    }
+                    attempt++;
+                    await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+                } finally {
+                    loadingSpinner.style.display = "none";
+                }
             }
-            loadingSpinner.style.display = "none";
         }
 
         function carregarMaisProdutos() {
@@ -431,7 +456,7 @@
             const prevButton = document.getElementById("modalPrev");
             const nextButton = document.getElementById("modalNext");
             if (!modal || !carrosselImagens || !carrosselDots || !modalError || !prevButton || !nextButton) {
-                console.error("Elementos do modal não encontrados:", { modal, carrosselImagens, carrosselDots, modalError, prevButton, nextButton });
+                console.error("Elementos do modal não encontrados");
                 return;
             }
 
@@ -443,7 +468,9 @@
             nextButton.classList.remove("visible");
 
             try {
-                currentImages = allProducts[index]?.imagens && allProducts[index].imagens.length > 0 ? allProducts[index].imagens : ["imagens/placeholder.jpg"];
+                currentImages = allProducts[index]?.imagens && allProducts[index].imagens.length > 0
+                    ? allProducts[index].imagens.map(img => img.startsWith('http') ? img : `${API_URL}${img}`)
+                    : ["imagens/placeholder.jpg"];
                 console.log("Imagens disponíveis:", currentImages);
 
                 if (!currentImages.length) {
@@ -453,7 +480,6 @@
                     return;
                 }
 
-                // Pré-carregar imagens para evitar travamentos
                 const loadPromises = currentImages.map((src, idx) => {
                     return new Promise((resolve, reject) => {
                         const img = new Image();
@@ -483,7 +509,7 @@
                 currentImageIndex = Math.max(0, Math.min(imageIndex, currentImages.length - 1));
                 console.log("Índice inicial ajustado:", currentImageIndex);
 
-                carrosselImagens.innerHTML = currentImages.map((img, idx) => `<img src="${img}" alt="Imagem ${idx + 1}" loading="lazy" onerror="this.style.display='none'; console.error('Erro ao renderizar imagem ${idx + 1}: ${img}')">`).join("");
+                carrosselImagens.innerHTML = currentImages.map((img, idx) => `<img src="${img}" alt="Imagem ${idx + 1}" loading="lazy" onerror="this.src='imagens/placeholder.jpg'; console.error('Erro ao renderizar imagem ${idx + 1}: ${img}')">`).join("");
                 carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
 
                 carrosselDots.innerHTML = currentImages.map((_, i) => `<span class="carrossel-dot ${i === currentImageIndex ? "ativo" : ""}" onclick="setModalCarrosselImage(${i})" aria-label="Selecionar imagem ${i + 1}"></span>`).join("");
@@ -606,12 +632,6 @@
                 imageModal.addEventListener("click", (e) => {
                     if (e.target === e.currentTarget) closeModal();
                 });
-            }
-
-            // Desativar MetaMask temporariamente para evitar interferências
-            if (window.ethereum) {
-                console.log("MetaMask detectado, desativando temporariamente");
-                window.ethereum = null;
             }
         });
     </script>
