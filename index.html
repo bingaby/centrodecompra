@@ -16,7 +16,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Estilos mantidos e ajustados */
+        /* Estilos ajustados para imitar Mercado Livre */
         .modal {
             display: none;
             position: fixed;
@@ -151,18 +151,26 @@
             border-radius: 8px;
             padding: 10px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            max-height: 220px; /* Reduzido para imagens menores */
+            max-height: 180px; /* Compacto, estilo Mercado Livre */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
         .produto-card:hover { transform: translateY(-5px); }
         .produto-card span {
             font-size: 14px;
             display: block;
             margin: 5px 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         .carrossel {
             position: relative;
             width: 100%;
-            max-height: 100px; /* Ajustado para desktop */
+            max-height: 100px; /* Quadrado para desktop */
+            max-width: 100px;
+            margin: 0 auto;
             overflow: hidden;
         }
         .carrossel-imagens {
@@ -172,15 +180,17 @@
         }
         .carrossel-imagens img {
             width: 100%;
-            max-height: 100px; /* Altura máxima para desktop */
-            object-fit: contain; /* Evita cortes */
+            max-height: 100px; /* Tamanho fixo para desktop */
+            max-width: 100px;
+            object-fit: contain; /* Estilo Mercado Livre */
             flex: 0 0 100%;
             transition: transform 0.3s ease;
+            border-radius: 4px;
         }
         .grid-produtos {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); /* Ajustado para imagens menores */
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); /* Mais compacto */
+            gap: 10px;
         }
         .grid-lojas {
             display: grid;
@@ -217,16 +227,18 @@
         }
         @media (max-width: 768px) {
             .grid-produtos {
-                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
             }
             .produto-card {
-                max-height: 200px; /* Reduzido para celular */
+                max-height: 160px; /* Compacto para celular */
             }
             .carrossel {
-                max-height: 80px; /* Ajustado para celular */
+                max-height: 80px; /* Quadrado para celular */
+                max-width: 80px;
             }
             .carrossel-imagens img {
-                max-height: 80px; /* Altura máxima para celular */
+                max-height: 80px;
+                max-width: 80px;
             }
             .tarja-preco {
                 font-size: 10px;
