@@ -151,7 +151,7 @@
             border-radius: 8px;
             padding: 10px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            max-height: 300px;
+            max-height: 220px; /* Reduzido para imagens menores */
         }
         .produto-card:hover { transform: translateY(-5px); }
         .produto-card span {
@@ -162,7 +162,7 @@
         .carrossel {
             position: relative;
             width: 100%;
-            max-height: 150px;
+            max-height: 100px; /* Ajustado para desktop */
             overflow: hidden;
         }
         .carrossel-imagens {
@@ -172,14 +172,14 @@
         }
         .carrossel-imagens img {
             width: 100%;
-            height: 150px;
-            object-fit: cover;
+            max-height: 100px; /* Altura máxima para desktop */
+            object-fit: contain; /* Evita cortes */
             flex: 0 0 100%;
             transition: transform 0.3s ease;
         }
         .grid-produtos {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); /* Ajustado para imagens menores */
             gap: 15px;
         }
         .grid-lojas {
@@ -215,15 +215,18 @@
             background: #ff6200;
             color: white;
         }
-        @media (max-width: 600px) {
+        @media (max-width: 768px) {
             .grid-produtos {
-                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
             }
             .produto-card {
-                max-height: 250px;
+                max-height: 200px; /* Reduzido para celular */
+            }
+            .carrossel {
+                max-height: 80px; /* Ajustado para celular */
             }
             .carrossel-imagens img {
-                height: 120px;
+                max-height: 80px; /* Altura máxima para celular */
             }
             .tarja-preco {
                 font-size: 10px;
@@ -284,6 +287,7 @@
             <h3>Categorias</h3>
             <ul role="listbox">
                 <li class="categoria-item ativa" data-categoria="todas" onclick="filtrarPorCategoria('todas')" role="option" aria-selected="true" tabindex="0">Todas as Categorias</li>
+                <li class="categoria-item" data-categoria="pet" onclick="filtrarPorCategoria('pet')" role="option" aria-selected="false" tabindex="0">Pet</li>
                 <li class="categoria-item" data-categoria="eletronicos" onclick="filtrarPorCategoria('eletronicos')" role="option" aria-selected="false" tabindex="0">Eletrônicos</li>
                 <li class="categoria-item" data-categoria="moda" onclick="filtrarPorCategoria('moda')" role="option" aria-selected="false" tabindex="0">Moda</li>
                 <li class="categoria-item" data-categoria="fitness" onclick="filtrarPorCategoria('fitness')" role="option" aria-selected="false" tabindex="0">Fitness</li>
@@ -328,11 +332,11 @@
                     <span>TikTok</span>
                 </a>
                 <a href="https://www.instagram.com/cdccentrodecompras/?utm_source=qr&r=nametag" target="_blank" aria-label="Nosso Instagram">
-                    <div class="icon"><img src="logos/instagram.png" alt="" loading="lazy" onerror="this.src='imagens/placeholder.jpg'"></div>
+                    <div class="icon"><img src="logos/instagram.png" alt="" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'"></div>
                     <span>Instagram</span>
                 </a>
                 <a href="https://x.com/ComprasCdc" target="_blank" aria-label="Nosso perfil no X">
-                    <div class="icon"><img src="logos/x.png" alt="" loading="lazy" onerror="this.src='imagens/placeholder.jpg'"></div>
+                    <div class="icon"><img src="logos/x.png" alt="" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'"></div>
                     <span>X</span>
                 </a>
                 <a href="https://www.youtube.com/channel/UCaKHlI-hWqwdAXS6Xsv3ZzA" target="_blank" aria-label="Nosso canal no YouTube">
@@ -459,12 +463,12 @@
                             
                             const imagens = produto.imagens && produto.imagens.length > 0
                                 ? produto.imagens.map(img => img.startsWith('http') ? img : `${API_URL}${img}`)
-                                : ["imagens/placeholder.jpg"];
+                                : ["https://minha-api-produtos.onrender.com/imagens/placeholder.jpg"];
                             const carrosselId = `carrossel-${globalIndex}`;
                             card.innerHTML = `
                                 <div class="carrossel" id="${carrosselId}">
                                     <div class="carrossel-imagens">
-                                        ${imagens.map((img, idx) => `<img src="${img}" alt="${produto.nome}" loading="lazy" onerror="this.src='imagens/placeholder.jpg'" onclick="event.stopPropagation(); openModal(${globalIndex}, ${idx})">`).join("")}
+                                        ${imagens.map((img, idx) => `<img src="${img}" alt="${produto.nome}" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'" onclick="event.stopPropagation(); openModal(${globalIndex}, ${idx})">`).join("")}
                                     </div>
                                     ${imagens.length > 1 ? `
                                         <button class="carrossel-prev" onclick="event.stopPropagation(); moveCarrossel('${carrosselId}', -1)" aria-label="Imagem anterior">◄</button>
@@ -565,14 +569,14 @@
                 const validImages = await Promise.all(currentImages.map(async (img, idx) => {
                     try {
                         const response = await fetch(img, { method: 'HEAD' });
-                        return response.ok ? img : 'imagens/placeholder.jpg';
+                        return response.ok ? img : 'https://minha-api-produtos.onrender.com/imagens/placeholder.jpg';
                     } catch {
-                        return 'imagens/placeholder.jpg';
+                        return 'https://minha-api-produtos.onrender.com/imagens/placeholder.jpg';
                     }
                 }));
 
                 carrosselImagens.innerHTML = validImages.map((img, idx) => 
-                    `<img src="${img}" alt="${produto.nome} - Imagem ${idx + 1}" loading="lazy" onerror="this.src='imagens/placeholder.jpg'">`
+                    `<img src="${img}" alt="${produto.nome} - Imagem ${idx + 1}" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">`
                 ).join("");
                 carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
 
