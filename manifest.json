@@ -1,46 +1,31 @@
-const CACHE_NAME = 'centro-de-compras-v1';
-const URLS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/script.js',
-  '/logos/site.webmanifest',
-  '/logos/favicon-32x32.png',
-  '/logos/favicon-16x16.png',
-  '/logos/apple-touch-icon.png',
-  '/logos/logoscentrodecompras.jpeg',
-  '/imagens/placeholder.jpg',
-  '/imagens/search-icon.png'
-];
-
-self.addEventListener('install', event => {
-  console.log('Service Worker instalado');
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(URLS_TO_CACHE))
-  );
-});
-
-self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(name => {
-          if (name !== CACHE_NAME) {
-            console.log('Limpando cache antigo:', name);
-            return caches.delete(name);
-          }
-        })
-      );
-    })
-  );
-});
-
-self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request).then(resp => {
-      return resp || fetch(event.request).catch(() => {
-        return new Response('Offline: recurso não disponível', { status: 503 });
-      });
-    })
-  );
-});
+{
+  "name": "Centro de Compras",
+  "short_name": "Compras",
+  "description": "Ofertas com descontos reais em lojas como Amazon, Shein, Shopee e Magalu.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#3483fa",
+  "icons": [
+    {
+      "src": "/logos/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/logos/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "/logos/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/logos/logoscentrodecompras.jpeg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    }
+  ]
+}
