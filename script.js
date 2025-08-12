@@ -69,6 +69,7 @@ function toggleCategories() {
 function focusSearch() {
     const searchInput = document.getElementById("busca");
     searchInput.focus();
+    window.scrollTo({ top: 0, behavior: "smooth" });
     document.querySelector(".nav-item[data-action='search']").classList.add("active");
     document.querySelectorAll(".nav-item:not([data-action='search'])").forEach(item => item.classList.remove("active"));
 }
@@ -149,13 +150,13 @@ async function carregarProdutos(categoria = "todas", loja = "todas", busca = "",
                     
                     const imagens = produto.imagens && produto.imagens.length > 0
                         ? produto.imagens.map(img => img.startsWith('http') ? img : `${API_URL}${img}`)
-                        : ["https://minha-api-produtos.onrender.com/imagens/placeholder.jpg"];
+                        : ["/imagens/placeholder.jpg"];
                     const carrosselId = `carrossel-${globalIndex}`;
                     const lojaClass = produto.loja.toLowerCase();
                     card.innerHTML = `
                         <div class="carrossel" id="${carrosselId}">
                             <div class="carrossel-imagens">
-                                ${imagens.map((img, idx) => `<img src="${img}" alt="${produto.nome}" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'" onclick="event.stopPropagation(); openModal(${globalIndex}, ${idx})">`).join("")}
+                                ${imagens.map((img, idx) => `<img src="${img}" alt="${produto.nome}" loading="lazy" onerror="this.src='/imagens/placeholder.jpg'" onclick="event.stopPropagation(); openModal(${globalIndex}, ${idx})">`).join("")}
                             </div>
                             ${imagens.length > 1 ? `
                                 <button class="carrossel-prev" onclick="event.stopPropagation(); moveCarrossel('${carrosselId}', -1)" aria-label="Imagem anterior">◄</button>
@@ -252,14 +253,14 @@ async function openModal(index, imageIndex) {
         const validImages = await Promise.all(currentImages.map(async (img, idx) => {
             try {
                 const response = await fetch(img, { method: 'HEAD' });
-                return response.ok ? img : 'https://minha-api-produtos.onrender.com/imagens/placeholder.jpg';
+                return response.ok ? img : '/imagens/placeholder.jpg';
             } catch {
-                return 'https://minha-api-produtos.onrender.com/imagens/placeholder.jpg';
+                return '/imagens/placeholder.jpg';
             }
         }));
 
         carrosselImagens.innerHTML = validImages.map((img, idx) => 
-            `<img src="${img}" alt="${produto.nome} - Imagem ${idx + 1}" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">`
+            `<img src="${img}" alt="${produto.nome} - Imagem ${idx + 1}" loading="lazy" onerror="this.src='/imagens/placeholder.jpg'">`
         ).join("");
         carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
 
