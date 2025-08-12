@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Centro de Compras</title>
   <meta name="description" content="Encontre as melhores ofertas em produtos de diversas lojas online no Centro de Compras." />
   <meta name="keywords" content="e-commerce, compras online, ofertas, produtos" />
@@ -12,53 +12,46 @@
   <link rel="icon" href="favicon.ico" type="image/x-icon" />
 </head>
 <body>
-  <div class="connection-status"></div>
 
   <header class="main-header">
     <div class="header-top">
       <div class="container">
         <div class="header-info">
-          <span><i class="fas fa-phone-alt"></i> (21)9999-9999</span>
+          <span><i class="fas fa-phone-alt"></i> (21) 9999-9999</span>
           <span><i class="fas fa-envelope"></i> contato@centrodecompras.com</span>
         </div>
         <div class="header-links">
-          <a href="#" class="header-link"></a>
           <a href="#" class="header-link">Cupons</a>
         </div>
       </div>
     </div>
+
     <div class="header-main">
       <div class="container header-content">
-        <img src="https://via.placeholder.com/200x50/3483fa/ffffff?text=Logo" alt="Logo Centro de Compras" class="logo" id="site-logo" />
+        <img src="https://via.placeholder.com/200x50/3483fa/fff?text=Centro+de+Compras" alt="Logo Centro de Compras" class="logo" />
         <div class="search-section">
-          <div class="search-container">
-            <input
-              type="text"
-              id="busca"
-              placeholder="Pesquisar produtos..."
-              aria-label="Pesquisar produtos"
-            />
-            <button class="search-btn" aria-label="Iniciar busca">
-              <i class="fas fa-search"></i>
-            </button>
-          </div>
+          <input type="text" id="busca" placeholder="Pesquisar produtos..." aria-label="Pesquisar produtos" />
+          <button class="search-btn" aria-label="Buscar">
+            <i class="fas fa-search"></i>
+          </button>
         </div>
         <div class="header-actions">
-          <a href="https://wa.me/5511999999999" class="action-btn whatsapp-btn" aria-label="Entrar em contato via WhatsApp">
+          <a href="https://wa.me/5511999999999" class="action-btn whatsapp-btn" aria-label="WhatsApp">
             <i class="fab fa-whatsapp"></i> WhatsApp
           </a>
-          <a href="https://t.me/centrodecompras" class="action-btn telegram-btn" aria-label="Entrar em contato via Telegram">
+          <a href="https://t.me/centrodecompras" class="action-btn telegram-btn" aria-label="Telegram">
             <i class="fab fa-telegram-plane"></i> Telegram
           </a>
-          <a href="/admin-xyz-123.html" class="action-btn admin-btn" id="admin-btn" style="display: none;" aria-label="Acessar painel administrativo">
+          <a href="/admin-xyz-123.html" class="action-btn admin-btn" aria-label="Admin" style="display:none;">
             <i class="fas fa-user-shield"></i> Admin
           </a>
         </div>
       </div>
     </div>
+
     <nav class="main-nav">
       <div class="container nav-content">
-        <button class="categories-btn" id="categories-toggle" aria-label="Abrir menu de categorias">
+        <button class="categories-btn" id="categories-toggle" aria-label="Abrir categorias">
           <i class="fas fa-bars"></i> Categorias
         </button>
         <div class="nav-links">
@@ -71,61 +64,35 @@
     </nav>
   </header>
 
-  <div class="categories-sidebar" id="categories-sidebar">
+  <!-- Sidebar Categorias -->
+  <aside class="categories-sidebar" id="categories-sidebar">
     <div class="sidebar-header">
       <h3><i class="fas fa-list"></i> Categorias</h3>
-      <button class="close-sidebar" id="close-sidebar" aria-label="Fechar menu de categorias">
+      <button class="close-sidebar" id="close-sidebar" aria-label="Fechar categorias">
         <i class="fas fa-times"></i>
       </button>
     </div>
     <ul class="categories-list">
-      <li class="category-item active" data-categoria="todas">
-        <i class="fas fa-th"></i> Todas as Categorias
-      </li>
-      <li class="category-item" data-categoria="eletronicos">
-        <i class="fas fa-mobile-alt"></i> Eletrônicos
-      </li>
-      <li class="category-item" data-categoria="moda">
-        <i class="fas fa-tshirt"></i> Moda
-      </li>
-      <li class="category-item" data-categoria="casa">
-        <i class="fas fa-home"></i> Casa
-      </li>
-      <li class="category-item" data-categoria="beleza">
-        <i class="fas fa-magic"></i> Beleza
-      </li>
-      <li class="category-item" data-categoria="esportes">
-        <i class="fas fa-dumbbell"></i> Esportes
-      </li>
-      <li class="category-item" data-categoria="infantil">
-        <i class="fas fa-baby"></i> Infantil
-      </li>
-      <li class="category-item" data-categoria="automotivo">
-        <i class="fas fa-car"></i> Automotivo
-      </li>
-      <li class="category-item" data-categoria="games">
-        <i class="fas fa-gamepad"></i> Games
-      </li>
-      <li class="category-item" data-categoria="livros">
-        <i class="fas fa-book"></i> Livros
-      </li>
-      <li class="category-item" data-categoria="fitness">
-        <i class="fas fa-running"></i> Fitness
-      </li>
-      <li class="category-item" data-categoria="pet">
-        <i class="fas fa-paw"></i> Pet Shop
-      </li>
-      <li class="category-item" data-categoria="jardinagem">
-        <i class="fas fa-leaf"></i> Jardinagem
-      </li>
-      <li class="category-item" data-categoria="gastronomia">
-        <i class="fas fa-utensils"></i> Gastronomia
-      </li>
+      <li class="category-item active" data-categoria="todas"><i class="fas fa-th"></i> Todas as Categorias</li>
+      <li class="category-item" data-categoria="eletronicos"><i class="fas fa-mobile-alt"></i> Eletrônicos</li>
+      <li class="category-item" data-categoria="moda"><i class="fas fa-tshirt"></i> Moda</li>
+      <li class="category-item" data-categoria="casa"><i class="fas fa-home"></i> Casa</li>
+      <li class="category-item" data-categoria="beleza"><i class="fas fa-magic"></i> Beleza</li>
+      <li class="category-item" data-categoria="esportes"><i class="fas fa-dumbbell"></i> Esportes</li>
+      <li class="category-item" data-categoria="infantil"><i class="fas fa-baby"></i> Infantil</li>
+      <li class="category-item" data-categoria="automotivo"><i class="fas fa-car"></i> Automotivo</li>
+      <li class="category-item" data-categoria="games"><i class="fas fa-gamepad"></i> Games</li>
+      <li class="category-item" data-categoria="livros"><i class="fas fa-book"></i> Livros</li>
+      <li class="category-item" data-categoria="fitness"><i class="fas fa-running"></i> Fitness</li>
+      <li class="category-item" data-categoria="pet"><i class="fas fa-paw"></i> Pet Shop</li>
+      <li class="category-item" data-categoria="jardinagem"><i class="fas fa-leaf"></i> Jardinagem</li>
+      <li class="category-item" data-categoria="gastronomia"><i class="fas fa-utensils"></i> Gastronomia</li>
     </ul>
-  </div>
+  </aside>
   <div class="overlay" id="overlay"></div>
 
   <main class="main-content">
+    <!-- Ofertas do Dia - Banner Azul Compacto -->
     <section class="offers-banner">
       <div class="container banner-content">
         <div class="banner-text">
@@ -149,31 +116,12 @@
       </div>
     </section>
 
+    <!-- Lojas Parceiras -->
     <section class="stores-section">
       <div class="container">
         <div class="section-header">
-          <div>
-            <h2><i class="fas fa-store"></i> Lojas Parceiras</h2>
-            <p>Explore produtos das melhores lojas online</p>
-          </div>
-          <div class="section-actions">
-            <div class="view-toggle">
-              <button class="view-btn active" data-view="grid" aria-label="Visualização em grade">
-                <i class="fas fa-th"></i>
-              </button>
-              <button class="view-btn" data-view="list" aria-label="Visualização em lista">
-                <i class="fas fa-list"></i>
-              </button>
-            </div>
-            <div class="sort-dropdown">
-              <select id="sort-select" aria-label="Ordenar produtos">
-                <option value="relevance">Relevância</option>
-                <option value="price-low">Menor Preço</option>
-                <option value="price-high">Maior Preço</option>
-                <option value="newest">Mais Recentes</option>
-              </select>
-            </div>
-          </div>
+          <h2><i class="fas fa-store"></i> Lojas Parceiras</h2>
+          <p>Explore produtos das melhores lojas online</p>
         </div>
         <div class="stores-grid">
           <div class="store-card active" data-loja="todas">
@@ -208,18 +156,19 @@
       </div>
     </section>
 
+    <!-- Produtos -->
     <section class="products-section">
       <div class="container">
         <div class="section-header">
           <h2 id="ofertas-titulo">🔥 Ofertas do Dia</h2>
         </div>
-        <div class="loading-container" id="loading-spinner">
+        <div class="loading-container" id="loading-spinner" style="display:none;">
           <div class="loading-spinner">
             <div class="spinner"></div>
             <p>Carregando produtos...</p>
           </div>
         </div>
-        <div class="empty-state" id="mensagem-vazia">
+        <div class="empty-state" id="mensagem-vazia" style="display:none;">
           <i class="fas fa-box-open empty-icon"></i>
           <h3>Nenhum produto encontrado</h3>
           <p>Tente ajustar os filtros ou a busca para encontrar o que procura.</p>
@@ -227,7 +176,7 @@
             <i class="fas fa-redo"></i> Limpar Filtros
           </a>
         </div>
-        <div class="error-state" id="error-message">
+        <div class="error-state" id="error-message" style="display:none;">
           <i class="fas fa-exclamation-circle error-icon"></i>
           <h3>Erro ao carregar produtos</h3>
           <p>Verifique sua conexão com a internet.</p>
@@ -245,10 +194,11 @@
     </section>
   </main>
 
-  <div class="image-modal" id="imageModal">
+  <!-- Modal Imagem -->
+  <div class="image-modal" id="imageModal" aria-hidden="true">
     <div class="modal-backdrop"></div>
-    <div class="modal-container">
-      <button class="modal-close" id="modal-close" aria-label="Fechar modal de imagem">
+    <div class="modal-container" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modal-close" id="modal-close" aria-label="Fechar modal">
         <i class="fas fa-times"></i>
       </button>
       <div class="modal-carousel">
@@ -301,18 +251,15 @@
     </div>
     <div class="footer-bottom">
       <div class="container">
-        <div class="footer-disclaimer">
-          <p>
-            <i class="fas fa-info-circle"></i> Preços e condições estão sujeitos à alteração sem aviso prévio. Verifique as lojas parceiras.
-          </p>
-        </div>
-        <div class="footer-copyright">
-          <p>&copy; <span id="year"></span> Centro de Compras. Todos os direitos reservados.</p>
-        </div>
+        <p>
+          <i class="fas fa-info-circle"></i> Preços e condições estão sujeitos à alteração sem aviso prévio. Verifique as lojas parceiras.
+        </p>
+        <p>&copy; <span id="year"></span> Centro de Compras. Todos os direitos reservados.</p>
       </div>
     </div>
   </footer>
 
+  <!-- Botão flutuante WhatsApp -->
   <div class="floating-assistant">
     <a href="https://wa.me/5511999999999" class="floating-btn" aria-label="Fale conosco pelo WhatsApp">
       <i class="fab fa-whatsapp"></i>
@@ -323,6 +270,38 @@
     </a>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    // Atualiza o ano no rodapé
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Controle sidebar categorias
+    const categoriesToggle = document.getElementById('categories-toggle');
+    const categoriesSidebar = document.getElementById('categories-sidebar');
+    const closeSidebarBtn = document.getElementById('close-sidebar');
+    const overlay = document.getElementById('overlay');
+
+    categoriesToggle.addEventListener('click', () => {
+      categoriesSidebar.classList.add('active');
+      overlay.classList.add('active');
+    });
+    closeSidebarBtn.addEventListener('click', () => {
+      categoriesSidebar.classList.remove('active');
+      overlay.classList.remove('active');
+    });
+    overlay.addEventListener('click', () => {
+      categoriesSidebar.classList.remove('active');
+      overlay.classList.remove('active');
+    });
+
+    // Script simples para abrir/fechar modal (exemplo)
+    const modal = document.getElementById('imageModal');
+    const modalClose = document.getElementById('modal-close');
+
+    modalClose.addEventListener('click', () => {
+      modal.style.display = 'none';
+      modal.setAttribute('aria-hidden', 'true');
+    });
+  </script>
+
 </body>
 </html>
