@@ -9,375 +9,439 @@
     <meta property="og:image" content="logos/centrodecompras.jpg">
     <meta property="og:url" content="https://centrodecompra.com.br/">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Centro de Compras - Ofertas e Descontos">
-    <meta name="twitter:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliados seguros e atualizados!">
-    <meta name="twitter:image" content="logos/centrodecompras.jpg">
     <title>Centro de Compras - Ofertas do Dia</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Estilos ajustados para imitar Mercado Livre */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
+        /* Ajustes para imagens compactas (estilo Mercado Livre) */
+        .produto-card .carrossel {
+            height: 100px; /* Desktop */
+            width: 100px;
+            margin: 0 auto;
         }
-        .modal-content {
-            position: relative;
-            max-width: 90vw;
-            max-height: 90vh;
-            width: auto;
-            height: auto;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content .carrossel-imagens {
-            display: flex;
-            overflow: hidden;
-            width: 100%;
-            height: 100%;
-        }
-        .modal-content .carrossel-imagens img {
-            width: 100%;
-            height: auto;
-            max-width: 900px;
-            max-height: 80vh;
+        .produto-card .carrossel-imagens img {
+            max-height: 100px;
+            max-width: 100px;
             object-fit: contain;
-            flex: 0 0 100%;
-            transition: transform 0.3s ease;
-            border-radius: 8px;
+            padding: var(--spacing-sm);
         }
-        .modal-close {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: #ff6200;
-            color: #fff;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 18px;
-            z-index: 1001;
+        .products-grid {
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); /* Mais compacto */
+            gap: var(--spacing-md);
         }
-        .carrossel-prev,
-        .carrossel-next {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(0, 0, 0, 0.6);
-            color: #fff;
-            border: none;
-            padding: 12px 15px;
-            cursor: pointer;
-            font-size: 20px;
-            border-radius: 4px;
-            transition: background 0.2s;
-            display: none;
+        .produto-card {
+            max-height: 220px; /* Card mais compacto */
         }
-        .carrossel-prev.visible,
-        .carrossel-next.visible {
-            display: block;
-        }
-        .carrossel-prev:hover,
-        .carrossel-next:hover {
-            background: rgba(0, 0, 0, 0.8);
-        }
-        .carrossel-prev { left: 15px; }
-        .carrossel-next { right: 15px; }
-        .carrossel-dots {
-            position: absolute;
-            bottom: 15px;
-            width: 100%;
-            text-align: center;
-        }
-        .carrossel-dot {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            background: #ccc;
-            border-radius: 50%;
-            margin: 0 6px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .carrossel-dot.ativo { background: #ff6200; }
-        .modal-error {
-            color: red;
-            text-align: center;
-            margin-top: 10px;
-            font-size: 14px;
-        }
-        .error-message {
-            color: red;
-            text-align: center;
-            margin-top: 10px;
+        .produto-nome, .descricao {
+            font-size: 0.85rem; /* Textos menores */
         }
         .tarja-preco {
-            display: inline-block;
-            background: #ff6200;
-            color: white;
-            padding: 6px 10px;
-            margin: 8px 0;
-            border-radius: 4px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 12px;
-        }
-        .tarja-preco:hover { background: #e55a00; }
-        #load-more {
-            display: none;
-            margin: 20px auto;
-            padding: 10px 20px;
-            background: #ff6200;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        #load-more:hover { background: #e55a00; }
-        .produto-card {
-            transition: transform 0.2s;
-            background: white;
-            border-radius: 8px;
-            padding: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            max-height: 180px; /* Compacto, estilo Mercado Livre */
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        .produto-card:hover { transform: translateY(-5px); }
-        .produto-card span {
-            font-size: 14px;
-            display: block;
-            margin: 5px 0;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        .carrossel {
-            position: relative;
-            width: 100%;
-            max-height: 100px; /* Quadrado para desktop */
-            max-width: 100px;
-            margin: 0 auto;
-            overflow: hidden;
-        }
-        .carrossel-imagens {
-            display: flex;
-            width: 100%;
-            height: 100%;
-        }
-        .carrossel-imagens img {
-            width: 100%;
-            max-height: 100px; /* Tamanho fixo para desktop */
-            max-width: 100px;
-            object-fit: contain; /* Estilo Mercado Livre */
-            flex: 0 0 100%;
-            transition: transform 0.3s ease;
-            border-radius: 4px;
-        }
-        .grid-produtos {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); /* Mais compacto */
-            gap: 10px;
-        }
-        .grid-lojas {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 10px;
-            padding: 10px;
-            justify-items: center;
-            align-items: center;
-        }
-        .loja, .loja-todas {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .loja img {
-            max-width: 80px;
-            max-height: 40px;
-            object-fit: contain;
-            margin-bottom: 5px;
-        }
-        .loja span, .loja-todas span {
-            font-size: 14px;
-            color: #333;
-        }
-        .loja.ativa, .loja-todas.ativa {
-            background: #ff6200;
-            color: white;
+            font-size: 0.8rem;
+            padding: var(--spacing-sm) var(--spacing-md);
         }
         @media (max-width: 768px) {
-            .grid-produtos {
-                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            .produto-card .carrossel {
+                height: 80px; /* Mobile */
+                width: 80px;
             }
-            .produto-card {
-                max-height: 160px; /* Compacto para celular */
-            }
-            .carrossel {
-                max-height: 80px; /* Quadrado para celular */
-                max-width: 80px;
-            }
-            .carrossel-imagens img {
+            .produto-card .carrossel-imagens img {
                 max-height: 80px;
                 max-width: 80px;
             }
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+            .produto-card {
+                max-height: 200px;
+            }
+            .produto-nome, .descricao {
+                font-size: 0.75rem;
+            }
             .tarja-preco {
-                font-size: 10px;
-                padding: 5px 8px;
-            }
-            .produto-card span {
-                font-size: 12px;
-            }
-            .modal-content .carrossel-imagens img {
-                max-width: 100%;
-                max-height: 70vh;
-            }
-            .grid-lojas {
-                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            }
-            .loja img {
-                max-width: 60px;
-                max-height: 30px;
-            }
-            .loja span, .loja-todas span {
-                font-size: 12px;
-            }
-            .modal-close {
-                padding: 8px 12px;
-                font-size: 16px;
-            }
-            .carrossel-prev,
-            .carrossel-next {
-                padding: 10px 12px;
-                font-size: 16px;
-            }
-            .carrossel-dot {
-                width: 10px;
-                height: 10px;
-                margin: 0 4px;
+                font-size: 0.7rem;
+                padding: var(--spacing-xs) var(--spacing-sm);
             }
         }
     </style>
 </head>
 <body>
-    <header class="site-header">
-        <div class="logo-container">
-            <a href="#" aria-label="Voltar para a página inicial"><img src="logos/centrodecompras.jpg" alt="Centro de Compras" loading="lazy" id="site-logo"></a>
+    <!-- Header Principal -->
+    <header class="main-header">
+        <div class="header-top">
+            <div class="container">
+                <div class="header-info">
+                    <span><i class="fas fa-shipping-fast"></i> Frete grátis em milhares de produtos</span>
+                    <span><i class="fas fa-shield-alt"></i> Compra 100% segura</span>
+                </div>
+                <div class="header-links">
+                    <a href="sobre.html" class="header-link">Ajuda</a>
+                    <a href="contato.html" class="header-link">Contato</a>
+                </div>
+            </div>
         </div>
-        <div class="header-text">
-            <h1>Centro de Compras</h1>
-            <p>O maior portal de ofertas do Brasil! Descubra as melhores oportunidades nos maiores sites de venda, com links diretos para sua compra.</p>
-        </div>
-    </header>
-    <nav aria-label="Navegação principal">
-        <a href="index.html">Promoções</a>
-        <a href="cupom.html">Cupom de desconto</a>
-        <a href="sobre.html">Sobre</a>
-        <a href="contato.html">Contato</a>
-    </nav>
-    <div class="container">
-        <aside class="sidebar-categorias">
-            <h3>Categorias</h3>
-            <ul role="listbox">
-                <li class="categoria-item ativa" data-categoria="todas" onclick="filtrarPorCategoria('todas')" role="option" aria-selected="true" tabindex="0">Todas as Categorias</li>
-                <li class="categoria-item" data-categoria="pet" onclick="filtrarPorCategoria('pet')" role="option" aria-selected="false" tabindex="0">Pet</li>
-                <li class="categoria-item" data-categoria="eletronicos" onclick="filtrarPorCategoria('eletronicos')" role="option" aria-selected="false" tabindex="0">Eletrônicos</li>
-                <li class="categoria-item" data-categoria="moda" onclick="filtrarPorCategoria('moda')" role="option" aria-selected="false" tabindex="0">Moda</li>
-                <li class="categoria-item" data-categoria="fitness" onclick="filtrarPorCategoria('fitness')" role="option" aria-selected="false" tabindex="0">Fitness</li>
-                <li class="categoria-item" data-categoria="casa" onclick="filtrarPorCategoria('casa')" role="option" aria-selected="false" tabindex="0">Casa e Decoração</li>
-                <li class="categoria-item" data-categoria="beleza" onclick="filtrarPorCategoria('beleza')" role="option" aria-selected="false" tabindex="0">Beleza</li>
-                <li class="categoria-item" data-categoria="esportes" onclick="filtrarPorCategoria('esportes')" role="option" aria-selected="false" tabindex="0">Esportes</li>
-                <li class="categoria-item" data-categoria="livros" onclick="filtrarPorCategoria('livros')" role="option" aria-selected="false" tabindex="0">Livros</li>
-                <li class="categoria-item" data-categoria="infantil" onclick="filtrarPorCategoria('infantil')" role="option" aria-selected="false" tabindex="0">Infantil</li>
-                <li class="categoria-item" data-categoria="Celulares" onclick="filtrarPorCategoria('Celulares')" role="option" aria-selected="false" tabindex="0">Celulares</li>
-                <li class="categoria-item" data-categoria="Eletrodomésticos" onclick="filtrarPorCategoria('Eletrodomésticos')" role="option" aria-selected="false" tabindex="0">Eletrodomésticos</li>
-            </ul>
-        </aside>
-        <main>
-            <section id="ofertas-section" aria-live="polite">
-                <h2 id="ofertas-titulo">🛍️ Ofertas do Dia</h2>
-                <div class="lojas-parceiras">
-                    <h3>🌟 Lojas Parceiras</h3>
-                    <div class="grid-lojas" role="group" aria-label="Filtro por lojas parceiras">
-                        <div class="loja-todas ativa" data-loja="todas" onclick="filtrarPorLoja('todas')" role="button" aria-pressed="true" tabindex="0"><span>Todas as Lojas</span></div>
-                        <div class="loja" data-loja="amazon" onclick="filtrarPorLoja('amazon')" role="button" aria-pressed="false" tabindex="0"><img src="logos/amazon.png" alt="Logo da Amazon" loading="lazy"><span class="amazon">Amazon</span></div>
-                        <div class="loja" data-loja="magalu" onclick="filtrarPorLoja('magalu')" role="button" aria-pressed="false" tabindex="0"><img src="logos/magalu.png" alt="Logo da Magalu" loading="lazy"><span class="magalu">Magalu</span></div>
-                        <div class="loja" data-loja="shein" onclick="filtrarPorLoja('shein')" role="button" aria-pressed="false" tabindex="0"><img src="logos/shein.png" alt="Logo da Shein" loading="lazy"><span class="shein">Shein</span></div>
-                        <div class="loja" data-loja="shopee" onclick="filtrarPorLoja('shopee')" role="button" aria-pressed="false" tabindex="0"><img src="logos/shopee.png" alt="Logo da Shopee" loading="lazy"><span class="shopee">Shopee</span></div>
-                        <div class="loja" data-loja="mercadolivre" onclick="filtrarPorLoja('mercadolivre')" role="button" aria-pressed="false" tabindex="0"><img src="logos/mercadolivre.jpg" alt="Logo do Mercado Livre" loading="lazy"><span class="mercadolivre">Mercado Livre</span></div>
-                        <div class="loja" data-loja="alibaba" onclick="filtrarPorLoja('alibaba')" role="button" aria-pressed="false" tabindex="0"><img src="logos/alibaba.png" alt="Logo da Alibaba" loading="lazy"><span class="alibaba">Alibaba</span></div>
+        
+        <div class="header-main">
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo-section">
+                        <img src="logos/centrodecompras.jpg" alt="Centro de Compras" class="logo" id="site-logo">
+                    </div>
+                    
+                    <div class="search-section">
+                        <div class="search-container">
+                            <input type="text" id="busca" placeholder="Buscar produtos, marcas e muito mais..." class="search-input">
+                            <button class="search-btn" type="button">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                        <div class="search-suggestions" id="search-suggestions"></div>
+                    </div>
+                    
+                    <div class="header-actions">
+                        <a href="https://wa.me/5521975179737" class="action-btn whatsapp-btn" target="_blank">
+                            <i class="fab fa-whatsapp"></i>
+                            <span>WhatsApp</span>
+                        </a>
+                        <a href="https://t.me/boost/centraldecomprascdc" class="action-btn telegram-btn" target="_blank">
+                            <i class="fab fa-telegram"></i>
+                            <span>Telegram</span>
+                        </a>
                     </div>
                 </div>
-                <input type="text" id="busca" placeholder="Busque por produtos..." class="barra-busca" aria-label="Buscar produtos" aria-describedby="busca-instrucao">
-                <span id="busca-instrucao" class="sr-only">Digite o nome do produto para filtrar os resultados.</span>
-                <div class="busca-feedback" id="busca-feedback">Buscando...</div>
-                <div class="loading-spinner" id="loading-spinner"></div>
-                <div class="grid-produtos" id="grid-produtos"></div>
-                <button id="load-more" onclick="carregarMaisProdutos()">Carregar Mais</button>
-                <p class="mensagem-vazia" id="mensagem-vazia" aria-live="polite">Nenhum produto encontrado.</p>
-                <p class="error-message" id="error-message" style="display: none;" aria-live="assertive"></p>
-            </section>
-            <a class="whatsapp" href="https://wa.me/5521975179737" target="_blank">📲 Atendimento via WhatsApp</a>
-            <a class="telegram" href="https://t.me/boost/centraldecomprascdc" target="_blank">📢 Canal no Telegram</a>
-            <div class="social-links">
-                <a href="https://www.tiktok.com/@cdc.centraldecompas?_t=ZM-8vYQlF9u1dH&_r=1" target="_blank" aria-label="Nosso TikTok">
-                    <div class="icon"><img src="logos/tiktok.png" alt="" loading="lazy"></div>
-                    <span>TikTok</span>
-                </a>
-                <a href="https://www.instagram.com/cdccentrodecompras/?utm_source=qr&r=nametag" target="_blank" aria-label="Nosso Instagram">
-                    <div class="icon"><img src="logos/instagram.png" alt="" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'"></div>
-                    <span>Instagram</span>
-                </a>
-                <a href="https://x.com/ComprasCdc" target="_blank" aria-label="Nosso perfil no X">
-                    <div class="icon"><img src="logos/x.png" alt="" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'"></div>
-                    <span>X</span>
-                </a>
-                <a href="https://www.youtube.com/channel/UCaKHlI-hWqwdAXS6Xsv3ZzA" target="_blank" aria-label="Nosso canal no YouTube">
-                    <div class="icon"><img src="logos/youtube.png" alt="" loading="lazy"></div>
-                    <span>YouTube</span>
-                </a>
             </div>
-        </main>
-    </div>
-    <div class="modal" id="imageModal" role="dialog" aria-labelledby="modal-titulo" aria-modal="true" tabindex="-1">
-        <h2 id="modal-titulo" class="sr-only">Visualizador de imagens do produto</h2>
-        <button class="modal-close" onclick="closeModal()" aria-label="Fechar visualizador de imagens">✕</button>
-        <div class="modal-content" id="modalCarrossel">
-            <div class="carrossel-imagens" id="modalCarrosselImagens"></div>
-            <button class="carrossel-prev" id="modalPrev" onclick="moveModalCarrossel(-1)" aria-label="Imagem anterior">◄</button>
-            <button class="carrossel-next" id="modalNext" onclick="moveModalCarrossel(1)" aria-label="Próxima imagem">►</button>
-            <div class="carrossel-dots" id="modalCarrosselDots"></div>
-            <p class="modal-error" id="modalError" style="display: none;" aria-live="assertive"></p>
+        </div>
+        
+        <nav class="main-nav">
+            <div class="container">
+                <div class="nav-content">
+                    <div class="nav-categories">
+                        <button class="categories-btn" id="categories-toggle">
+                            <i class="fas fa-bars"></i>
+                            <span>Categorias</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </div>
+                    <div class="nav-links">
+                        <a href="index.html" class="nav-link active">Ofertas do Dia</a>
+                        <a href="#" class="nav-link">Mais Vendidos</a>
+                        <a href="cupom.html" class="nav-link">Cupons</a>
+                        <a href="#" class="nav-link" onclick="filtrarPorCategoria('eletronicos')">Eletrônicos</a>
+                        <a href="#" class="nav-link" onclick="filtrarPorCategoria('moda')">Moda</a>
+                        <a href="#" class="nav-link" onclick="filtrarPorCategoria('casa')">Casa</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Sidebar de Categorias -->
+    <div class="categories-sidebar" id="categories-sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-list"></i> Categorias</h3>
+            <button class="close-sidebar" id="close-sidebar">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="sidebar-content">
+            <ul class="categories-list">
+                <li class="category-item active" data-categoria="todas" onclick="filtrarPorCategoria('todas')">
+                    <i class="fas fa-th-large"></i>
+                    <span>Todas as Categorias</span>
+                </li>
+                <li class="category-item" data-categoria="pet" onclick="filtrarPorCategoria('pet')">
+                    <i class="fas fa-paw"></i>
+                    <span>Pet</span>
+                </li>
+                <li class="category-item" data-categoria="eletronicos" onclick="filtrarPorCategoria('eletronicos')">
+                    <i class="fas fa-laptop"></i>
+                    <span>Eletrônicos</span>
+                </li>
+                <li class="category-item" data-categoria="moda" onclick="filtrarPorCategoria('moda')">
+                    <i class="fas fa-tshirt"></i>
+                    <span>Moda</span>
+                </li>
+                <li class="category-item" data-categoria="casa" onclick="filtrarPorCategoria('casa')">
+                    <i class="fas fa-home"></i>
+                    <span>Casa e Decoração</span>
+                </li>
+                <li class="category-item" data-categoria="beleza" onclick="filtrarPorCategoria('beleza')">
+                    <i class="fas fa-heart"></i>
+                    <span>Beleza e Cuidado</span>
+                </li>
+                <li class="category-item" data-categoria="esportes" onclick="filtrarPorCategoria('esportes')">
+                    <i class="fas fa-dumbbell"></i>
+                    <span>Esportes e Fitness</span>
+                </li>
+                <li class="category-item" data-categoria="infantil" onclick="filtrarPorCategoria('infantil')">
+                    <i class="fas fa-baby"></i>
+                    <span>Bebês e Crianças</span>
+                </li>
+                <li class="category-item" data-categoria="automotivo" onclick="filtrarPorCategoria('automotivo')">
+                    <i class="fas fa-car"></i>
+                    <span>Automotivo</span>
+                </li>
+                <li class="category-item" data-categoria="games" onclick="filtrarPorCategoria('games')">
+                    <i class="fas fa-gamepad"></i>
+                    <span>Games</span>
+                </li>
+                <li class="category-item" data-categoria="livros" onclick="filtrarPorCategoria('livros')">
+                    <i class="fas fa-book"></i>
+                    <span>Livros</span>
+                </li>
+            </ul>
         </div>
     </div>
-    <footer>
-        <p>🔧 Todos os direitos reservados <strong>Grupo Centro de Compra "CdC"</strong> © <span id="year"></span></p>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Conteúdo Principal -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Banner de Ofertas -->
+            <section class="offers-banner">
+                <div class="banner-content">
+                    <div class="banner-text">
+                        <h1>🔥 Ofertas Imperdíveis</h1>
+                        <p>Descontos de até 70% nas melhores lojas do Brasil</p>
+                    </div>
+                    <div class="banner-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">1000+</span>
+                            <span class="stat-label">Produtos</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">50+</span>
+                            <span class="stat-label">Lojas</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">70%</span>
+                            <span class="stat-label">Desconto</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Lojas Parceiras -->
+            <section class="stores-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-store"></i> Lojas Parceiras</h2>
+                    <p>Compre com segurança nas melhores lojas online</p>
+                </div>
+                <div class="stores-grid">
+                    <div class="store-card active" data-loja="todas" onclick="filtrarPorLoja('todas')">
+                        <div class="store-icon">
+                            <i class="fas fa-th-large"></i>
+                        </div>
+                        <span class="store-name">Todas</span>
+                    </div>
+                    <div class="store-card amazon" data-loja="amazon" onclick="filtrarPorLoja('amazon')">
+                        <div class="store-logo">
+                            <img src="logos/amazon.png" alt="Amazon" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">
+                        </div>
+                        <span class="store-name">Amazon</span>
+                    </div>
+                    <div class="store-card mercadolivre" data-loja="mercadolivre" onclick="filtrarPorLoja('mercadolivre')">
+                        <div class="store-logo">
+                            <img src="logos/mercadolivre.jpg" alt="Mercado Livre" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">
+                        </div>
+                        <span class="store-name">Mercado Livre</span>
+                    </div>
+                    <div class="store-card shopee" data-loja="shopee" onclick="filtrarPorLoja('shopee')">
+                        <div class="store-logo">
+                            <img src="logos/shopee.png" alt="Shopee" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">
+                        </div>
+                        <span class="store-name">Shopee</span>
+                    </div>
+                    <div class="store-card magalu" data-loja="magalu" onclick="filtrarPorLoja('magalu')">
+                        <div class="store-logo">
+                            <img src="logos/magalu.png" alt="Magalu" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">
+                        </div>
+                        <span class="store-name">Magalu</span>
+                    </div>
+                    <div class="store-card shein" data-loja="shein" onclick="filtrarPorLoja('shein')">
+                        <div class="store-logo">
+                            <img src="logos/shein.png" alt="Shein" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">
+                        </div>
+                        <span class="store-name">Shein</span>
+                    </div>
+                    <div class="store-card alibaba" data-loja="alibaba" onclick="filtrarPorLoja('alibaba')">
+                        <div class="store-logo">
+                            <img src="logos/alibaba.png" alt="Alibaba" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">
+                        </div>
+                        <span class="store-name">Alibaba</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Loading -->
+            <div class="loading-container" id="loading-spinner">
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <p>Carregando ofertas incríveis...</p>
+                </div>
+            </div>
+
+            <!-- Grid de Produtos -->
+            <section class="products-section">
+                <div class="section-header">
+                    <h2 id="ofertas-titulo"><i class="fas fa-fire"></i> Ofertas do Dia</h2>
+                    <div class="section-actions">
+                        <div class="view-toggle">
+                            <button class="view-btn active" data-view="grid">
+                                <i class="fas fa-th"></i>
+                            </button>
+                            <button class="view-btn" data-view="list">
+                                <i class="fas fa-list"></i>
+                            </button>
+                        </div>
+                        <div class="sort-dropdown">
+                            <select id="sort-select">
+                                <option value="relevance">Mais Relevantes</option>
+                                <option value="price-low">Menor Preço</option>
+                                <option value="price-high">Maior Preço</option>
+                                <option value="newest">Mais Recentes</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="products-grid" id="grid-produtos"></div>
+                
+                <div class="load-more-container">
+                    <button id="load-more" class="load-more-btn">
+                        <i class="fas fa-plus"></i>
+                        <span>Carregar Mais Produtos</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Mensagens de Estado -->
+            <div class="empty-state" id="mensagem-vazia">
+                <div class="empty-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3>Nenhum produto encontrado</h3>
+                <p>Tente ajustar os filtros ou buscar por outros termos</p>
+                <button class="btn-primary" onclick="location.reload()">
+                    <i class="fas fa-refresh"></i>
+                    Limpar Filtros
+                </button>
+            </div>
+
+            <div class="error-state" id="error-message">
+                <div class="error-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h3>Ops! Algo deu errado</h3>
+                <p>Não foi possível carregar os produtos. Verifique sua conexão.</p>
+                <button class="btn-primary" onclick="location.reload()">
+                    <i class="fas fa-redo"></i>
+                    Tentar Novamente
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal de Imagem -->
+    <div class="image-modal" id="imageModal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-container">
+            <button class="modal-close" id="modal-close">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-content">
+                <div class="modal-carousel" id="modalCarrossel">
+                    <div class="carousel-images" id="modalCarrosselImagens"></div>
+                    <button class="carousel-btn prev" id="modalPrev">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="carousel-btn next" id="modalNext">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    <div class="carousel-dots" id="modalCarrosselDots"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Centro de Compras</h4>
+                    <p>Sua plataforma de ofertas e descontos nas melhores lojas online do Brasil.</p>
+                    <div class="social-links">
+                        <a href="https://www.instagram.com/cdccentrodecompras/" target="_blank" class="social-link instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://www.tiktok.com/@cdc.centraldecompas" target="_blank" class="social-link tiktok">
+                            <i class="fab fa-tiktok"></i>
+                        </a>
+                        <a href="https://x.com/ComprasCdc" target="_blank" class="social-link twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="https://www.youtube.com/channel/UCaKHlI-hWqwdAXS6Xsv3ZzA" target="_blank" class="social-link youtube">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Atendimento</h4>
+                    <ul>
+                        <li><a href="https://wa.me/5521975179737" target="_blank">WhatsApp</a></li>
+                        <li><a href="https://t.me/boost/centraldecomprascdc" target="_blank">Telegram</a></li>
+                        <li><a href="sobre.html">Central de Ajuda</a></li>
+                        <li><a href="contato.html">Contato</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Institucional</h4>
+                    <ul>
+                        <li><a href="sobre.html">Sobre Nós</a></li>
+                        <li><a href="#">Política de Privacidade</a></li>
+                        <li><a href="#">Termos de Uso</a></li>
+                        <li><a href="#">Como Funciona</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Categorias</h4>
+                    <ul>
+                        <li><a href="#" onclick="filtrarPorCategoria('eletronicos')">Eletrônicos</a></li>
+                        <li><a href="#" onclick="filtrarPorCategoria('moda')">Moda</a></li>
+                        <li><a href="#" onclick="filtrarPorCategoria('casa')">Casa e Decoração</a></li>
+                        <li><a href="#" onclick="filtrarPorCategoria('pet')">Pet</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div class="footer-disclaimer">
+                    <p><i class="fas fa-info-circle"></i> Este site contém links de afiliados. Ao comprar através dos nossos links, você nos ajuda a manter o site funcionando sem custo adicional para você.</p>
+                </div>
+                <div class="footer-copyright">
+                    <p>&copy; <span id="year"></span> Centro de Compras. Todos os direitos reservados.</p>
+                </div>
+            </div>
+        </div>
     </footer>
-    <div class="robo-assistente">
-        <a href="https://wa.me/5521975179737" target="_blank" aria-label="Falar com o assistente virtual no WhatsApp">
-            <img src="imagens/robo.jpg" alt="Robô Assistente" class="robo-imagem">
-            <div class="robo-texto">Posso ajudar?</div>
+
+    <!-- Botão Flutuante -->
+    <div class="floating-assistant">
+        <a href="https://wa.me/5521975179737" target="_blank" class="floating-btn">
+            <i class="fab fa-whatsapp"></i>
+            <div class="floating-tooltip">
+                <span>Precisa de ajuda?</span>
+                <small>Fale conosco no WhatsApp</small>
+            </div>
         </a>
     </div>
+
     <script>
         const VERSION = "1.0.8";
         const API_URL = 'https://minha-api-produtos.onrender.com';
@@ -393,6 +457,7 @@
 
         document.getElementById("year").textContent = new Date().getFullYear();
 
+        // Admin Access
         const logo = document.getElementById("site-logo");
         let clickCount = 0, clickTimeout = null;
         logo.addEventListener("click", (e) => {
@@ -407,6 +472,28 @@
             }
         });
 
+        // Categories Sidebar Toggle
+        const categoriesToggle = document.getElementById("categories-toggle");
+        const categoriesSidebar = document.getElementById("categories-sidebar");
+        const closeSidebar = document.getElementById("close-sidebar");
+        const overlay = document.getElementById("overlay");
+
+        categoriesToggle.addEventListener("click", () => {
+            categoriesSidebar.classList.toggle("active");
+            overlay.classList.toggle("active");
+        });
+
+        closeSidebar.addEventListener("click", () => {
+            categoriesSidebar.classList.remove("active");
+            overlay.classList.remove("active");
+        });
+
+        overlay.addEventListener("click", () => {
+            categoriesSidebar.classList.remove("active");
+            overlay.classList.remove("active");
+        });
+
+        // Load Products
         async function carregarProdutos(categoria = "todas", loja = "todas", busca = "", page = 1) {
             const gridProdutos = document.getElementById("grid-produtos");
             const mensagemVazia = document.getElementById("mensagem-vazia");
@@ -458,7 +545,7 @@
                     allProducts = [...allProducts, ...filteredProducts];
 
                     if (allProducts.length === 0) {
-                        mensagemVazia.style.display = "block";
+                        mensagemVazia.style.display = "flex";
                         gridProdutos.style.display = "none";
                     } else {
                         mensagemVazia.style.display = "none";
@@ -477,6 +564,7 @@
                                 ? produto.imagens.map(img => img.startsWith('http') ? img : `${API_URL}${img}`)
                                 : ["https://minha-api-produtos.onrender.com/imagens/placeholder.jpg"];
                             const carrosselId = `carrossel-${globalIndex}`;
+                            const lojaClass = produto.loja.toLowerCase();
                             card.innerHTML = `
                                 <div class="carrossel" id="${carrosselId}">
                                     <div class="carrossel-imagens">
@@ -490,24 +578,26 @@
                                         </div>
                                     ` : ""}
                                 </div>
-                                <span>${produto.nome}</span>
+                                <span class="produto-nome">${produto.nome}</span>
                                 <span class="descricao">Loja: ${produto.loja}</span>
-                                <a href="${produto.link}" target="_blank" class="tarja-preco" aria-label="Clique para ver o preço de ${produto.nome} na loja">Clique para ver o preço</a>
+                                <a href="${produto.link}" target="_blank" class="tarja-preco tarja-${lojaClass}" aria-label="Clique para ver o preço de ${produto.nome} na loja">
+                                    <i class="fas fa-shopping-cart"></i> Ver Preço
+                                </a>
                             `;
                             gridProdutos.appendChild(card);
                         });
                     }
                     
-                    loadMoreButton.style.display = data.total > allProducts.length ? "block" : "none";
+                    loadMoreButton.style.display = data.total > allProducts.length ? "flex" : "none";
                     isLoading = false;
                     return;
                 } catch (error) {
                     console.error(`⚠️ Tentativa ${attempt} falhou: ${error.message}`);
                     if (attempt === maxRetries) {
-                        errorMessage.textContent = "Erro ao carregar os produtos. Tente novamente mais tarde.";
-                        errorMessage.style.display = "block";
+                        errorMessage.style.display = "flex";
                         mensagemVazia.style.display = "none";
                         gridProdutos.style.display = "none";
+                        errorMessage.querySelector("p").textContent = "Erro ao carregar os produtos. Tente novamente mais tarde.";
                     }
                     attempt++;
                     await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
@@ -550,16 +640,15 @@
             const modal = document.getElementById("imageModal");
             const carrosselImagens = document.getElementById("modalCarrosselImagens");
             const carrosselDots = document.getElementById("modalCarrosselDots");
-            const modalError = document.getElementById("modalError");
             const prevButton = document.getElementById("modalPrev");
             const nextButton = document.getElementById("modalNext");
+            const modalClose = document.getElementById("modal-close");
 
-            if (!modal || !carrosselImagens || !carrosselDots || !modalError || !prevButton || !nextButton) {
+            if (!modal || !carrosselImagens || !carrosselDots || !prevButton || !nextButton) {
                 console.error("Elementos do modal não encontrados");
                 return;
             }
 
-            modalError.style.display = "none";
             carrosselImagens.innerHTML = "";
             carrosselDots.innerHTML = "";
             prevButton.classList.remove("visible");
@@ -567,10 +656,7 @@
 
             const produto = allProducts[index];
             if (!produto || !produto.imagens || produto.imagens.length === 0) {
-                modalError.textContent = "Nenhuma imagem disponível para este produto.";
-                modalError.style.display = "block";
-                modal.style.display = "flex";
-                modal.focus();
+                alert("Nenhuma imagem disponível para este produto.");
                 return;
             }
 
@@ -602,10 +688,7 @@
                 modal.focus();
             } catch (error) {
                 console.error("Erro ao abrir modal:", error);
-                modalError.textContent = "Erro ao carregar as imagens. Tente novamente.";
-                modalError.style.display = "block";
-                modal.style.display = "flex";
-                modal.focus();
+                alert("Erro ao carregar as imagens. Tente novamente.");
             }
         }
 
@@ -642,22 +725,26 @@
             }
         }
 
+        document.getElementById("modal-close").addEventListener("click", closeModal);
+        document.getElementById("modalPrev").addEventListener("click", () => moveModalCarrossel(-1));
+        document.getElementById("modalNext").addEventListener("click", () => moveModalCarrossel(1));
+
         function filtrarPorCategoria(categoria) {
-            document.querySelectorAll(".categoria-item").forEach(item => {
+            document.querySelectorAll(".category-item").forEach(item => {
                 const isActive = item.dataset.categoria === categoria;
-                item.classList.toggle("ativa", isActive);
-                item.setAttribute("aria-selected", isActive);
+                item.classList.toggle("active", isActive);
             });
             currentCategory = categoria;
             currentPage = 1;
             carregarProdutos(currentCategory, currentStore, currentSearch, currentPage);
+            categoriesSidebar.classList.remove("active");
+            overlay.classList.remove("active");
         }
 
         function filtrarPorLoja(loja) {
-            document.querySelectorAll(".loja, .loja-todas").forEach(item => {
+            document.querySelectorAll(".store-card").forEach(item => {
                 const isActive = item.dataset.loja === loja;
-                item.classList.toggle("ativa", isActive);
-                item.setAttribute("aria-pressed", isActive);
+                item.classList.toggle("active", isActive);
             });
             currentStore = loja;
             currentPage = 1;
@@ -674,6 +761,21 @@
                 });
             }
             carregarProdutos();
+
+            // View Toggle (Grid/List - Placeholder for future implementation)
+            document.querySelectorAll(".view-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    document.querySelectorAll(".view-btn").forEach(b => b.classList.remove("active"));
+                    btn.classList.add("active");
+                    // Add logic for grid/list view if needed
+                });
+            });
+
+            // Sort Dropdown (Placeholder for future implementation)
+            document.getElementById("sort-select").addEventListener("change", (e) => {
+                console.log("Ordenar por:", e.target.value);
+                // Add sorting logic if needed
+            });
         });
 
         window.addEventListener('keyup', (event) => {
@@ -685,17 +787,6 @@
                     moveModalCarrossel(1);
                 } else if (event.key === 'Escape') {
                     closeModal();
-                } else if (event.key === 'Tab') {
-                    const focusableElements = modal.querySelectorAll('button, [role="button"]');
-                    const firstElement = focusableElements[0];
-                    const lastElement = focusableElements[focusableElements.length - 1];
-                    if (event.shiftKey && document.activeElement === firstElement) {
-                        event.preventDefault();
-                        lastElement.focus();
-                    } else if (!event.shiftKey && document.activeElement === lastElement) {
-                        event.preventDefault();
-                        firstElement.focus();
-                    }
                 }
             }
         });
