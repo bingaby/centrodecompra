@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Ofertas com descontos reais nas principais lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliado seguros e atualizados.">
-    <meta property="og:title" content="Centro de Compras - Ofertas e Descontos">
-    <meta property="og:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliados seguros e atualizados!">
+    <meta name="description" content="Ofertas com descontos reais nas principais lojas como Amazon, Shein, Shopee e Magalu. Links de afiliado seguros e atualizados.">
+    <meta property="og:title" content="Centro de Compra - Ofertas e Descontos">
+    <meta property="og:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee e Magalu. Links de afiliados seguros e atualizados!">
     <meta property="og:image" content="https://placehold.co/1200x630/3483fa/ffffff?text=Centro+de+Compras">
     <meta property="og:url" content="https://centrodecompra.com.br/">
     <meta name="twitter:card" content="summary_large_image">
-    <title>Centro de Compras - Ofertas do Dia</title>
+    <title>Centro de Compra - Ofertas do Dia</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
@@ -75,9 +75,6 @@
                         <a href="#" class="nav-link active">Ofertas do Dia</a>
                         <a href="#" class="nav-link">Mais Vendidos</a>
                         <a href="#" class="nav-link">Cupons</a>
-                        <a href="#" class="nav-link">Eletrônicos</a>
-                        <a href="#" class="nav-link">Moda</a>
-                        <a href="#" class="nav-link">Casa</a>
                     </div>
                 </div>
             </div>
@@ -150,6 +147,10 @@
                     <i class="fas fa-pencil-alt"></i>
                     <span>Papelaria</span>
                 </li>
+                <li class="category-item" data-categoria="pet" onclick="filtrarPorCategoria('pet')">
+                    <i class="fas fa-paw"></i>
+                    <span>Pet</span>
+                </li>
             </ul>
         </div>
     </div>
@@ -184,6 +185,21 @@
                 </div>
             </section>
 
+            <!-- Espaço para Anúncio do Google -->
+            <section class="ad-section">
+                <div class="ad-container">
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                         data-ad-slot="XXXXXXXXXX"
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                    <script>
+                        (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                </div>
+            </section>
+
             <!-- Lojas Parceiras -->
             <section class="stores-section">
                 <div class="section-header">
@@ -205,7 +221,7 @@
                     </div>
                     <div class="store-card mercadolivre" data-loja="mercadolivre" onclick="filtrarPorLoja('mercadolivre')">
                         <div class="store-logo">
-                            <img src="https://placehold.co/80x30/ffe600/333333?text=ML" alt="Mercado Livre">
+                            <img src="https://placehold.co/80x30/ffe600/333333?text=Mercado+Livre" alt="Mercado Livre">
                         </div>
                         <span class="store-name">Mercado Livre</span>
                     </div>
@@ -225,13 +241,7 @@
                         <div class="store-logo">
                             <img src="https://placehold.co/80x30/000000/ffffff?text=SHEIN" alt="Shein">
                         </div>
-                        <span class="store-name">Shein</span>
-                    </div>
-                    <div class="store-card alibaba" data-loja="alibaba" onclick="filtrarPorLoja('alibaba')">
-                        <div class="store-logo">
-                            <img src="https://placehold.co/80x30/ff6a00/ffffff?text=Alibaba" alt="Alibaba">
-                        </div>
-                        <span class="store-name">Alibaba</span>
+                        <span class="store-name">SHEIN</span>
                     </div>
                 </div>
             </section>
@@ -369,16 +379,6 @@
                         <li><a href="#">Como Funciona</a></li>
                     </ul>
                 </div>
-                
-                <div class="footer-section">
-                    <h4>Categorias</h4>
-                    <ul>
-                        <li><a href="#" onclick="filtrarPorCategoria('eletronicos')">Eletrônicos</a></li>
-                        <li><a href="#" onclick="filtrarPorCategoria('moda')">Moda</a></li>
-                        <li><a href="#" onclick="filtrarPorCategoria('casa')">Casa e Decoração</a></li>
-                        <li><a href="#" onclick="filtrarPorCategoria('beleza')">Beleza</a></li>
-                    </ul>
-                </div>
             </div>
             
             <div class="footer-bottom">
@@ -386,7 +386,7 @@
                     <p><i class="fas fa-info-circle"></i> Este site contém links de afiliados. Ao comprar através dos nossos links, você nos ajuda a manter o site funcionando sem custo adicional para você.</p>
                 </div>
                 <div class="footer-copyright">
-                    <p>&copy; <span id="year"></span> Centro de Compras. Todos os direitos reservados.</p>
+                    <p>&copy; <span id="year"></span> Centro de Compra. Todos os direitos reservados.</p>
                 </div>
             </div>
         </div>
@@ -403,6 +403,7 @@
         </a>
     </div>
 
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
