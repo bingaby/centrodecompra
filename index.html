@@ -6,7 +6,7 @@
     <meta name="description" content="Ofertas com descontos reais nas principais lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliado seguros e atualizados.">
     <meta property="og:title" content="Centro de Compras - Ofertas e Descontos">
     <meta property="og:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliados seguros e atualizados!">
-    <meta property="og:image" content="https://via.placeholder.com/1200x630/3483fa/ffffff?text=Centro+de+Compras">
+    <meta property="og:image" content="https://placehold.co/1200x630/3483fa/ffffff?text=Centro+de+Compras">
     <meta property="og:url" content="https://centrodecompra.com.br/">
     <meta name="twitter:card" content="summary_large_image">
     <title>Centro de Compras - Ofertas do Dia</title>
@@ -34,7 +34,7 @@
             <div class="container">
                 <div class="header-content">
                     <div class="logo-section">
-                        <img src="https://via.placeholder.com/180x60/3483fa/ffffff?text=Centro+de+Compras" alt="Centro de Compras" class="logo" id="site-logo">
+                        <img src="https://placehold.co/180x60/3483fa/ffffff?text=Centro+de+Compras" alt="Centro de Compras" class="logo" id="site-logo">
                     </div>
                     
                     <div class="search-section">
@@ -94,45 +94,61 @@
         </div>
         <div class="sidebar-content">
             <ul class="categories-list">
-                <li class="category-item active" data-categoria="todas">
+                <li class="category-item active" data-categoria="todas" onclick="filtrarPorCategoria('todas')">
                     <i class="fas fa-th-large"></i>
                     <span>Todas as Categorias</span>
                 </li>
-                <li class="category-item" data-categoria="eletronicos">
+                <li class="category-item" data-categoria="eletronicos" onclick="filtrarPorCategoria('eletronicos')">
                     <i class="fas fa-laptop"></i>
                     <span>Eletrônicos</span>
                 </li>
-                <li class="category-item" data-categoria="moda">
+                <li class="category-item" data-categoria="moda" onclick="filtrarPorCategoria('moda')">
                     <i class="fas fa-tshirt"></i>
                     <span>Moda</span>
                 </li>
-                <li class="category-item" data-categoria="casa">
+                <li class="category-item" data-categoria="casa" onclick="filtrarPorCategoria('casa')">
                     <i class="fas fa-home"></i>
                     <span>Casa e Decoração</span>
                 </li>
-                <li class="category-item" data-categoria="beleza">
+                <li class="category-item" data-categoria="beleza" onclick="filtrarPorCategoria('beleza')">
                     <i class="fas fa-heart"></i>
                     <span>Beleza e Cuidado</span>
                 </li>
-                <li class="category-item" data-categoria="esportes">
+                <li class="category-item" data-categoria="esportes" onclick="filtrarPorCategoria('esportes')">
                     <i class="fas fa-dumbbell"></i>
                     <span>Esportes e Fitness</span>
                 </li>
-                <li class="category-item" data-categoria="infantil">
+                <li class="category-item" data-categoria="infantil" onclick="filtrarPorCategoria('infantil')">
                     <i class="fas fa-baby"></i>
                     <span>Bebês e Crianças</span>
                 </li>
-                <li class="category-item" data-categoria="automotivo">
+                <li class="category-item" data-categoria="automotivo" onclick="filtrarPorCategoria('automotivo')">
                     <i class="fas fa-car"></i>
                     <span>Automotivo</span>
                 </li>
-                <li class="category-item" data-categoria="games">
+                <li class="category-item" data-categoria="games" onclick="filtrarPorCategoria('games')">
                     <i class="fas fa-gamepad"></i>
                     <span>Games</span>
                 </li>
-                <li class="category-item" data-categoria="livros">
+                <li class="category-item" data-categoria="livros" onclick="filtrarPorCategoria('livros')">
                     <i class="fas fa-book"></i>
                     <span>Livros</span>
+                </li>
+                <li class="category-item" data-categoria="alimentos" onclick="filtrarPorCategoria('alimentos')">
+                    <i class="fas fa-utensils"></i>
+                    <span>Alimentos e Bebidas</span>
+                </li>
+                <li class="category-item" data-categoria="ferramentas" onclick="filtrarPorCategoria('ferramentas')">
+                    <i class="fas fa-tools"></i>
+                    <span>Ferramentas</span>
+                </li>
+                <li class="category-item" data-categoria="saude" onclick="filtrarPorCategoria('saude')">
+                    <i class="fas fa-medkit"></i>
+                    <span>Saúde e Bem-Estar</span>
+                </li>
+                <li class="category-item" data-categoria="papelaria" onclick="filtrarPorCategoria('papelaria')">
+                    <i class="fas fa-pencil-alt"></i>
+                    <span>Papelaria</span>
                 </li>
             </ul>
         </div>
@@ -175,45 +191,45 @@
                     <p>Compre com segurança nas melhores lojas online</p>
                 </div>
                 <div class="stores-grid">
-                    <div class="store-card active" data-loja="todas">
+                    <div class="store-card active" data-loja="todas" onclick="filtrarPorLoja('todas')">
                         <div class="store-icon">
                             <i class="fas fa-th-large"></i>
                         </div>
                         <span class="store-name">Todas</span>
                     </div>
-                    <div class="store-card amazon" data-loja="amazon">
+                    <div class="store-card amazon" data-loja="amazon" onclick="filtrarPorLoja('amazon')">
                         <div class="store-logo">
-                            <img src="https://via.placeholder.com/80x30/ff9900/ffffff?text=Amazon" alt="Amazon">
+                            <img src="https://placehold.co/80x30/ff9900/ffffff?text=Amazon" alt="Amazon">
                         </div>
                         <span class="store-name">Amazon</span>
                     </div>
-                    <div class="store-card mercadolivre" data-loja="mercadolivre">
+                    <div class="store-card mercadolivre" data-loja="mercadolivre" onclick="filtrarPorLoja('mercadolivre')">
                         <div class="store-logo">
-                            <img src="https://via.placeholder.com/80x30/ffe600/333333?text=ML" alt="Mercado Livre">
+                            <img src="https://placehold.co/80x30/ffe600/333333?text=ML" alt="Mercado Livre">
                         </div>
                         <span class="store-name">Mercado Livre</span>
                     </div>
-                    <div class="store-card shopee" data-loja="shopee">
+                    <div class="store-card shopee" data-loja="shopee" onclick="filtrarPorLoja('shopee')">
                         <div class="store-logo">
-                            <img src="https://via.placeholder.com/80x30/ee4d2d/ffffff?text=Shopee" alt="Shopee">
+                            <img src="https://placehold.co/80x30/ee4d2d/ffffff?text=Shopee" alt="Shopee">
                         </div>
                         <span class="store-name">Shopee</span>
                     </div>
-                    <div class="store-card magalu" data-loja="magalu">
+                    <div class="store-card magalu" data-loja="magalu" onclick="filtrarPorLoja('magalu')">
                         <div class="store-logo">
-                            <img src="https://via.placeholder.com/80x30/0066cc/ffffff?text=Magalu" alt="Magalu">
+                            <img src="https://placehold.co/80x30/0066cc/ffffff?text=Magalu" alt="Magalu">
                         </div>
                         <span class="store-name">Magalu</span>
                     </div>
-                    <div class="store-card shein" data-loja="shein">
+                    <div class="store-card shein" data-loja="shein" onclick="filtrarPorLoja('shein')">
                         <div class="store-logo">
-                            <img src="https://via.placeholder.com/80x30/000000/ffffff?text=SHEIN" alt="Shein">
+                            <img src="https://placehold.co/80x30/000000/ffffff?text=SHEIN" alt="Shein">
                         </div>
                         <span class="store-name">Shein</span>
                     </div>
-                    <div class="store-card alibaba" data-loja="alibaba">
+                    <div class="store-card alibaba" data-loja="alibaba" onclick="filtrarPorLoja('alibaba')">
                         <div class="store-logo">
-                            <img src="https://via.placeholder.com/80x30/ff6a00/ffffff?text=Alibaba" alt="Alibaba">
+                            <img src="https://placehold.co/80x30/ff6a00/ffffff?text=Alibaba" alt="Alibaba">
                         </div>
                         <span class="store-name">Alibaba</span>
                     </div>
@@ -255,7 +271,7 @@
                 <div class="products-grid" id="grid-produtos"></div>
                 
                 <div class="load-more-container">
-                    <button id="load-more" class="load-more-btn">
+                    <button id="load-more" class="load-more-btn" onclick="carregarMaisProdutos()">
                         <i class="fas fa-plus"></i>
                         <span>Carregar Mais Produtos</span>
                     </button>
@@ -357,10 +373,10 @@
                 <div class="footer-section">
                     <h4>Categorias</h4>
                     <ul>
-                        <li><a href="#">Eletrônicos</a></li>
-                        <li><a href="#">Moda</a></li>
-                        <li><a href="#">Casa e Decoração</a></li>
-                        <li><a href="#">Beleza</a></li>
+                        <li><a href="#" onclick="filtrarPorCategoria('eletronicos')">Eletrônicos</a></li>
+                        <li><a href="#" onclick="filtrarPorCategoria('moda')">Moda</a></li>
+                        <li><a href="#" onclick="filtrarPorCategoria('casa')">Casa e Decoração</a></li>
+                        <li><a href="#" onclick="filtrarPorCategoria('beleza')">Beleza</a></li>
                     </ul>
                 </div>
             </div>
