@@ -16,112 +16,166 @@
     <style>
         /* Estilos padrão para desktop */
         .products-grid {
-            grid-template-columns: repeat(8, 1fr); /* 8 colunas no desktop */
-            gap: var(--spacing-md);
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .produto-card .carrossel {
-            height: 150px; /* Imagens para 8 colunas */
-            width: 150px;
-            margin: 0 auto;
-        }
-        .produto-card .carrossel-imagens img {
-            max-height: 150px;
-            max-width: 150px;
-            object-fit: contain;
-            padding: var(--spacing-sm);
+            display: grid !important;
+            grid-template-columns: repeat(8, 1fr) !important; /* 8 colunas fixas */
+            gap: 16px !important; /* Espaçamento similar ao Mercado Livre */
+            max-width: 1200px !important;
+            margin: 0 auto !important;
+            padding: 16px !important;
         }
         .produto-card {
-            max-height: 300px; /* Cards ajustados */
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+            max-height: 280px !important; /* Altura dos cards */
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-between !important;
+            background: #fff !important;
+            border: 1px solid #e0e0e0 !important; /* Borda sutil como no Magalu */
+            border-radius: 8px !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important; /* Sombra leve */
+            transition: transform 0.2s !important;
+        }
+        .produto-card:hover {
+            transform: translateY(-4px) !important; /* Efeito de hover como no Mercado Livre */
+        }
+        .produto-card .carrossel {
+            height: 140px !important;
+            width: 140px !important;
+            margin: 8px auto !important;
+        }
+        .produto-card .carrossel-imagens img {
+            max-height: 140px !important;
+            max-width: 140px !important;
+            object-fit: contain !important;
+            padding: 4px !important;
         }
         .produto-nome {
-            font-size: 0.9rem;
-            line-height: 1.3;
-            margin: var(--spacing-sm) var(--spacing-md);
+            font-size: 0.9rem !important;
+            font-weight: 500 !important;
+            line-height: 1.3 !important;
+            margin: 4px 8px !important;
+            color: #333 !important;
+            text-align: center !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            display: -webkit-box !important;
+            -webkit-line-clamp: 2 !important;
+            -webkit-box-orient: vertical !important;
         }
         .descricao {
-            font-size: 0.8rem;
-            margin: 0 var(--spacing-md) var(--spacing-sm);
+            font-size: 0.8rem !important;
+            color: #666 !important;
+            margin: 0 8px 4px !important;
+            text-align: center !important;
         }
         .tarja-preco {
-            font-size: 0.85rem;
-            padding: var(--spacing-sm) var(--spacing-md);
-            margin: 0 var(--spacing-md) var(--spacing-md);
+            font-size: 0.85rem !important;
+            font-weight: 600 !important;
+            padding: 8px !important;
+            margin: 0 8px 8px !important;
+            background: #007bff !important; /* Azul similar ao Mercado Livre */
+            color: #fff !important;
+            border-radius: 4px !important;
+            text-align: center !important;
+            text-decoration: none !important;
+            display: block !important;
+            transition: background 0.2s !important;
+        }
+        .tarja-preco:hover {
+            background: #0056b3 !important; /* Hover mais escuro */
         }
         .main-nav .nav-links {
-            display: flex;
-            flex-wrap: wrap; /* Permite quebra de linha para muitas categorias */
-            gap: var(--spacing-md);
+            display: flex !important;
+            align-items: center !important;
+            gap: 16px !important;
+            flex-wrap: nowrap !important;
         }
         .nav-link {
-            font-size: 0.9rem;
+            font-size: 0.9rem !important;
+            color: #333 !important;
+            text-decoration: none !important;
+            padding: 8px !important;
+            transition: color 0.2s !important;
+        }
+        .nav-link:hover {
+            color: #007bff !important;
+        }
+        .nav-link.active {
+            color: #007bff !important;
+            font-weight: 600 !important;
+        }
+        .more-categories-btn {
+            font-size: 0.9rem !important;
+            color: #007bff !important;
+            cursor: pointer !important;
+            padding: 8px !important;
+        }
+        .more-categories-btn:hover {
+            text-decoration: underline !important;
         }
 
         /* Media query para tablets */
         @media (max-width: 1024px) {
             .products-grid {
-                grid-template-columns: repeat(6, 1fr); /* 6 colunas no tablet */
-                gap: var(--spacing-md);
+                grid-template-columns: repeat(6, 1fr) !important; /* 6 colunas */
+                gap: 12px !important;
             }
             .produto-card .carrossel {
-                height: 120px;
-                width: 120px;
+                height: 120px !important;
+                width: 120px !important;
             }
             .produto-card .carrossel-imagens img {
-                max-height: 120px;
-                max-width: 120px;
+                max-height: 120px !important;
+                max-width: 120px !important;
             }
             .produto-card {
-                max-height: 260px;
+                max-height: 260px !important;
             }
             .produto-nome {
-                font-size: 0.85rem;
+                font-size: 0.85rem !important;
             }
             .descricao {
-                font-size: 0.75rem;
+                font-size: 0.75rem !important;
             }
             .tarja-preco {
-                font-size: 0.8rem;
+                font-size: 0.8rem !important;
+                padding: 6px !important;
             }
         }
 
         /* Media query para mobile */
         @media (max-width: 768px) {
             .products-grid {
-                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); /* 3-4 colunas no mobile */
-                gap: var(--spacing-sm);
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)) !important; /* 3-4 colunas */
+                gap: 8px !important;
             }
             .produto-card .carrossel {
-                height: 80px; /* Compacto no mobile */
-                width: 80px;
+                height: 80px !important;
+                width: 80px !important;
             }
             .produto-card .carrossel-imagens img {
-                max-height: 80px;
-                max-width: 80px;
+                max-height: 80px !important;
+                max-width: 80px !important;
             }
             .produto-card {
-                max-height: 200px;
+                max-height: 200px !important;
             }
             .produto-nome {
-                font-size: 0.75rem;
+                font-size: 0.75rem !important;
             }
             .descricao {
-                font-size: 0.7rem;
+                font-size: 0.7rem !important;
             }
             .tarja-preco {
-                font-size: 0.7rem;
-                padding: var(--spacing-xs) var(--spacing-sm);
+                font-size: 0.7rem !important;
+                padding: 4px 8px !important;
             }
             .main-nav .nav-links {
-                flex-direction: column; /* Empilha categorias no mobile */
-                gap: var(--spacing-sm);
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 8px !important;
             }
-            .nav-link {
-                font-size: 0.8rem;
+            .nav-link, .more-categories-btn {
+                font-size: 0.8rem !important;
             }
         }
     </style>
@@ -187,17 +241,12 @@
                         <a href="index.html" class="nav-link active">Ofertas do Dia</a>
                         <a href="#" class="nav-link">Mais Vendidos</a>
                         <a href="cupom.html" class="nav-link">Cupons</a>
-                        <a href="#" class="nav-link" onclick="filtrarPorCategoria('todas')">Todas as Categorias</a>
+                        <a href="#" class="nav-link" onclick="filtrarPorCategoria('todas')">Todas</a>
                         <a href="#" class="nav-link" onclick="filtrarPorCategoria('pet')">Pet</a>
                         <a href="#" class="nav-link" onclick="filtrarPorCategoria('eletronicos')">Eletrônicos</a>
                         <a href="#" class="nav-link" onclick="filtrarPorCategoria('moda')">Moda</a>
-                        <a href="#" class="nav-link" onclick="filtrarPorCategoria('casa')">Casa e Decoração</a>
-                        <a href="#" class="nav-link" onclick="filtrarPorCategoria('beleza')">Beleza e Cuidado</a>
-                        <a href="#" class="nav-link" onclick="filtrarPorCategoria('esportes')">Esportes e Fitness</a>
-                        <a href="#" class="nav-link" onclick="filtrarPorCategoria('infantil')">Bebês e Crianças</a>
-                        <a href="#" class="nav-link" onclick="filtrarPorCategoria('automotivo')">Automotivo</a>
-                        <a href="#" class="nav-link" onclick="filtrarPorCategoria('games')">Games</a>
-                        <a href="#" class="nav-link" onclick="filtrarPorCategoria('livros')">Livros</a>
+                        <a href="#" class="nav-link" onclick="filtrarPorCategoria('casa')">Casa</a>
+                        <span class="more-categories-btn" onclick="document.getElementById('categories-toggle').click()">Mais Categorias</span>
                     </div>
                 </div>
             </div>
@@ -519,12 +568,12 @@
     </div>
 
     <script>
-        const VERSION = "1.0.9";
+        const VERSION = "1.0.10";
         const API_URL = 'https://minha-api-produtos.onrender.com';
         let currentImages = [];
         let currentImageIndex = 0;
         let currentPage = 1;
-        const productsPerPage = 24; // Ajustado para 24 produtos por página
+        const productsPerPage = 24; // 24 produtos por página
         let allProducts = [];
         let isLoading = false;
         let currentCategory = "todas";
