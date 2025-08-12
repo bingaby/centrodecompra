@@ -332,31 +332,6 @@ document.querySelectorAll(".view-btn").forEach(btn => {
     });
 });
 
-function checkConnection() {
-    const statusElement = document.createElement("div");
-    statusElement.classList.add("connection-status");
-    document.body.appendChild(statusElement);
-
-    function updateStatus() {
-        const isOnline = navigator.onLine;
-        statusElement.classList.toggle("online", isOnline);
-        statusElement.classList.toggle("offline", !isOnline);
-        statusElement.innerHTML = `
-            <div class="status-content">
-                <span><i class="fas ${isOnline ? "fa-check-circle" : "fa-exclamation-circle"}"></i> 
-                ${isOnline ? "Conectado à Internet" : "Sem conexão com a Internet"}</span>
-                <small>${isOnline ? "Você está online!" : "Verifique sua conexão."}</small>
-            </div>
-        `;
-        setTimeout(() => statusElement.remove(), 3000);
-    }
-
-    window.addEventListener("online", updateStatus);
-    window.addEventListener("offline", updateStatus);
-    updateStatus();
-}
-
 document.addEventListener("DOMContentLoaded", () => {
     carregarProdutos();
-    checkConnection();
 });
