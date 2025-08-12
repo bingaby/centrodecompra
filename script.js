@@ -48,7 +48,32 @@ overlay.addEventListener("click", () => {
     overlay.classList.remove("active");
 });
 
-// Função para embaralhar array (Fisher-Yates Shuffle)
+// Bottom Navigation
+function navigateTo(action) {
+    document.querySelectorAll(".nav-item").forEach(item => {
+        item.classList.toggle("active", item.getAttribute("data-action") === action);
+    });
+    if (action === "home") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        carregarProdutos();
+    }
+}
+
+function toggleCategories() {
+    categoriesSidebar.classList.toggle("active");
+    overlay.classList.toggle("active");
+    document.querySelector(".nav-item[data-action='categories']").classList.add("active");
+    document.querySelectorAll(".nav-item:not([data-action='categories'])").forEach(item => item.classList.remove("active"));
+}
+
+function focusSearch() {
+    const searchInput = document.getElementById("busca");
+    searchInput.focus();
+    document.querySelector(".nav-item[data-action='search']").classList.add("active");
+    document.querySelectorAll(".nav-item:not([data-action='search'])").forEach(item => item.classList.remove("active"));
+}
+
+// Função para embaralhar array
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -82,18 +107,16 @@ async function carregarProdutos(categoria = "todas", loja = "todas", busca = "",
 
     while (attempt <= maxRetries) {
         try {
-            console.log(`Tentativa ${attempt}: Carregando de ${API_URL}/api/produtos?page=${page}&limit=${productsPerPage}`);
             const response = await fetch(
                 `${API_URL}/api/produtos?page=${page}&limit=${productsPerPage}`,
                 { cache: "no-store" }
             );
             if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Erro HTTP ${response.status}: ${errorText || 'Resposta vazia'}`);
+                throw new Error(`Erro HTTP ${response.status}`);
             }
             const data = await response.json();
             if (!data || !Array.isArray(data.produtos)) {
-                throw new Error('Resposta inválida: produtos não é um array');
+                throw new Error('Resposta inválida');
             }
 
             const filteredProducts = data.produtos.filter(p =>
@@ -107,7 +130,6 @@ async function carregarProdutos(categoria = "todas", loja = "todas", busca = "",
                 (!busca || p.nome.toLowerCase().includes(busca.toLowerCase()))
             );
 
-            // Embaralhar produtos apenas na primeira página
             const productsToRender = page === 1 ? shuffleArray([...filteredProducts]) : filteredProducts;
             allProducts = [...allProducts, ...productsToRender];
 
@@ -145,7 +167,7 @@ async function carregarProdutos(categoria = "todas", loja = "todas", busca = "",
                         </div>
                         <span class="produto-nome">${produto.nome}</span>
                         <span class="descricao">Loja: ${produto.loja}</span>
-                        <a href="${produto.link}" target="_blank" class="tarja-preco tarja-${lojaClass}" aria-label="Clique para ver o preço de ${produto.nome} na loja">
+                        <a href="${produto.link}" target="_blank" class="tarja-preco tarja-${lojaClass}" aria-label="Ver preço de ${produto.nome}">
                             <i class="fas fa-shopping-cart"></i> Ver Preço
                         </a>
                     `;
@@ -160,9 +182,8 @@ async function carregarProdutos(categoria = "todas", loja = "todas", busca = "",
             console.error(`⚠️ Tentativa ${attempt} falhou: ${error.message}`);
             if (attempt === maxRetries) {
                 errorMessage.style.display = "flex";
-                mensagemVazia.style.display = "none";
                 gridProdutos.style.display = "none";
-                errorMessage.querySelector("p").textContent = "Erro ao carregar os produtos. Tente novamente mais tarde.";
+                errorMessage.querySelector("p").textContent = "Erro ao carregar os produtos.";
             }
             attempt++;
             await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
@@ -207,7 +228,6 @@ async function openModal(index, imageIndex) {
     const carrosselDots = document.getElementById("modalCarrosselDots");
     const prevButton = document.getElementById("modalPrev");
     const nextButton = document.getElementById("modalNext");
-    const modalClose = document.getElementById("modal-close");
 
     if (!modal || !carrosselImagens || !carrosselDots || !prevButton || !nextButton) {
         console.error("Elementos do modal não encontrados");
@@ -221,7 +241,7 @@ async function openModal(index, imageIndex) {
 
     const produto = allProducts[index];
     if (!produto || !produto.imagens || produto.imagens.length === 0) {
-        alert("Nenhuma imagem disponível para este produto.");
+        alert("Nenhuma imagem disponível.");
         return;
     }
 
@@ -244,7 +264,7 @@ async function openModal(index, imageIndex) {
         carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
 
         carrosselDots.innerHTML = validImages.map((_, i) => 
-            `<span class="carrossel-dot ${i === currentImageIndex ? "ativo" : ""}" onclick="setModalCarrosselImage(${i})" aria-label="Selecionar imagem ${i + 1}" role="button" tabindex="0"></span>`
+            `<span class="carrossel-dot ${i === currentImageIndex ? "ativo" : ""}" onclick="setModalCarrosselImage(${i})" aria-label="Selecionar imagem ${i + 1}"></span>`
         ).join("");
 
         prevButton.classList.toggle("visible", validImages.length > 1);
@@ -253,7 +273,7 @@ async function openModal(index, imageIndex) {
         modal.focus();
     } catch (error) {
         console.error("Erro ao abrir modal:", error);
-        alert("Erro ao carregar as imagens. Tente novamente.");
+        alert("Erro ao carregar imagens.");
     }
 }
 
@@ -279,8 +299,7 @@ function setModalCarrosselImage(index) {
 }
 
 document.getElementById("modal-close")?.addEventListener("click", () => {
-    const modal = document.getElementById("imageModal");
-    if (modal) modal.style.display = "none";
+    document.getElementById("imageModal").style.display = "none";
 });
 
 document.getElementById("modalPrev")?.addEventListener("click", () => moveModalCarrossel(-1));
@@ -293,6 +312,8 @@ function filtrarPorCategoria(categoria) {
         item.classList.toggle("active", item.getAttribute("data-categoria") === categoria);
     });
     carregarProdutos(currentCategory, currentStore, currentSearch);
+    categoriesSidebar.classList.remove("active");
+    overlay.classList.remove("active");
 }
 
 function filtrarPorLoja(loja) {
@@ -320,16 +341,6 @@ document.getElementById("sort-select")?.addEventListener("change", (e) => {
     });
     currentPage = 1;
     carregarProdutos(currentCategory, currentStore, currentSearch);
-});
-
-document.querySelectorAll(".view-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-        document.querySelectorAll(".view-btn").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        const view = btn.getAttribute("data-view");
-        const grid = document.getElementById("grid-produtos");
-        grid.classList.toggle("list-view", view === "list");
-    });
 });
 
 document.addEventListener("DOMContentLoaded", () => {
