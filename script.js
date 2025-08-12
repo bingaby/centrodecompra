@@ -48,6 +48,15 @@ overlay.addEventListener("click", () => {
     overlay.classList.remove("active");
 });
 
+// Função para embaralhar array (Fisher-Yates Shuffle)
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
 // Load Products
 async function carregarProdutos(categoria = "todas", loja = "todas", busca = "", page = 1) {
     const gridProdutos = document.getElementById("grid-produtos");
@@ -97,7 +106,10 @@ async function carregarProdutos(categoria = "todas", loja = "todas", busca = "",
                 (loja === "todas" || p.loja.toLowerCase() === loja.toLowerCase()) &&
                 (!busca || p.nome.toLowerCase().includes(busca.toLowerCase()))
             );
-            allProducts = [...allProducts, ...filteredProducts];
+
+            // Embaralhar produtos apenas na primeira página
+            const productsToRender = page === 1 ? shuffleArray([...filteredProducts]) : filteredProducts;
+            allProducts = [...allProducts, ...productsToRender];
 
             if (allProducts.length === 0) {
                 mensagemVazia.style.display = "flex";
@@ -106,8 +118,6 @@ async function carregarProdutos(categoria = "todas", loja = "todas", busca = "",
                 mensagemVazia.style.display = "none";
                 gridProdutos.style.display = "grid";
                 
-                const productsToRender = filteredProducts;
-
                 productsToRender.forEach((produto, index) => {
                     const card = document.createElement("div");
                     card.classList.add("produto-card", "visible");
@@ -254,110 +264,99 @@ function moveModalCarrossel(direction) {
 
     const total = currentImages.length;
     currentImageIndex = (currentImageIndex + direction + total) % total;
-    
     carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
     Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle("ativo", i === currentImageIndex));
 }
 
 function setModalCarrosselImage(index) {
-    if (index < 0 || index >= currentImages.length) return;
-    
-    currentImageIndex = index;
     const carrosselImagens = document.getElementById("modalCarrosselImagens");
     const carrosselDots = document.getElementById("modalCarrosselDots")?.children;
     if (!carrosselImagens || !carrosselDots) return;
-    
-    carrosselImagens.style.transform = `translateX(-${index * 100}%)`;
-    Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle("ativo", i === index));
+
+    currentImageIndex = index;
+    carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+    Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle("ativo", i === currentImageIndex));
 }
 
-function closeModal() {
+document.getElementById("modal-close")?.addEventListener("click", () => {
     const modal = document.getElementById("imageModal");
-    if (modal) {
-        modal.style.display = "none";
-        currentImages = [];
-        currentImageIndex = 0;
-    }
-}
-
-document.getElementById("modal-close").addEventListener("click", closeModal);
-document.getElementById("modalPrev").addEventListener("click", () => moveModalCarrossel(-1));
-document.getElementById("modalNext").addEventListener("click", () => moveModalCarrossel(1));
-
-// Category Filtering
-document.querySelectorAll(".category-item").forEach(item => {
-    item.addEventListener("click", () => {
-        const categoria = item.dataset.categoria;
-        filtrarPorCategoria(categoria);
-    });
+    if (modal) modal.style.display = "none";
 });
 
+document.getElementById("modalPrev")?.addEventListener("click", () => moveModalCarrossel(-1));
+document.getElementById("modalNext")?.addEventListener("click", () => moveModalCarrossel(1));
+
 function filtrarPorCategoria(categoria) {
-    document.querySelectorAll(".category-item").forEach(item => {
-        const isActive = item.dataset.categoria === categoria;
-        item.classList.toggle("active", isActive);
-    });
     currentCategory = categoria;
     currentPage = 1;
-    carregarProdutos(currentCategory, currentStore, currentSearch, currentPage);
-    categoriesSidebar.classList.remove("active");
-    overlay.classList.remove("active");
+    document.querySelectorAll(".category-item").forEach(item => {
+        item.classList.toggle("active", item.getAttribute("data-categoria") === categoria);
+    });
+    carregarProdutos(currentCategory, currentStore, currentSearch);
 }
 
 function filtrarPorLoja(loja) {
-    document.querySelectorAll(".store-card").forEach(item => {
-        const isActive = item.dataset.loja === loja;
-        item.classList.toggle("active", isActive);
-    });
     currentStore = loja;
     currentPage = 1;
-    carregarProdutos(currentCategory, currentStore, currentSearch, currentPage);
+    document.querySelectorAll(".store-card").forEach(item => {
+        item.classList.toggle("active", item.getAttribute("data-loja") === loja);
+    });
+    carregarProdutos(currentCategory, currentStore, currentSearch);
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    const buscaInput = document.getElementById("busca");
-    if (buscaInput) {
-        buscaInput.addEventListener("input", (e) => {
-            currentSearch = e.target.value.toLowerCase();
-            currentPage = 1;
-            carregarProdutos(currentCategory, currentStore, currentSearch, currentPage);
-        });
-    }
-    carregarProdutos();
+document.getElementById("busca").addEventListener("input", (e) => {
+    currentSearch = e.target.value.trim();
+    currentPage = 1;
+    carregarProdutos(currentCategory, currentStore, currentSearch);
+});
 
-    // View Toggle (Grid/List - Placeholder for future implementation)
-    document.querySelectorAll(".view-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-            document.querySelectorAll(".view-btn").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-            // Add logic for grid/list view if needed
-        });
+document.getElementById("sort-select")?.addEventListener("change", (e) => {
+    const sortValue = e.target.value;
+    allProducts.sort((a, b) => {
+        if (sortValue === "price-low") return (a.preco || 0) - (b.preco || 0);
+        if (sortValue === "price-high") return (b.preco || 0) - (a.preco || 0);
+        if (sortValue === "newest") return new Date(b.data || 0) - new Date(a.data || 0);
+        return 0;
     });
+    currentPage = 1;
+    carregarProdutos(currentCategory, currentStore, currentSearch);
+});
 
-    // Sort Dropdown (Placeholder for future implementation)
-    document.getElementById("sort-select").addEventListener("change", (e) => {
-        console.log("Ordenar por:", e.target.value);
-        // Add sorting logic if needed
-    });
-
-    // Store Filtering
-    document.querySelectorAll(".store-card").forEach(item => {
-        item.addEventListener("click", () => {
-            const loja = item.dataset.loja;
-            filtrarPorLoja(loja);
-        });
+document.querySelectorAll(".view-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+        document.querySelectorAll(".view-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        const view = btn.getAttribute("data-view");
+        const grid = document.getElementById("grid-produtos");
+        grid.classList.toggle("list-view", view === "list");
     });
 });
 
-window.addEventListener('keyup', (event) => {
-    const modal = document.getElementById('imageModal');
-    if (modal.style.display === 'flex') {
-        if (event.key === 'ArrowLeft') {
-            moveModalCarrossel(-1);
-        } else if (event.key === 'ArrowRight') {
-            moveModalCarrossel(1);
-        } else if (event.key === 'Escape') {
-            closeModal();
-        }
+function checkConnection() {
+    const statusElement = document.createElement("div");
+    statusElement.classList.add("connection-status");
+    document.body.appendChild(statusElement);
+
+    function updateStatus() {
+        const isOnline = navigator.onLine;
+        statusElement.classList.toggle("online", isOnline);
+        statusElement.classList.toggle("offline", !isOnline);
+        statusElement.innerHTML = `
+            <div class="status-content">
+                <span><i class="fas ${isOnline ? "fa-check-circle" : "fa-exclamation-circle"}"></i> 
+                ${isOnline ? "Conectado à Internet" : "Sem conexão com a Internet"}</span>
+                <small>${isOnline ? "Você está online!" : "Verifique sua conexão."}</small>
+            </div>
+        `;
+        setTimeout(() => statusElement.remove(), 3000);
     }
+
+    window.addEventListener("online", updateStatus);
+    window.addEventListener("offline", updateStatus);
+    updateStatus();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    carregarProdutos();
+    checkConnection();
 });
