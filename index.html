@@ -6,64 +6,13 @@
     <meta name="description" content="Ofertas com descontos reais nas principais lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliado seguros e atualizados.">
     <meta property="og:title" content="Centro de Compras - Ofertas e Descontos">
     <meta property="og:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliados seguros e atualizados!">
-    <meta property="og:image" content="logos/centrodecompras.jpg">
+    <meta property="og:image" content="https://via.placeholder.com/1200x630/3483fa/ffffff?text=Centro+de+Compras">
     <meta property="og:url" content="https://centrodecompra.com.br/">
     <meta name="twitter:card" content="summary_large_image">
     <title>Centro de Compras - Ofertas do Dia</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* Ajustes para imagens compactas (estilo Mercado Livre) */
-        .produto-card .carrossel {
-            height: 100px; /* Desktop */
-            width: 100px;
-            margin: 0 auto;
-        }
-        .produto-card .carrossel-imagens img {
-            max-height: 100px;
-            max-width: 100px;
-            object-fit: contain;
-            padding: var(--spacing-sm);
-        }
-        .products-grid {
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); /* Mais compacto */
-            gap: var(--spacing-md);
-        }
-        .produto-card {
-            max-height: 220px; /* Card mais compacto */
-        }
-        .produto-nome, .descricao {
-            font-size: 0.85rem; /* Textos menores */
-        }
-        .tarja-preco {
-            font-size: 0.8rem;
-            padding: var(--spacing-sm) var(--spacing-md);
-        }
-        @media (max-width: 768px) {
-            .produto-card .carrossel {
-                height: 80px; /* Mobile */
-                width: 80px;
-            }
-            .produto-card .carrossel-imagens img {
-                max-height: 80px;
-                max-width: 80px;
-            }
-            .products-grid {
-                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            }
-            .produto-card {
-                max-height: 200px;
-            }
-            .produto-nome, .descricao {
-                font-size: 0.75rem;
-            }
-            .tarja-preco {
-                font-size: 0.7rem;
-                padding: var(--spacing-xs) var(--spacing-sm);
-            }
-        }
-    </style>
 </head>
 <body>
     <!-- Header Principal -->
@@ -75,8 +24,8 @@
                     <span><i class="fas fa-shield-alt"></i> Compra 100% segura</span>
                 </div>
                 <div class="header-links">
-                    <a href="sobre.html" class="header-link">Ajuda</a>
-                    <a href="contato.html" class="header-link">Contato</a>
+                    <a href="#" class="header-link">Ajuda</a>
+                    <a href="#" class="header-link">Contato</a>
                 </div>
             </div>
         </div>
@@ -85,7 +34,7 @@
             <div class="container">
                 <div class="header-content">
                     <div class="logo-section">
-                        <img src="logos/centrodecompras.jpg" alt="Centro de Compras" class="logo" id="site-logo">
+                        <img src="https://via.placeholder.com/180x60/3483fa/ffffff?text=Centro+de+Compras" alt="Centro de Compras" class="logo" id="site-logo">
                     </div>
                     
                     <div class="search-section">
@@ -123,12 +72,12 @@
                         </button>
                     </div>
                     <div class="nav-links">
-                        <a href="index.html" class="nav-link active">Ofertas do Dia</a>
+                        <a href="#" class="nav-link active">Ofertas do Dia</a>
                         <a href="#" class="nav-link">Mais Vendidos</a>
-                        <a href="cupom.html" class="nav-link">Cupons</a>
-                        <a href="#" class="nav-link" onclick="filtrarPorCategoria('eletronicos')">Eletrônicos</a>
-                        <a href="#" class="nav-link" onclick="filtrarPorCategoria('moda')">Moda</a>
-                        <a href="#" class="nav-link" onclick="filtrarPorCategoria('casa')">Casa</a>
+                        <a href="#" class="nav-link">Cupons</a>
+                        <a href="#" class="nav-link">Eletrônicos</a>
+                        <a href="#" class="nav-link">Moda</a>
+                        <a href="#" class="nav-link">Casa</a>
                     </div>
                 </div>
             </div>
@@ -145,47 +94,43 @@
         </div>
         <div class="sidebar-content">
             <ul class="categories-list">
-                <li class="category-item active" data-categoria="todas" onclick="filtrarPorCategoria('todas')">
+                <li class="category-item active" data-categoria="todas">
                     <i class="fas fa-th-large"></i>
                     <span>Todas as Categorias</span>
                 </li>
-                <li class="category-item" data-categoria="pet" onclick="filtrarPorCategoria('pet')">
-                    <i class="fas fa-paw"></i>
-                    <span>Pet</span>
-                </li>
-                <li class="category-item" data-categoria="eletronicos" onclick="filtrarPorCategoria('eletronicos')">
+                <li class="category-item" data-categoria="eletronicos">
                     <i class="fas fa-laptop"></i>
                     <span>Eletrônicos</span>
                 </li>
-                <li class="category-item" data-categoria="moda" onclick="filtrarPorCategoria('moda')">
+                <li class="category-item" data-categoria="moda">
                     <i class="fas fa-tshirt"></i>
                     <span>Moda</span>
                 </li>
-                <li class="category-item" data-categoria="casa" onclick="filtrarPorCategoria('casa')">
+                <li class="category-item" data-categoria="casa">
                     <i class="fas fa-home"></i>
                     <span>Casa e Decoração</span>
                 </li>
-                <li class="category-item" data-categoria="beleza" onclick="filtrarPorCategoria('beleza')">
+                <li class="category-item" data-categoria="beleza">
                     <i class="fas fa-heart"></i>
                     <span>Beleza e Cuidado</span>
                 </li>
-                <li class="category-item" data-categoria="esportes" onclick="filtrarPorCategoria('esportes')">
+                <li class="category-item" data-categoria="esportes">
                     <i class="fas fa-dumbbell"></i>
                     <span>Esportes e Fitness</span>
                 </li>
-                <li class="category-item" data-categoria="infantil" onclick="filtrarPorCategoria('infantil')">
+                <li class="category-item" data-categoria="infantil">
                     <i class="fas fa-baby"></i>
                     <span>Bebês e Crianças</span>
                 </li>
-                <li class="category-item" data-categoria="automotivo" onclick="filtrarPorCategoria('automotivo')">
+                <li class="category-item" data-categoria="automotivo">
                     <i class="fas fa-car"></i>
                     <span>Automotivo</span>
                 </li>
-                <li class="category-item" data-categoria="games" onclick="filtrarPorCategoria('games')">
+                <li class="category-item" data-categoria="games">
                     <i class="fas fa-gamepad"></i>
                     <span>Games</span>
                 </li>
-                <li class="category-item" data-categoria="livros" onclick="filtrarPorCategoria('livros')">
+                <li class="category-item" data-categoria="livros">
                     <i class="fas fa-book"></i>
                     <span>Livros</span>
                 </li>
@@ -230,45 +175,45 @@
                     <p>Compre com segurança nas melhores lojas online</p>
                 </div>
                 <div class="stores-grid">
-                    <div class="store-card active" data-loja="todas" onclick="filtrarPorLoja('todas')">
+                    <div class="store-card active" data-loja="todas">
                         <div class="store-icon">
                             <i class="fas fa-th-large"></i>
                         </div>
                         <span class="store-name">Todas</span>
                     </div>
-                    <div class="store-card amazon" data-loja="amazon" onclick="filtrarPorLoja('amazon')">
+                    <div class="store-card amazon" data-loja="amazon">
                         <div class="store-logo">
-                            <img src="logos/amazon.png" alt="Amazon" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">
+                            <img src="https://via.placeholder.com/80x30/ff9900/ffffff?text=Amazon" alt="Amazon">
                         </div>
                         <span class="store-name">Amazon</span>
                     </div>
-                    <div class="store-card mercadolivre" data-loja="mercadolivre" onclick="filtrarPorLoja('mercadolivre')">
+                    <div class="store-card mercadolivre" data-loja="mercadolivre">
                         <div class="store-logo">
-                            <img src="logos/mercadolivre.jpg" alt="Mercado Livre" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">
+                            <img src="https://via.placeholder.com/80x30/ffe600/333333?text=ML" alt="Mercado Livre">
                         </div>
                         <span class="store-name">Mercado Livre</span>
                     </div>
-                    <div class="store-card shopee" data-loja="shopee" onclick="filtrarPorLoja('shopee')">
+                    <div class="store-card shopee" data-loja="shopee">
                         <div class="store-logo">
-                            <img src="logos/shopee.png" alt="Shopee" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">
+                            <img src="https://via.placeholder.com/80x30/ee4d2d/ffffff?text=Shopee" alt="Shopee">
                         </div>
                         <span class="store-name">Shopee</span>
                     </div>
-                    <div class="store-card magalu" data-loja="magalu" onclick="filtrarPorLoja('magalu')">
+                    <div class="store-card magalu" data-loja="magalu">
                         <div class="store-logo">
-                            <img src="logos/magalu.png" alt="Magalu" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">
+                            <img src="https://via.placeholder.com/80x30/0066cc/ffffff?text=Magalu" alt="Magalu">
                         </div>
                         <span class="store-name">Magalu</span>
                     </div>
-                    <div class="store-card shein" data-loja="shein" onclick="filtrarPorLoja('shein')">
+                    <div class="store-card shein" data-loja="shein">
                         <div class="store-logo">
-                            <img src="logos/shein.png" alt="Shein" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">
+                            <img src="https://via.placeholder.com/80x30/000000/ffffff?text=SHEIN" alt="Shein">
                         </div>
                         <span class="store-name">Shein</span>
                     </div>
-                    <div class="store-card alibaba" data-loja="alibaba" onclick="filtrarPorLoja('alibaba')">
+                    <div class="store-card alibaba" data-loja="alibaba">
                         <div class="store-logo">
-                            <img src="logos/alibaba.png" alt="Alibaba" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">
+                            <img src="https://via.placeholder.com/80x30/ff6a00/ffffff?text=Alibaba" alt="Alibaba">
                         </div>
                         <span class="store-name">Alibaba</span>
                     </div>
@@ -394,15 +339,15 @@
                     <ul>
                         <li><a href="https://wa.me/5521975179737" target="_blank">WhatsApp</a></li>
                         <li><a href="https://t.me/boost/centraldecomprascdc" target="_blank">Telegram</a></li>
-                        <li><a href="sobre.html">Central de Ajuda</a></li>
-                        <li><a href="contato.html">Contato</a></li>
+                        <li><a href="#">Central de Ajuda</a></li>
+                        <li><a href="#">Contato</a></li>
                     </ul>
                 </div>
                 
                 <div class="footer-section">
                     <h4>Institucional</h4>
                     <ul>
-                        <li><a href="sobre.html">Sobre Nós</a></li>
+                        <li><a href="#">Sobre Nós</a></li>
                         <li><a href="#">Política de Privacidade</a></li>
                         <li><a href="#">Termos de Uso</a></li>
                         <li><a href="#">Como Funciona</a></li>
@@ -412,10 +357,10 @@
                 <div class="footer-section">
                     <h4>Categorias</h4>
                     <ul>
-                        <li><a href="#" onclick="filtrarPorCategoria('eletronicos')">Eletrônicos</a></li>
-                        <li><a href="#" onclick="filtrarPorCategoria('moda')">Moda</a></li>
-                        <li><a href="#" onclick="filtrarPorCategoria('casa')">Casa e Decoração</a></li>
-                        <li><a href="#" onclick="filtrarPorCategoria('pet')">Pet</a></li>
+                        <li><a href="#">Eletrônicos</a></li>
+                        <li><a href="#">Moda</a></li>
+                        <li><a href="#">Casa e Decoração</a></li>
+                        <li><a href="#">Beleza</a></li>
                     </ul>
                 </div>
             </div>
@@ -442,354 +387,6 @@
         </a>
     </div>
 
-    <script>
-        const VERSION = "1.0.8";
-        const API_URL = 'https://minha-api-produtos.onrender.com';
-        let currentImages = [];
-        let currentImageIndex = 0;
-        let currentPage = 1;
-        const productsPerPage = 12;
-        let allProducts = [];
-        let isLoading = false;
-        let currentCategory = "todas";
-        let currentStore = "todas";
-        let currentSearch = "";
-
-        document.getElementById("year").textContent = new Date().getFullYear();
-
-        // Admin Access
-        const logo = document.getElementById("site-logo");
-        let clickCount = 0, clickTimeout = null;
-        logo.addEventListener("click", (e) => {
-            e.stopPropagation();
-            clickCount++;
-            if (clickCount === 1) {
-                clickTimeout = setTimeout(() => { clickCount = 0; }, 500);
-            } else if (clickCount === 3) {
-                clearTimeout(clickTimeout);
-                window.location.href = "admin-xyz-123.html";
-                clickCount = 0;
-            }
-        });
-
-        // Categories Sidebar Toggle
-        const categoriesToggle = document.getElementById("categories-toggle");
-        const categoriesSidebar = document.getElementById("categories-sidebar");
-        const closeSidebar = document.getElementById("close-sidebar");
-        const overlay = document.getElementById("overlay");
-
-        categoriesToggle.addEventListener("click", () => {
-            categoriesSidebar.classList.toggle("active");
-            overlay.classList.toggle("active");
-        });
-
-        closeSidebar.addEventListener("click", () => {
-            categoriesSidebar.classList.remove("active");
-            overlay.classList.remove("active");
-        });
-
-        overlay.addEventListener("click", () => {
-            categoriesSidebar.classList.remove("active");
-            overlay.classList.remove("active");
-        });
-
-        // Load Products
-        async function carregarProdutos(categoria = "todas", loja = "todas", busca = "", page = 1) {
-            const gridProdutos = document.getElementById("grid-produtos");
-            const mensagemVazia = document.getElementById("mensagem-vazia");
-            const errorMessage = document.getElementById("error-message");
-            const loadingSpinner = document.getElementById("loading-spinner");
-            const loadMoreButton = document.getElementById("load-more");
-
-            if (isLoading) return;
-            isLoading = true;
-
-            loadingSpinner.style.display = "block";
-            if (page === 1) {
-                gridProdutos.innerHTML = "";
-                allProducts = [];
-            }
-            mensagemVazia.style.display = "none";
-            errorMessage.style.display = "none";
-            loadMoreButton.style.display = "none";
-
-            const maxRetries = 3;
-            let attempt = 1;
-
-            while (attempt <= maxRetries) {
-                try {
-                    console.log(`Tentativa ${attempt}: Carregando de ${API_URL}/api/produtos?page=${page}&limit=${productsPerPage}`);
-                    const response = await fetch(
-                        `${API_URL}/api/produtos?page=${page}&limit=${productsPerPage}`,
-                        { cache: "no-store" }
-                    );
-                    if (!response.ok) {
-                        const errorText = await response.text();
-                        throw new Error(`Erro HTTP ${response.status}: ${errorText || 'Resposta vazia'}`);
-                    }
-                    const data = await response.json();
-                    if (!data || !Array.isArray(data.produtos)) {
-                        throw new Error('Resposta inválida: produtos não é um array');
-                    }
-
-                    const filteredProducts = data.produtos.filter(p =>
-                        p &&
-                        typeof p.nome === 'string' &&
-                        typeof p.categoria === 'string' &&
-                        typeof p.loja === 'string' &&
-                        Array.isArray(p.imagens) &&
-                        (categoria === "todas" || p.categoria.toLowerCase() === categoria.toLowerCase()) &&
-                        (loja === "todas" || p.loja.toLowerCase() === loja.toLowerCase()) &&
-                        (!busca || p.nome.toLowerCase().includes(busca.toLowerCase()))
-                    );
-                    allProducts = [...allProducts, ...filteredProducts];
-
-                    if (allProducts.length === 0) {
-                        mensagemVazia.style.display = "flex";
-                        gridProdutos.style.display = "none";
-                    } else {
-                        mensagemVazia.style.display = "none";
-                        gridProdutos.style.display = "grid";
-                        
-                        const productsToRender = filteredProducts;
-
-                        productsToRender.forEach((produto, index) => {
-                            const card = document.createElement("div");
-                            card.classList.add("produto-card", "visible");
-                            card.setAttribute("data-categoria", produto.categoria.toLowerCase());
-                            card.setAttribute("data-loja", produto.loja.toLowerCase());
-                            const globalIndex = allProducts.indexOf(produto);
-                            
-                            const imagens = produto.imagens && produto.imagens.length > 0
-                                ? produto.imagens.map(img => img.startsWith('http') ? img : `${API_URL}${img}`)
-                                : ["https://minha-api-produtos.onrender.com/imagens/placeholder.jpg"];
-                            const carrosselId = `carrossel-${globalIndex}`;
-                            const lojaClass = produto.loja.toLowerCase();
-                            card.innerHTML = `
-                                <div class="carrossel" id="${carrosselId}">
-                                    <div class="carrossel-imagens">
-                                        ${imagens.map((img, idx) => `<img src="${img}" alt="${produto.nome}" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'" onclick="event.stopPropagation(); openModal(${globalIndex}, ${idx})">`).join("")}
-                                    </div>
-                                    ${imagens.length > 1 ? `
-                                        <button class="carrossel-prev" onclick="event.stopPropagation(); moveCarrossel('${carrosselId}', -1)" aria-label="Imagem anterior">◄</button>
-                                        <button class="carrossel-next" onclick="event.stopPropagation(); moveCarrossel('${carrosselId}', 1)" aria-label="Próxima imagem">►</button>
-                                        <div class="carrossel-dots">
-                                            ${imagens.map((_, idx) => `<span class="carrossel-dot ${idx === 0 ? "ativo" : ""}" onclick="event.stopPropagation(); setCarrosselImage('${carrosselId}', ${idx})" aria-label="Selecionar imagem ${idx + 1}"></span>`).join("")}
-                                        </div>
-                                    ` : ""}
-                                </div>
-                                <span class="produto-nome">${produto.nome}</span>
-                                <span class="descricao">Loja: ${produto.loja}</span>
-                                <a href="${produto.link}" target="_blank" class="tarja-preco tarja-${lojaClass}" aria-label="Clique para ver o preço de ${produto.nome} na loja">
-                                    <i class="fas fa-shopping-cart"></i> Ver Preço
-                                </a>
-                            `;
-                            gridProdutos.appendChild(card);
-                        });
-                    }
-                    
-                    loadMoreButton.style.display = data.total > allProducts.length ? "flex" : "none";
-                    isLoading = false;
-                    return;
-                } catch (error) {
-                    console.error(`⚠️ Tentativa ${attempt} falhou: ${error.message}`);
-                    if (attempt === maxRetries) {
-                        errorMessage.style.display = "flex";
-                        mensagemVazia.style.display = "none";
-                        gridProdutos.style.display = "none";
-                        errorMessage.querySelector("p").textContent = "Erro ao carregar os produtos. Tente novamente mais tarde.";
-                    }
-                    attempt++;
-                    await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
-                } finally {
-                    loadingSpinner.style.display = "none";
-                    isLoading = false;
-                }
-            }
-        }
-
-        function carregarMaisProdutos() {
-            currentPage++;
-            carregarProdutos(currentCategory, currentStore, currentSearch, currentPage);
-        }
-
-        function moveCarrossel(id, direction) {
-            const carrossel = document.getElementById(id);
-            if (!carrossel) return;
-            const imagens = carrossel.querySelector(".carrossel-imagens");
-            const dots = carrossel.querySelectorAll(".carrossel-dot");
-            let index = parseInt(imagens.dataset.index || 0);
-            const total = imagens.children.length;
-            index = (index + direction + total) % total;
-            imagens.style.transform = `translateX(-${index * 100}%)`;
-            imagens.dataset.index = index;
-            dots.forEach((dot, i) => dot.classList.toggle("ativo", i === index));
-        }
-
-        function setCarrosselImage(id, index) {
-            const carrossel = document.getElementById(id);
-            if (!carrossel) return;
-            const imagens = carrossel.querySelector(".carrossel-imagens");
-            const dots = carrossel.querySelectorAll(".carrossel-dot");
-            imagens.style.transform = `translateX(-${index * 100}%)`;
-            imagens.dataset.index = index;
-            dots.forEach((dot, i) => dot.classList.toggle("ativo", i === index));
-        }
-
-        async function openModal(index, imageIndex) {
-            const modal = document.getElementById("imageModal");
-            const carrosselImagens = document.getElementById("modalCarrosselImagens");
-            const carrosselDots = document.getElementById("modalCarrosselDots");
-            const prevButton = document.getElementById("modalPrev");
-            const nextButton = document.getElementById("modalNext");
-            const modalClose = document.getElementById("modal-close");
-
-            if (!modal || !carrosselImagens || !carrosselDots || !prevButton || !nextButton) {
-                console.error("Elementos do modal não encontrados");
-                return;
-            }
-
-            carrosselImagens.innerHTML = "";
-            carrosselDots.innerHTML = "";
-            prevButton.classList.remove("visible");
-            nextButton.classList.remove("visible");
-
-            const produto = allProducts[index];
-            if (!produto || !produto.imagens || produto.imagens.length === 0) {
-                alert("Nenhuma imagem disponível para este produto.");
-                return;
-            }
-
-            try {
-                currentImages = produto.imagens.map(img => img.startsWith('http') ? img : `${API_URL}${img}`);
-                currentImageIndex = Math.max(0, Math.min(imageIndex, currentImages.length - 1));
-
-                const validImages = await Promise.all(currentImages.map(async (img, idx) => {
-                    try {
-                        const response = await fetch(img, { method: 'HEAD' });
-                        return response.ok ? img : 'https://minha-api-produtos.onrender.com/imagens/placeholder.jpg';
-                    } catch {
-                        return 'https://minha-api-produtos.onrender.com/imagens/placeholder.jpg';
-                    }
-                }));
-
-                carrosselImagens.innerHTML = validImages.map((img, idx) => 
-                    `<img src="${img}" alt="${produto.nome} - Imagem ${idx + 1}" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">`
-                ).join("");
-                carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
-
-                carrosselDots.innerHTML = validImages.map((_, i) => 
-                    `<span class="carrossel-dot ${i === currentImageIndex ? "ativo" : ""}" onclick="setModalCarrosselImage(${i})" aria-label="Selecionar imagem ${i + 1}" role="button" tabindex="0"></span>`
-                ).join("");
-
-                prevButton.classList.toggle("visible", validImages.length > 1);
-                nextButton.classList.toggle("visible", validImages.length > 1);
-                modal.style.display = "flex";
-                modal.focus();
-            } catch (error) {
-                console.error("Erro ao abrir modal:", error);
-                alert("Erro ao carregar as imagens. Tente novamente.");
-            }
-        }
-
-        function moveModalCarrossel(direction) {
-            const carrosselImagens = document.getElementById("modalCarrosselImagens");
-            const carrosselDots = document.getElementById("modalCarrosselDots")?.children;
-            if (!carrosselImagens || !carrosselDots || !currentImages.length) return;
-
-            const total = currentImages.length;
-            currentImageIndex = (currentImageIndex + direction + total) % total;
-            
-            carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
-            Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle("ativo", i === currentImageIndex));
-        }
-
-        function setModalCarrosselImage(index) {
-            if (index < 0 || index >= currentImages.length) return;
-            
-            currentImageIndex = index;
-            const carrosselImagens = document.getElementById("modalCarrosselImagens");
-            const carrosselDots = document.getElementById("modalCarrosselDots")?.children;
-            if (!carrosselImagens || !carrosselDots) return;
-            
-            carrosselImagens.style.transform = `translateX(-${index * 100}%)`;
-            Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle("ativo", i === index));
-        }
-
-        function closeModal() {
-            const modal = document.getElementById("imageModal");
-            if (modal) {
-                modal.style.display = "none";
-                currentImages = [];
-                currentImageIndex = 0;
-            }
-        }
-
-        document.getElementById("modal-close").addEventListener("click", closeModal);
-        document.getElementById("modalPrev").addEventListener("click", () => moveModalCarrossel(-1));
-        document.getElementById("modalNext").addEventListener("click", () => moveModalCarrossel(1));
-
-        function filtrarPorCategoria(categoria) {
-            document.querySelectorAll(".category-item").forEach(item => {
-                const isActive = item.dataset.categoria === categoria;
-                item.classList.toggle("active", isActive);
-            });
-            currentCategory = categoria;
-            currentPage = 1;
-            carregarProdutos(currentCategory, currentStore, currentSearch, currentPage);
-            categoriesSidebar.classList.remove("active");
-            overlay.classList.remove("active");
-        }
-
-        function filtrarPorLoja(loja) {
-            document.querySelectorAll(".store-card").forEach(item => {
-                const isActive = item.dataset.loja === loja;
-                item.classList.toggle("active", isActive);
-            });
-            currentStore = loja;
-            currentPage = 1;
-            carregarProdutos(currentCategory, currentStore, currentSearch, currentPage);
-        }
-
-        document.addEventListener("DOMContentLoaded", () => {
-            const buscaInput = document.getElementById("busca");
-            if (buscaInput) {
-                buscaInput.addEventListener("input", (e) => {
-                    currentSearch = e.target.value.toLowerCase();
-                    currentPage = 1;
-                    carregarProdutos(currentCategory, currentStore, currentSearch, currentPage);
-                });
-            }
-            carregarProdutos();
-
-            // View Toggle (Grid/List - Placeholder for future implementation)
-            document.querySelectorAll(".view-btn").forEach(btn => {
-                btn.addEventListener("click", () => {
-                    document.querySelectorAll(".view-btn").forEach(b => b.classList.remove("active"));
-                    btn.classList.add("active");
-                    // Add logic for grid/list view if needed
-                });
-            });
-
-            // Sort Dropdown (Placeholder for future implementation)
-            document.getElementById("sort-select").addEventListener("change", (e) => {
-                console.log("Ordenar por:", e.target.value);
-                // Add sorting logic if needed
-            });
-        });
-
-        window.addEventListener('keyup', (event) => {
-            const modal = document.getElementById('imageModal');
-            if (modal.style.display === 'flex') {
-                if (event.key === 'ArrowLeft') {
-                    moveModalCarrossel(-1);
-                } else if (event.key === 'ArrowRight') {
-                    moveModalCarrossel(1);
-                } else if (event.key === 'Escape') {
-                    closeModal();
-                }
-            }
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
