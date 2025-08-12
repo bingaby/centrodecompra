@@ -2,51 +2,206 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <meta name="description" content="Ofertas com descontos reais nas principais lojas como Amazon, Shein, Shopee e Magalu. Links de afiliado seguros e atualizados.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Ofertas com descontos reais nas principais lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliado seguros e atualizados.">
     <meta property="og:title" content="Centro de Compras - Ofertas e Descontos">
-    <meta property="og:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee e Magalu. Links de afiliados seguros e atualizados!">
-    <meta property="og:image" content="/logos/logoscentrodecompras.jpeg">
+    <meta property="og:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e Alibaba. Links de afiliados seguros e atualizados!">
+    <meta property="og:image" content="logos/centrodecompras.jpg">
     <meta property="og:url" content="https://centrodecompra.com.br/">
     <meta name="twitter:card" content="summary_large_image">
-    <!-- PWA Metatags -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#3483fa">
-    <link rel="manifest" href="/site.webmanifest">
-    <link rel="icon" type="image/png" sizes="32x32" href="/logos/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/logos/favicon-16x16.png">
-    <link rel="apple-touch-icon" href="/logos/apple-touch-icon.png">
     <title>Centro de Compras - Ofertas do Dia</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilos padrão para desktop */
+        .products-grid {
+            grid-template-columns: repeat(8, 1fr); /* 8 colunas no desktop */
+            gap: var(--spacing-md);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .produto-card .carrossel {
+            height: 150px; /* Imagens para 8 colunas */
+            width: 150px;
+            margin: 0 auto;
+        }
+        .produto-card .carrossel-imagens img {
+            max-height: 150px;
+            max-width: 150px;
+            object-fit: contain;
+            padding: var(--spacing-sm);
+        }
+        .produto-card {
+            max-height: 300px; /* Cards ajustados */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .produto-nome {
+            font-size: 0.9rem;
+            line-height: 1.3;
+            margin: var(--spacing-sm) var(--spacing-md);
+        }
+        .descricao {
+            font-size: 0.8rem;
+            margin: 0 var(--spacing-md) var(--spacing-sm);
+        }
+        .tarja-preco {
+            font-size: 0.85rem;
+            padding: var(--spacing-sm) var(--spacing-md);
+            margin: 0 var(--spacing-md) var(--spacing-md);
+        }
+        .main-nav .nav-links {
+            display: flex;
+            flex-wrap: wrap; /* Permite quebra de linha para muitas categorias */
+            gap: var(--spacing-md);
+        }
+        .nav-link {
+            font-size: 0.9rem;
+        }
+
+        /* Media query para tablets */
+        @media (max-width: 1024px) {
+            .products-grid {
+                grid-template-columns: repeat(6, 1fr); /* 6 colunas no tablet */
+                gap: var(--spacing-md);
+            }
+            .produto-card .carrossel {
+                height: 120px;
+                width: 120px;
+            }
+            .produto-card .carrossel-imagens img {
+                max-height: 120px;
+                max-width: 120px;
+            }
+            .produto-card {
+                max-height: 260px;
+            }
+            .produto-nome {
+                font-size: 0.85rem;
+            }
+            .descricao {
+                font-size: 0.75rem;
+            }
+            .tarja-preco {
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Media query para mobile */
+        @media (max-width: 768px) {
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); /* 3-4 colunas no mobile */
+                gap: var(--spacing-sm);
+            }
+            .produto-card .carrossel {
+                height: 80px; /* Compacto no mobile */
+                width: 80px;
+            }
+            .produto-card .carrossel-imagens img {
+                max-height: 80px;
+                max-width: 80px;
+            }
+            .produto-card {
+                max-height: 200px;
+            }
+            .produto-nome {
+                font-size: 0.75rem;
+            }
+            .descricao {
+                font-size: 0.7rem;
+            }
+            .tarja-preco {
+                font-size: 0.7rem;
+                padding: var(--spacing-xs) var(--spacing-sm);
+            }
+            .main-nav .nav-links {
+                flex-direction: column; /* Empilha categorias no mobile */
+                gap: var(--spacing-sm);
+            }
+            .nav-link {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Header Principal -->
     <header class="main-header">
+        <div class="header-top">
+            <div class="container">
+                <div class="header-info">
+                    <span><i class="fas fa-shipping-fast"></i> Frete grátis em milhares de produtos</span>
+                    <span><i class="fas fa-shield-alt"></i> Compra 100% segura</span>
+                </div>
+                <div class="header-links">
+                    <a href="sobre.html" class="header-link">Ajuda</a>
+                    <a href="contato.html" class="header-link">Contato</a>
+                </div>
+            </div>
+        </div>
+        
         <div class="header-main">
             <div class="container">
                 <div class="header-content">
                     <div class="logo-section">
-                        <img src="/logos/logoscentrodecompras.jpeg" alt="Centro de Compras" class="logo" id="site-logo">
+                        <img src="logos/centrodecompras.jpg" alt="Centro de Compras" class="logo" id="site-logo">
                     </div>
+                    
                     <div class="search-section">
                         <div class="search-container">
-                            <input type="text" id="busca" placeholder="Buscar produtos..." class="search-input">
+                            <input type="text" id="busca" placeholder="Buscar produtos, marcas e muito mais..." class="search-input">
                             <button class="search-btn" type="button">
-                                <img src="/imagens/search-icon.png" alt="Buscar" class="search-icon">
+                                <i class="fas fa-search"></i>
                             </button>
                         </div>
+                        <div class="search-suggestions" id="search-suggestions"></div>
                     </div>
+                    
                     <div class="header-actions">
-                        <button class="action-btn categories-btn" id="categories-toggle">
-                            <i class="fas fa-bars"></i>
-                        </button>
+                        <a href="https://wa.me/5521975179737" class="action-btn whatsapp-btn" target="_blank">
+                            <i class="fab fa-whatsapp"></i>
+                            <span>WhatsApp</span>
+                        </a>
+                        <a href="https://t.me/boost/centraldecomprascdc" class="action-btn telegram-btn" target="_blank">
+                            <i class="fab fa-telegram"></i>
+                            <span>Telegram</span>
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
+        
+        <nav class="main-nav">
+            <div class="container">
+                <div class="nav-content">
+                    <div class="nav-categories">
+                        <button class="categories-btn" id="categories-toggle">
+                            <i class="fas fa-bars"></i>
+                            <span>Categorias</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </div>
+                    <div class="nav-links">
+                        <a href="index.html" class="nav-link active">Ofertas do Dia</a>
+                        <a href="#" class="nav-link">Mais Vendidos</a>
+                        <a href="cupom.html" class="nav-link">Cupons</a>
+                        <a href="#" class="nav-link" onclick="filtrarPorCategoria('todas')">Todas as Categorias</a>
+                        <a href="#" class="nav-link" onclick="filtrarPorCategoria('pet')">Pet</a>
+                        <a href="#" class="nav-link" onclick="filtrarPorCategoria('eletronicos')">Eletrônicos</a>
+                        <a href="#" class="nav-link" onclick="filtrarPorCategoria('moda')">Moda</a>
+                        <a href="#" class="nav-link" onclick="filtrarPorCategoria('casa')">Casa e Decoração</a>
+                        <a href="#" class="nav-link" onclick="filtrarPorCategoria('beleza')">Beleza e Cuidado</a>
+                        <a href="#" class="nav-link" onclick="filtrarPorCategoria('esportes')">Esportes e Fitness</a>
+                        <a href="#" class="nav-link" onclick="filtrarPorCategoria('infantil')">Bebês e Crianças</a>
+                        <a href="#" class="nav-link" onclick="filtrarPorCategoria('automotivo')">Automotivo</a>
+                        <a href="#" class="nav-link" onclick="filtrarPorCategoria('games')">Games</a>
+                        <a href="#" class="nav-link" onclick="filtrarPorCategoria('livros')">Livros</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
     </header>
 
     <!-- Sidebar de Categorias -->
@@ -77,11 +232,37 @@
                 </li>
                 <li class="category-item" data-categoria="casa" onclick="filtrarPorCategoria('casa')">
                     <i class="fas fa-home"></i>
-                    <span>Casa</span>
+                    <span>Casa e Decoração</span>
+                </li>
+                <li class="category-item" data-categoria="beleza" onclick="filtrarPorCategoria('beleza')">
+                    <i class="fas fa-heart"></i>
+                    <span>Beleza e Cuidado</span>
+                </li>
+                <li class="category-item" data-categoria="esportes" onclick="filtrarPorCategoria('esportes')">
+                    <i class="fas fa-dumbbell"></i>
+                    <span>Esportes e Fitness</span>
+                </li>
+                <li class="category-item" data-categoria="infantil" onclick="filtrarPorCategoria('infantil')">
+                    <i class="fas fa-baby"></i>
+                    <span>Bebês e Crianças</span>
+                </li>
+                <li class="category-item" data-categoria="automotivo" onclick="filtrarPorCategoria('automotivo')">
+                    <i class="fas fa-car"></i>
+                    <span>Automotivo</span>
+                </li>
+                <li class="category-item" data-categoria="games" onclick="filtrarPorCategoria('games')">
+                    <i class="fas fa-gamepad"></i>
+                    <span>Games</span>
+                </li>
+                <li class="category-item" data-categoria="livros" onclick="filtrarPorCategoria('livros')">
+                    <i class="fas fa-book"></i>
+                    <span>Livros</span>
                 </li>
             </ul>
         </div>
     </div>
+
+    <!-- Overlay -->
     <div class="overlay" id="overlay"></div>
 
     <!-- Conteúdo Principal -->
@@ -91,79 +272,102 @@
             <section class="offers-banner">
                 <div class="banner-content">
                     <div class="banner-text">
-                        <h1>Ofertas do Dia!</h1>
-                        <p>Descontos incríveis em Amazon, Shein, Shopee e mais.</p>
+                        <h1>🔥 Ofertas Imperdíveis</h1>
+                        <p>Descontos de até 70% nas melhores lojas do Brasil</p>
                     </div>
-                </div>
-            </section>
-
-            <!-- Anúncio -->
-            <section class="ad-section">
-                <div class="ad-container">
-                    <ins class="adsbygoogle"
-                         style="display:block"
-                         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-                         data-ad-slot="XXXXXXXXXX"
-                         data-ad-format="auto"
-                         data-full-width-responsive="true"></ins>
-                    <script>
-                        (adsbygoogle = window.adsbygoogle || []).push({});
-                    </script>
+                    <div class="banner-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">1000+</span>
+                            <span class="stat-label">Produtos</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">50+</span>
+                            <span class="stat-label">Lojas</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">70%</span>
+                            <span class="stat-label">Desconto</span>
+                        </div>
+                    </div>
                 </div>
             </section>
 
             <!-- Lojas Parceiras -->
             <section class="stores-section">
                 <div class="section-header">
-                    <div>
-                        <h2><i class="fas fa-store"></i> Lojas Parceiras</h2>
-                        <p>Explore produtos das melhores lojas</p>
-                    </div>
+                    <h2><i class="fas fa-store"></i> Lojas Parceiras</h2>
+                    <p>Compre com segurança nas melhores lojas online</p>
                 </div>
-                <div class="stores-grid" id="stores-grid">
+                <div class="stores-grid">
+                    <div class="store-card active" data-loja="todas" onclick="filtrarPorLoja('todas')">
+                        <div class="store-icon">
+                            <i class="fas fa-th-large"></i>
+                        </div>
+                        <span class="store-name">Todas</span>
+                    </div>
                     <div class="store-card amazon" data-loja="amazon" onclick="filtrarPorLoja('amazon')">
                         <div class="store-logo">
-                            <img src="logos/amazon.png" alt="Amazon" onerror="this.src='/imagens/placeholder.jpg'">
+                            <img src="logos/amazon.png" alt="Amazon" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">
                         </div>
                         <span class="store-name">Amazon</span>
                     </div>
                     <div class="store-card mercadolivre" data-loja="mercadolivre" onclick="filtrarPorLoja('mercadolivre')">
                         <div class="store-logo">
-                            <img src="logos/mercadolivre.jpg" alt="Mercado Livre" onerror="this.src='/imagens/placeholder.jpg'">
+                            <img src="logos/mercadolivre.jpg" alt="Mercado Livre" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">
                         </div>
                         <span class="store-name">Mercado Livre</span>
                     </div>
                     <div class="store-card shopee" data-loja="shopee" onclick="filtrarPorLoja('shopee')">
                         <div class="store-logo">
-                            <img src="logos/shopee.png" alt="Shopee" onerror="this.src='/imagens/placeholder.jpg'">
+                            <img src="logos/shopee.png" alt="Shopee" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">
                         </div>
                         <span class="store-name">Shopee</span>
                     </div>
                     <div class="store-card magalu" data-loja="magalu" onclick="filtrarPorLoja('magalu')">
                         <div class="store-logo">
-                            <img src="logos/magalu.png" alt="Magalu" onerror="this.src='/imagens/placeholder.jpg'">
+                            <img src="logos/magalu.png" alt="Magalu" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">
                         </div>
                         <span class="store-name">Magalu</span>
                     </div>
                     <div class="store-card shein" data-loja="shein" onclick="filtrarPorLoja('shein')">
                         <div class="store-logo">
-                            <img src="logos/shein.png" alt="Shein" onerror="this.src='/imagens/placeholder.jpg'">
+                            <img src="logos/shein.png" alt="Shein" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">
                         </div>
                         <span class="store-name">Shein</span>
+                    </div>
+                    <div class="store-card alibaba" data-loja="alibaba" onclick="filtrarPorLoja('alibaba')">
+                        <div class="store-logo">
+                            <img src="logos/alibaba.png" alt="Alibaba" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">
+                        </div>
+                        <span class="store-name">Alibaba</span>
                     </div>
                 </div>
             </section>
 
-            <!-- Produtos -->
+            <!-- Loading -->
+            <div class="loading-container" id="loading-spinner">
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <p>Carregando ofertas incríveis...</p>
+                </div>
+            </div>
+
+            <!-- Grid de Produtos -->
             <section class="products-section">
                 <div class="section-header">
-                    <div>
-                        <h2><i class="fas fa-tags"></i> Produtos em Oferta</h2>
-                    </div>
+                    <h2 id="ofertas-titulo"><i class="fas fa-fire"></i> Ofertas do Dia</h2>
                     <div class="section-actions">
+                        <div class="view-toggle">
+                            <button class="view-btn active" data-view="grid">
+                                <i class="fas fa-th"></i>
+                            </button>
+                            <button class="view-btn" data-view="list">
+                                <i class="fas fa-list"></i>
+                            </button>
+                        </div>
                         <div class="sort-dropdown">
                             <select id="sort-select">
-                                <option value="default">Ordenar por</option>
+                                <option value="relevance">Mais Relevantes</option>
                                 <option value="price-low">Menor Preço</option>
                                 <option value="price-high">Maior Preço</option>
                                 <option value="newest">Mais Recentes</option>
@@ -171,31 +375,41 @@
                         </div>
                     </div>
                 </div>
+                
                 <div class="products-grid" id="grid-produtos"></div>
-                <div class="loading-container" id="loading-spinner">
-                    <div class="loading-spinner">
-                        <div class="spinner"></div>
-                        <p>Carregando...</p>
-                    </div>
-                </div>
-                <div class="empty-state" id="mensagem-vazia">
-                    <i class="fas fa-box-open empty-icon"></i>
-                    <h3>Nenhum produto encontrado</h3>
-                    <p>Tente ajustar sua busca ou explorar outras categorias.</p>
-                    <button class="btn-primary" onclick="carregarProdutos()">Ver Todas as Ofertas</button>
-                </div>
-                <div class="error-state" id="error-message">
-                    <i class="fas fa-exclamation-circle error-icon"></i>
-                    <h3>Oops, algo deu errado!</h3>
-                    <p>Não foi possível carregar os produtos. Tente novamente.</p>
-                    <button class="btn-primary" onclick="carregarProdutos()">Tentar Novamente</button>
-                </div>
+                
                 <div class="load-more-container">
-                    <button class="load-more-btn" id="load-more" onclick="carregarMaisProdutos()">
-                        <i class="fas fa-plus"></i> Carregar Mais
+                    <button id="load-more" class="load-more-btn">
+                        <i class="fas fa-plus"></i>
+                        <span>Carregar Mais Produtos</span>
                     </button>
                 </div>
             </section>
+
+            <!-- Mensagens de Estado -->
+            <div class="empty-state" id="mensagem-vazia">
+                <div class="empty-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3>Nenhum produto encontrado</h3>
+                <p>Tente ajustar os filtros ou buscar por outros termos</p>
+                <button class="btn-primary" onclick="location.reload()">
+                    <i class="fas fa-refresh"></i>
+                    Limpar Filtros
+                </button>
+            </div>
+
+            <div class="error-state" id="error-message">
+                <div class="error-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h3>Ops! Algo deu errado</h3>
+                <p>Não foi possível carregar os produtos. Verifique sua conexão.</p>
+                <button class="btn-primary" onclick="location.reload()">
+                    <i class="fas fa-redo"></i>
+                    Tentar Novamente
+                </button>
+            </div>
         </div>
     </main>
 
@@ -206,72 +420,85 @@
             <button class="modal-close" id="modal-close">
                 <i class="fas fa-times"></i>
             </button>
-            <div class="modal-carousel">
-                <div class="carousel-images" id="modalCarrosselImagens"></div>
-                <button class="carousel-btn prev" id="modalPrev">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <button class="carousel-btn next" id="modalNext">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-                <div class="carousel-dots" id="modalCarrosselDots"></div>
+            <div class="modal-content">
+                <div class="modal-carousel" id="modalCarrossel">
+                    <div class="carousel-images" id="modalCarrosselImagens"></div>
+                    <button class="carousel-btn prev" id="modalPrev">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="carousel-btn next" id="modalNext">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    <div class="carousel-dots" id="modalCarrosselDots"></div>
+                </div>
             </div>
         </div>
     </div>
-
-    <!-- Barra de Navegação Inferior -->
-    <nav class="bottom-nav">
-        <div class="container">
-            <div class="nav-items">
-                <a href="#" class="nav-item active" data-action="home" onclick="navigateTo('home')">
-                    <i class="fas fa-home"></i>
-                    <span>Início</span>
-                </a>
-                <button class="nav-item" data-action="categories" onclick="toggleCategories()">
-                    <i class="fas fa-list"></i>
-                    <span>Categorias</span>
-                </button>
-                <button class="nav-item" data-action="search" onclick="focusSearch()">
-                    <i class="fas fa-search"></i>
-                    <span>Busca</span>
-                </button>
-                <a href="#cupons" class="nav-item" data-action="coupons">
-                    <i class="fas fa-ticket-alt"></i>
-                    <span>Cupons</span>
-                </a>
-            </div>
-        </div>
-    </nav>
 
     <!-- Footer -->
     <footer class="main-footer">
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h4>Sobre Nós</h4>
-                    <p>Sua central de compras com as melhores ofertas de lojas confiáveis.</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Links Úteis</h4>
-                    <ul>
-                        <li><a href="#politica">Política de Privacidade</a></li>
-                        <li><a href="#termos">Termos de Uso</a></li>
-                        <li><a href="#contato">Contato</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Siga-nos</h4>
+                    <h4>Centro de Compras</h4>
+                    <p>Sua plataforma de ofertas e descontos nas melhores lojas online do Brasil.</p>
                     <div class="social-links">
-                        <a href="#" class="social-link instagram"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="social-link tiktok"><i class="fab fa-tiktok"></i></a>
-                        <a href="#" class="social-link twitter"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="social-link youtube"><i class="fab fa-youtube"></i></a>
+                        <a href="https://www.instagram.com/cdccentrodecompras/" target="_blank" class="social-link instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://www.tiktok.com/@cdc.centraldecompas" target="_blank" class="social-link tiktok">
+                            <i class="fab fa-tiktok"></i>
+                        </a>
+                        <a href="https://x.com/ComprasCdc" target="_blank" class="social-link twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="https://www.youtube.com/channel/UCaKHlI-hWqwdAXS6Xsv3ZzA" target="_blank" class="social-link youtube">
+                            <i class="fab fa-youtube"></i>
+                        </a>
                     </div>
                 </div>
+                
+                <div class="footer-section">
+                    <h4>Atendimento</h4>
+                    <ul>
+                        <li><a href="https://wa.me/5521975179737" target="_blank">WhatsApp</a></li>
+                        <li><a href="https://t.me/boost/centraldecomprascdc" target="_blank">Telegram</a></li>
+                        <li><a href="sobre.html">Central de Ajuda</a></li>
+                        <li><a href="contato.html">Contato</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Institucional</h4>
+                    <ul>
+                        <li><a href="sobre.html">Sobre Nós</a></li>
+                        <li><a href="#">Política de Privacidade</a></li>
+                        <li><a href="#">Termos de Uso</a></li>
+                        <li><a href="#">Como Funciona</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Categorias</h4>
+                    <ul>
+                        <li><a href="#" onclick="filtrarPorCategoria('todas')">Todas as Categorias</a></li>
+                        <li><a href="#" onclick="filtrarPorCategoria('pet')">Pet</a></li>
+                        <li><a href="#" onclick="filtrarPorCategoria('eletronicos')">Eletrônicos</a></li>
+                        <li><a href="#" onclick="filtrarPorCategoria('moda')">Moda</a></li>
+                        <li><a href="#" onclick="filtrarPorCategoria('casa')">Casa e Decoração</a></li>
+                        <li><a href="#" onclick="filtrarPorCategoria('beleza')">Beleza e Cuidado</a></li>
+                        <li><a href="#" onclick="filtrarPorCategoria('esportes')">Esportes e Fitness</a></li>
+                        <li><a href="#" onclick="filtrarPorCategoria('infantil')">Bebês e Crianças</a></li>
+                        <li><a href="#" onclick="filtrarPorCategoria('automotivo')">Automotivo</a></li>
+                        <li><a href="#" onclick="filtrarPorCategoria('games')">Games</a></li>
+                        <li><a href="#" onclick="filtrarPorCategoria('livros')">Livros</a></li>
+                    </ul>
+                </div>
             </div>
+            
             <div class="footer-bottom">
                 <div class="footer-disclaimer">
-                    <p><i class="fas fa-info-circle"></i> Este site contém links de afiliados. Compras realizadas podem gerar comissões.</p>
+                    <p><i class="fas fa-info-circle"></i> Este site contém links de afiliados. Ao comprar através dos nossos links, você nos ajuda a manter o site funcionando sem custo adicional para você.</p>
                 </div>
                 <div class="footer-copyright">
                     <p>&copy; <span id="year"></span> Centro de Compras. Todos os direitos reservados.</p>
@@ -282,28 +509,367 @@
 
     <!-- Botão Flutuante -->
     <div class="floating-assistant">
-        <a href="https://wa.me/5511999999999" class="floating-btn" target="_blank">
+        <a href="https://wa.me/5521975179737" target="_blank" class="floating-btn">
             <i class="fab fa-whatsapp"></i>
             <div class="floating-tooltip">
-                <span>Fale Conosco</span>
-                <small>Suporte via WhatsApp</small>
+                <span>Precisa de ajuda?</span>
+                <small>Fale conosco no WhatsApp</small>
             </div>
         </a>
     </div>
 
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
-            crossorigin="anonymous"></script>
-    <script src="script.js"></script>
     <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').then(reg => {
-                    console.log('Service Worker registrado:', reg);
-                }).catch(err => {
-                    console.error('Erro ao registrar Service Worker:', err);
+        const VERSION = "1.0.9";
+        const API_URL = 'https://minha-api-produtos.onrender.com';
+        let currentImages = [];
+        let currentImageIndex = 0;
+        let currentPage = 1;
+        const productsPerPage = 24; // Ajustado para 24 produtos por página
+        let allProducts = [];
+        let isLoading = false;
+        let currentCategory = "todas";
+        let currentStore = "todas";
+        let currentSearch = "";
+
+        document.getElementById("year").textContent = new Date().getFullYear();
+
+        // Admin Access
+        const logo = document.getElementById("site-logo");
+        let clickCount = 0, clickTimeout = null;
+        logo.addEventListener("click", (e) => {
+            e.stopPropagation();
+            clickCount++;
+            if (clickCount === 1) {
+                clickTimeout = setTimeout(() => { clickCount = 0; }, 500);
+            } else if (clickCount === 3) {
+                clearTimeout(clickTimeout);
+                window.location.href = "admin-xyz-123.html";
+                clickCount = 0;
+            }
+        });
+
+        // Categories Sidebar Toggle
+        const categoriesToggle = document.getElementById("categories-toggle");
+        const categoriesSidebar = document.getElementById("categories-sidebar");
+        const closeSidebar = document.getElementById("close-sidebar");
+        const overlay = document.getElementById("overlay");
+
+        categoriesToggle.addEventListener("click", () => {
+            categoriesSidebar.classList.toggle("active");
+            overlay.classList.toggle("active");
+        });
+
+        closeSidebar.addEventListener("click", () => {
+            categoriesSidebar.classList.remove("active");
+            overlay.classList.remove("active");
+        });
+
+        overlay.addEventListener("click", () => {
+            categoriesSidebar.classList.remove("active");
+            overlay.classList.remove("active");
+        });
+
+        // Load Products
+        async function carregarProdutos(categoria = "todas", loja = "todas", busca = "", page = 1) {
+            const gridProdutos = document.getElementById("grid-produtos");
+            const mensagemVazia = document.getElementById("mensagem-vazia");
+            const errorMessage = document.getElementById("error-message");
+            const loadingSpinner = document.getElementById("loading-spinner");
+            const loadMoreButton = document.getElementById("load-more");
+
+            if (isLoading) return;
+            isLoading = true;
+
+            loadingSpinner.style.display = "block";
+            if (page === 1) {
+                gridProdutos.innerHTML = "";
+                allProducts = [];
+            }
+            mensagemVazia.style.display = "none";
+            errorMessage.style.display = "none";
+            loadMoreButton.style.display = "none";
+
+            const maxRetries = 3;
+            let attempt = 1;
+
+            while (attempt <= maxRetries) {
+                try {
+                    console.log(`Tentativa ${attempt}: Carregando de ${API_URL}/api/produtos?page=${page}&limit=${productsPerPage}`);
+                    const response = await fetch(
+                        `${API_URL}/api/produtos?page=${page}&limit=${productsPerPage}`,
+                        { cache: "no-store" }
+                    );
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(`Erro HTTP ${response.status}: ${errorText || 'Resposta vazia'}`);
+                    }
+                    const data = await response.json();
+                    if (!data || !Array.isArray(data.produtos)) {
+                        throw new Error('Resposta inválida: produtos não é um array');
+                    }
+
+                    const filteredProducts = data.produtos.filter(p =>
+                        p &&
+                        typeof p.nome === 'string' &&
+                        typeof p.categoria === 'string' &&
+                        typeof p.loja === 'string' &&
+                        Array.isArray(p.imagens) &&
+                        (categoria === "todas" || p.categoria.toLowerCase() === categoria.toLowerCase()) &&
+                        (loja === "todas" || p.loja.toLowerCase() === loja.toLowerCase()) &&
+                        (!busca || p.nome.toLowerCase().includes(busca.toLowerCase()))
+                    );
+                    allProducts = [...allProducts, ...filteredProducts];
+
+                    if (allProducts.length === 0) {
+                        mensagemVazia.style.display = "flex";
+                        gridProdutos.style.display = "none";
+                    } else {
+                        mensagemVazia.style.display = "none";
+                        gridProdutos.style.display = "grid";
+                        
+                        const productsToRender = filteredProducts;
+
+                        productsToRender.forEach((produto, index) => {
+                            const card = document.createElement("div");
+                            card.classList.add("produto-card", "visible");
+                            card.setAttribute("data-categoria", produto.categoria.toLowerCase());
+                            card.setAttribute("data-loja", produto.loja.toLowerCase());
+                            const globalIndex = allProducts.indexOf(produto);
+                            
+                            const imagens = produto.imagens && produto.imagens.length > 0
+                                ? produto.imagens.map(img => img.startsWith('http') ? img : `${API_URL}${img}`)
+                                : ["https://minha-api-produtos.onrender.com/imagens/placeholder.jpg"];
+                            const carrosselId = `carrossel-${globalIndex}`;
+                            const lojaClass = produto.loja.toLowerCase();
+                            card.innerHTML = `
+                                <div class="carrossel" id="${carrosselId}">
+                                    <div class="carrossel-imagens">
+                                        ${imagens.map((img, idx) => `<img src="${img}" alt="${produto.nome}" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'" onclick="event.stopPropagation(); openModal(${globalIndex}, ${idx})">`).join("")}
+                                    </div>
+                                    ${imagens.length > 1 ? `
+                                        <button class="carrossel-prev" onclick="event.stopPropagation(); moveCarrossel('${carrosselId}', -1)" aria-label="Imagem anterior">◄</button>
+                                        <button class="carrossel-next" onclick="event.stopPropagation(); moveCarrossel('${carrosselId}', 1)" aria-label="Próxima imagem">►</button>
+                                        <div class="carrossel-dots">
+                                            ${imagens.map((_, idx) => `<span class="carrossel-dot ${idx === 0 ? "ativo" : ""}" onclick="event.stopPropagation(); setCarrosselImage('${carrosselId}', ${idx})" aria-label="Selecionar imagem ${idx + 1}"></span>`).join("")}
+                                        </div>
+                                    ` : ""}
+                                </div>
+                                <span class="produto-nome">${produto.nome}</span>
+                                <span class="descricao">Loja: ${produto.loja}</span>
+                                <a href="${produto.link}" target="_blank" class="tarja-preco tarja-${lojaClass}" aria-label="Clique para ver o preço de ${produto.nome} na loja">
+                                    <i class="fas fa-shopping-cart"></i> Ver Preço
+                                </a>
+                            `;
+                            gridProdutos.appendChild(card);
+                        });
+                    }
+                    
+                    loadMoreButton.style.display = data.total > allProducts.length ? "flex" : "none";
+                    isLoading = false;
+                    return;
+                } catch (error) {
+                    console.error(`⚠️ Tentativa ${attempt} falhou: ${error.message}`);
+                    if (attempt === maxRetries) {
+                        errorMessage.style.display = "flex";
+                        mensagemVazia.style.display = "none";
+                        gridProdutos.style.display = "none";
+                        errorMessage.querySelector("p").textContent = "Erro ao carregar os produtos. Tente novamente mais tarde.";
+                    }
+                    attempt++;
+                    await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+                } finally {
+                    loadingSpinner.style.display = "none";
+                    isLoading = false;
+                }
+            }
+        }
+
+        function carregarMaisProdutos() {
+            currentPage++;
+            carregarProdutos(currentCategory, currentStore, currentSearch, currentPage);
+        }
+
+        function moveCarrossel(id, direction) {
+            const carrossel = document.getElementById(id);
+            if (!carrossel) return;
+            const imagens = carrossel.querySelector(".carrossel-imagens");
+            const dots = carrossel.querySelectorAll(".carrossel-dot");
+            let index = parseInt(imagens.dataset.index || 0);
+            const total = imagens.children.length;
+            index = (index + direction + total) % total;
+            imagens.style.transform = `translateX(-${index * 100}%)`;
+            imagens.dataset.index = index;
+            dots.forEach((dot, i) => dot.classList.toggle("ativo", i === index));
+        }
+
+        function setCarrosselImage(id, index) {
+            const carrossel = document.getElementById(id);
+            if (!carrossel) return;
+            const imagens = carrossel.querySelector(".carrossel-imagens");
+            const dots = carrossel.querySelectorAll(".carrossel-dot");
+            imagens.style.transform = `translateX(-${index * 100}%)`;
+            imagens.dataset.index = index;
+            dots.forEach((dot, i) => dot.classList.toggle("ativo", i === index));
+        }
+
+        async function openModal(index, imageIndex) {
+            const modal = document.getElementById("imageModal");
+            const carrosselImagens = document.getElementById("modalCarrosselImagens");
+            const carrosselDots = document.getElementById("modalCarrosselDots");
+            const prevButton = document.getElementById("modalPrev");
+            const nextButton = document.getElementById("modalNext");
+            const modalClose = document.getElementById("modal-close");
+
+            if (!modal || !carrosselImagens || !carrosselDots || !prevButton || !nextButton) {
+                console.error("Elementos do modal não encontrados");
+                return;
+            }
+
+            carrosselImagens.innerHTML = "";
+            carrosselDots.innerHTML = "";
+            prevButton.classList.remove("visible");
+            nextButton.classList.remove("visible");
+
+            const produto = allProducts[index];
+            if (!produto || !produto.imagens || produto.imagens.length === 0) {
+                alert("Nenhuma imagem disponível para este produto.");
+                return;
+            }
+
+            try {
+                currentImages = produto.imagens.map(img => img.startsWith('http') ? img : `${API_URL}${img}`);
+                currentImageIndex = Math.max(0, Math.min(imageIndex, currentImages.length - 1));
+
+                const validImages = await Promise.all(currentImages.map(async (img, idx) => {
+                    try {
+                        const response = await fetch(img, { method: 'HEAD' });
+                        return response.ok ? img : 'https://minha-api-produtos.onrender.com/imagens/placeholder.jpg';
+                    } catch {
+                        return 'https://minha-api-produtos.onrender.com/imagens/placeholder.jpg';
+                    }
+                }));
+
+                carrosselImagens.innerHTML = validImages.map((img, idx) => 
+                    `<img src="${img}" alt="${produto.nome} - Imagem ${idx + 1}" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">`
+                ).join("");
+                carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+
+                carrosselDots.innerHTML = validImages.map((_, i) => 
+                    `<span class="carrossel-dot ${i === currentImageIndex ? "ativo" : ""}" onclick="setModalCarrosselImage(${i})" aria-label="Selecionar imagem ${i + 1}" role="button" tabindex="0"></span>`
+                ).join("");
+
+                prevButton.classList.toggle("visible", validImages.length > 1);
+                nextButton.classList.toggle("visible", validImages.length > 1);
+                modal.style.display = "flex";
+                modal.focus();
+            } catch (error) {
+                console.error("Erro ao abrir modal:", error);
+                alert("Erro ao carregar as imagens. Tente novamente.");
+            }
+        }
+
+        function moveModalCarrossel(direction) {
+            const carrosselImagens = document.getElementById("modalCarrosselImagens");
+            const carrosselDots = document.getElementById("modalCarrosselDots")?.children;
+            if (!carrosselImagens || !carrosselDots || !currentImages.length) return;
+
+            const total = currentImages.length;
+            currentImageIndex = (currentImageIndex + direction + total) % total;
+            
+            carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+            Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle("ativo", i === currentImageIndex));
+        }
+
+        function setModalCarrosselImage(index) {
+            if (index < 0 || index >= currentImages.length) return;
+            
+            currentImageIndex = index;
+            const carrosselImagens = document.getElementById("modalCarrosselImagens");
+            const carrosselDots = document.getElementById("modalCarrosselDots")?.children;
+            if (!carrosselImagens || !carrosselDots) return;
+            
+            carrosselImagens.style.transform = `translateX(-${index * 100}%)`;
+            Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle("ativo", i === index));
+        }
+
+        function closeModal() {
+            const modal = document.getElementById("imageModal");
+            if (modal) {
+                modal.style.display = "none";
+                currentImages = [];
+                currentImageIndex = 0;
+            }
+        }
+
+        document.getElementById("modal-close").addEventListener("click", closeModal);
+        document.getElementById("modalPrev").addEventListener("click", () => moveModalCarrossel(-1));
+        document.getElementById("modalNext").addEventListener("click", () => moveModalCarrossel(1));
+
+        function filtrarPorCategoria(categoria) {
+            document.querySelectorAll(".category-item").forEach(item => {
+                const isActive = item.dataset.categoria === categoria;
+                item.classList.toggle("active", isActive);
+            });
+            document.querySelectorAll(".nav-link").forEach(link => {
+                const isActive = link.getAttribute("onclick")?.includes(`'${categoria}'`);
+                link.classList.toggle("active", isActive);
+            });
+            currentCategory = categoria;
+            currentPage = 1;
+            carregarProdutos(currentCategory, currentStore, currentSearch, currentPage);
+            categoriesSidebar.classList.remove("active");
+            overlay.classList.remove("active");
+        }
+
+        function filtrarPorLoja(loja) {
+            document.querySelectorAll(".store-card").forEach(item => {
+                const isActive = item.dataset.loja === loja;
+                item.classList.toggle("active", isActive);
+            });
+            currentStore = loja;
+            currentPage = 1;
+            carregarProdutos(currentCategory, currentStore, currentSearch, currentPage);
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const buscaInput = document.getElementById("busca");
+            if (buscaInput) {
+                buscaInput.addEventListener("input", (e) => {
+                    currentSearch = e.target.value.toLowerCase();
+                    currentPage = 1;
+                    carregarProdutos(currentCategory, currentStore, currentSearch, currentPage);
+                });
+            }
+            carregarProdutos();
+
+            // View Toggle (Grid/List - Placeholder for future implementation)
+            document.querySelectorAll(".view-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    document.querySelectorAll(".view-btn").forEach(b => b.classList.remove("active"));
+                    btn.classList.add("active");
+                    // Add logic for grid/list view if needed
                 });
             });
-        }
+
+            // Sort Dropdown (Placeholder for future implementation)
+            document.getElementById("sort-select").addEventListener("change", (e) => {
+                console.log("Ordenar por:", e.target.value);
+                // Add sorting logic if needed
+            });
+        });
+
+        window.addEventListener('keyup', (event) => {
+            const modal = document.getElementById('imageModal');
+            if (modal.style.display === 'flex') {
+                if (event.key === 'ArrowLeft') {
+                    moveModalCarrossel(-1);
+                } else if (event.key === 'ArrowRight') {
+                    moveModalCarrossel(1);
+                } else if (event.key === 'Escape') {
+                    closeModal();
+                }
+            }
+        });
     </script>
 </body>
 </html>
