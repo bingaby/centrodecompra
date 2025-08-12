@@ -323,7 +323,7 @@ body {
 .categories-sidebar {
   position: fixed;
   top: 0;
-  left: -300px; /* Começa oculta */
+  left: -300px;
   width: 300px;
   height: 100vh;
   background: var(--background-primary);
@@ -334,7 +334,7 @@ body {
 }
 
 .categories-sidebar.active {
-  left: 0; /* Aparece quando ativa */
+  left: 0;
 }
 
 .sidebar-header {
@@ -494,6 +494,22 @@ body {
   opacity: 0.8;
 }
 
+/* Seção de Anúncios */
+.ad-section {
+  margin-bottom: var(--spacing-xl);
+}
+
+.ad-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--background-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  box-shadow: var(--shadow-sm);
+  min-height: 100px;
+}
+
 /* Seção de Lojas */
 .stores-section {
   margin-bottom: var(--spacing-xl);
@@ -612,6 +628,67 @@ body {
   text-align: center;
 }
 
+/* Cores Específicas das Lojas */
+.store-card.amazon {
+  background: linear-gradient(135deg, #ff9900, #ffb84d);
+  color: white;
+}
+.store-card.amazon:hover {
+  background: linear-gradient(135deg, #e68a00, #ff9900);
+}
+.store-card.amazon.active {
+  background: linear-gradient(135deg, #ff9900, #ffb84d);
+  border-color: #ff9900;
+}
+
+.store-card.mercadolivre {
+  background: linear-gradient(135deg, #ffe600, #fff34d);
+  color: #333;
+}
+.store-card.mercadolivre:hover {
+  background: linear-gradient(135deg, #e0d000, #ffe600);
+}
+.store-card.mercadolivre.active {
+  background: linear-gradient(135deg, #ffe600, #fff34d);
+  border-color: #ffe600;
+}
+
+.store-card.shopee {
+  background: linear-gradient(135deg, #ee4d2d, #ff6b47);
+  color: white;
+}
+.store-card.shopee:hover {
+  background: linear-gradient(135deg, #d84126, #ee4d2d);
+}
+.store-card.shopee.active {
+  background: linear-gradient(135deg, #ee4d2d, #ff6b47);
+  border-color: #ee4d2d;
+}
+
+.store-card.magalu {
+  background: linear-gradient(135deg, #0066cc, #3399ff);
+  color: white;
+}
+.store-card.magalu:hover {
+  background: linear-gradient(135deg, #0052a3, #0066cc);
+}
+.store-card.magalu.active {
+  background: linear-gradient(135deg, #0066cc, #3399ff);
+  border-color: #0066cc;
+}
+
+.store-card.shein {
+  background: linear-gradient(135deg, #000000, #333333);
+  color: white;
+}
+.store-card.shein:hover {
+  background: linear-gradient(135deg, #333333, #000000);
+}
+.store-card.shein.active {
+  background: linear-gradient(135deg, #000000, #333333);
+  border-color: #000000;
+}
+
 /* Loading */
 .loading-container {
   display: none;
@@ -653,9 +730,23 @@ body {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: var(--spacing-lg);
-  margin Drizzle
+  margin-bottom: var(--spacing-xl);
+}
 
-System: margin-bottom: var(--spacing-xl);
+.produto-card {
+  background: var(--background-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: var(--transition-normal);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.produto-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
 }
 
 /* Carrossel do Produto */
@@ -787,13 +878,6 @@ System: margin-bottom: var(--spacing-xl);
 }
 .tarja-shein:hover {
   background: linear-gradient(135deg, #333333, #000000);
-}
-
-.tarja-alibaba {
-  background: linear-gradient(135deg, #ff6a00, #ff8533);
-}
-.tarja-alibaba:hover {
-  background: linear-gradient(135deg, #e55a00, #ff6a00);
 }
 
 /* Controles do Carrossel */
