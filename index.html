@@ -15,6 +15,40 @@
     <link rel="stylesheet" href="style.css">
     <style>
         /* Estilos padrão para desktop */
+        .container-main {
+            display: flex !important;
+            max-width: 1400px !important;
+            margin: 0 auto !important;
+            padding: 16px !important;
+        }
+        .categories-sidebar {
+            width: 250px !important;
+            background: #fff !important;
+            border-right: 1px solid #e0e0e0 !important;
+            padding: 16px !important;
+            position: sticky !important;
+            top: 0 !important;
+            height: calc(100vh - 80px) !important;
+            overflow-y: auto !important;
+            transition: transform 0.3s ease !important;
+        }
+        .categories-sidebar.hidden {
+            transform: translateX(-250px) !important;
+        }
+        .sidebar-toggle {
+            display: none !important;
+            font-size: 0.9rem !important;
+            padding: 8px 16px !important;
+            background: #007bff !important;
+            color: #fff !important;
+            border: none !important;
+            border-radius: 4px !important;
+            cursor: pointer !important;
+            margin-bottom: 16px !important;
+        }
+        .sidebar-toggle:hover {
+            background: #0056b3 !important;
+        }
         .products-grid {
             display: grid !important;
             grid-template-columns: repeat(8, 1fr) !important; /* 8 colunas fixas */
@@ -112,9 +146,52 @@
         .more-categories-btn:hover {
             text-decoration: underline !important;
         }
+        .categories-list {
+            list-style: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        .category-item {
+            display: flex !important;
+            align-items: center !important;
+            padding: 12px !important;
+            font-size: 0.9rem !important;
+            color: #333 !important;
+            cursor: pointer !important;
+            transition: background 0.2s !important;
+        }
+        .category-item:hover {
+            background: #f5f5f5 !important;
+        }
+        .category-item.active {
+            background: #e6f0ff !important;
+            color: #007bff !important;
+            font-weight: 600 !important;
+        }
+        .category-item i {
+            margin-right: 8px !important;
+        }
 
         /* Media query para tablets */
         @media (max-width: 1024px) {
+            .container-main {
+                flex-direction: column !important;
+            }
+            .categories-sidebar {
+                width: 100% !important;
+                position: relative !important;
+                height: auto !important;
+                border-right: none !important;
+                border-bottom: 1px solid #e0e0e0 !important;
+                display: none !important;
+            }
+            .categories-sidebar.active {
+                display: block !important;
+                transform: translateX(0) !important;
+            }
+            .sidebar-toggle {
+                display: block !important;
+            }
             .products-grid {
                 grid-template-columns: repeat(6, 1fr) !important; /* 6 colunas */
                 gap: 12px !important;
@@ -144,6 +221,24 @@
 
         /* Media query para mobile */
         @media (max-width: 768px) {
+            .container-main {
+                flex-direction: column !important;
+            }
+            .categories-sidebar {
+                width: 100% !important;
+                position: relative !important;
+                height: auto !important;
+                border-right: none !important;
+                border-bottom: 1px solid #e0e0e0 !important;
+                display: none !important;
+            }
+            .categories-sidebar.active {
+                display: block !important;
+                transform: translateX(0) !important;
+            }
+            .sidebar-toggle {
+                display: block !important;
+            }
             .products-grid {
                 grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)) !important; /* 3-4 colunas */
                 gap: 8px !important;
@@ -253,211 +348,209 @@
         </nav>
     </header>
 
-    <!-- Sidebar de Categorias -->
-    <div class="categories-sidebar" id="categories-sidebar">
-        <div class="sidebar-header">
-            <h3><i class="fas fa-list"></i> Categorias</h3>
-            <button class="close-sidebar" id="close-sidebar">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="sidebar-content">
-            <ul class="categories-list">
-                <li class="category-item active" data-categoria="todas" onclick="filtrarPorCategoria('todas')">
-                    <i class="fas fa-th-large"></i>
-                    <span>Todas as Categorias</span>
-                </li>
-                <li class="category-item" data-categoria="pet" onclick="filtrarPorCategoria('pet')">
-                    <i class="fas fa-paw"></i>
-                    <span>Pet</span>
-                </li>
-                <li class="category-item" data-categoria="eletronicos" onclick="filtrarPorCategoria('eletronicos')">
-                    <i class="fas fa-laptop"></i>
-                    <span>Eletrônicos</span>
-                </li>
-                <li class="category-item" data-categoria="moda" onclick="filtrarPorCategoria('moda')">
-                    <i class="fas fa-tshirt"></i>
-                    <span>Moda</span>
-                </li>
-                <li class="category-item" data-categoria="casa" onclick="filtrarPorCategoria('casa')">
-                    <i class="fas fa-home"></i>
-                    <span>Casa e Decoração</span>
-                </li>
-                <li class="category-item" data-categoria="beleza" onclick="filtrarPorCategoria('beleza')">
-                    <i class="fas fa-heart"></i>
-                    <span>Beleza e Cuidado</span>
-                </li>
-                <li class="category-item" data-categoria="esportes" onclick="filtrarPorCategoria('esportes')">
-                    <i class="fas fa-dumbbell"></i>
-                    <span>Esportes e Fitness</span>
-                </li>
-                <li class="category-item" data-categoria="infantil" onclick="filtrarPorCategoria('infantil')">
-                    <i class="fas fa-baby"></i>
-                    <span>Bebês e Crianças</span>
-                </li>
-                <li class="category-item" data-categoria="automotivo" onclick="filtrarPorCategoria('automotivo')">
-                    <i class="fas fa-car"></i>
-                    <span>Automotivo</span>
-                </li>
-                <li class="category-item" data-categoria="games" onclick="filtrarPorCategoria('games')">
-                    <i class="fas fa-gamepad"></i>
-                    <span>Games</span>
-                </li>
-                <li class="category-item" data-categoria="livros" onclick="filtrarPorCategoria('livros')">
-                    <i class="fas fa-book"></i>
-                    <span>Livros</span>
-                </li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Overlay -->
-    <div class="overlay" id="overlay"></div>
-
     <!-- Conteúdo Principal -->
     <main class="main-content">
-        <div class="container">
-            <!-- Banner de Ofertas -->
-            <section class="offers-banner">
-                <div class="banner-content">
-                    <div class="banner-text">
-                        <h1>🔥 Ofertas Imperdíveis</h1>
-                        <p>Descontos de até 70% nas melhores lojas do Brasil</p>
-                    </div>
-                    <div class="banner-stats">
-                        <div class="stat-item">
-                            <span class="stat-number">1000+</span>
-                            <span class="stat-label">Produtos</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-number">50+</span>
-                            <span class="stat-label">Lojas</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-number">70%</span>
-                            <span class="stat-label">Desconto</span>
-                        </div>
-                    </div>
+        <div class="container-main">
+            <!-- Sidebar de Categorias (Fixo no Desktop) -->
+            <div class="categories-sidebar" id="categories-sidebar">
+                <div class="sidebar-header">
+                    <h3><i class="fas fa-list"></i> Categorias</h3>
                 </div>
-            </section>
-
-            <!-- Lojas Parceiras -->
-            <section class="stores-section">
-                <div class="section-header">
-                    <h2><i class="fas fa-store"></i> Lojas Parceiras</h2>
-                    <p>Compre com segurança nas melhores lojas online</p>
-                </div>
-                <div class="stores-grid">
-                    <div class="store-card active" data-loja="todas" onclick="filtrarPorLoja('todas')">
-                        <div class="store-icon">
+                <button class="sidebar-toggle" id="sidebar-toggle">Esconder Categorias</button>
+                <div class="sidebar-content">
+                    <ul class="categories-list">
+                        <li class="category-item active" data-categoria="todas" onclick="filtrarPorCategoria('todas')">
                             <i class="fas fa-th-large"></i>
-                        </div>
-                        <span class="store-name">Todas</span>
-                    </div>
-                    <div class="store-card amazon" data-loja="amazon" onclick="filtrarPorLoja('amazon')">
-                        <div class="store-logo">
-                            <img src="logos/amazon.png" alt="Amazon" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">
-                        </div>
-                        <span class="store-name">Amazon</span>
-                    </div>
-                    <div class="store-card mercadolivre" data-loja="mercadolivre" onclick="filtrarPorLoja('mercadolivre')">
-                        <div class="store-logo">
-                            <img src="logos/mercadolivre.jpg" alt="Mercado Livre" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">
-                        </div>
-                        <span class="store-name">Mercado Livre</span>
-                    </div>
-                    <div class="store-card shopee" data-loja="shopee" onclick="filtrarPorLoja('shopee')">
-                        <div class="store-logo">
-                            <img src="logos/shopee.png" alt="Shopee" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">
-                        </div>
-                        <span class="store-name">Shopee</span>
-                    </div>
-                    <div class="store-card magalu" data-loja="magalu" onclick="filtrarPorLoja('magalu')">
-                        <div class="store-logo">
-                            <img src="logos/magalu.png" alt="Magalu" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">
-                        </div>
-                        <span class="store-name">Magalu</span>
-                    </div>
-                    <div class="store-card shein" data-loja="shein" onclick="filtrarPorLoja('shein')">
-                        <div class="store-logo">
-                            <img src="logos/shein.png" alt="Shein" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">
-                        </div>
-                        <span class="store-name">Shein</span>
-                    </div>
-                    <div class="store-card alibaba" data-loja="alibaba" onclick="filtrarPorLoja('alibaba')">
-                        <div class="store-logo">
-                            <img src="logos/alibaba.png" alt="Alibaba" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">
-                        </div>
-                        <span class="store-name">Alibaba</span>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Loading -->
-            <div class="loading-container" id="loading-spinner">
-                <div class="loading-spinner">
-                    <div class="spinner"></div>
-                    <p>Carregando ofertas incríveis...</p>
+                            <span>Todas as Categorias</span>
+                        </li>
+                        <li class="category-item" data-categoria="pet" onclick="filtrarPorCategoria('pet')">
+                            <i class="fas fa-paw"></i>
+                            <span>Pet</span>
+                        </li>
+                        <li class="category-item" data-categoria="eletronicos" onclick="filtrarPorCategoria('eletronicos')">
+                            <i class="fas fa-laptop"></i>
+                            <span>Eletrônicos</span>
+                        </li>
+                        <li class="category-item" data-categoria="moda" onclick="filtrarPorCategoria('moda')">
+                            <i class="fas fa-tshirt"></i>
+                            <span>Moda</span>
+                        </li>
+                        <li class="category-item" data-categoria="casa" onclick="filtrarPorCategoria('casa')">
+                            <i class="fas fa-home"></i>
+                            <span>Casa e Decoração</span>
+                        </li>
+                        <li class="category-item" data-categoria="beleza" onclick="filtrarPorCategoria('beleza')">
+                            <i class="fas fa-heart"></i>
+                            <span>Beleza e Cuidado</span>
+                        </li>
+                        <li class="category-item" data-categoria="esportes" onclick="filtrarPorCategoria('esportes')">
+                            <i class="fas fa-dumbbell"></i>
+                            <span>Esportes e Fitness</span>
+                        </li>
+                        <li class="category-item" data-categoria="infantil" onclick="filtrarPorCategoria('infantil')">
+                            <i class="fas fa-baby"></i>
+                            <span>Bebês e Crianças</span>
+                        </li>
+                        <li class="category-item" data-categoria="automotivo" onclick="filtrarPorCategoria('automotivo')">
+                            <i class="fas fa-car"></i>
+                            <span>Automotivo</span>
+                        </li>
+                        <li class="category-item" data-categoria="games" onclick="filtrarPorCategoria('games')">
+                            <i class="fas fa-gamepad"></i>
+                            <span>Games</span>
+                        </li>
+                        <li class="category-item" data-categoria="livros" onclick="filtrarPorCategoria('livros')">
+                            <i class="fas fa-book"></i>
+                            <span>Livros</span>
+                        </li>
+                    </ul>
                 </div>
             </div>
 
-            <!-- Grid de Produtos -->
-            <section class="products-section">
-                <div class="section-header">
-                    <h2 id="ofertas-titulo"><i class="fas fa-fire"></i> Ofertas do Dia</h2>
-                    <div class="section-actions">
-                        <div class="view-toggle">
-                            <button class="view-btn active" data-view="grid">
-                                <i class="fas fa-th"></i>
-                            </button>
-                            <button class="view-btn" data-view="list">
-                                <i class="fas fa-list"></i>
-                            </button>
+            <!-- Conteúdo Principal -->
+            <div class="content-main">
+                <!-- Banner de Ofertas -->
+                <section class="offers-banner">
+                    <div class="banner-content">
+                        <div class="banner-text">
+                            <h1>🔥 Ofertas Imperdíveis</h1>
+                            <p>Descontos de até 70% nas melhores lojas do Brasil</p>
                         </div>
-                        <div class="sort-dropdown">
-                            <select id="sort-select">
-                                <option value="relevance">Mais Relevantes</option>
-                                <option value="price-low">Menor Preço</option>
-                                <option value="price-high">Maior Preço</option>
-                                <option value="newest">Mais Recentes</option>
-                            </select>
+                        <div class="banner-stats">
+                            <div class="stat-item">
+                                <span class="stat-number">1000+</span>
+                                <span class="stat-label">Produtos</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">50+</span>
+                                <span class="stat-label">Lojas</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">70%</span>
+                                <span class="stat-label">Desconto</span>
+                            </div>
                         </div>
                     </div>
+                </section>
+
+                <!-- Lojas Parceiras -->
+                <section class="stores-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-store"></i> Lojas Parceiras</h2>
+                        <p>Compre com segurança nas melhores lojas online</p>
+                    </div>
+                    <div class="stores-grid">
+                        <div class="store-card active" data-loja="todas" onclick="filtrarPorLoja('todas')">
+                            <div class="store-icon">
+                                <i class="fas fa-th-large"></i>
+                            </div>
+                            <span class="store-name">Todas</span>
+                        </div>
+                        <div class="store-card amazon" data-loja="amazon" onclick="filtrarPorLoja('amazon')">
+                            <div class="store-logo">
+                                <img src="logos/amazon.png" alt="Amazon" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">
+                            </div>
+                            <span class="store-name">Amazon</span>
+                        </div>
+                        <div class="store-card mercadolivre" data-loja="mercadolivre" onclick="filtrarPorLoja('mercadolivre')">
+                            <div class="store-logo">
+                                <img src="logos/mercadolivre.jpg" alt="Mercado Livre" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">
+                            </div>
+                            <span class="store-name">Mercado Livre</span>
+                        </div>
+                        <div class="store-card shopee" data-loja="shopee" onclick="filtrarPorLoja('shopee')">
+                            <div class="store-logo">
+                                <img src="logos/shopee.png" alt="Shopee" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">
+                            </div>
+                            <span class="store-name">Shopee</span>
+                        </div>
+                        <div class="store-card magalu" data-loja="magalu" onclick="filtrarPorLoja('magalu')">
+                            <div class="store-logo">
+                                <img src="logos/magalu.png" alt="Magalu" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">
+                            </div>
+                            <span class="store-name">Magalu</span>
+                        </div>
+                        <div class="store-card shein" data-loja="shein" onclick="filtrarPorLoja('shein')">
+                            <div class="store-logo">
+                                <img src="logos/shein.png" alt="Shein" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">
+                            </div>
+                            <span class="store-name">Shein</span>
+                        </div>
+                        <div class="store-card alibaba" data-loja="alibaba" onclick="filtrarPorLoja('alibaba')">
+                            <div class="store-logo">
+                                <img src="logos/alibaba.png" alt="Alibaba" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">
+                            </div>
+                            <span class="store-name">Alibaba</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Loading -->
+                <div class="loading-container" id="loading-spinner">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Carregando ofertas incríveis...</p>
+                    </div>
                 </div>
-                
-                <div class="products-grid" id="grid-produtos"></div>
-                
-                <div class="load-more-container">
-                    <button id="load-more" class="load-more-btn">
-                        <i class="fas fa-plus"></i>
-                        <span>Carregar Mais Produtos</span>
+
+                <!-- Grid de Produtos -->
+                <section class="products-section">
+                    <div class="section-header">
+                        <h2 id="ofertas-titulo"><i class="fas fa-fire"></i> Ofertas do Dia</h2>
+                        <div class="section-actions">
+                            <div class="view-toggle">
+                                <button class="view-btn active" data-view="grid">
+                                    <i class="fas fa-th"></i>
+                                </button>
+                                <button class="view-btn" data-view="list">
+                                    <i class="fas fa-list"></i>
+                                </button>
+                            </div>
+                            <div class="sort-dropdown">
+                                <select id="sort-select">
+                                    <option value="relevance">Mais Relevantes</option>
+                                    <option value="price-low">Menor Preço</option>
+                                    <option value="price-high">Maior Preço</option>
+                                    <option value="newest">Mais Recentes</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="products-grid" id="grid-produtos"></div>
+                    
+                    <div class="load-more-container">
+                        <button id="load-more" class="load-more-btn">
+                            <i class="fas fa-plus"></i>
+                            <span>Carregar Mais Produtos</span>
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Mensagens de Estado -->
+                <div class="empty-state" id="mensagem-vazia">
+                    <div class="empty-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3>Nenhum produto encontrado</h3>
+                    <p>Tente ajustar os filtros ou buscar por outros termos</p>
+                    <button class="btn-primary" onclick="location.reload()">
+                        <i class="fas fa-refresh"></i>
+                        Limpar Filtros
                     </button>
                 </div>
-            </section>
 
-            <!-- Mensagens de Estado -->
-            <div class="empty-state" id="mensagem-vazia">
-                <div class="empty-icon">
-                    <i class="fas fa-search"></i>
+                <div class="error-state" id="error-message">
+                    <div class="error-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h3>Ops! Algo deu errado</h3>
+                    <p>Não foi possível carregar os produtos. Verifique sua conexão.</p>
+                    <button class="btn-primary" onclick="location.reload()">
+                        <i class="fas fa-redo"></i>
+                        Tentar Novamente
+                    </button>
                 </div>
-                <h3>Nenhum produto encontrado</h3>
-                <p>Tente ajustar os filtros ou buscar por outros termos</p>
-                <button class="btn-primary" onclick="location.reload()">
-                    <i class="fas fa-refresh"></i>
-                    Limpar Filtros
-                </button>
-            </div>
-
-            <div class="error-state" id="error-message">
-                <div class="error-icon">
-                    <i class="fas fa-exclamation-triangle"></i>
-                </div>
-                <h3>Ops! Algo deu errado</h3>
-                <p>Não foi possível carregar os produtos. Verifique sua conexão.</p>
-                <button class="btn-primary" onclick="location.reload()">
-                    <i class="fas fa-redo"></i>
-                    Tentar Novamente
-                </button>
             </div>
         </div>
     </main>
@@ -526,6 +619,24 @@
                         <li><a href="#">Como Funciona</a></li>
                     </ul>
                 </div>
+                
+                <div class="footer-section">
+                    <h4>Categorias</h4>
+                    <ul>
+                        <li><a href="#" onclick="filtrarPorCategoria('todas')">Todas as Categorias</a></li>
+                        <li><a href="#" onclick="filtrarPorCategoria('pet')">Pet</a></li>
+                        <li><a href="#" onclick="filtrarPorCategoria('eletronicos')">Eletrônicos</a></li>
+                        <li><a href="#" onclick="filtrarPorCategoria('moda')">Moda</a></li>
+                        <li><a href="#" onclick="filtrarPorCategoria('casa')">Casa e Decoração</a></li>
+                        <li><a href="#" onclick="filtrarPorCategoria('beleza')">Beleza e Cuidado</a></li>
+                        <li><a href="#" onclick="filtrarPorCategoria('esportes')">Esportes e Fitness</a></li>
+                        <li><a href="#" onclick="filtrarPorCategoria('infantil')">Bebês e Crianças</a></li>
+                        <li><a href="#" onclick="filtrarPorCategoria('automotivo')">Automotivo</a></li>
+                        <li><a href="#" onclick="filtrarPorCategoria('games')">Games</a></li>
+                        <li><a href="#" onclick="filtrarPorCategoria('livros')">Livros</a></li>
+                    </ul>
+                </div>
+            </div>
             
             <div class="footer-bottom">
                 <div class="footer-disclaimer">
@@ -550,7 +661,7 @@
     </div>
 
     <script>
-        const VERSION = "1.0.10";
+        const VERSION = "1.0.11"; // Incrementado
         const API_URL = 'https://minha-api-produtos.onrender.com';
         let currentImages = [];
         let currentImageIndex = 0;
@@ -582,7 +693,7 @@
         // Categories Sidebar Toggle
         const categoriesToggle = document.getElementById("categories-toggle");
         const categoriesSidebar = document.getElementById("categories-sidebar");
-        const closeSidebar = document.getElementById("close-sidebar");
+        const sidebarToggle = document.getElementById("sidebar-toggle");
         const overlay = document.getElementById("overlay");
 
         categoriesToggle.addEventListener("click", () => {
@@ -590,9 +701,9 @@
             overlay.classList.toggle("active");
         });
 
-        closeSidebar.addEventListener("click", () => {
-            categoriesSidebar.classList.remove("active");
-            overlay.classList.remove("active");
+        sidebarToggle.addEventListener("click", () => {
+            categoriesSidebar.classList.toggle("hidden");
+            sidebarToggle.textContent = categoriesSidebar.classList.contains("hidden") ? "Mostrar Categorias" : "Esconder Categorias";
         });
 
         overlay.addEventListener("click", () => {
