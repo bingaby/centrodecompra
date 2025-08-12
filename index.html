@@ -6,15 +6,17 @@
     <meta name="description" content="Ofertas com descontos reais nas principais lojas como Amazon, Shein, Shopee e Magalu. Links de afiliado seguros e atualizados.">
     <meta property="og:title" content="Centro de Compras - Ofertas e Descontos">
     <meta property="og:description" content="Encontre as melhores ofertas em lojas como Amazon, Shein, Shopee e Magalu. Links de afiliados seguros e atualizados!">
-    <meta property="og:image" content="https://placehold.co/1200x630/3483fa/ffffff?text=Centro+de+Compras">
+    <meta property="og:image" content="/logos/logoscentrodecompras.jpeg">
     <meta property="og:url" content="https://centrodecompra.com.br/">
     <meta name="twitter:card" content="summary_large_image">
     <!-- PWA Metatags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#3483fa">
-    <link rel="manifest" href="/manifest.json">
-    <link rel="apple-touch-icon" href="/logos/icon-192x192.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="icon" type="image/png" sizes="32x32" href="/logos/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/logos/favicon-16x16.png">
+    <link rel="apple-touch-icon" href="/logos/apple-touch-icon.png">
     <title>Centro de Compras - Ofertas do Dia</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -27,13 +29,13 @@
             <div class="container">
                 <div class="header-content">
                     <div class="logo-section">
-                        <img src="https://placehold.co/180x60/3483fa/ffffff?text=Centro+de+Compras" alt="Centro de Compras" class="logo" id="site-logo">
+                        <img src="/logos/logoscentrodecompras.jpeg" alt="Centro de Compras" class="logo" id="site-logo">
                     </div>
                     <div class="search-section">
                         <div class="search-container">
                             <input type="text" id="busca" placeholder="Buscar produtos..." class="search-input">
                             <button class="search-btn" type="button">
-                                <i class="fas fa-search"></i>
+                                <img src="/imagens/search-icon.png" alt="Buscar" class="search-icon">
                             </button>
                         </div>
                     </div>
@@ -121,31 +123,31 @@
                 <div class="stores-grid" id="stores-grid">
                     <div class="store-card amazon" data-loja="amazon" onclick="filtrarPorLoja('amazon')">
                         <div class="store-logo">
-                            <img src="logos/amazon.png" alt="Amazon" onerror="this.src='logos/placeholder.png'">
+                            <img src="logos/amazon.png" alt="Amazon" onerror="this.src='/imagens/placeholder.jpg'">
                         </div>
                         <span class="store-name">Amazon</span>
                     </div>
                     <div class="store-card mercadolivre" data-loja="mercadolivre" onclick="filtrarPorLoja('mercadolivre')">
                         <div class="store-logo">
-                            <img src="logos/mercadolivre.jpg" alt="Mercado Livre" onerror="this.src='logos/placeholder.png'">
+                            <img src="logos/mercadolivre.jpg" alt="Mercado Livre" onerror="this.src='/imagens/placeholder.jpg'">
                         </div>
                         <span class="store-name">Mercado Livre</span>
                     </div>
                     <div class="store-card shopee" data-loja="shopee" onclick="filtrarPorLoja('shopee')">
                         <div class="store-logo">
-                            <img src="logos/shopee.png" alt="Shopee" onerror="this.src='logos/placeholder.png'">
+                            <img src="logos/shopee.png" alt="Shopee" onerror="this.src='/imagens/placeholder.jpg'">
                         </div>
                         <span class="store-name">Shopee</span>
                     </div>
                     <div class="store-card magalu" data-loja="magalu" onclick="filtrarPorLoja('magalu')">
                         <div class="store-logo">
-                            <img src="logos/magalu.png" alt="Magalu" onerror="this.src='logos/placeholder.png'">
+                            <img src="logos/magalu.png" alt="Magalu" onerror="this.src='/imagens/placeholder.jpg'">
                         </div>
                         <span class="store-name">Magalu</span>
                     </div>
                     <div class="store-card shein" data-loja="shein" onclick="filtrarPorLoja('shein')">
                         <div class="store-logo">
-                            <img src="logos/shein.png" alt="Shein" onerror="this.src='logos/placeholder.png'">
+                            <img src="logos/shein.png" alt="Shein" onerror="this.src='/imagens/placeholder.jpg'">
                         </div>
                         <span class="store-name">Shein</span>
                     </div>
@@ -292,5 +294,16 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
             crossorigin="anonymous"></script>
     <script src="script.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then(reg => {
+                    console.log('Service Worker registrado:', reg);
+                }).catch(err => {
+                    console.error('Erro ao registrar Service Worker:', err);
+                });
+            });
+        }
+    </script>
 </body>
 </html>
