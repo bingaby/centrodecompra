@@ -281,9 +281,9 @@ body {
 
 .stores-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 1rem;
-  padding: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1.5rem;
+  padding: 1.5rem;
   background: var(--background-primary);
   border-radius: var(--radius-md);
 }
@@ -292,11 +292,12 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 1rem;
+  padding: 1.5rem;
   border: 2px solid var(--border-color);
   border-radius: var(--radius-md);
   cursor: pointer;
   transition: var(--transition);
+  text-align: center;
 }
 
 .store-card:hover {
@@ -317,14 +318,17 @@ body {
 .store-card[data-loja="aliexpress"]:hover { border-color: #e21b2b; }
 
 .store-logo {
-  height: 40px;
+  max-height: 50px;
+  max-width: 120px;
+  width: 100%;
   object-fit: contain;
+  image-rendering: auto;
+  margin-bottom: 0.5rem;
 }
 
 .store-name {
   font-size: 1rem;
   font-weight: 600;
-  margin-top: 0.5rem;
 }
 
 .store-icon {
@@ -511,38 +515,6 @@ body {
   gap: 2rem;
 }
 
-.social-links {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.social-link {
-  display: inline-block;
-}
-
-.social-icon {
-  width: 32px;
-  height: 32px;
-  object-fit: contain;
-  transition: var(--transition);
-}
-
-.social-link:hover .social-icon {
-  transform: scale(1.1);
-}
-
-.payment-methods {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.payment-icon {
-  height: 24px;
-  object-fit: contain;
-}
-
 .footer-bottom {
   margin-top: 2rem;
   text-align: center;
@@ -616,6 +588,17 @@ body {
 
   .stores-grid {
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .store-card {
+    padding: 1rem;
+  }
+
+  .store-logo {
+    max-height: 40px;
+    max-width: 100px;
   }
 
   .products-grid {
@@ -629,6 +612,23 @@ body {
 
   .category-item i {
     font-size: 1.3rem;
+  }
+}
+
+/* Ajustes para Desktop */
+@media (min-width: 769px) {
+  .stores-grid {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .store-card {
+    padding: 1.5rem;
+  }
+
+  .store-logo {
+    max-height: 50px;
+    max-width: 120px;
   }
 }
 
