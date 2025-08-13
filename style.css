@@ -281,7 +281,7 @@ body {
 
 .stores-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 1rem;
   padding: 1rem;
   background: var(--background-primary);
@@ -311,10 +311,25 @@ body {
 .store-card[data-loja="amazon"]:hover { border-color: #ff9900; }
 .store-card[data-loja="mercadolivre"]:hover { border-color: #ffe600; }
 .store-card[data-loja="shopee"]:hover { border-color: #ee4d2d; }
+.store-card[data-loja="magalu"]:hover { border-color: #0086ff; }
+.store-card[data-loja="shein"]:hover { border-color: #000000; }
+.store-card[data-loja="alibaba"]:hover { border-color: #f60; }
+.store-card[data-loja="aliexpress"]:hover { border-color: #e21b2b; }
 
-.store-logo { height: 32px; }
-.store-name { font-size: 1rem; font-weight: 600; }
-.store-icon { font-size: 2rem; }
+.store-logo {
+  height: 40px;
+  object-fit: contain;
+}
+
+.store-name {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+.store-icon {
+  font-size: 2rem;
+}
 
 /* Tooltip */
 .store-card::after {
@@ -450,6 +465,39 @@ body {
   object-fit: contain;
 }
 
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+.carousel-btn.prev { left: 10px; }
+.carousel-btn.next { right: 10px; }
+
+.carousel-dots {
+  text-align: center;
+  padding: 0.5rem;
+}
+
+.carousel-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: #ccc;
+  border-radius: 50%;
+  margin: 0 5px;
+  cursor: pointer;
+}
+
+.carousel-dot.active {
+  background: var(--primary-color);
+}
+
 /* Footer */
 .main-footer {
   background: linear-gradient(135deg, #2d3748, #1a202c);
@@ -466,17 +514,38 @@ body {
 .social-links {
   display: flex;
   gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .social-link {
-  width: 40px;
-  height: 40px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
+  display: inline-block;
+}
+
+.social-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  transition: var(--transition);
+}
+
+.social-link:hover .social-icon {
+  transform: scale(1.1);
+}
+
+.payment-methods {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.payment-icon {
+  height: 24px;
+  object-fit: contain;
+}
+
+.footer-bottom {
+  margin-top: 2rem;
+  text-align: center;
 }
 
 /* Loading e Estados */
@@ -520,6 +589,18 @@ body {
 .empty-icon, .error-icon {
   font-size: 4rem;
   color: var(--text-secondary);
+}
+
+.btn-primary {
+  padding: 0.5rem 1rem;
+  background: var(--primary-color);
+  color: white;
+  text-decoration: none;
+  border-radius: var(--radius-md);
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
 }
 
 /* Responsividade */
