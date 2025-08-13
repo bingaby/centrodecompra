@@ -1,127 +1,110 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Centro de Compras - Ofertas de lojas como Amazon, Shein, Shopee, Magalu, Mercado Livre e mais. Links de afiliado atualizados e seguros.">
   <title>Centro de Compras</title>
+  <meta name="description" content="Encontre as melhores ofertas em produtos de diversas lojas online no Centro de Compras. Site de afiliado.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
-
-  <!-- CABEÇALHO -->
-  <header>
+  <header class="main-header">
+    <div class="header-top">
+      <div class="container">
+        <span><i class="fas fa-phone-alt"></i> (21) 9999-9999</span>
+        <span><i class="fas fa-envelope"></i> contato@centrodecompras.com</span>
+      </div>
+    </div>
     <div class="header-main">
-      <div class="logo">Centro de Compras</div>
-      <nav class="nav-links">
-        <a href="#">Início</a>
-        <a href="#">Categorias</a>
-        <a href="#">Ofertas</a>
-        <a href="#">Contato</a>
-      </nav>
-      <div class="search-section">
-        <input type="text" placeholder="Buscar produtos...">
-        <button><i class="fa fa-search"></i></button>
+      <div class="container header-content">
+        <img src="https://via.placeholder.com/200x50/3483fa/ffffff?text=Logo" alt="Logo Centro de Compras" class="logo" id="site-logo">
+        <div class="search-section">
+          <input type="text" id="busca" placeholder="Pesquisar produtos...">
+          <button id="search-btn"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="header-actions">
+          <a href="https://wa.me/5511999999999" class="action-btn whatsapp-btn"><i class="fab fa-whatsapp"></i></a>
+          <a href="https://t.me/centrodecompras" class="action-btn telegram-btn"><i class="fab fa-telegram-plane"></i></a>
+          <a href="/admin-xyz-123.html" class="action-btn admin-btn" id="admin-btn" style="display:none;"><i class="fas fa-user-shield"></i></a>
+        </div>
       </div>
     </div>
   </header>
 
-  <!-- BANNER OFERTAS DO DIA -->
-  <section class="offers-banner">
-    <div class="banner-content">
-      <div class="banner-text">
-        <h1>Ofertas do Dia</h1>
-        <p>Descontos exclusivos e por tempo limitado!</p>
+  <main class="main-content">
+    <!-- Banner ofertas do dia -->
+    <section class="offers-banner">
+      <div class="container">
+        <h1>🔥 Ofertas do Dia</h1>
+        <p>Economize até 70% em milhares de produtos!</p>
       </div>
-      <div class="banner-stats">
-        <div>
-          <div class="stat-number">50%</div>
-          <div class="stat-label">Desconto</div>
+    </section>
+
+    <!-- Lojas parceiras -->
+    <section class="stores-section">
+      <div class="container">
+        <h2>Lojas Parceiras</h2>
+        <div class="stores-grid">
+          <div class="store-card" data-loja="amazon"><img src="logos/amazon.png" alt="Amazon"></div>
+          <div class="store-card" data-loja="mercadolivre"><img src="logos/mercadolivre.jpg" alt="Mercado Livre"></div>
+          <div class="store-card" data-loja="shopee"><img src="logos/shopee.png" alt="Shopee"></div>
+          <div class="store-card" data-loja="magalu"><img src="logos/magalu.png" alt="Magalu"></div>
+          <div class="store-card" data-loja="shein"><img src="logos/shein.png" alt="Shein"></div>
+          <div class="store-card" data-loja="alibaba"><img src="logos/alibaba.png" alt="Alibaba"></div>
         </div>
-        <div>
-          <div class="stat-number">+500</div>
-          <div class="stat-label">Produtos</div>
+      </div>
+    </section>
+
+    <!-- Produtos -->
+    <section class="products-section">
+      <div class="container">
+        <h2>🔥 Ofertas do Dia</h2>
+        <div class="loading-container" id="loading-spinner">
+          <div class="spinner"></div>
+          <p>Carregando produtos...</p>
+        </div>
+        <div class="empty-state" id="mensagem-vazia">
+          <i class="fas fa-box-open"></i>
+          <h3>Nenhum produto encontrado</h3>
+          <p>Tente ajustar os filtros ou a busca.</p>
+        </div>
+        <div class="error-state" id="error-message">
+          <i class="fas fa-exclamation-circle"></i>
+          <h3>Erro ao carregar produtos</h3>
+          <p>Verifique sua conexão com a internet.</p>
+        </div>
+        <div class="products-grid" id="grid-produtos"></div>
+        <div class="load-more-container">
+          <button class="load-more-btn" id="load-more">Carregar Mais</button>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </main>
 
-  <!-- CATEGORIAS -->
-  <section class="categories">
-    <div class="category-card">
-      <img src="logos/eletronicos.png" alt="Eletrônicos">
-      <p>Eletrônicos</p>
-    </div>
-    <div class="category-card">
-      <img src="logos/moda.png" alt="Moda">
-      <p>Moda</p>
-    </div>
-    <div class="category-card">
-      <img src="logos/casa.png" alt="Casa">
-      <p>Casa</p>
-    </div>
-    <div class="category-card">
-      <img src="logos/esportes.png" alt="Esportes">
-      <p>Esportes</p>
-    </div>
-    <div class="category-card">
-      <img src="logos/beleza.png" alt="Beleza">
-      <p>Beleza</p>
-    </div>
-    <div class="category-card">
-      <img src="logos/brinquedos.png" alt="Brinquedos">
-      <p>Brinquedos</p>
-    </div>
-  </section>
-
-  <!-- LOJAS PARCEIRAS -->
-  <section class="stores-section">
-    <h2>Lojas Parceiras</h2>
-    <div class="stores-grid">
-      <div class="store-card">
-        <img src="logos/amazon.png" alt="Amazon">
-      </div>
-      <div class="store-card">
-        <img src="logos/shopee.png" alt="Shopee">
-      </div>
-      <div class="store-card">
-        <img src="logos/shein.png" alt="Shein">
-      </div>
-      <div class="store-card">
-        <img src="logos/magalu.png" alt="Magalu">
-      </div>
-      <div class="store-card">
-        <img src="logos/mercadolivre.png" alt="Mercado Livre">
-      </div>
-    </div>
-  </section>
-
-  <!-- ÁREA DA SUA API -->
-  <section class="products-grid" id="lista-produtos">
-    <!-- Sua API vai injetar os produtos aqui -->
-  </section>
-
-  <!-- BOTÃO WHATSAPP -->
-  <div class="floating-assistant">
-    <a href="https://wa.me/5599999999999" target="_blank" class="floating-btn">
-      <i class="fab fa-whatsapp"></i>
-      <span class="floating-tooltip">Fale conosco no WhatsApp</span>
-    </a>
-  </div>
-
-  <!-- RODAPÉ -->
-  <footer>
-    <div class="footer-content">
-      <p>&copy; 2025 Centro de Compras - Todos os direitos reservados.</p>
-      <p class="disclaimer">
-        Este site participa de programas de afiliados e pode receber comissão por compras qualificadas realizadas através dos links disponibilizados.
-      </p>
-      <p class="about">
-        Nosso objetivo é reunir as melhores ofertas de grandes varejistas online, garantindo praticidade e economia para você.
-      </p>
+  <!-- Rodapé -->
+  <footer class="main-footer">
+    <div class="container">
+      <p>Centro de Compras é um site de afiliado. Preços e promoções são fornecidos pelas lojas parceiras.</p>
+      <p>&copy; <span id="year"></span> Centro de Compras. Todos os direitos reservados.</p>
     </div>
   </footer>
 
+  <!-- Modal imagens -->
+  <div class="image-modal" id="imageModal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-container">
+      <button class="modal-close" id="modal-close"><i class="fas fa-times"></i></button>
+      <div class="modal-carousel">
+        <div class="carousel-images" id="modalCarrosselImagens"></div>
+        <button class="carousel-btn prev" id="modalPrev">◄</button>
+        <button class="carousel-btn next" id="modalNext">►</button>
+        <div class="carousel-dots" id="modalCarrosselDots"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
