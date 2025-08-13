@@ -1,71 +1,231 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seu Site de Afiliados</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Centro de Compras</title>
+  <meta name="description" content="Encontre as melhores ofertas em produtos de diversas lojas online no Centro de Compras." />
+  <meta name="keywords" content="e-commerce, compras online, ofertas, produtos" />
+  <meta name="author" content="Centro de Compras" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
 </head>
 <body>
-    <header>
-        <div class="logo">
-            <img src="logo.png" alt="Logo do Site">
+  <div class="connection-status"></div>
+
+  <header class="main-header">
+    <div class="header-top">
+      <div class="container">
+        <div class="header-info">
+          <span><i class="fas fa-phone-alt"></i> (21)9999-9999</span>
+          <span><i class="fas fa-envelope"></i> contato@centrodecompras.com</span>
         </div>
-        <nav>
-            <ul>
-                <li><a href="#home">Início</a></li>
-                <li><a href="#produtos">Produtos</a></li>
-                <li><a href="#sobre">Sobre</a></li>
-                <li><a href="#contato">Contato</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <section id="home" class="hero">
-        <h1>Encontre os Melhores Produtos com Descontos Exclusivos</h1>
-        <p>Compare preços, leia avaliações e compre com segurança através dos nossos links de afiliados.</p>
-        <a href="#produtos" class="btn-primary">Ver Produtos</a>
-    </section>
-
-    <section id="produtos" class="produtos">
-        <h2>Produtos Recomendados</h2>
-        <div class="produto-card">
-            <img src="produto1.jpg" alt="Produto 1">
-            <h3>Produto 1</h3>
-            <p>Descrição do produto 1.</p>
-            <a href="link-afiliado1" class="btn-secundario">Comprar</a>
+        <div class="header-links">
+          <a href="#" class="header-link">Cupons</a>
         </div>
-        <div class="produto-card">
-            <img src="produto2.jpg" alt="Produto 2">
-            <h3>Produto 2</h3>
-            <p>Descrição do produto 2.</p>
-            <a href="link-afiliado2" class="btn-secundario">Comprar</a>
+      </div>
+    </div>
+    <div class="header-main">
+      <div class="container header-content">
+        <img src="logos/logo.png" alt="Logo Centro de Compras" class="logo" id="site-logo" />
+        <div class="search-section">
+          <div class="search-container">
+            <input type="text" id="busca" placeholder="Pesquisar produtos..." aria-label="Pesquisar produtos" />
+            <button class="search-btn" aria-label="Iniciar busca"><i class="fas fa-search"></i></button>
+          </div>
         </div>
-        <!-- Adicione mais cards conforme necessário -->
+        <div class="header-actions">
+          <a href="https://wa.me/5511999999999" class="action-btn whatsapp-btn"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+          <a href="https://t.me/centrodecompras" class="action-btn telegram-btn"><i class="fab fa-telegram-plane"></i> Telegram</a>
+        </div>
+      </div>
+    </div>
+    <nav class="main-nav">
+      <div class="container nav-content">
+        <button class="categories-btn" id="categories-toggle"><i class="fas fa-bars"></i> Categorias</button>
+        <div class="nav-links">
+          <a href="#" class="nav-link active">Início</a>
+          <a href="#" class="nav-link">Ofertas</a>
+          <a href="#" class="nav-link">Novidades</a>
+          <a href="#" class="nav-link">Contato</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <div class="categories-sidebar" id="categories-sidebar">
+    <div class="sidebar-header">
+      <h3><i class="fas fa-list"></i> Categorias</h3>
+      <button class="close-sidebar" id="close-sidebar"><i class="fas fa-times"></i></button>
+    </div>
+    <ul class="categories-list">
+      <li class="category-item active" data-categoria="todas"><i class="fas fa-th"></i> Todas as Categorias</li>
+      <li class="category-item" data-categoria="eletronicos"><i class="fas fa-mobile-alt"></i> Eletrônicos</li>
+      <li class="category-item" data-categoria="moda"><i class="fas fa-tshirt"></i> Moda</li>
+      <li class="category-item" data-categoria="casa"><i class="fas fa-home"></i> Casa</li>
+      <li class="category-item" data-categoria="beleza"><i class="fas fa-magic"></i> Beleza</li>
+      <li class="category-item" data-categoria="esportes"><i class="fas fa-dumbbell"></i> Esportes</li>
+      <li class="category-item" data-categoria="infantil"><i class="fas fa-baby"></i> Infantil</li>
+      <li class="category-item" data-categoria="automotivo"><i class="fas fa-car"></i> Automotivo</li>
+      <li class="category-item" data-categoria="games"><i class="fas fa-gamepad"></i> Games</li>
+      <li class="category-item" data-categoria="livros"><i class="fas fa-book"></i> Livros</li>
+      <li class="category-item" data-categoria="fitness"><i class="fas fa-running"></i> Fitness</li>
+      <li class="category-item" data-categoria="pet"><i class="fas fa-paw"></i> Pet Shop</li>
+      <li class="category-item" data-categoria="jardinagem"><i class="fas fa-leaf"></i> Jardinagem</li>
+      <li class="category-item" data-categoria="gastronomia"><i class="fas fa-utensils"></i> Gastronomia</li>
+    </ul>
+  </div>
+  <div class="overlay" id="overlay"></div>
+
+  <main class="main-content">
+    <section class="offers-banner">
+      <div class="container banner-content">
+        <div class="banner-text">
+          <h1>🔥 Ofertas do Dia</h1>
+          <p>Economize até 70% em milhares de produtos!</p>
+        </div>
+      </div>
     </section>
 
-    <section id="sobre" class="sobre">
-        <h2>Sobre Nós</h2>
-        <p>Somos uma plataforma dedicada a ajudar você a encontrar os melhores produtos com os melhores preços através de links de afiliados.</p>
+    <section class="stores-section">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <h2><i class="fas fa-store"></i> Lojas Parceiras</h2>
+            <p>Explore produtos das melhores lojas online</p>
+          </div>
+        </div>
+        <div class="stores-grid">
+          <div class="store-card active" data-loja="todas">
+            <i class="fas fa-th store-icon"></i>
+            <div class="store-name">Todas as Lojas</div>
+          </div>
+          <div class="store-card" data-loja="amazon">
+            <img src="logos/amazon.png" alt="Logo Amazon" class="store-logo" />
+            <div class="store-name">Amazon</div>
+          </div>
+          <div class="store-card" data-loja="mercadolivre">
+            <img src="logos/mercadolivre.png" alt="Logo Mercado Livre" class="store-logo" />
+            <div class="store-name">Mercado Livre</div>
+          </div>
+          <div class="store-card" data-loja="shopee">
+            <img src="logos/shopee.png" alt="Logo Shopee" class="store-logo" />
+            <div class="store-name">Shopee</div>
+          </div>
+          <div class="store-card" data-loja="magalu">
+            <img src="logos/magalu.png" alt="Logo Magalu" class="store-logo" />
+            <div class="store-name">Magalu</div>
+          </div>
+          <div class="store-card" data-loja="shein">
+            <img src="logos/shein.png" alt="Logo Shein" class="store-logo" />
+            <div class="store-name">Shein</div>
+          </div>
+          <div class="store-card" data-loja="alibaba">
+            <img src="logos/alibaba.png" alt="Logo Alibaba" class="store-logo" />
+            <div class="store-name">Alibaba</div>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <section id="contato" class="contato">
-        <h2>Entre em Contato</h2>
-        <form action="enviar-contato.php" method="POST">
-            <label for="nome">Nome:</label>
-            <input type="text" id="nome" name="nome" required>
-            <label for="email">E-mail:</label>
-            <input type="email" id="email" name="email" required>
-            <label for="mensagem">Mensagem:</label>
-            <textarea id="mensagem" name="mensagem" required></textarea>
-            <button type="submit" class="btn-primary">Enviar</button>
-        </form>
+    <section class="products-section">
+      <div class="container">
+        <div class="section-header">
+          <h2 id="ofertas-titulo">🔥 Ofertas do Dia</h2>
+        </div>
+        <div class="loading-container" id="loading-spinner">
+          <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Carregando produtos...</p>
+          </div>
+        </div>
+        <div class="empty-state" id="mensagem-vazia">
+          <i class="fas fa-box-open empty-icon"></i>
+          <h3>Nenhum produto encontrado</h3>
+          <p>Tente ajustar os filtros ou a busca para encontrar o que procura.</p>
+          <a href="#" class="btn-primary" onclick="window.location.reload()">
+            <i class="fas fa-redo"></i> Limpar Filtros
+          </a>
+        </div>
+        <div class="error-state" id="error-message">
+          <i class="fas fa-exclamation-circle error-icon"></i>
+          <h3>Erro ao carregar produtos</h3>
+          <p>Verifique sua conexão com a internet.</p>
+          <a href="#" class="btn-primary" onclick="window.location.reload()">
+            <i class="fas fa-redo"></i> Tentar Novamente
+          </a>
+        </div>
+        <div class="products-grid" id="grid-produtos"></div>
+        <div class="load-more-container">
+          <button class="load-more-btn" id="load-more">
+            <i class="fas fa-plus"></i> Carregar Mais
+          </button>
+        </div>
+      </div>
     </section>
+  </main>
 
-    <footer>
-        <p>&copy; 2025 Seu Site de Afiliados. Todos os direitos reservados.</p>
-    </footer>
+  <div class="image-modal" id="imageModal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-container">
+      <button class="modal-close" id="modal-close"><i class="fas fa-times"></i></button>
+      <div class="modal-carousel">
+        <div class="carousel-images" id="modalCarrosselImagens"></div>
+        <button class="carousel-btn prev" id="modalPrev"><i class="fas fa-chevron-left"></i></button>
+        <button class="carousel-btn next" id="modalNext"><i class="fas fa-chevron-right"></i></button>
+        <div class="carousel-dots" id="modalCarrosselDots"></div>
+      </div>
+    </div>
+  </div>
 
-    <script src="scripts.js"></script>
+  <footer class="main-footer">
+    <div class="container footer-content">
+      <div class="footer-section">
+        <h4>Sobre Nós</h4>
+        <p>O Centro de Compras reúne as melhores ofertas de lojas online confiáveis em um só lugar. Economize tempo e dinheiro com a gente!</p>
+      </div>
+      <div class="footer-section">
+        <h4>Links Úteis</h4>
+        <ul>
+          <li><a href="#">Termos de Uso</a></li>
+          <li><a href="#">Política de Privacidade</a></li>
+          <li><a href="#">FAQ</a></li>
+          <li><a href="#">Suporte</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Redes Sociais</h4>
+        <div class="social-links">
+          <a href="#" class="social-link instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="social-link tiktok"><i class="fab fa-tiktok"></i></a>
+          <a href="#" class="social-link twitter"><i class="fab fa-twitter"></i></a>
+          <a href="#" class="social-link youtube"><i class="fab fa-youtube"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">
+        <div class="footer-disclaimer">
+          <p><i class="fas fa-info-circle"></i> Preços e condições estão sujeitos à alteração sem aviso prévio. Verifique as lojas parceiras.</p>
+        </div>
+        <div class="footer-copyright">
+          <p>&copy; <span id="year"></span> Centro de Compras. Todos os direitos reservados.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div class="floating-assistant">
+    <a href="https://wa.me/5511999999999" class="floating-btn">
+      <i class="fab fa-whatsapp"></i>
+      <div class="floating-tooltip">
+        <span>Fale Conosco</span>
+        <small>Atendimento via WhatsApp</small>
+      </div>
+    </a>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
