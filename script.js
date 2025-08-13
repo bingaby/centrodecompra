@@ -1,4 +1,4 @@
-const VERSION = "1.0.8";
+const VERSION = "1.0.11";
 const API_URL = 'https://minha-api-produtos.onrender.com';
 let currentImages = [];
 let currentImageIndex = 0;
@@ -12,21 +12,6 @@ let currentSearch = "";
 
 // Atualiza o ano no footer
 document.getElementById("year").textContent = new Date().getFullYear();
-
-// Acesso ao admin com três cliques no logo
-const logo = document.getElementById("site-logo");
-let clickCount = 0, clickTimeout = null;
-logo.addEventListener("click", (e) => {
-    e.stopPropagation();
-    clickCount++;
-    if (clickCount === 1) {
-        clickTimeout = setTimeout(() => { clickCount = 0; }, 500);
-    } else if (clickCount === 3) {
-        clearTimeout(clickTimeout);
-        window.location.href = "admin-xyz-123.html";
-        clickCount = 0;
-    }
-});
 
 // Alternar sidebar de categorias
 const categoriesToggle = document.getElementById("categories-toggle");
@@ -66,7 +51,10 @@ async function carregarProdutos(categoria = "todas", loja = "todas", busca = "",
     const loadingSpinner = document.getElementById("loading-spinner");
     const loadMoreButton = document.getElementById("load-more");
 
-    if (isLoading) return;
+    if (isLoading) {
+        console.log("Carregamento em andamento, ignorando nova requisição.");
+        return;
+    }
     isLoading = true;
 
     loadingSpinner.style.display = "block";
@@ -99,16 +87,17 @@ async function carregarProdutos(categoria = "todas", loja = "todas", busca = "",
                 throw new Error('Resposta inválida: produtos não é um array');
             }
 
-            const filteredProducts = data.produtos.filter(p =>
-                p &&
-                typeof p.nome === 'string' &&
-                typeof p.categoria === 'string' &&
-                typeof p.loja === 'string' &&
-                Array.isArray(p.imagens) &&
-                (categoria === "todas" || p.categoria.toLowerCase() === categoria.toLowerCase()) &&
-                (loja === "todas" || p.loja.toLowerCase() === loja.toLowerCase()) &&
-                (!busca || p.nome.toLowerCase().includes(busca.toLowerCase()))
-            );
+            const filteredProducts = data.produtos.filter(p => {
+                if (!p || typeof p.nome !== 'string' || typeof p.categoria !== 'string' || typeof p.loja !== 'string' || !Array.isArray(p.imagens)) {
+                    console.warn('Produto inválido ignorado:', p);
+                    return false;
+                }
+                return (
+                    (categoria === "todas" || p.categoria.toLowerCase() === categoria.toLowerCase()) &&
+                    (loja === "todas" || p.loja.toLowerCase() === loja.toLowerCase()) &&
+                    (!busca || p.nome.toLowerCase().includes(busca.toLowerCase()))
+                );
+            });
             console.log('Produtos filtrados:', filteredProducts);
 
             allProducts = [...allProducts, ...filteredProducts];
@@ -184,7 +173,10 @@ function carregarMaisProdutos() {
 // Funções do carrossel
 function moveCarrossel(id, direction) {
     const carrossel = document.getElementById(id);
-    if (!carrossel) return;
+    if (!carrossel) {
+        console.warn(`Carrossel com ID ${id} não encontrado`);
+        return;
+    }
     const imagens = carrossel.querySelector(".carrossel-imagens");
     const dots = carrossel.querySelectorAll(".carrossel-dot");
     let index = parseInt(imagens.dataset.index || 0);
@@ -197,7 +189,10 @@ function moveCarrossel(id, direction) {
 
 function setCarrosselImage(id, index) {
     const carrossel = document.getElementById(id);
-    if (!carrossel) return;
+    if (!carrossel) {
+        console.warn(`Carrossel com ID ${id} não encontrado`);
+        return;
+    }
     const imagens = carrossel.querySelector(".carrossel-imagens");
     const dots = carrossel.querySelectorAll(".carrossel-dot");
     imagens.style.transform = `translateX(-${index * 100}%)`;
@@ -341,26 +336,8 @@ document.getElementById("modal-close")?.addEventListener("click", closeModal);
 document.getElementById("modalPrev")?.addEventListener("click", () => moveModalCarrossel(-1));
 document.getElementById("modalNext")?.addEventListener("click", () => moveModalCarrossel(1));
 
-// Verificar conexão
-function checkConnection() {
-    const statusElement = document.getElementById("connection-status");
-    if (!navigator.onLine) {
-        statusElement.classList.remove("online");
-        statusElement.classList.add("offline");
-        statusElement.innerHTML = '<i class="fas fa-wifi"></i> Você está offline. Verifique sua conexão.';
-    } else {
-        statusElement.classList.remove("offline");
-        statusElement.classList.add("online");
-        statusElement.innerHTML = '<i class="fas fa-wifi"></i> Conectado à internet.';
-        setTimeout(() => statusElement.style.display = "none", 3000);
-    }
-}
-
-window.addEventListener("online", checkConnection);
-window.addEventListener("offline", checkConnection);
-
 // Carregar produtos iniciais
 document.addEventListener("DOMContentLoaded", () => {
-    checkConnection();
+    console.log(`Iniciando carregamento de produtos - Versão ${VERSION}`);
     carregarProdutos();
 });
