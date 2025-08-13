@@ -8,7 +8,7 @@
   <meta name="keywords" content="e-commerce, compras online, ofertas, produtos, desconto, promoção" />
   <meta name="author" content="Centro de Compras" />
   
-  <!-- Melhorado meta tags para SEO -->
+  <!-- Meta tags para SEO -->
   <meta property="og:title" content="Centro de Compras - Melhores Ofertas Online" />
   <meta property="og:description" content="Encontre as melhores ofertas em produtos de diversas lojas online" />
   <meta property="og:type" content="website" />
@@ -18,7 +18,7 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" href="/placeholder.svg?height=32&width=32" type="image/svg+xml" />
   
-  <!-- Adicionado preload para melhor performance -->
+  <!-- Preload para melhor performance -->
   <link rel="preload" href="style.css" as="style" />
 </head>
 <body>
@@ -86,40 +86,37 @@
     </nav>
   </header>
 
-  <div class="stores-grid">
-  <div class="store-card active" data-loja="todas">
-    <i class="fas fa-th store-icon"></i>
-    <div class="store-name">Todas</div>
-  </div>
-  <div class="store-card" data-loja="amazon">
-    <img src="assets/logos/amazon.png" alt="Amazon" class="store-logo" />
-    <div class="store-name">Amazon</div>
-  </div>
-  <div class="store-card" data-loja="mercadolivre">
-    <img src="assets/logos/mercadolivre.jpg" alt="Mercado Livre" class="store-logo" />
-    <div class="store-name">Mercado Livre</div>
-  </div>
-  <div class="store-card" data-loja="shopee">
-    <img src="assets/logos/shopee.png" alt="Shopee" class="store-logo" />
-    <div class="store-name">Shopee</div>
-  </div>
-  <div class="store-card" data-loja="magalu">
-    <img src="assets/logos/magalu.png" alt="Magalu" class="store-logo" />
-    <div class="store-name">Magalu</div>
-  </div>
-  <div class="store-card" data-loja="shein">
-    <img src="assets/logos/shein.png" alt="Shein" class="store-logo" />
-    <div class="store-name">Shein</div>
-  </div>
-  <div class="store-card" data-loja="alibaba">
-    <img src="assets/logos/alibaba.png" alt="Alibaba" class="store-logo" />
-    <div class="store-name">Alibaba</div>
-  </div>
-  <div class="store-card" data-loja="americanas">
-    <img src="assets/logos/americanas.svg" alt="Americanas" class="store-logo" />
-    <div class="store-name">Americanas</div>
-  </div>
-</div>
+  <aside class="categories-sidebar" id="categories-sidebar">
+    <div class="sidebar-header">
+      <h3><i class="fas fa-list"></i> Categorias</h3>
+      <button class="close-sidebar" id="close-sidebar" aria-label="Fechar menu de categorias">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <ul class="categories-list">
+      <li class="category-item active" data-categoria="todas">
+        <i class="fas fa-th"></i> Todas
+      </li>
+      <li class="category-item" data-categoria="eletronicos">
+        <i class="fas fa-laptop"></i> Eletrônicos
+      </li>
+      <li class="category-item" data-categoria="moda">
+        <i class="fas fa-tshirt"></i> Moda
+      </li>
+      <li class="category-item" data-categoria="casa">
+        <i class="fas fa-home"></i> Casa
+      </li>
+      <li class="category-item" data-categoria="esportes">
+        <i class="fas fa-futbol"></i> Esportes
+      </li>
+      <li class="category-item" data-categoria="beleza">
+        <i class="fas fa-spa"></i> Beleza
+      </li>
+    </ul>
+  </aside>
+
+  <div class="overlay" id="overlay"></div>
+
   <main class="main-content">
     <section class="offers-banner" id="inicio">
       <div class="container banner-content">
@@ -272,6 +269,25 @@
       </div>
     </div>
   </footer>
+
+  <div class="image-modal" id="imageModal" role="dialog" aria-modal="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-container">
+      <button class="modal-close" id="modal-close" aria-label="Fechar modal">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="modal-carousel">
+        <div class="carousel-images" id="modalCarrosselImagens"></div>
+        <button class="carousel-btn prev" id="modalPrev">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="carousel-btn next" id="modalNext">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+        <div class="carousel-dots" id="modalCarrosselDots"></div>
+      </div>
+    </div>
+  </div>
 
   <div class="floating-assistant">
     <a href="https://wa.me/5521999999999?text=Olá! Gostaria de saber mais sobre as ofertas do Centro de Compras" 
