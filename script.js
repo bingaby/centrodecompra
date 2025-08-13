@@ -1,6 +1,5 @@
 const VERSION = "1.0.12";
 const API_URL = 'https://minha-api-produtos.onrender.com';
-const ADMIN_TOKEN = '098457098457'; // Substitua pelo mesmo valor do .env
 let currentImages = [];
 let currentImageIndex = 0;
 let currentPage = 1;
@@ -235,12 +234,13 @@ async function salvarProduto(event) {
     const method = id ? 'PUT' : 'POST';
 
     try {
+        console.log(`Enviando para ${url} com método ${method}`);
         const response = await fetch(url, {
             method,
-            headers: { 'Authorization': `Bearer ${ADMIN_TOKEN}` },
             body: formData,
         });
         const data = await response.json();
+        console.log('Resposta:', response.status, data);
 
         const feedback = document.createElement('div');
         feedback.className = `feedback-message feedback-${data.status}`;
@@ -255,6 +255,7 @@ async function salvarProduto(event) {
             carregarProdutosAdmin();
         }
     } catch (error) {
+        console.error('Erro ao salvar produto:', error);
         const feedback = document.createElement('div');
         feedback.className = 'feedback-message feedback-error';
         feedback.textContent = 'Erro ao salvar produto';
@@ -267,12 +268,12 @@ async function salvarProduto(event) {
 // Função para editar produto
 async function editarProduto(id) {
     try {
-        const response = await fetch(`${API_URL}/api/produtos?page=1&limit=1&busca=${id}`);
+        const response = await fetch(`${API_URL}/api/produtos/${id}`);
         if (!response.ok) throw new Error(`Erro HTTP ${response.status}`);
         const data = await response.json();
-        if (data.status !== 'success' || !data.data[0]) throw new Error('Produto não encontrado');
+        if (data.status !== 'success' || !data.data) throw new Error('Produto não encontrado');
 
-        const produto = data.data[0];
+        const produto = data.data;
         const form = document.getElementById('product-form');
         form.dataset.id = id;
         form.querySelector('#nome').value = produto.nome;
@@ -292,9 +293,9 @@ async function excluirProduto(id) {
     try {
         const response = await fetch(`${API_URL}/api/produtos/${id}`, {
             method: 'DELETE',
-            headers: { 'Authorization': `Bearer ${ADMIN_TOKEN}` },
         });
         const data = await response.json();
+        console.log('Resposta:', response.status, data);
 
         const feedback = document.createElement('div');
         feedback.className = `feedback-message feedback-${data.status}`;
@@ -475,7 +476,7 @@ document.querySelectorAll(".store-card").forEach(card => {
 // Carregar mais produtos
 document.getElementById("load-more")?.addEventListener("click", () => {
     currentPage++;
-    carregarProdutos(currentCategory, currentStore, currentSearch, currentPage);
+    carregarProdutos(currentCategory, currentStore, currentSearch);
 });
 
 // Fechar modal
