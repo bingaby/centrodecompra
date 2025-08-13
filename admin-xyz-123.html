@@ -22,6 +22,8 @@
     .btn-editar:hover { background: #0056b3; }
     .btn-excluir { background: #dc3545; }
     .btn-excluir:hover { background: #b02a37; }
+    #loading-spinner { display: none; text-align: center; margin: 10px 0; }
+    #loading-spinner::before { content: 'Carregando...'; font-size: 16px; }
   </style>
 </head>
 <body>
@@ -73,6 +75,7 @@
 
   <div class="produtos-container">
     <h2>Produtos Cadastrados</h2>
+    <div id="loading-spinner"></div>
     <table class="produtos-table">
       <thead>
         <tr>
@@ -94,20 +97,42 @@
     async function carregarProdutos() {
       const lista = document.getElementById('produtos-lista');
       const errorMessage = document.getElementById('error-message');
-      if (!lista || !errorMessage) return;
+      const loadingSpinner = document.getElementById('loading-spinner');
+      if (!lista || !errorMessage || !loadingSpinner) {
+        console.error('Elementos do DOM não encontrados');
+        return;
+      }
 
       try {
+        loadingSpinner.style.display = 'block';
+        errorMessage.style.display = 'none';
         const response = await fetch(`${API_URL}/api/produtos?page=1&limit=1000`, { cache: 'no-store' });
-        if (!response.ok) throw new Error(`Erro ${response.status}`);
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Erro HTTP ${response.status}: ${errorText || 'Resposta vazia'}`);
+        }
         const data = await response.json();
-        const produtos = data.produtos || [];
+        console.log('Resposta da API:', data);
+
+        if (data.status !== 'success' || !Array.isArray(data.data)) {
+          throw new Error(data.message || 'Resposta inválida');
+        }
+
+        const produtos = data.data;
         lista.innerHTML = '';
+
+        if (produtos.length === 0) {
+          lista.innerHTML = '<tr><td colspan="6">Nenhum produto cadastrado.</td></tr>';
+          return;
+        }
 
         produtos.forEach(produto => {
           const tr = document.createElement('tr');
-          const imagem = produto.imagens && produto.imagens[0] ? produto.imagens[0] : 'https://www.centrodecompra.com.br/imagens/placeholder.jpg';
+          const imagem = produto.imagens && produto.imagens[0] 
+            ? produto.imagens[0] 
+            : 'https://minha-api-produtos.onrender.com/imagens/placeholder.jpg';
           tr.innerHTML = `
-            <td><img src="${imagem}" class="produto-imagem" alt="${produto.nome}" onerror="this.src='https://www.centrodecompra.com.br/imagens/placeholder.jpg'"></td>
+            <td><img src="${imagem}" class="produto-imagem" alt="${produto.nome}" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'"></td>
             <td>${produto.nome || 'Sem nome'}</td>
             <td>${produto.categoria || 'Sem categoria'}</td>
             <td>${produto.loja || 'Sem loja'}</td>
@@ -123,6 +148,8 @@
         console.error('Erro ao carregar produtos:', error);
         errorMessage.textContent = `Erro ao carregar produtos: ${error.message}`;
         errorMessage.style.display = 'block';
+      } finally {
+        loadingSpinner.style.display = 'none';
       }
     }
 
@@ -134,7 +161,7 @@
       const submitBtn = document.getElementById('submit-btn');
       const produtoId = document.getElementById('produto-id').value;
 
-      if (!form || !errorMessage || !successMessage) {
+      if (!form || !errorMessage || !successMessage || !submitBtn) {
         console.error('Elementos do formulário não encontrados');
         errorMessage.textContent = 'Erro interno. Tente novamente.';
         errorMessage.style.display = 'block';
@@ -150,7 +177,7 @@
         return;
       }
       if (!produtoId && imagens.length === 0) {
-        errorMessage.textContent = 'Selecione pelo menos uma imagem.';
+        errorMessage.textContent = 'Selecione pelo menos uma imagem para novos produtos.';
         errorMessage.style.display = 'block';
         successMessage.style.display = 'none';
         return;
@@ -165,13 +192,14 @@
         console.log(`Enviando para ${url} com método ${method}`);
         const response = await fetch(url, { method, body: formData });
         console.log('Resposta:', response.status);
+        const data = await response.json();
+        console.log('Dados da API:', data);
+
         if (!response.ok) {
-          const text = await response.text();
-          console.log('Erro da API:', text);
-          throw new Error(`Erro ${response.status}`);
+          throw new Error(data.message || `Erro ${response.status}`);
         }
 
-        successMessage.textContent = produtoId ? 'Produto atualizado com sucesso!' : 'Produto cadastrado com sucesso!';
+        successMessage.textContent = data.message || (produtoId ? 'Produto atualizado com sucesso!' : 'Produto cadastrado com sucesso!');
         successMessage.style.display = 'block';
         form.reset();
         submitBtn.textContent = 'Cadastrar Produto';
@@ -187,12 +215,19 @@
 
     async function editarProduto(id) {
       try {
-        const response = await fetch(`${API_URL}/api/produtos?page=1&limit=1000`, { cache: 'no-store' });
-        if (!response.ok) throw new Error(`Erro ${response.status}`);
+        const response = await fetch(`${API_URL}/api/produtos/${id}`, { cache: 'no-store' });
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Erro HTTP ${response.status}: ${errorText || 'Resposta vazia'}`);
+        }
         const data = await response.json();
-        const produto = data.produtos.find(p => p.id == id);
-        if (!produto) throw new Error('Produto não encontrado');
+        console.log('Resposta da API:', data);
 
+        if (data.status !== 'success' || !data.data) {
+          throw new Error(data.message || 'Produto não encontrado');
+        }
+
+        const produto = data.data;
         document.getElementById('nome').value = produto.nome || '';
         document.getElementById('categoria').value = produto.categoria || 'todas';
         document.getElementById('loja').value = produto.loja || 'todas';
@@ -212,8 +247,14 @@
 
       try {
         const response = await fetch(`${API_URL}/api/produtos/${id}`, { method: 'DELETE' });
-        if (!response.ok) throw new Error(`Erro ${response.status}`);
-        document.getElementById('success-message').textContent = 'Produto excluído com sucesso!';
+        const data = await response.json();
+        console.log('Resposta:', response.status, data);
+
+        if (!response.ok) {
+          throw new Error(data.message || `Erro ${response.status}`);
+        }
+
+        document.getElementById('success-message').textContent = data.message || 'Produto excluído com sucesso!';
         document.getElementById('success-message').style.display = 'block';
         carregarProdutos();
       } catch (error) {
