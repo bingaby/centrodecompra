@@ -1,5 +1,6 @@
-const VERSION = "1.0.11";
+const VERSION = "1.0.12";
 const API_URL = 'https://minha-api-produtos.onrender.com';
+const ADMIN_TOKEN = '098457098457'; // Substitua pelo mesmo valor do .env
 let currentImages = [];
 let currentImageIndex = 0;
 let currentPage = 1;
@@ -10,6 +11,9 @@ let currentCategory = "todas";
 let currentStore = "todas";
 let currentSearch = "";
 
+// Conectar ao Socket.IO
+const socket = io(API_URL, { transports: ['websocket'], reconnectionAttempts: 5 });
+
 // Atualiza o ano no footer
 document.getElementById("year").textContent = new Date().getFullYear();
 
@@ -19,20 +23,22 @@ const categoriesSidebar = document.getElementById("categories-sidebar");
 const closeSidebar = document.getElementById("close-sidebar");
 const overlay = document.getElementById("overlay");
 
-categoriesToggle.addEventListener("click", () => {
-    categoriesSidebar.classList.toggle("active");
-    overlay.classList.toggle("active");
-});
+if (categoriesToggle && categoriesSidebar && closeSidebar && overlay) {
+    categoriesToggle.addEventListener("click", () => {
+        categoriesSidebar.classList.toggle("active");
+        overlay.classList.toggle("active");
+    });
 
-closeSidebar.addEventListener("click", () => {
-    categoriesSidebar.classList.remove("active");
-    overlay.classList.remove("active");
-});
+    closeSidebar.addEventListener("click", () => {
+        categoriesSidebar.classList.remove("active");
+        overlay.classList.remove("active");
+    });
 
-overlay.addEventListener("click", () => {
-    categoriesSidebar.classList.remove("active");
-    overlay.classList.remove("active");
-});
+    overlay.addEventListener("click", () => {
+        categoriesSidebar.classList.remove("active");
+        overlay.classList.remove("active");
+    });
+}
 
 // Debounce para busca
 function debounce(func, wait) {
@@ -43,6 +49,34 @@ function debounce(func, wait) {
     };
 }
 
+// Função para verificar conexão com a API
+function checkConnectionStatus() {
+    const statusElement = document.querySelector('.connection-status');
+    if (!statusElement) return;
+
+    fetch(`${API_URL}/api/produtos`, { cache: 'no-store' })
+        .then(response => {
+            statusElement.classList.toggle('online', response.ok);
+            statusElement.classList.toggle('offline', !response.ok);
+            statusElement.innerHTML = `
+                <div class="status-content">
+                    <i class="fas fa-${response.ok ? 'check-circle' : 'exclamation-circle'}"></i>
+                    <span>API ${response.ok ? 'Online' : 'Offline'}</span>
+                    <small>${response.ok ? 'Conectado ao servidor' : 'Verifique sua conexão'}</small>
+                </div>`;
+        })
+        .catch(() => {
+            statusElement.classList.add('offline');
+            statusElement.classList.remove('online');
+            statusElement.innerHTML = `
+                <div class="status-content">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>API Offline</span>
+                    <small>Verifique sua conexão</small>
+                </div>`;
+        });
+}
+
 // Função para carregar produtos
 async function carregarProdutos(categoria = "todas", loja = "todas", busca = "", page = 1) {
     const gridProdutos = document.getElementById("grid-produtos");
@@ -50,6 +84,11 @@ async function carregarProdutos(categoria = "todas", loja = "todas", busca = "",
     const errorMessage = document.getElementById("error-message");
     const loadingSpinner = document.getElementById("loading-spinner");
     const loadMoreButton = document.getElementById("load-more");
+
+    if (!gridProdutos || !mensagemVazia || !errorMessage || !loadingSpinner || !loadMoreButton) {
+        console.error("Elementos do DOM não encontrados");
+        return;
+    }
 
     if (isLoading) {
         console.log("Carregamento em andamento, ignorando nova requisição.");
@@ -71,11 +110,9 @@ async function carregarProdutos(categoria = "todas", loja = "todas", busca = "",
 
     while (attempt <= maxRetries) {
         try {
-            console.log(`Tentativa ${attempt}: Carregando de ${API_URL}/api/produtos?page=${page}&limit=${productsPerPage}`);
-            const response = await fetch(
-                `${API_URL}/api/produtos?page=${page}&limit=${productsPerPage}`,
-                { cache: "no-store" }
-            );
+            const url = `${API_URL}/api/produtos?page=${page}&limit=${productsPerPage}&categoria=${categoria}&loja=${loja}${busca ? `&busca=${encodeURIComponent(busca)}` : ''}`;
+            console.log(`Tentativa ${attempt}: Carregando de ${url}`);
+            const response = await fetch(url, { cache: "no-store" });
             if (!response.ok) {
                 const errorText = await response.text();
                 throw new Error(`Erro HTTP ${response.status}: ${errorText || 'Resposta vazia'}`);
@@ -83,24 +120,11 @@ async function carregarProdutos(categoria = "todas", loja = "todas", busca = "",
             const data = await response.json();
             console.log('Resposta da API:', data);
 
-            if (!data || !Array.isArray(data.produtos)) {
-                throw new Error('Resposta inválida: produtos não é um array');
+            if (data.status !== 'success' || !Array.isArray(data.data)) {
+                throw new Error(`Resposta inválida: ${data.message || 'Dados não são um array'}`);
             }
 
-            const filteredProducts = data.produtos.filter(p => {
-                if (!p || typeof p.nome !== 'string' || typeof p.categoria !== 'string' || typeof p.loja !== 'string' || !Array.isArray(p.imagens)) {
-                    console.warn('Produto inválido ignorado:', p);
-                    return false;
-                }
-                return (
-                    (categoria === "todas" || p.categoria.toLowerCase() === categoria.toLowerCase()) &&
-                    (loja === "todas" || p.loja.toLowerCase() === loja.toLowerCase()) &&
-                    (!busca || p.nome.toLowerCase().includes(busca.toLowerCase()))
-                );
-            });
-            console.log('Produtos filtrados:', filteredProducts);
-
-            allProducts = [...allProducts, ...filteredProducts];
+            allProducts = [...allProducts, ...data.data];
 
             if (allProducts.length === 0) {
                 mensagemVazia.style.display = "flex";
@@ -109,15 +133,19 @@ async function carregarProdutos(categoria = "todas", loja = "todas", busca = "",
                 mensagemVazia.style.display = "none";
                 gridProdutos.style.display = "grid";
 
-                filteredProducts.forEach((produto, index) => {
+                data.data.forEach((produto, index) => {
+                    if (!produto || typeof produto.nome !== 'string' || !Array.isArray(produto.imagens)) {
+                        console.warn('Produto inválido ignorado:', produto);
+                        return;
+                    }
                     const card = document.createElement("div");
                     card.classList.add("produto-card", "visible");
                     card.setAttribute("data-categoria", produto.categoria.toLowerCase());
                     card.setAttribute("data-loja", produto.loja.toLowerCase());
                     const globalIndex = allProducts.indexOf(produto);
 
-                    const imagens = produto.imagens && produto.imagens.length > 0
-                        ? produto.imagens.map(img => img.startsWith('http') ? img : `${API_URL}${img}`)
+                    const imagens = produto.imagens.length > 0
+                        ? produto.imagens
                         : ["https://minha-api-produtos.onrender.com/imagens/placeholder.jpg"];
                     const carrosselId = `carrossel-${globalIndex}`;
                     const lojaClass = produto.loja.toLowerCase();
@@ -164,10 +192,124 @@ async function carregarProdutos(categoria = "todas", loja = "todas", busca = "",
     }
 }
 
-// Carregar mais produtos
-function carregarMaisProdutos() {
-    currentPage++;
-    carregarProdutos(currentCategory, currentStore, currentSearch, currentPage);
+// Função para carregar produtos no admin
+async function carregarProdutosAdmin() {
+    const tableBody = document.querySelector('.products-table tbody');
+    if (!tableBody) return;
+
+    try {
+        const response = await fetch(`${API_URL}/api/produtos`, { cache: 'no-store' });
+        if (!response.ok) throw new Error(`Erro HTTP ${response.status}`);
+        const data = await response.json();
+        if (data.status !== 'success' || !Array.isArray(data.data)) throw new Error(data.message || 'Resposta inválida');
+
+        tableBody.innerHTML = data.data.map(produto => `
+            <tr>
+                <td>${produto.id}</td>
+                <td><img src="${produto.imagens[0] || 'https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'}" alt="${produto.nome}" /></td>
+                <td>${produto.nome}</td>
+                <td>${produto.categoria}</td>
+                <td>${produto.loja}</td>
+                <td><a href="${produto.link}" target="_blank">Ver</a></td>
+                <td class="actions">
+                    <button class="btn btn-edit" onclick="editarProduto(${produto.id})"><i class="fas fa-edit"></i> Editar</button>
+                    <button class="btn btn-delete" onclick="excluirProduto(${produto.id})"><i class="fas fa-trash"></i> Excluir</button>
+                </td>
+            </tr>
+        `).join('');
+    } catch (error) {
+        console.error('Erro ao carregar produtos admin:', error);
+        tableBody.innerHTML = `<tr><td colspan="7">Erro ao carregar produtos: ${error.message}</td></tr>`;
+    }
+}
+
+// Função para salvar/editar produto
+async function salvarProduto(event) {
+    event.preventDefault();
+    const form = document.getElementById('product-form');
+    if (!form) return;
+
+    const formData = new FormData(form);
+    const id = form.dataset.id;
+    const url = id ? `${API_URL}/api/produtos/${id}` : `${API_URL}/api/produtos`;
+    const method = id ? 'PUT' : 'POST';
+
+    try {
+        const response = await fetch(url, {
+            method,
+            headers: { 'Authorization': `Bearer ${ADMIN_TOKEN}` },
+            body: formData,
+        });
+        const data = await response.json();
+
+        const feedback = document.createElement('div');
+        feedback.className = `feedback-message feedback-${data.status}`;
+        feedback.textContent = data.message;
+        document.body.appendChild(feedback);
+        feedback.style.display = 'block';
+        setTimeout(() => feedback.remove(), 3000);
+
+        if (data.status === 'success') {
+            form.reset();
+            delete form.dataset.id;
+            carregarProdutosAdmin();
+        }
+    } catch (error) {
+        const feedback = document.createElement('div');
+        feedback.className = 'feedback-message feedback-error';
+        feedback.textContent = 'Erro ao salvar produto';
+        document.body.appendChild(feedback);
+        feedback.style.display = 'block';
+        setTimeout(() => feedback.remove(), 3000);
+    }
+}
+
+// Função para editar produto
+async function editarProduto(id) {
+    try {
+        const response = await fetch(`${API_URL}/api/produtos?page=1&limit=1&busca=${id}`);
+        if (!response.ok) throw new Error(`Erro HTTP ${response.status}`);
+        const data = await response.json();
+        if (data.status !== 'success' || !data.data[0]) throw new Error('Produto não encontrado');
+
+        const produto = data.data[0];
+        const form = document.getElementById('product-form');
+        form.dataset.id = id;
+        form.querySelector('#nome').value = produto.nome;
+        form.querySelector('#categoria').value = produto.categoria;
+        form.querySelector('#loja').value = produto.loja;
+        form.querySelector('#link').value = produto.link;
+    } catch (error) {
+        console.error('Erro ao carregar produto para edição:', error);
+        alert('Erro ao carregar produto para edição');
+    }
+}
+
+// Função para excluir produto
+async function excluirProduto(id) {
+    if (!confirm('Deseja realmente excluir este produto?')) return;
+
+    try {
+        const response = await fetch(`${API_URL}/api/produtos/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${ADMIN_TOKEN}` },
+        });
+        const data = await response.json();
+
+        const feedback = document.createElement('div');
+        feedback.className = `feedback-message feedback-${data.status}`;
+        feedback.textContent = data.message;
+        document.body.appendChild(feedback);
+        feedback.style.display = 'block';
+        setTimeout(() => feedback.remove(), 3000);
+
+        if (data.status === 'success') {
+            carregarProdutosAdmin();
+        }
+    } catch (error) {
+        console.error('Erro ao excluir produto:', error);
+        alert('Erro ao excluir produto');
+    }
 }
 
 // Funções do carrossel
@@ -226,7 +368,7 @@ async function openModal(index, imageIndex) {
     }
 
     try {
-        currentImages = produto.imagens.map(img => img.startsWith('http') ? img : `${API_URL}${img}`);
+        currentImages = produto.imagens;
         currentImageIndex = Math.max(0, Math.min(imageIndex, currentImages.length - 1));
 
         const validImages = await Promise.all(currentImages.map(async (img, idx) => {
@@ -291,18 +433,20 @@ function closeModal() {
 // Eventos de busca
 const searchInput = document.getElementById("busca");
 const searchButton = document.querySelector(".search-btn");
-const debouncedSearch = debounce(() => {
-    currentSearch = searchInput.value.trim();
-    currentPage = 1;
-    carregarProdutos(currentCategory, currentStore, currentSearch);
-}, 500);
+if (searchInput && searchButton) {
+    const debouncedSearch = debounce(() => {
+        currentSearch = searchInput.value.trim();
+        currentPage = 1;
+        carregarProdutos(currentCategory, currentStore, currentSearch);
+    }, 500);
 
-searchInput.addEventListener("input", debouncedSearch);
-searchButton.addEventListener("click", () => {
-    currentSearch = searchInput.value.trim();
-    currentPage = 1;
-    carregarProdutos(currentCategory, currentStore, currentSearch);
-});
+    searchInput.addEventListener("input", debouncedSearch);
+    searchButton.addEventListener("click", () => {
+        currentSearch = searchInput.value.trim();
+        currentPage = 1;
+        carregarProdutos(currentCategory, currentStore, currentSearch);
+    });
+}
 
 // Filtros de categoria
 document.querySelectorAll(".category-item").forEach(item => {
@@ -329,15 +473,42 @@ document.querySelectorAll(".store-card").forEach(card => {
 });
 
 // Carregar mais produtos
-document.getElementById("load-more").addEventListener("click", carregarMaisProdutos);
+document.getElementById("load-more")?.addEventListener("click", () => {
+    currentPage++;
+    carregarProdutos(currentCategory, currentStore, currentSearch, currentPage);
+});
 
 // Fechar modal
 document.getElementById("modal-close")?.addEventListener("click", closeModal);
 document.getElementById("modalPrev")?.addEventListener("click", () => moveModalCarrossel(-1));
 document.getElementById("modalNext")?.addEventListener("click", () => moveModalCarrossel(1));
 
-// Carregar produtos iniciais
+// Socket.IO eventos
+socket.on('connect', () => console.log('Conectado ao Socket.IO'));
+socket.on('disconnect', () => console.log('Desconectado do Socket.IO'));
+socket.on('novoProduto', () => {
+    currentPage = 1;
+    carregarProdutos(currentCategory, currentStore, currentSearch);
+    carregarProdutosAdmin();
+});
+socket.on('produtoAtualizado', () => {
+    currentPage = 1;
+    carregarProdutos(currentCategory, currentStore, currentSearch);
+    carregarProdutosAdmin();
+});
+socket.on('produtoExcluido', () => {
+    currentPage = 1;
+    carregarProdutos(currentCategory, currentStore, currentSearch);
+    carregarProdutosAdmin();
+});
+
+// Carregar produtos iniciais e verificar conexão
 document.addEventListener("DOMContentLoaded", () => {
     console.log(`Iniciando carregamento de produtos - Versão ${VERSION}`);
+    checkConnectionStatus();
     carregarProdutos();
+    if (window.location.pathname.includes('admin-xyz-123.html')) {
+        carregarProdutosAdmin();
+        document.getElementById('product-form')?.addEventListener('submit', salvarProduto);
+    }
 });
