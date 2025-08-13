@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Centro de Compra - Melhores Ofertas Online</title>
-  <meta name="description" content="Encontre as melhores ofertas em produtos de diversas lojas online no Centro de Compra. Compare preços e economize!" />
-  <meta name="keywords" content="e-commerce, compras online, ofertas, produtos, desconto, promoção" />
+  <title>Centro de Compra - Ofertas Online</title>
+  <meta name="description" content="As melhores ofertas de lojas online em um só lugar. Filtre por categoria, loja ou busque produtos com descontos!" />
+  <meta name="keywords" content="e-commerce, compras online, ofertas, descontos, lojas" />
   <meta name="author" content="Centro de Compra" />
   
   <!-- Meta tags para SEO -->
-  <meta property="og:title" content="Centro de Compra - Melhores Ofertas Online" />
-  <meta property="og:description" content="Encontre as melhores ofertas em produtos de diversas lojas online" />
+  <meta property="og:title" content="Centro de Compra - Ofertas Online" />
+  <meta property="og:description" content="Encontre as melhores ofertas de lojas confiáveis em um só lugar." />
   <meta property="og:type" content="website" />
   <meta name="twitter:card" content="summary_large_image" />
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link rel="stylesheet" href="style.css" />
-  <link rel="icon" href="/placeholder.svg?height=32&width=32" type="image/svg+xml" />
+  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
   
-  <!-- Preload para melhor performance -->
+  <!-- Preload para performance -->
   <link rel="preload" href="style.css" as="style" />
 </head>
 <body>
@@ -26,13 +26,11 @@
     <div class="header-top">
       <div class="container">
         <div class="header-info">
-          <span><i class="fas fa-phone-alt"></i> (21) 9999-9999</span>
-          <span><i class="fas fa-envelope"></i> contato@centrodecompra.com</span>
+          <span><i class="fas fa-phone-alt"></i> (21) 98765-4321</span>
+          <span><i class="fas fa-envelope"></i> suporte@centrodecompra.com</span>
         </div>
         <div class="header-links">
-          <a href="#cupons" class="header-link">
-            <i class="fas fa-tags"></i> Cupons de Desconto
-          </a>
+          <a href="#cupons" class="header-link"><i class="fas fa-tags"></i> Cupons</a>
         </div>
       </div>
     </div>
@@ -47,7 +45,7 @@
               type="text" 
               id="busca" 
               class="search-input" 
-              placeholder="Pesquisar produtos, marcas ou lojas..." 
+              placeholder="Busque produtos ou lojas..." 
               aria-label="Pesquisar produtos" 
             />
             <button class="search-btn" aria-label="Iniciar busca">
@@ -57,7 +55,7 @@
         </div>
         
         <div class="header-actions">
-          <a href="https://wa.me/5521999999999" class="action-btn whatsapp-btn" target="_blank" rel="noopener">
+          <a href="https://wa.me/5521987654321" class="action-btn whatsapp-btn" target="_blank" rel="noopener">
             <i class="fab fa-whatsapp"></i> WhatsApp
           </a>
           <a href="https://t.me/centrodecompra" class="action-btn telegram-btn" target="_blank" rel="noopener">
@@ -75,7 +73,7 @@
         <div class="nav-links">
           <a href="#inicio" class="nav-link active">Início</a>
           <a href="#ofertas" class="nav-link">Ofertas</a>
-          <a href="#novidades" class="nav-link">Novidades</a>
+          <a href="#lojas" class="nav-link">Lojas</a>
           <a href="#contato" class="nav-link">Contato</a>
         </div>
       </div>
@@ -117,53 +115,36 @@
     <section class="offers-banner" id="inicio">
       <div class="container banner-content">
         <div class="banner-text">
-          <h1>🔥 Ofertas Imperdíveis</h1>
+          <h1>🔥 Ofertas Exclusivas</h1>
           <p>Economize até 70% em milhares de produtos das melhores lojas!</p>
         </div>
       </div>
     </section>
 
-    <section class="stores-section">
+    <section class="stores-section" id="lojas">
       <div class="container">
         <div class="section-header">
           <div>
-            <h2><i class="fas fa-store"></i> Nossas Lojas Parceiras</h2>
-            <p>Explore produtos das melhores e mais confiáveis lojas online</p>
+            <h2><i class="fas fa-store"></i> Lojas Parceiras</h2>
+            <p>Explore produtos das lojas mais confiáveis</p>
           </div>
         </div>
-        
         <div class="stores-grid">
           <div class="store-card active" data-loja="todas" data-tooltip="Ver produtos de todas as lojas">
             <i class="fas fa-th store-icon"></i>
             <div class="store-name">Todas</div>
           </div>
-          <div class="store-card" data-loja="amazon" data-tooltip="Loja líder em eletrônicos e livros">
+          <div class="store-card" data-loja="amazon" data-tooltip="Líder em eletrônicos e livros">
             <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="Amazon" class="store-logo" />
             <div class="store-name">Amazon</div>
           </div>
-          <div class="store-card" data-loja="mercadolivre" data-tooltip="Marketplace com ampla variedade de produtos">
+          <div class="store-card" data-loja="mercadolivre" data-tooltip="Marketplace com ampla variedade">
             <img src="https://upload.wikimedia.org/wikipedia/commons/2/29/Mercado_Libre_logo.svg" alt="Mercado Livre" class="store-logo" />
             <div class="store-name">Mercado Livre</div>
           </div>
-          <div class="store-card" data-loja="shopee" data-tooltip="Ofertas exclusivas em moda e acessórios">
+          <div class="store-card" data-loja="shopee" data-tooltip="Ofertas em moda e acessórios">
             <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/Shopee_logo.svg" alt="Shopee" class="store-logo" />
             <div class="store-name">Shopee</div>
-          </div>
-          <div class="store-card" data-loja="magalu" data-tooltip="Produtos para casa e tecnologia">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/7/79/Magalu_logo.svg" alt="Magalu" class="store-logo" />
-            <div class="store-name">Magalu</div>
-          </div>
-          <div class="store-card" data-loja="shein" data-tooltip="Moda acessível e tendências">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/c/cf/Shein_logo.svg" alt="Shein" class="store-logo" />
-            <div class="store-name">Shein</div>
-          </div>
-          <div class="store-card" data-loja="alibaba" data-tooltip="Comércio global com preços competitivos">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/6/69/Alibaba_Logo.svg" alt="Alibaba" class="store-logo" />
-            <div class="store-name">Alibaba</div>
-          </div>
-          <div class="store-card" data-loja="americanas" data-tooltip="Variedade em produtos e promoções">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/f/f9/Americanas_logo.svg" alt="Americanas" class="store-logo" />
-            <div class="store-name">Americanas</div>
           </div>
         </div>
       </div>
@@ -178,14 +159,14 @@
         <div class="loading-container" id="loading-spinner">
           <div class="loading-spinner">
             <div class="spinner"></div>
-            <p>Carregando os melhores produtos para você...</p>
+            <p>Carregando produtos...</p>
           </div>
         </div>
         
         <div class="empty-state" id="mensagem-vazia">
           <i class="fas fa-box-open empty-icon"></i>
           <h3>Nenhum produto encontrado</h3>
-          <p>Tente ajustar os filtros ou a busca para encontrar o que procura.</p>
+          <p>Tente ajustar os filtros ou a busca.</p>
           <a href="#" class="btn-primary" onclick="window.location.reload()">
             <i class="fas fa-redo"></i> Limpar Filtros
           </a>
@@ -194,7 +175,7 @@
         <div class="error-state" id="error-message">
           <i class="fas fa-exclamation-circle error-icon"></i>
           <h3>Ops! Algo deu errado</h3>
-          <p>Não foi possível carregar os produtos. Verifique sua conexão.</p>
+          <p>Não foi possível carregar os produtos.</p>
           <a href="#" class="btn-primary" onclick="window.location.reload()">
             <i class="fas fa-redo"></i> Tentar Novamente
           </a>
@@ -204,7 +185,7 @@
         
         <div class="load-more-container">
           <button class="load-more-btn" id="load-more">
-            <i class="fas fa-plus"></i> Ver Mais Produtos
+            <i class="fas fa-plus"></i> Ver Mais
           </button>
         </div>
       </div>
@@ -214,53 +195,37 @@
   <footer class="main-footer" id="contato">
     <div class="container footer-content">
       <div class="footer-section">
-        <h4>Sobre o Centro de Compra</h4>
-        <p>Somos uma plataforma que reúne as melhores ofertas de lojas online confiáveis em um só lugar. Nossa missão é ajudar você a economizar tempo e dinheiro nas suas compras online!</p>
-        <div class="footer-stats">
-          <small><i class="fas fa-users"></i> +50.000 usuários satisfeitos</small>
-        </div>
+        <h4>Sobre Nós</h4>
+        <p>Centro de Compra reúne as melhores ofertas de lojas online confiáveis. Economize tempo e dinheiro!</p>
       </div>
-      
       <div class="footer-section">
         <h4>Links Úteis</h4>
         <ul>
           <li><a href="#termos">Termos de Uso</a></li>
           <li><a href="#privacidade">Política de Privacidade</a></li>
-          <li><a href="#faq">Perguntas Frequentes</a></li>
-          <li><a href="#suporte">Central de Ajuda</a></li>
-          <li><a href="#cupons" id="cupons">Cupons de Desconto</a></li>
+          <li><a href="#faq">FAQ</a></li>
+          <li><a href="#suporte">Suporte</a></li>
         </ul>
       </div>
-      
       <div class="footer-section">
         <h4>Siga-nos</h4>
         <div class="social-links">
           <a href="#" class="social-link instagram" aria-label="Instagram" target="_blank" rel="noopener">
             <i class="fab fa-instagram"></i>
           </a>
-          <a href="#" class="social-link tiktok" aria-label="TikTok" target="_blank" rel="noopener">
-            <i class="fab fa-tiktok"></i>
-          </a>
           <a href="#" class="social-link twitter" aria-label="Twitter" target="_blank" rel="noopener">
             <i class="fab fa-twitter"></i>
           </a>
-          <a href="#" class="social-link youtube" aria-label="YouTube" target="_blank" rel="noopener">
-            <i class="fab fa-youtube"></i>
-          </a>
         </div>
-        <p style="margin-top: 1rem; font-size: 0.9rem; color: #cccccc;">
-          Receba as melhores ofertas no seu WhatsApp!
-        </p>
       </div>
     </div>
-    
     <div class="footer-bottom">
       <div class="container">
         <div class="footer-disclaimer">
-          <p><i class="fas fa-info-circle"></i> Este site contém links de afiliados; ao comprar através deles, podemos receber uma comissão sem custo adicional para você.</p>
+          <p><i class="fas fa-info-circle"></i> Este site contém links de afiliados. Podemos receber comissões.</p>
         </div>
         <div class="footer-copyright">
-          <p>&copy; <span id="year">2025</span> Centro de Compra. Todos os direitos reservados.</p>
+          <p>&copy; <span id="year">2025</span> Centro de Compra.</p>
         </div>
       </div>
     </div>
@@ -283,20 +248,6 @@
         <div class="carousel-dots" id="modalCarrosselDots"></div>
       </div>
     </div>
-  </div>
-
-  <div class="floating-assistant">
-    <a href="https://wa.me/5521999999999?text=Olá! Gostaria de saber mais sobre as ofertas do Centro de Compra" 
-       class="floating-btn" 
-       target="_blank" 
-       rel="noopener"
-       aria-label="Falar no WhatsApp">
-      <i class="fab fa-whatsapp"></i>
-      <div class="floating-tooltip">
-        <span>Fale Conosco</span>
-        <small>Atendimento via WhatsApp</small>
-      </div>
-    </a>
   </div>
 
   <script src="script.js"></script>
