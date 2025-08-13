@@ -515,6 +515,40 @@ body {
   gap: 2rem;
 }
 
+.social-links {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.social-link {
+  display: inline-block;
+}
+
+.social-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  image-rendering: auto;
+  transition: var(--transition);
+}
+
+.social-link:hover .social-icon {
+  transform: scale(1.1);
+}
+
+.payment-methods {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.payment-icon {
+  height: 24px;
+  object-fit: contain;
+  image-rendering: auto;
+}
+
 .footer-bottom {
   margin-top: 2rem;
   text-align: center;
@@ -612,6 +646,15 @@ body {
 
   .category-item i {
     font-size: 1.3rem;
+  }
+
+  .social-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .payment-icon {
+    height: 20px;
   }
 }
 
