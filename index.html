@@ -16,7 +16,13 @@
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link rel="stylesheet" href="style.css" />
-  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+  <link rel="icon" href="logos/favicon.ico" type="image/x-icon" />
+  <link rel="icon" type="image/png" sizes="16x16" href="logos/favicon-16x16.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32x32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="logos/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="logos/android-chrome-192x192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="logos/android-chrome-512x512.png" />
+  <link rel="manifest" href="logos/site.webmanifest" />
   
   <!-- Preload para performance -->
   <link rel="preload" href="style.css" as="style" />
@@ -121,6 +127,9 @@
       <li class="category-item" data-categoria="alimentos" aria-label="Filtrar por alimentos">
         <i class="fas fa-utensils"></i> Alimentos
       </li>
+      <li class="category-item" data-categoria="pet" aria-label="Filtrar por pet shop">
+        <i class="fas fa-paw"></i> Pet Shop
+      </li>
     </ul>
   </aside>
 
@@ -150,16 +159,32 @@
             <div class="store-name">Todas</div>
           </div>
           <div class="store-card" data-loja="amazon" data-tooltip="Líder em eletrônicos e livros">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="Amazon" class="store-logo" />
+            <img src="logos/amazon.png" alt="Amazon" class="store-logo" />
             <div class="store-name">Amazon</div>
           </div>
           <div class="store-card" data-loja="mercadolivre" data-tooltip="Marketplace com ampla variedade">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/2/29/Mercado_Libre_logo.svg" alt="Mercado Livre" class="store-logo" />
+            <img src="logos/mercadolivre.jpg" alt="Mercado Livre" class="store-logo" />
             <div class="store-name">Mercado Livre</div>
           </div>
           <div class="store-card" data-loja="shopee" data-tooltip="Ofertas em moda e acessórios">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/Shopee_logo.svg" alt="Shopee" class="store-logo" />
+            <img src="logos/shopee.png" alt="Shopee" class="store-logo" />
             <div class="store-name">Shopee</div>
+          </div>
+          <div class="store-card" data-loja="magalu" data-tooltip="Loja completa para casa e tecnologia">
+            <img src="logos/magalu.png" alt="Magalu" class="store-logo" />
+            <div class="store-name">Magalu</div>
+          </div>
+          <div class="store-card" data-loja="shein" data-tooltip="Moda acessível e variada">
+            <img src="logos/shein.png" alt="Shein" class="store-logo" />
+            <div class="store-name">Shein</div>
+          </div>
+          <div class="store-card" data-loja="alibaba" data-tooltip="Produtos direto da China">
+            <img src="logos/alibaba.png" alt="Alibaba" class="store-logo" />
+            <div class="store-name">Alibaba</div>
+          </div>
+          <div class="store-card" data-loja="aliexpress" data-tooltip="Ofertas internacionais com frete acessível">
+            <img src="logos/aliexpress.png" alt="AliExpress" class="store-logo" />
+            <div class="store-name">AliExpress</div>
           </div>
         </div>
       </div>
@@ -225,12 +250,32 @@
       <div class="footer-section">
         <h4>Siga-nos</h4>
         <div class="social-links">
-          <a href="#" class="social-link instagram" aria-label="Instagram" target="_blank" rel="noopener">
-            <i class="fab fa-instagram"></i>
+          <a href="https://instagram.com/centrodecompra" class="social-link" aria-label="Instagram" target="_blank" rel="noopener">
+            <img src="logos/instagram.png" alt="Instagram" class="social-icon" />
           </a>
-          <a href="#" class="social-link twitter" aria-label="Twitter" target="_blank" rel="noopener">
-            <i class="fab fa-twitter"></i>
+          <a href="https://facebook.com/centrodecompra" class="social-link" aria-label="Facebook" target="_blank" rel="noopener">
+            <img src="logos/facebook.png" alt="Facebook" class="social-icon" />
           </a>
+          <a href="https://youtube.com/centrodecompra" class="social-link" aria-label="YouTube" target="_blank" rel="noopener">
+            <img src="logos/youtube.png" alt="YouTube" class="social-icon" />
+          </a>
+          <a href="https://tiktok.com/@centrodecompra" class="social-link" aria-label="TikTok" target="_blank" rel="noopener">
+            <img src="logos/tiktok.png" alt="TikTok" class="social-icon" />
+          </a>
+          <a href="https://t.me/centrodecompra" class="social-link" aria-label="Telegram" target="_blank" rel="noopener">
+            <img src="logos/telegram.jpg" alt="Telegram" class="social-icon" />
+          </a>
+          <a href="https://kwai.com/@centrodecompra" class="social-link" aria-label="Kwai" target="_blank" rel="noopener">
+            <img src="logos/kwai.png" alt="Kwai" class="social-icon" />
+          </a>
+        </div>
+      </div>
+      <div class="footer-section">
+        <h4>Formas de Pagamento</h4>
+        <div class="payment-methods">
+          <img src="logos/visa.png" alt="Visa" class="payment-icon" />
+          <img src="logos/mastercard.png" alt="Mastercard" class="payment-icon" />
+          <img src="logos/boleto.png" alt="Boleto" class="payment-icon" />
         </div>
       </div>
     </div>
