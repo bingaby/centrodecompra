@@ -1,176 +1,31 @@
-/* ESTILO GERAL */
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f5f5f5;
-  color: #333;
-}
+body { margin:0; font-family: Arial, sans-serif; background:#f5f5f5; }
+.container { width:90%; max-width:1200px; margin:0 auto; }
 
-/* CABEÇALHO */
-header {
-  background: #0054a6;
-  padding: 10px 20px;
-  color: #fff;
-}
+.main-header { background:#3483fa; color:#fff; }
+.header-top { font-size:14px; padding:5px 0; text-align:center; }
+.header-main { display:flex; justify-content:space-between; align-items:center; padding:10px 0; }
+.logo { height:50px; }
+.search-section { flex:1; margin:0 20px; display:flex; }
+.search-section input { flex:1; padding:5px 10px; border-radius:4px 0 0 4px; border:none; }
+.search-section button { padding:5px 10px; border:none; background:#fff; color:#3483fa; border-radius:0 4px 4px 0; cursor:pointer; }
 
-.header-main {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-}
+.offers-banner { background:#1a5cc8; color:#fff; text-align:center; padding:20px 0; margin-bottom:20px; border-radius:8px; }
+.offers-banner h1 { margin:0 0 10px 0; font-size:24px; }
+.offers-banner p { margin:0; font-size:16px; }
 
-.logo {
-  font-size: 1.5rem;
-  font-weight: bold;
-}
+.stores-section h2 { margin-bottom:10px; color:#333; }
+.stores-grid { display:flex; flex-wrap:wrap; gap:15px; }
+.store-card { flex:1 1 120px; text-align:center; padding:10px; background:#fff; border-radius:8px; cursor:pointer; transition:0.3s; }
+.store-card img { max-width:100%; height:auto; }
 
-.nav-links a {
-  color: #fff;
-  margin: 0 10px;
-  text-decoration: none;
-}
+.products-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:15px; margin-top:20px; }
+.produto-card { background:#fff; padding:10px; border-radius:8px; display:flex; flex-direction:column; justify-content:space-between; }
+.produto-card img { width:100%; border-radius:8px; margin-bottom:10px; }
+.produto-nome { font-weight:bold; margin-bottom:5px; }
+.tarja-preco { text-decoration:none; background:#3483fa; color:#fff; padding:5px; border-radius:4px; text-align:center; display:block; }
 
-.search-section {
-  display: flex;
-}
+.load-more-container { text-align:center; margin:20px 0; }
+.load-more-btn { padding:10px 20px; background:#3483fa; color:#fff; border:none; border-radius:4px; cursor:pointer; }
 
-.search-section input {
-  padding: 5px;
-  border: none;
-  border-radius: 4px 0 0 4px;
-}
-
-.search-section button {
-  background: #ffcc00;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 0 4px 4px 0;
-  cursor: pointer;
-}
-
-/* BANNER OFERTAS */
-.offers-banner {
-  background: #0054a6;
-  color: white;
-  padding: 20px;
-  text-align: center;
-}
-
-.banner-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.banner-stats {
-  display: flex;
-  gap: 20px;
-}
-
-.stat-number {
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-
-/* CATEGORIAS */
-.categories {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 15px;
-  padding: 20px;
-}
-
-.category-card {
-  background: white;
-  border-radius: 8px;
-  padding: 10px;
-  text-align: center;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-.category-card img {
-  max-width: 60px;
-}
-
-/* LOJAS PARCEIRAS */
-.stores-section {
-  padding: 20px;
-}
-
-.stores-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-}
-
-.store-card {
-  background: white;
-  padding: 10px;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  flex: 1 1 100px;
-  text-align: center;
-}
-
-.store-card img {
-  max-width: 100px;
-}
-
-/* PRODUTOS */
-.products-grid {
-  padding: 20px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 15px;
-}
-
-/* BOTÃO WHATSAPP */
-.floating-assistant {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-}
-
-.floating-btn {
-  background: #25d366;
-  color: white;
-  padding: 10px 14px;
-  border-radius: 50px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  text-decoration: none;
-  font-size: 1rem;
-}
-
-.floating-tooltip {
-  display: none;
-}
-
-/* RODAPÉ */
-footer {
-  background: #003974;
-  color: white;
-  padding: 20px;
-  text-align: center;
-}
-
-footer .disclaimer {
-  font-size: 0.9rem;
-  color: #ffcc00;
-}
-
-footer .about {
-  font-size: 0.85rem;
-  margin-top: 10px;
-}
-
-/* RESPONSIVO */
-@media (max-width: 768px) {
-  .banner-content {
-    flex-direction: column;
-    gap: 15px;
-  }
-}
+.main-footer { background:#333; color:#fff; padding:20px 0; text-align:center; margin-top:40px; }
+.main-footer a { color:#fff; text-decoration:none; }
