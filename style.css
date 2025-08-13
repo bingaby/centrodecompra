@@ -128,341 +128,11 @@ body {
 .header-top {
   background: var(--primary-color);
   color: white;
-  font-size: 0.75rem; /* Reduzido de 0.875rem para compactar a altura */
-  padding: 0.25rem 0; /* Reduzido de var(--spacing-sm) para 0.25rem */
-}
-
-.header-top .container {
-  max-width: 960px; /* Mantido para largura reduzida */
-  padding: var(--spacing-xs) var(--spacing-md); /* Ajustado para menos espaço vertical */
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.header-info {
-  display: flex;
-  gap: var(--spacing-md); /* Reduzido de var(--spacing-lg) para compactar */
-}
-
-.header-info span {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-}
-
-.header-links {
-  display: flex;
-  gap: var(--spacing-md);
-}
-
-.header-link {
-  color: white;
-  text-decoration: none;
-  opacity: 0.9;
-  transition: var(--transition-fast);
-}
-
-.header-link:hover {
-  opacity: 1;
-}
-
-.header-main {
-  padding: var(--spacing-md) 0;
-}
-
-.header-content {
-  display: grid;
-  grid-template-columns: 200px 1fr auto;
-  gap: var(--spacing-lg);
-  align-items: center;
-}
-
-.logo {
-  height: 50px;
-  width: auto;
-  cursor: pointer;
-  transition: var(--transition-fast);
-}
-
-.logo:hover {
-  transform: scale(1.05);
-}
-
-.search-section {
-  position: relative;
-  max-width: 600px;
-}
-
-.search-container {
-  display: flex;
-  background: var(--background-primary);
-  border: 2px solid var(--border-color);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  transition: var(--transition-fast);
-}
-
-.search-container:focus-within {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(52, 131, 250, 0.1);
-}
-
-.search-input {
-  flex: 1;
-  padding: var(--spacing-md);
-  border: none;
-  outline: none;
-  font-size: 1rem;
-  background: transparent;
-}
-
-.search-input::placeholder {
-  color: var(--text-muted);
-}
-
-.search-btn {
-  padding: var(--spacing-md) var(--spacing-lg);
-  background: var(--primary-color);
-  color: white;
-  border: none;
-  cursor: pointer;
-  transition: var(--transition-fast);
-}
-
-.search-btn:hover {
-  background: var(--primary-hover);
-}
-
-.header-actions {
-  display: flex;
-  gap: var(--spacing-sm);
-}
-
-.action-btn {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: var(--radius-md);
-  text-decoration: none;
-  font-weight: 500;
   font-size: 0.875rem;
-  transition: var(--transition-fast);
-}
-
-.whatsapp-btn {
-  background: #25d366;
-  color: white;
-}
-
-.whatsapp-btn:hover {
-  background: #20b358;
-  transform: translateY(-1px);
-}
-
-.telegram-btn {
-  background: #0088cc;
-  color: white;
-}
-
-.telegram-btn:hover {
-  background: #0077b3;
-  transform: translateY(-1px);
-}
-
-/* Navegação */
-.main-nav {
-  background: var(--background-primary);
-  border-top: 1px solid var(--border-color);
-}
-
-.nav-content {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-lg);
-  padding: var(--spacing-md) 0;
-}
-
-.categories-btn {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-md);
-  background: var(--background-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  font-weight: 500;
-  transition: var(--transition-fast);
-}
-
-.categories-btn:hover {
-  background: var(--background-tertiary);
-}
-
-.nav-links {
-  display: flex;
-  gap: var(--spacing-lg);
-}
-
-.nav-link {
-  color: var(--text-secondary);
-  text-decoration: none;
-  font-weight: 500;
   padding: var(--spacing-sm) 0;
-  border-bottom: 2px solid transparent;
-  transition施
-
-System: Entendido! Abaixo está o código **CSS** completo (`style.css`) atualizado com todas as alterações solicitadas, incluindo:
-1. **Reduzir a altura do `.header-top`**: Diminuí o `padding` vertical de `var(--spacing-sm)` (0.5rem) para `0.25rem` e o `font-size` de `0.875rem` para `0.75rem` para compactar a seção azul no topo.
-2. **Reduzir a largura do banner "Ofertas do Dia" (`.offers-banner`)**: Ajustei o `max-width` do `.offers-banner .container` para `960px` e reduzi o `padding` de `var(--spacing-2xl)` (3rem) para `var(--spacing-lg)` (1.5rem).
-3. **Reduzir o tamanho das imagens das lojas parceiras**: Diminuí a `height` de `.store-logo img` de `30px` para `24px` e o `max-width` de `80px` para `60px`, além de reduzir o `padding` do `.store-card` de `var(--spacing-lg)` (1.5rem) para `var(--spacing-md)` (1rem).
-4. **Melhorar a aparência no celular**: Ajustei o media query `@media (max-width: 480px)` para reduzir a altura do carrossel de produtos para `120px` (de `150px`), o tamanho da fonte do título "Ofertas do Dia" para `1.2rem`, e a grade de lojas para `minmax(100px, 1fr)`.
-
-Os arquivos **HTML** (`index.html`) e **JavaScript** (`script.js`) permanecem inalterados, pois as mudanças são apenas no CSS. Como você pediu o "código completo", entendi que se refere ao CSS completo com todas as alterações. Caso precise do HTML ou JavaScript, ou de um arquivo combinado, posso fornecê-los — é só pedir!
-
----
-
-### **Código CSS Completo (`style.css`)**
-```css
-/* Reset e Variáveis CSS */
-:root {
-  /* Cores principais inspiradas no Mercado Livre */
-  --primary-color: #3483fa;
-  --primary-hover: #2968c8;
-  --secondary-color: #00a650;
-  --accent-color: #ffe600;
-  --warning-color: #ff9500;
-  --error-color: #f23d4f;
-  --success-color: #00a650;
-
-  /* Cores neutras */
-  --text-primary: #333333;
-  --text-secondary: #666666;
-  --text-muted: #999999;
-  --background-primary: #ffffff;
-  --background-secondary: #f5f5f5;
-  --background-tertiary: #ebebeb;
-  --border-color: #e6e6e6;
-  --border-light: #f0f0f0;
-
-  /* Sombras */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
-  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.2);
-
-  /* Bordas */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
-
-  /* Transições */
-  --transition-fast: 0.15s ease;
-  --transition-normal: 0.3s ease;
-  --transition-slow: 0.5s ease;
-
-  /* Espaçamentos */
-  --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 1rem;
-  --spacing-lg: 1.5rem;
-  --spacing-xl: 2rem;
-  --spacing-2xl: 3rem;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  line-height: 1.6;
-  color: var(--text-primary);
-  background-color: var(--background-secondary);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 var(--spacing-md);
-}
-
-/* Status de Conexão */
-.connection-status {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 9999;
-  padding: var(--spacing-md) var(--spacing-lg);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-  animation: slideInRight 0.5s ease-out;
-  max-width: 300px;
-}
-
-.connection-status.online {
-  background: var(--success-color);
-  color: white;
-}
-
-.connection-status.offline {
-  background: var(--warning-color);
-  color: white;
-}
-
-.status-content {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-}
-
-.status-content i {
-  font-size: 1.2rem;
-  margin-right: var(--spacing-sm);
-}
-
-.status-content small {
-  opacity: 0.9;
-  font-size: 0.75rem;
-}
-
-@keyframes slideInRight {
-  from {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-/* Header Styles */
-.main-header {
-  background: var(--background-primary);
-  box-shadow: var(--shadow-md);
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-}
-
-.header-top {
-  background: var(--primary-color);
-  color: white;
-  font-size: 0.75rem; /* Reduzido de 0.875rem para compactar a altura */
-  padding: 0.25rem 0; /* Reduzido de var(--spacing-sm) para 0.25rem */
 }
 
 .header-top .container {
-  max-width: 960px; /* Mantido para largura reduzida */
-  padding: var(--spacing-xs) var(--spacing-md); /* Ajustado para menos espaço vertical */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -470,7 +140,7 @@ body {
 
 .header-info {
   display: flex;
-  gap: var(--spacing-md); /* Reduzido de var(--spacing-lg) para compactar */
+  gap: var(--spacing-lg);
 }
 
 .header-info span {
@@ -765,14 +435,10 @@ body {
   background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
   color: white;
   border-radius: var(--radius-lg);
-  padding: var(--spacing-lg); /* Reduzido de var(--spacing-2xl) para compactar */
+  padding: var(--spacing-2xl);
   margin-bottom: var(--spacing-xl);
   position: relative;
   overflow: hidden;
-}
-
-.offers-banner .container {
-  max-width: 960px; /* Reduzido para alinhar com header-top */
 }
 
 .offers-banner::before {
@@ -893,7 +559,7 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: var(--spacing-md);
   background: var(--background-primary);
-  padding: var(--spacing-md); /* Reduzido de var(--spacing-lg) */
+  padding: var(--spacing-lg);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
 }
@@ -903,7 +569,7 @@ body {
   flex-direction: column;
   align-items: center;
   gap: var(--spacing-sm);
-  padding: var(--spacing-md); /* Reduzido de var(--spacing-lg) */
+  padding: var(--spacing-lg);
   border: 2px solid var(--border-light);
   border-radius: var(--radius-md);
   cursor: pointer;
@@ -934,9 +600,9 @@ body {
 }
 
 .store-logo img {
-  height: 24px; /* Reduzido de 30px */
+  height: 30px;
   width: auto;
-  max-width: 60px; /* Reduzido de 80px */
+  max-width: 80px;
   object-fit: contain;
 }
 
@@ -1010,7 +676,7 @@ body {
 .produto-card .carrossel {
   position: relative;
   width: 100%;
-  height: 180px; /* Mantido (já reduzido anteriormente) */
+  height: 220px;
   overflow: hidden;
   background: var(--background-secondary);
 }
@@ -1027,7 +693,7 @@ body {
   height: 100%;
   object-fit: contain;
   flex: 0 0 100%;
-  padding: var(--spacing-sm); /* Mantido (já reduzido anteriormente) */
+  padding: var(--spacing-md);
   cursor: pointer;
 }
 
@@ -1686,15 +1352,11 @@ body {
   }
 
   .header-top {
-    display: none; /* Mantido: oculta o header-top em telas pequenas */
+    display: none;
   }
 
   .banner-text h1 {
-    font-size: 1.2rem; /* Reduzido de 1.5rem para melhor proporção */
-  }
-
-  .banner-text p {
-    font-size: 1rem; /* Reduzido de 1.2rem */
+    font-size: 1.5rem;
   }
 
   .banner-stats {
@@ -1702,45 +1364,13 @@ body {
     gap: var(--spacing-sm);
   }
 
-  .stores-grid {
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Reduzido de 120px para cartões menores */
-    gap: var(--spacing-sm); /* Reduzido de var(--spacing-md) */
-    padding: var(--spacing-sm); /* Reduzido de var(--spacing-md) */
-  }
-
-  .store-card {
-    padding: var(--spacing-sm); /* Reduzido de var(--spacing-md) */
-  }
-
-  .store-logo img {
-    height: 20px; /* Reduzido ainda mais para telas pequenas */
-    max-width: 50px; /* Reduzido de 60px */
-  }
-
-  .store-name {
-    font-size: 0.75rem; /* Reduzido de 0.875rem */
-  }
-
   .products-grid {
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); /* Reduzido de 1fr 1fr para melhor ajuste */
-    gap: var(--spacing-sm); /* Reduzido de var(--spacing-lg) */
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-sm);
   }
 
   .produto-card .carrossel {
-    height: 120px; /* Reduzido de 150px para telas pequenas */
-  }
-
-  .produto-nome {
-    font-size: 0.875rem; /* Reduzido de 1rem */
-  }
-
-  .descricao {
-    font-size: 0.75rem; /* Reduzido de 0.875rem */
-  }
-
-  .tarja-preco {
-    font-size: 0.8rem; /* Reduzido de 0.9rem */
-    padding: var(--spacing-sm) var(--spacing-md); /* Reduzido de var(--spacing-md) var(--spacing-lg) */
+    height: 150px;
   }
 
   .floating-assistant {
