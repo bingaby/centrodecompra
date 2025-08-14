@@ -1,4 +1,4 @@
-const VERSION = "1.0.15"; // Atualizado para refletir a nova funcionalidade
+const VERSION = "1.0.16"; // Atualizado para nova funcionalidade
 const API_URL = 'https://minha-api-produtos.onrender.com';
 let currentImages = [];
 let currentImageIndex = 0;
@@ -487,19 +487,34 @@ function closeModal() {
 
 // Eventos de busca
 const searchInput = document.getElementById("busca");
-const searchButton = document.querySelector(".search-btn");
-if (searchInput && searchButton) {
+if (searchInput) {
     const debouncedSearch = debounce(() => {
         currentSearch = searchInput.value.trim();
         currentPage = 1;
+        console.log(`Busca automática disparada: ${currentSearch}`);
         carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
-    }, 500);
+    }, 300); // Reduzido para 300ms para maior responsividade
 
     searchInput.addEventListener("input", debouncedSearch);
-    searchButton.addEventListener("click", () => {
-        currentSearch = searchInput.value.trim();
-        currentPage = 1;
-        carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
+
+    // Suporte ao Enter para busca imediata
+    searchInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+            currentSearch = searchInput.value.trim();
+            currentPage = 1;
+            console.log(`Busca via Enter: ${currentSearch}`);
+            carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
+        }
+    });
+
+    // Limpar resultados quando o campo de busca estiver vazio
+    searchInput.addEventListener("input", () => {
+        if (searchInput.value.trim() === "") {
+            currentSearch = "";
+            currentPage = 1;
+            console.log("Campo de busca vazio, recarregando todos os produtos");
+            carregarProdutos(currentCategory, currentStore, currentPage, "");
+        }
     });
 }
 
@@ -512,7 +527,7 @@ document.querySelectorAll(".category-item").forEach(item => {
         currentPage = 1;
         currentSearch = ""; // Limpar busca ao mudar categoria
         searchInput.value = ""; // Limpar input de busca
-        carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
+        carregarProdutos(currentCategory, currentStore, currentPage, "");
     });
 });
 
@@ -525,7 +540,7 @@ document.querySelectorAll(".store-card").forEach(card => {
         currentPage = 1;
         currentSearch = ""; // Limpar busca ao mudar loja
         searchInput.value = ""; // Limpar input de busca
-        carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
+        carregarProdutos(currentCategory, currentStore, currentPage, "");
     });
 });
 
