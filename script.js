@@ -1,4 +1,4 @@
-const VERSION = "1.0.13"; // Atualizado para nova versão
+const VERSION = "1.0.14"; // Atualizado para nova versão
 const API_URL = 'https://minha-api-produtos.onrender.com';
 let currentImages = [];
 let currentImageIndex = 0;
@@ -115,8 +115,7 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1) {
             const response = await fetch(url, {
                 cache: "no-store",
                 headers: {
-                    'Accept': 'application/json',
-                    'Cache-Control': 'no-cache'
+                    'Accept': 'application/json'
                 }
             });
             console.log('Status da resposta:', response.status);
@@ -211,8 +210,7 @@ async function carregarProdutosAdmin() {
         const response = await fetch(`${API_URL}/api/produtos?page=1&limit=1000`, {
             cache: 'no-store',
             headers: {
-                'Accept': 'application/json',
-                'Cache-Control': 'no-cache'
+                'Accept': 'application/json'
             }
         });
         if (!response.ok) throw new Error(`Erro HTTP ${response.status}`);
@@ -303,8 +301,7 @@ async function editarProduto(id) {
     try {
         const response = await fetch(`${API_URL}/api/produtos/${id}`, {
             headers: {
-                'Accept': 'application/json',
-                'Cache-Control': 'no-cache'
+                'Accept': 'application/json'
             }
         });
         if (!response.ok) throw new Error(`Erro HTTP ${response.status}`);
@@ -560,7 +557,10 @@ async function testarRenderizacao() {
     grid.innerHTML = '';
     try {
         const response = await fetch('https://minha-api-produtos.onrender.com/api/produtos?page=1&limit=12', {
-            cache: 'no-store'
+            cache: 'no-store',
+            headers: {
+                'Accept': 'application/json'
+            }
         });
         const data = await response.json();
         console.log('Dados da API:', data);
