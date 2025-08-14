@@ -34,6 +34,9 @@
       <label for="nome">Nome do Produto</label>
       <input type="text" id="nome" name="nome" required aria-required="true">
 
+      <label for="preco">Preço (R$)</label>
+      <input type="number" id="preco" name="preco" step="0.01" min="0" placeholder="0.00">
+
       <label for="categoria">Categoria</label>
       <select id="categoria" name="categoria" required aria-required="true">
         <option value="todas">Todas</option>
@@ -82,6 +85,7 @@
         <tr>
           <th>Imagem</th>
           <th>Nome</th>
+          <th>Preço</th>
           <th>Categoria</th>
           <th>Loja</th>
           <th>Link</th>
@@ -114,7 +118,7 @@
           throw new Error(`Erro HTTP ${response.status}: ${errorText || 'Resposta vazia'}`);
         }
         const data = await response.json();
-        console.log('Resposta da API:', data);
+        console.log('Resposta da API:', JSON.stringify(data, null, 2));
 
         if (data.status !== 'success' || !Array.isArray(data.data)) {
           throw new Error(data.message || 'Resposta inválida');
@@ -124,7 +128,7 @@
         lista.innerHTML = '';
 
         if (produtos.length === 0) {
-          lista.innerHTML = '<tr><td colspan="6">Nenhum produto cadastrado.</td></tr>';
+          lista.innerHTML = '<tr><td colspan="7">Nenhum produto cadastrado.</td></tr>';
           return;
         }
 
@@ -136,6 +140,7 @@
           tr.innerHTML = `
             <td><img src="${imagem}" class="produto-imagem" alt="${produto.nome}" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'"></td>
             <td>${produto.nome || 'Sem nome'}</td>
+            <td>R$ ${produto.preco || '0.00'}</td>
             <td>${produto.categoria || 'Sem categoria'}</td>
             <td>${produto.loja || 'Sem loja'}</td>
             <td><a href="${produto.link || '#'}" target="_blank">Link</a></td>
@@ -147,7 +152,7 @@
           lista.appendChild(tr);
         });
       } catch (error) {
-        console.error('Erro ao carregar produtos:', error);
+        console.error('Erro ao carregar produtos:', error.message, error.stack);
         errorMessage.textContent = `Erro ao carregar produtos: ${error.message}`;
         errorMessage.style.display = 'block';
       } finally {
@@ -172,7 +177,15 @@
 
       const formData = new FormData(form);
       const imagens = formData.getAll('imagens');
-      console.log('Dados do formulário:', { nome: formData.get('nome'), categoria: formData.get('categoria'), loja: formData.get('loja'), link: formData.get('link'), imagensCount: imagens.length });
+      console.log('Dados do formulário:', {
+        nome: formData.get('nome'),
+        preco: formData.get('preco'),
+        categoria: formData.get('categoria'),
+        loja: formData.get('loja'),
+        link: formData.get('link'),
+        imagensCount: imagens.length,
+        imagens: imagens.map(f => f.name)
+      });
 
       if (imagens.length > 5) {
         errorMessage.textContent = 'Máximo de 5 imagens permitido.';
@@ -197,7 +210,7 @@
         const response = await fetch(url, { method, body: formData });
         console.log('Resposta:', response.status);
         const data = await response.json();
-        console.log('Dados da API:', data);
+        console.log('Dados da API:', JSON.stringify(data, null, 2));
 
         if (!response.ok) {
           throw new Error(data.message || `Erro ${response.status}`);
@@ -210,7 +223,7 @@
         document.getElementById('produto-id').value = '';
         carregarProdutos();
       } catch (error) {
-        console.error('Erro:', error);
+        console.error('Erro:', error.message, error.stack);
         errorMessage.textContent = `Erro ao ${produtoId ? 'atualizar' : 'cadastrar'}: ${error.message}`;
         errorMessage.style.display = 'block';
         successMessage.style.display = 'none';
@@ -225,7 +238,7 @@
           throw new Error(`Erro HTTP ${response.status}: ${errorText || 'Resposta vazia'}`);
         }
         const data = await response.json();
-        console.log('Resposta da API:', data);
+        console.log('Resposta da API:', JSON.stringify(data, null, 2));
 
         if (data.status !== 'success' || !data.data) {
           throw new Error(data.message || 'Produto não encontrado');
@@ -233,6 +246,7 @@
 
         const produto = data.data;
         document.getElementById('nome').value = produto.nome || '';
+        document.getElementById('preco').value = produto.preco || '0';
         document.getElementById('categoria').value = produto.categoria || 'todas';
         document.getElementById('loja').value = produto.loja || 'todas';
         document.getElementById('link').value = produto.link || '';
@@ -240,7 +254,7 @@
         document.getElementById('submit-btn').textContent = 'Atualizar Produto';
         window.scrollTo(0, 0);
       } catch (error) {
-        console.error('Erro ao carregar produto para edição:', error);
+        console.error('Erro ao carregar produto para edição:', error.message, error.stack);
         document.getElementById('error-message').textContent = `Erro ao carregar produto: ${error.message}`;
         document.getElementById('error-message').style.display = 'block';
       }
@@ -252,7 +266,7 @@
       try {
         const response = await fetch(`${API_URL}/api/produtos/${id}`, { method: 'DELETE' });
         const data = await response.json();
-        console.log('Resposta:', response.status, data);
+        console.log('Resposta:', response.status, JSON.stringify(data, null, 2));
 
         if (!response.ok) {
           throw new Error(data.message || `Erro ${response.status}`);
@@ -262,7 +276,7 @@
         document.getElementById('success-message').style.display = 'block';
         carregarProdutos();
       } catch (error) {
-        console.error('Erro ao excluir produto:', error);
+        console.error('Erro ao excluir produto:', error.message, error.stack);
         document.getElementById('error-message').textContent = `Erro ao excluir: ${error.message}`;
         document.getElementById('error-message').style.display = 'block';
       }
