@@ -11,549 +11,203 @@ let currentStore = "todas";
 let currentSearch = "";
 
 // Conectar ao Socket.IO
-const socket = io(API_URL, { transports: ['websocket'], reconnectionAttempts: 5 });
+ const API_URL = 'https://minha-api-produtos.onrender.com';
+    const socket = io(API_URL, { transports: ['websocket'], reconnectionAttempts: 5 });
 
-// Atualiza o ano no footer
-document.getElementById("year").textContent = new Date().getFullYear();
-
-// Alternar sidebar de categorias
-const categoriesToggle = document.getElementById("categories-toggle");
-const categoriesSidebar = document.getElementById("categories-sidebar");
-const closeSidebar = document.getElementById("close-sidebar");
-const overlay = document.getElementById("overlay");
-
-if (categoriesToggle && categoriesSidebar && closeSidebar && overlay) {
-    categoriesToggle.addEventListener("click", () => {
-        categoriesSidebar.classList.toggle("active");
-        overlay.classList.toggle("active");
-    });
-
-    closeSidebar.addEventListener("click", () => {
-        categoriesSidebar.classList.remove("active");
-        overlay.classList.remove("active");
-    });
-
-    overlay.addEventListener("click", () => {
-        categoriesSidebar.classList.remove("active");
-        overlay.classList.remove("active");
-    });
-}
-
-// Debounce para busca (mantido, mas não usado até implementar busca no backend)
-function debounce(func, wait) {
-    let timeout;
-    return function (...args) {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(this, args), wait);
-    };
-}
-
-// Função para verificar conexão com a API
-function checkConnectionStatus() {
-    const statusElement = document.querySelector('.connection-status');
-    if (!statusElement) return;
-
-    fetch(`${API_URL}/api/produtos`, { cache: 'no-store' })
-        .then(response => {
-            statusElement.classList.toggle('online', response.ok);
-            statusElement.classList.toggle('offline', !response.ok);
-            statusElement.innerHTML = `
-                <div class="status-content">
-                    <i class="fas fa-${response.ok ? 'check-circle' : 'exclamation-circle'}"></i>
-                    <span>API ${response.ok ? 'Online' : 'Offline'}</span>
-                    <small>${response.ok ? 'Conectado ao servidor' : 'Verifique sua conexão'}</small>
-                </div>`;
-        })
-        .catch(() => {
-            statusElement.classList.add('offline');
-            statusElement.classList.remove('online');
-            statusElement.innerHTML = `
-                <div class="status-content">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <span>API Offline</span>
-                    <small>Verifique sua conexão</small>
-                </div>`;
-        });
-}
-
-// Função para carregar produtos
-async function carregarProdutos(categoria = "todas", loja = "todas", page = 1) {
-    const gridProdutos = document.getElementById("grid-produtos");
-    const mensagemVazia = document.getElementById("mensagem-vazia");
-    const errorMessage = document.getElementById("error-message");
-    const loadingSpinner = document.getElementById("loading-spinner");
-    const loadMoreButton = document.getElementById("load-more");
-
-    if (!gridProdutos || !mensagemVazia || !errorMessage || !loadingSpinner || !loadMoreButton) {
-        console.error("Elementos do DOM não encontrados");
+    async function carregarProdutos() {
+      const lista = document.getElementById('produtos-lista');
+      const errorMessage = document.getElementById('error-message');
+      const loadingSpinner = document.getElementById('loading-spinner');
+      if (!lista || !errorMessage || !loadingSpinner) {
+        console.error('Elementos do DOM não encontrados');
         return;
-    }
+      }
 
-    if (isLoading) {
-        console.log("Carregamento em andamento, ignorando nova requisição.");
-        return;
-    }
-    isLoading = true;
-
-    loadingSpinner.style.display = "block";
-    if (page === 1) {
-        gridProdutos.innerHTML = "";
-        allProducts = [];
-    }
-    mensagemVazia.style.display = "none";
-    errorMessage.style.display = "none";
-    loadMoreButton.style.display = "none";
-
-    const maxRetries = 3;
-    let attempt = 1;
-
-    while (attempt <= maxRetries) {
-        try {
-            const url = `${API_URL}/api/produtos?page=${page}&limit=${productsPerPage}${categoria !== 'todas' ? `&categoria=${encodeURIComponent(categoria)}` : ''}${loja !== 'todas' ? `&loja=${encodeURIComponent(loja)}` : ''}`;
-            console.log(`Tentativa ${attempt}: Carregando de ${url}`);
-            const response = await fetch(url, {
-                cache: "no-store",
-                headers: {
-                    'Accept': 'application/json',
-                    'Cache-Control': 'no-cache'
-                }
-            });
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Erro HTTP ${response.status}: ${errorText || 'Resposta vazia'}`);
-            }
-            const data = await response.json();
-            console.log('Resposta da API:', JSON.stringify(data, null, 2));
-
-            if (data.status !== 'success' || !Array.isArray(data.data)) {
-                throw new Error(`Resposta inválida: ${data.message || 'Dados não são um array'}`);
-            }
-
-            allProducts = [...allProducts, ...data.data];
-
-            if (allProducts.length === 0) {
-                mensagemVazia.style.display = "flex";
-                gridProdutos.style.display = "none";
-            } else {
-                mensagemVazia.style.display = "none";
-                gridProdutos.style.display = "grid";
-
-                data.data.forEach((produto, index) => {
-                    if (!produto || typeof produto.nome !== 'string' || !Array.isArray(produto.imagens)) {
-                        console.warn('Produto inválido ignorado:', produto);
-                        return;
-                    }
-                    const card = document.createElement("div");
-                    card.classList.add("produto-card", "visible");
-                    card.setAttribute("data-categoria", produto.categoria.toLowerCase());
-                    card.setAttribute("data-loja", produto.loja.toLowerCase());
-                    const globalIndex = allProducts.indexOf(produto);
-
-                    const imagens = produto.imagens.length > 0
-                        ? produto.imagens
-                        : ["https://minha-api-produtos.onrender.com/imagens/placeholder.jpg"];
-                    const carrosselId = `carrossel-${globalIndex}`;
-                    const lojaClass = produto.loja.toLowerCase();
-                    card.innerHTML = `
-                        <div class="carrossel" id="${carrosselId}">
-                            <div class="carrossel-imagens">
-                                ${imagens.map((img, idx) => `<img src="${img}" alt="${produto.nome}" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'" onclick="event.stopPropagation(); openModal(${globalIndex}, ${idx})">`).join("")}
-                            </div>
-                            ${imagens.length > 1 ? `
-                                <button class="carrossel-prev" onclick="event.stopPropagation(); moveCarrossel('${carrosselId}', -1)" aria-label="Imagem anterior"><i class="fas fa-chevron-left"></i></button>
-                                <button class="carrossel-next" onclick="event.stopPropagation(); moveCarrossel('${carrosselId}', 1)" aria-label="Próxima imagem"><i class="fas fa-chevron-right"></i></button>
-                                <div class="carrossel-dots">
-                                    ${imagens.map((_, idx) => `<span class="carrossel-dot ${idx === 0 ? "ativo" : ""}" onclick="event.stopPropagation(); setCarrosselImage('${carrosselId}', ${idx})" aria-label="Selecionar imagem ${idx + 1}"></span>`).join("")}
-                                </div>
-                            ` : ""}
-                        </div>
-                        <span class="produto-nome">${produto.nome}</span>
-                        <span class="descricao">Loja: ${produto.loja}</span>
-                        <a href="${produto.link}" target="_blank" class="tarja-preco tarja-${lojaClass}" aria-label="Clique para ver o preço de ${produto.nome} na loja">
-                            <i class="fas fa-shopping-cart"></i> Ver Preço
-                        </a>
-                    `;
-                    gridProdutos.appendChild(card);
-                });
-            }
-
-            loadMoreButton.style.display = data.total > allProducts.length ? "flex" : "none";
-            isLoading = false;
-            return;
-        } catch (error) {
-            console.error(`⚠️ Tentativa ${attempt} falhou: ${error.message}`);
-            if (attempt === maxRetries) {
-                errorMessage.style.display = "flex";
-                mensagemVazia.style.display = "none";
-                gridProdutos.style.display = "none";
-                errorMessage.querySelector("p").textContent = `Erro ao carregar os produtos: ${error.message}. Tente novamente mais tarde.`;
-            }
-            attempt++;
-            await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
-        } finally {
-            loadingSpinner.style.display = "none";
-            isLoading = false;
+      try {
+        loadingSpinner.style.display = 'block';
+        errorMessage.style.display = 'none';
+        const response = await fetch(`${API_URL}/api/produtos?page=1&limit=1000`, { cache: 'no-store' });
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Erro HTTP ${response.status}: ${errorText || 'Resposta vazia'}`);
         }
-    }
-}
-
-// Função para carregar produtos no admin
-async function carregarProdutosAdmin() {
-    const tableBody = document.querySelector('.products-table tbody');
-    if (!tableBody) return;
-
-    try {
-        const response = await fetch(`${API_URL}/api/produtos?page=1&limit=1000`, {
-            cache: 'no-store',
-            headers: {
-                'Accept': 'application/json',
-                'Cache-Control': 'no-cache'
-            }
-        });
-        if (!response.ok) throw new Error(`Erro HTTP ${response.status}`);
         const data = await response.json();
-        console.log('Resposta da API (admin):', JSON.stringify(data, null, 2));
-        if (data.status !== 'success' || !Array.isArray(data.data)) throw new Error(data.message || 'Resposta inválida');
+        console.log('Resposta da API:', JSON.stringify(data, null, 2));
 
-        tableBody.innerHTML = data.data.map(produto => `
-            <tr>
-                <td>${produto.id}</td>
-                <td><img src="${produto.imagens[0] || 'https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'}" alt="${produto.nome}" style="width: 50px; height: 50px;" /></td>
-                <td>${produto.nome}</td>
-                <td>${produto.categoria}</td>
-                <td>${produto.loja}</td>
-                <td><a href="${produto.link}" target="_blank">Ver</a></td>
-                <td class="actions">
-                    <button class="btn btn-edit" onclick="editarProduto(${produto.id})"><i class="fas fa-edit"></i> Editar</button>
-                    <button class="btn btn-delete" onclick="excluirProduto(${produto.id})"><i class="fas fa-trash"></i> Excluir</button>
-                </td>
-            </tr>
-        `).join('');
-    } catch (error) {
-        console.error('Erro ao carregar produtos admin:', error.message, error.stack);
-        tableBody.innerHTML = `<tr><td colspan="7">Erro ao carregar produtos: ${error.message}</td></tr>`;
+        if (data.status !== 'success' || !Array.isArray(data.data)) {
+          throw new Error(data.message || 'Resposta inválida');
+        }
+
+        const produtos = data.data;
+        lista.innerHTML = '';
+
+        if (produtos.length === 0) {
+          lista.innerHTML = '<tr><td colspan="7">Nenhum produto cadastrado.</td></tr>';
+          return;
+        }
+
+        produtos.forEach(produto => {
+          const tr = document.createElement('tr');
+          const imagem = produto.imagens && produto.imagens[0] 
+            ? produto.imagens[0] 
+            : 'https://minha-api-produtos.onrender.com/imagens/placeholder.jpg';
+          tr.innerHTML = `
+            <td><img src="${imagem}" class="produto-imagem" alt="${produto.nome}" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'"></td>
+            <td>${produto.nome || 'Sem nome'}</td>
+            <td>R$ ${produto.preco || '0.00'}</td>
+            <td>${produto.categoria || 'Sem categoria'}</td>
+            <td>${produto.loja || 'Sem loja'}</td>
+            <td><a href="${produto.link || '#'}" target="_blank">Link</a></td>
+            <td>
+              <button class="btn-editar" onclick="editarProduto('${produto.id}')">Editar</button>
+              <button class="btn-excluir" onclick="excluirProduto('${produto.id}')">Excluir</button>
+            </td>
+          `;
+          lista.appendChild(tr);
+        });
+      } catch (error) {
+        console.error('Erro ao carregar produtos:', error.message, error.stack);
+        errorMessage.textContent = `Erro ao carregar produtos: ${error.message}`;
+        errorMessage.style.display = 'block';
+      } finally {
+        loadingSpinner.style.display = 'none';
+      }
     }
-}
 
-// Função para salvar/editar produto
-async function salvarProduto(event) {
-    event.preventDefault();
-    const form = document.getElementById('product-form');
-    if (!form) return;
+    async function cadastrarProduto(event) {
+      event.preventDefault();
+      const form = document.getElementById('cadastro-produto');
+      const errorMessage = document.getElementById('error-message');
+      const successMessage = document.getElementById('success-message');
+      const submitBtn = document.getElementById('submit-btn');
+      const produtoId = document.getElementById('produto-id').value;
 
-    const formData = new FormData(form);
-    const id = form.dataset.id;
-    const url = id ? `${API_URL}/api/produtos/${id}` : `${API_URL}/api/produtos`;
-    const method = id ? 'PUT' : 'POST';
+      if (!form || !errorMessage || !successMessage || !submitBtn) {
+        console.error('Elementos do formulário não encontrados');
+        errorMessage.textContent = 'Erro interno. Tente novamente.';
+        errorMessage.style.display = 'block';
+        return;
+      }
 
-    const formDataObj = {
+      const formData = new FormData(form);
+      const imagens = formData.getAll('imagens');
+      console.log('Dados do formulário:', {
         nome: formData.get('nome'),
         preco: formData.get('preco'),
         categoria: formData.get('categoria'),
         loja: formData.get('loja'),
         link: formData.get('link'),
-        imagensCount: formData.getAll('imagens').length,
-        imagens: formData.getAll('imagens').map(f => f.name)
-    };
-    console.log('Dados do formulário:', JSON.stringify(formDataObj, null, 2));
+        imagensCount: imagens.length,
+        imagens: imagens.map(f => f.name)
+      });
 
-    try {
+      if (imagens.length > 5) {
+        errorMessage.textContent = 'Máximo de 5 imagens permitido.';
+        errorMessage.style.display = 'block';
+        successMessage.style.display = 'none';
+        return;
+      }
+      if (!produtoId && imagens.length === 0) {
+        errorMessage.textContent = 'Selecione pelo menos uma imagem para novos produtos.';
+        errorMessage.style.display = 'block';
+        successMessage.style.display = 'none';
+        return;
+      }
+
+      try {
+        errorMessage.style.display = 'none';
+        successMessage.style.display = 'none';
+        const url = produtoId ? `${API_URL}/api/produtos/${produtoId}` : `${API_URL}/api/produtos`;
+        const method = produtoId ? 'PUT' : 'POST';
+
         console.log(`Enviando para ${url} com método ${method}`);
-        const response = await fetch(url, {
-            method,
-            body: formData,
-            headers: {
-                'Accept': 'application/json'
-            }
-        });
+        const response = await fetch(url, { method, body: formData });
+        console.log('Resposta:', response.status);
         const data = await response.json();
-        console.log('Resposta:', response.status, JSON.stringify(data, null, 2));
+        console.log('Dados da API:', JSON.stringify(data, null, 2));
 
-        const feedback = document.createElement('div');
-        feedback.className = `feedback-message feedback-${data.status}`;
-        feedback.textContent = data.message;
-        document.body.appendChild(feedback);
-        feedback.style.display = 'block';
-        setTimeout(() => feedback.remove(), 3000);
-
-        if (data.status === 'success') {
-            form.reset();
-            delete form.dataset.id;
-            carregarProdutosAdmin();
+        if (!response.ok) {
+          throw new Error(data.message || `Erro ${response.status}`);
         }
-    } catch (error) {
-        console.error('Erro ao salvar produto:', error.message, error.stack);
-        const feedback = document.createElement('div');
-        feedback.className = 'feedback-message feedback-error';
-        feedback.textContent = 'Erro ao salvar produto: ' + error.message;
-        document.body.appendChild(feedback);
-        feedback.style.display = 'block';
-        setTimeout(() => feedback.remove(), 3000);
-    }
-}
 
-// Função para editar produto
-async function editarProduto(id) {
-    try {
-        const response = await fetch(`${API_URL}/api/produtos/${id}`, {
-            headers: {
-                'Accept': 'application/json',
-                'Cache-Control': 'no-cache'
-            }
-        });
-        if (!response.ok) throw new Error(`Erro HTTP ${response.status}`);
+        successMessage.textContent = data.message || (produtoId ? 'Produto atualizado com sucesso!' : 'Produto cadastrado com sucesso!');
+        successMessage.style.display = 'block';
+        form.reset();
+        submitBtn.textContent = 'Cadastrar Produto';
+        document.getElementById('produto-id').value = '';
+        carregarProdutos();
+      } catch (error) {
+        console.error('Erro:', error.message, error.stack);
+        errorMessage.textContent = `Erro ao ${produtoId ? 'atualizar' : 'cadastrar'}: ${error.message}`;
+        errorMessage.style.display = 'block';
+        successMessage.style.display = 'none';
+      }
+    }
+
+    async function editarProduto(id) {
+      try {
+        const response = await fetch(`${API_URL}/api/produtos/${id}`, { cache: 'no-store' });
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Erro HTTP ${response.status}: ${errorText || 'Resposta vazia'}`);
+        }
         const data = await response.json();
-        console.log('Produto para edição:', JSON.stringify(data, null, 2));
-        if (data.status !== 'success' || !data.data) throw new Error('Produto não encontrado');
+        console.log('Resposta da API:', JSON.stringify(data, null, 2));
+
+        if (data.status !== 'success' || !data.data) {
+          throw new Error(data.message || 'Produto não encontrado');
+        }
 
         const produto = data.data;
-        const form = document.getElementById('product-form');
-        form.dataset.id = id;
-        form.querySelector('#nome').value = produto.nome;
-        form.querySelector('#categoria').value = produto.categoria;
-        form.querySelector('#loja').value = produto.loja;
-        form.querySelector('#link').value = produto.link;
-        form.querySelector('#preco').value = produto.preco;
-    } catch (error) {
+        document.getElementById('nome').value = produto.nome || '';
+        document.getElementById('preco').value = produto.preco || '0';
+        document.getElementById('categoria').value = produto.categoria || 'todas';
+        document.getElementById('loja').value = produto.loja || 'todas';
+        document.getElementById('link').value = produto.link || '';
+        document.getElementById('produto-id').value = produto.id;
+        document.getElementById('submit-btn').textContent = 'Atualizar Produto';
+        window.scrollTo(0, 0);
+      } catch (error) {
         console.error('Erro ao carregar produto para edição:', error.message, error.stack);
-        alert('Erro ao carregar produto para edição: ' + error.message);
+        document.getElementById('error-message').textContent = `Erro ao carregar produto: ${error.message}`;
+        document.getElementById('error-message').style.display = 'block';
+      }
     }
-}
 
-// Função para excluir produto
-async function excluirProduto(id) {
-    if (!confirm('Deseja realmente excluir este produto?')) return;
+    async function excluirProduto(id) {
+      if (!confirm('Tem certeza que deseja excluir este produto?')) return;
 
-    try {
-        const response = await fetch(`${API_URL}/api/produtos/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Accept': 'application/json'
-            }
-        });
+      try {
+        const response = await fetch(`${API_URL}/api/produtos/${id}`, { method: 'DELETE' });
         const data = await response.json();
         console.log('Resposta:', response.status, JSON.stringify(data, null, 2));
 
-        const feedback = document.createElement('div');
-        feedback.className = `feedback-message feedback-${data.status}`;
-        feedback.textContent = data.message;
-        document.body.appendChild(feedback);
-        feedback.style.display = 'block';
-        setTimeout(() => feedback.remove(), 3000);
-
-        if (data.status === 'success') {
-            carregarProdutosAdmin();
+        if (!response.ok) {
+          throw new Error(data.message || `Erro ${response.status}`);
         }
-    } catch (error) {
+
+        document.getElementById('success-message').textContent = data.message || 'Produto excluído com sucesso!';
+        document.getElementById('success-message').style.display = 'block';
+        carregarProdutos();
+      } catch (error) {
         console.error('Erro ao excluir produto:', error.message, error.stack);
-        alert('Erro ao excluir produto: ' + error.message);
-    }
-}
-
-// Funções do carrossel
-function moveCarrossel(id, direction) {
-    const carrossel = document.getElementById(id);
-    if (!carrossel) {
-        console.warn(`Carrossel com ID ${id} não encontrado`);
-        return;
-    }
-    const imagens = carrossel.querySelector(".carrossel-imagens");
-    const dots = carrossel.querySelectorAll(".carrossel-dot");
-    let index = parseInt(imagens.dataset.index || 0);
-    const total = imagens.children.length;
-    index = (index + direction + total) % total;
-    imagens.style.transform = `translateX(-${index * 100}%)`;
-    imagens.dataset.index = index;
-    dots.forEach((dot, i) => dot.classList.toggle("ativo", i === index));
-}
-
-function setCarrosselImage(id, index) {
-    const carrossel = document.getElementById(id);
-    if (!carrossel) {
-        console.warn(`Carrossel com ID ${id} não encontrado`);
-        return;
-    }
-    const imagens = carrossel.querySelector(".carrossel-imagens");
-    const dots = carrossel.querySelectorAll(".carrossel-dot");
-    imagens.style.transform = `translateX(-${index * 100}%)`;
-    imagens.dataset.index = index;
-    dots.forEach((dot, i) => dot.classList.toggle("ativo", i === index));
-}
-
-// Modal de imagens
-async function openModal(index, imageIndex) {
-    const modal = document.getElementById("imageModal");
-    const carrosselImagens = document.getElementById("modalCarrosselImagens");
-    const carrosselDots = document.getElementById("modalCarrosselDots");
-    const prevButton = document.getElementById("modalPrev");
-    const nextButton = document.getElementById("modalNext");
-    const modalClose = document.getElementById("modal-close");
-
-    if (!modal || !carrosselImagens || !carrosselDots || !prevButton || !nextButton || !modalClose) {
-        console.error("Elementos do modal não encontrados");
-        return;
+        document.getElementById('error-message').textContent = `Erro ao excluir: ${error.message}`;
+        document.getElementById('error-message').style.display = 'block';
+      }
     }
 
-    carrosselImagens.innerHTML = "";
-    carrosselDots.innerHTML = "";
-    prevButton.classList.remove("visible");
-    nextButton.classList.remove("visible");
+    socket.on('connect', () => console.log('Conectado ao Socket.IO'));
+    socket.on('novoProduto', () => carregarProdutos());
+    socket.on('produtoAtualizado', () => carregarProdutos());
+    socket.on('produtoExcluido', () => carregarProdutos());
 
-    const produto = allProducts[index];
-    if (!produto || !produto.imagens || produto.imagens.length === 0) {
-        alert("Nenhuma imagem disponível para este produto.");
-        return;
-    }
-
-    try {
-        currentImages = produto.imagens;
-        currentImageIndex = Math.max(0, Math.min(imageIndex, currentImages.length - 1));
-
-        const validImages = await Promise.all(currentImages.map(async (img, idx) => {
-            try {
-                const response = await fetch(img, { method: 'HEAD' });
-                return response.ok ? img : 'https://minha-api-produtos.onrender.com/imagens/placeholder.jpg';
-            } catch {
-                return 'https://minha-api-produtos.onrender.com/imagens/placeholder.jpg';
-            }
-        }));
-
-        carrosselImagens.innerHTML = validImages.map((img, idx) => 
-            `<img src="${img}" alt="${produto.nome} - Imagem ${idx + 1}" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">`
-        ).join("");
-        carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
-
-        carrosselDots.innerHTML = validImages.map((_, i) => 
-            `<span class="carrossel-dot ${i === currentImageIndex ? "ativo" : ""}" onclick="setModalCarrosselImage(${i})" aria-label="Selecionar imagem ${i + 1}" role="button" tabindex="0"></span>`
-        ).join("");
-
-        prevButton.classList.toggle("visible", validImages.length > 1);
-        nextButton.classList.toggle("visible", validImages.length > 1);
-        modal.style.display = "flex";
-        modalClose.focus();
-    } catch (error) {
-        console.error("Erro ao abrir modal:", error.message, error.stack);
-        alert("Erro ao carregar as imagens. Tente novamente.");
-    }
-}
-
-function moveModalCarrossel(direction) {
-    const carrosselImagens = document.getElementById("modalCarrosselImagens");
-    const carrosselDots = document.getElementById("modalCarrosselDots")?.children;
-    if (!carrosselImagens || !carrosselDots || !currentImages.length) return;
-
-    const total = currentImages.length;
-    currentImageIndex = (currentImageIndex + direction + total) % total;
-    
-    carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
-    Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle("ativo", i === currentImageIndex));
-}
-
-function setModalCarrosselImage(index) {
-    if (index < 0 || index >= currentImages.length) return;
-    
-    currentImageIndex = index;
-    const carrosselImagens = document.getElementById("modalCarrosselImagens");
-    const carrosselDots = document.getElementById("modalCarrosselDots")?.children;
-    if (!carrosselImagens || !carrosselDots) return;
-    
-    carrosselImagens.style.transform = `translateX(-${index * 100}%)`;
-    Array.from(carrosselDots).forEach((dot, i) => dot.classList.toggle("ativo", i === index));
-}
-
-function closeModal() {
-    const modal = document.getElementById("imageModal");
-    if (modal) {
-        modal.style.display = "none";
-    }
-}
-
-// Eventos de busca
-const searchInput = document.getElementById("busca");
-const searchButton = document.querySelector(".search-btn");
-if (searchInput && searchButton) {
-    const debouncedSearch = debounce(() => {
-        currentSearch = searchInput.value.trim();
-        currentPage = 1;
-        carregarProdutos(currentCategory, currentStore);
-    }, 500);
-
-    searchInput.addEventListener("input", debouncedSearch);
-    searchButton.addEventListener("click", () => {
-        currentSearch = searchInput.value.trim();
-        currentPage = 1;
-        carregarProdutos(currentCategory, currentStore);
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('Script do admin carregado');
+      const form = document.getElementById('cadastro-produto');
+      if (form) {
+        form.addEventListener('submit', cadastrarProduto);
+      } else {
+        console.error('Formulário não encontrado');
+      }
+      carregarProdutos();
     });
-}
-
-// Filtros de categoria
-document.querySelectorAll(".category-item").forEach(item => {
-    item.addEventListener("click", () => {
-        document.querySelector(".category-item.active")?.classList.remove("active");
-        item.classList.add("active");
-        currentCategory = item.dataset.categoria;
-        currentPage = 1;
-        carregarProdutos(currentCategory, currentStore);
-    });
-});
-
-// Filtros de loja
-document.querySelectorAll(".store-card").forEach(card => {
-    card.addEventListener("click", () => {
-        document.querySelector(".store-card.active")?.classList.remove("active");
-        card.classList.add("active");
-        currentStore = card.dataset.loja;
-        currentPage = 1;
-        carregarProdutos(currentCategory, currentStore);
-    });
-});
-
-// Carregar mais produtos
-document.getElementById("load-more")?.addEventListener("click", () => {
-    currentPage++;
-    carregarProdutos(currentCategory, currentStore);
-});
-
-// Fechar modal
-document.getElementById("modal-close")?.addEventListener("click", closeModal);
-document.getElementById("modalPrev")?.addEventListener("click", () => moveModalCarrossel(-1));
-document.getElementById("modalNext")?.addEventListener("click", () => moveModalCarrossel(1));
-
-// Socket.IO eventos
-socket.on('connect', () => console.log('Conectado ao Socket.IO'));
-socket.on('disconnect', () => console.log('Desconectado do Socket.IO'));
-socket.on('novoProduto', () => {
-    console.log('Novo produto detectado, recarregando lista');
-    currentPage = 1;
-    carregarProdutos(currentCategory, currentStore);
-    if (window.location.pathname.includes('admin-xyz-123.html')) {
-        carregarProdutosAdmin();
-    }
-});
-socket.on('produtoAtualizado', () => {
-    console.log('Produto atualizado, recarregando lista');
-    currentPage = 1;
-    carregarProdutos(currentCategory, currentStore);
-    if (window.location.pathname.includes('admin-xyz-123.html')) {
-        carregarProdutosAdmin();
-    }
-});
-socket.on('produtoExcluido', () => {
-    console.log('Produto excluído, recarregando lista');
-    currentPage = 1;
-    carregarProdutos(currentCategory, currentStore);
-    if (window.location.pathname.includes('admin-xyz-123.html')) {
-        carregarProdutosAdmin();
-    }
-});
-
-// Carregar produtos iniciais e verificar conexão
-document.addEventListener("DOMContentLoaded", () => {
-    console.log(`Iniciando carregamento de produtos - Versão ${VERSION}`);
-    checkConnectionStatus();
-    carregarProdutos();
-    if (window.location.pathname.includes('admin-xyz-123.html')) {
-        carregarProdutosAdmin();
-        document.getElementById('product-form')?.addEventListener('submit', salvarProduto);
-    }
-});
