@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Painel Administrativo - Cadastro de Produtos</title>
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
   <style>
     body { font-family: 'Roboto', sans-serif; padding: 20px; background-color: #fff; color: #333; }
     .form-container, .produtos-container { max-width: 800px; margin: 0 auto 20px; }
@@ -93,6 +94,7 @@
 
   <script>
     const API_URL = 'https://minha-api-produtos.onrender.com';
+    const socket = io(API_URL, { transports: ['websocket'], reconnectionAttempts: 5 });
 
     async function carregarProdutos() {
       const lista = document.getElementById('produtos-lista');
@@ -170,6 +172,8 @@
 
       const formData = new FormData(form);
       const imagens = formData.getAll('imagens');
+      console.log('Dados do formulário:', { nome: formData.get('nome'), categoria: formData.get('categoria'), loja: formData.get('loja'), link: formData.get('link'), imagensCount: imagens.length });
+
       if (imagens.length > 5) {
         errorMessage.textContent = 'Máximo de 5 imagens permitido.';
         errorMessage.style.display = 'block';
@@ -263,6 +267,11 @@
         document.getElementById('error-message').style.display = 'block';
       }
     }
+
+    socket.on('connect', () => console.log('Conectado ao Socket.IO'));
+    socket.on('novoProduto', () => carregarProdutos());
+    socket.on('produtoAtualizado', () => carregarProdutos());
+    socket.on('produtoExcluido', () => carregarProdutos());
 
     document.addEventListener('DOMContentLoaded', () => {
       console.log('Script do admin carregado');
