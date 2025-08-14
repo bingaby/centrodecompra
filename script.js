@@ -39,7 +39,7 @@ if (categoriesToggle && categoriesSidebar && closeSidebar && overlay) {
     });
 }
 
-// Debounce para busca (mantido, mas não usado até implementar busca no backend)
+// Debounce para busca
 function debounce(func, wait) {
     let timeout;
     return function (...args) {
@@ -78,6 +78,7 @@ function checkConnectionStatus() {
 
 // Função para carregar produtos
 async function carregarProdutos(categoria = "todas", loja = "todas", page = 1) {
+    console.log('Iniciando carregarProdutos:', { categoria, loja, page });
     const gridProdutos = document.getElementById("grid-produtos");
     const mensagemVazia = document.getElementById("mensagem-vazia");
     const errorMessage = document.getElementById("error-message");
@@ -118,6 +119,7 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1) {
                     'Cache-Control': 'no-cache'
                 }
             });
+            console.log('Status da resposta:', response.status);
             if (!response.ok) {
                 const errorText = await response.text();
                 throw new Error(`Erro HTTP ${response.status}: ${errorText || 'Resposta vazia'}`);
@@ -143,6 +145,7 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1) {
                         console.warn('Produto inválido ignorado:', produto);
                         return;
                     }
+                    console.log('Renderizando produto:', produto);
                     const card = document.createElement("div");
                     card.classList.add("produto-card", "visible");
                     card.setAttribute("data-categoria", produto.categoria.toLowerCase());
@@ -174,9 +177,11 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1) {
                         </a>
                     `;
                     gridProdutos.appendChild(card);
+                    console.log('Card adicionado:', card.outerHTML);
                 });
             }
 
+            console.log('Total de produtos no grid:', allProducts.length);
             loadMoreButton.style.display = data.total > allProducts.length ? "flex" : "none";
             isLoading = false;
             return;
@@ -280,6 +285,7 @@ async function salvarProduto(event) {
             form.reset();
             delete form.dataset.id;
             carregarProdutosAdmin();
+            carregarProdutos('todas', 'todas'); // Forçar atualização no index
         }
     } catch (error) {
         console.error('Erro ao salvar produto:', error.message, error.stack);
@@ -522,8 +528,8 @@ document.getElementById("modalNext")?.addEventListener("click", () => moveModalC
 // Socket.IO eventos
 socket.on('connect', () => console.log('Conectado ao Socket.IO'));
 socket.on('disconnect', () => console.log('Desconectado do Socket.IO'));
-socket.on('novoProduto', () => {
-    console.log('Novo produto detectado, recarregando lista');
+socket.on('novoProduto', (produto) => {
+    console.log('Novo produto detectado:', produto);
     currentPage = 1;
     carregarProdutos(currentCategory, currentStore);
     if (window.location.pathname.includes('admin-xyz-123.html')) {
@@ -547,11 +553,40 @@ socket.on('produtoExcluido', () => {
     }
 });
 
+// Função de teste para renderização
+async function testarRenderizacao() {
+    console.log('Executando teste de renderização');
+    const grid = document.getElementById('grid-produtos');
+    grid.innerHTML = '';
+    try {
+        const response = await fetch('https://minha-api-produtos.onrender.com/api/produtos?page=1&limit=12', {
+            cache: 'no-store'
+        });
+        const data = await response.json();
+        console.log('Dados da API:', data);
+        data.data.forEach(produto => {
+            const card = document.createElement('div');
+            card.classList.add('produto-card', 'visible');
+            card.innerHTML = `
+                <img src="${produto.imagens[0]}" alt="${produto.nome}">
+                <span>${produto.nome}</span>
+                <span>Loja: ${produto.loja}</span>
+            `;
+            grid.appendChild(card);
+            console.log('Card de teste:', card.outerHTML);
+        });
+    } catch (error) {
+        console.error('Erro no teste:', error);
+    }
+}
+
 // Carregar produtos iniciais e verificar conexão
 document.addEventListener("DOMContentLoaded", () => {
     console.log(`Iniciando carregamento de produtos - Versão ${VERSION}`);
     checkConnectionStatus();
-    carregarProdutos();
+    currentCategory = 'todas';
+    currentStore = 'todas';
+    carregarProdutos('todas', 'todas');
     if (window.location.pathname.includes('admin-xyz-123.html')) {
         carregarProdutosAdmin();
         document.getElementById('product-form')?.addEventListener('submit', salvarProduto);
