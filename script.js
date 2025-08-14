@@ -1,4 +1,4 @@
-const VERSION = "1.0.12";
+const VERSION = "1.0.13"; // Atualizado para nova versão
 const API_URL = 'https://minha-api-produtos.onrender.com';
 let currentImages = [];
 let currentImageIndex = 0;
@@ -39,7 +39,7 @@ if (categoriesToggle && categoriesSidebar && closeSidebar && overlay) {
     });
 }
 
-// Debounce para busca
+// Debounce para busca (mantido, mas não usado até implementar busca no backend)
 function debounce(func, wait) {
     let timeout;
     return function (...args) {
@@ -77,7 +77,7 @@ function checkConnectionStatus() {
 }
 
 // Função para carregar produtos
-async function carregarProdutos(categoria = "todas", loja = "todas", busca = "", page = 1) {
+async function carregarProdutos(categoria = "todas", loja = "todas", page = 1) {
     const gridProdutos = document.getElementById("grid-produtos");
     const mensagemVazia = document.getElementById("mensagem-vazia");
     const errorMessage = document.getElementById("error-message");
@@ -109,15 +109,21 @@ async function carregarProdutos(categoria = "todas", loja = "todas", busca = "",
 
     while (attempt <= maxRetries) {
         try {
-            const url = `${API_URL}/api/produtos?page=${page}&limit=${productsPerPage}&categoria=${categoria}&loja=${loja}${busca ? `&busca=${encodeURIComponent(busca)}` : ''}`;
+            const url = `${API_URL}/api/produtos?page=${page}&limit=${productsPerPage}${categoria !== 'todas' ? `&categoria=${encodeURIComponent(categoria)}` : ''}${loja !== 'todas' ? `&loja=${encodeURIComponent(loja)}` : ''}`;
             console.log(`Tentativa ${attempt}: Carregando de ${url}`);
-            const response = await fetch(url, { cache: "no-store" });
+            const response = await fetch(url, {
+                cache: "no-store",
+                headers: {
+                    'Accept': 'application/json',
+                    'Cache-Control': 'no-cache'
+                }
+            });
             if (!response.ok) {
                 const errorText = await response.text();
                 throw new Error(`Erro HTTP ${response.status}: ${errorText || 'Resposta vazia'}`);
             }
             const data = await response.json();
-            console.log('Resposta da API:', data);
+            console.log('Resposta da API:', JSON.stringify(data, null, 2));
 
             if (data.status !== 'success' || !Array.isArray(data.data)) {
                 throw new Error(`Resposta inválida: ${data.message || 'Dados não são um array'}`);
@@ -197,15 +203,22 @@ async function carregarProdutosAdmin() {
     if (!tableBody) return;
 
     try {
-        const response = await fetch(`${API_URL}/api/produtos`, { cache: 'no-store' });
+        const response = await fetch(`${API_URL}/api/produtos?page=1&limit=1000`, {
+            cache: 'no-store',
+            headers: {
+                'Accept': 'application/json',
+                'Cache-Control': 'no-cache'
+            }
+        });
         if (!response.ok) throw new Error(`Erro HTTP ${response.status}`);
         const data = await response.json();
+        console.log('Resposta da API (admin):', JSON.stringify(data, null, 2));
         if (data.status !== 'success' || !Array.isArray(data.data)) throw new Error(data.message || 'Resposta inválida');
 
         tableBody.innerHTML = data.data.map(produto => `
             <tr>
                 <td>${produto.id}</td>
-                <td><img src="${produto.imagens[0] || 'https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'}" alt="${produto.nome}" /></td>
+                <td><img src="${produto.imagens[0] || 'https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'}" alt="${produto.nome}" style="width: 50px; height: 50px;" /></td>
                 <td>${produto.nome}</td>
                 <td>${produto.categoria}</td>
                 <td>${produto.loja}</td>
@@ -217,7 +230,7 @@ async function carregarProdutosAdmin() {
             </tr>
         `).join('');
     } catch (error) {
-        console.error('Erro ao carregar produtos admin:', error);
+        console.error('Erro ao carregar produtos admin:', error.message, error.stack);
         tableBody.innerHTML = `<tr><td colspan="7">Erro ao carregar produtos: ${error.message}</td></tr>`;
     }
 }
@@ -233,14 +246,28 @@ async function salvarProduto(event) {
     const url = id ? `${API_URL}/api/produtos/${id}` : `${API_URL}/api/produtos`;
     const method = id ? 'PUT' : 'POST';
 
+    const formDataObj = {
+        nome: formData.get('nome'),
+        preco: formData.get('preco'),
+        categoria: formData.get('categoria'),
+        loja: formData.get('loja'),
+        link: formData.get('link'),
+        imagensCount: formData.getAll('imagens').length,
+        imagens: formData.getAll('imagens').map(f => f.name)
+    };
+    console.log('Dados do formulário:', JSON.stringify(formDataObj, null, 2));
+
     try {
         console.log(`Enviando para ${url} com método ${method}`);
         const response = await fetch(url, {
             method,
             body: formData,
+            headers: {
+                'Accept': 'application/json'
+            }
         });
         const data = await response.json();
-        console.log('Resposta:', response.status, data);
+        console.log('Resposta:', response.status, JSON.stringify(data, null, 2));
 
         const feedback = document.createElement('div');
         feedback.className = `feedback-message feedback-${data.status}`;
@@ -255,10 +282,10 @@ async function salvarProduto(event) {
             carregarProdutosAdmin();
         }
     } catch (error) {
-        console.error('Erro ao salvar produto:', error);
+        console.error('Erro ao salvar produto:', error.message, error.stack);
         const feedback = document.createElement('div');
         feedback.className = 'feedback-message feedback-error';
-        feedback.textContent = 'Erro ao salvar produto';
+        feedback.textContent = 'Erro ao salvar produto: ' + error.message;
         document.body.appendChild(feedback);
         feedback.style.display = 'block';
         setTimeout(() => feedback.remove(), 3000);
@@ -268,9 +295,15 @@ async function salvarProduto(event) {
 // Função para editar produto
 async function editarProduto(id) {
     try {
-        const response = await fetch(`${API_URL}/api/produtos/${id}`);
+        const response = await fetch(`${API_URL}/api/produtos/${id}`, {
+            headers: {
+                'Accept': 'application/json',
+                'Cache-Control': 'no-cache'
+            }
+        });
         if (!response.ok) throw new Error(`Erro HTTP ${response.status}`);
         const data = await response.json();
+        console.log('Produto para edição:', JSON.stringify(data, null, 2));
         if (data.status !== 'success' || !data.data) throw new Error('Produto não encontrado');
 
         const produto = data.data;
@@ -280,9 +313,10 @@ async function editarProduto(id) {
         form.querySelector('#categoria').value = produto.categoria;
         form.querySelector('#loja').value = produto.loja;
         form.querySelector('#link').value = produto.link;
+        form.querySelector('#preco').value = produto.preco;
     } catch (error) {
-        console.error('Erro ao carregar produto para edição:', error);
-        alert('Erro ao carregar produto para edição');
+        console.error('Erro ao carregar produto para edição:', error.message, error.stack);
+        alert('Erro ao carregar produto para edição: ' + error.message);
     }
 }
 
@@ -293,9 +327,12 @@ async function excluirProduto(id) {
     try {
         const response = await fetch(`${API_URL}/api/produtos/${id}`, {
             method: 'DELETE',
+            headers: {
+                'Accept': 'application/json'
+            }
         });
         const data = await response.json();
-        console.log('Resposta:', response.status, data);
+        console.log('Resposta:', response.status, JSON.stringify(data, null, 2));
 
         const feedback = document.createElement('div');
         feedback.className = `feedback-message feedback-${data.status}`;
@@ -308,8 +345,8 @@ async function excluirProduto(id) {
             carregarProdutosAdmin();
         }
     } catch (error) {
-        console.error('Erro ao excluir produto:', error);
-        alert('Erro ao excluir produto');
+        console.error('Erro ao excluir produto:', error.message, error.stack);
+        alert('Erro ao excluir produto: ' + error.message);
     }
 }
 
@@ -352,7 +389,7 @@ async function openModal(index, imageIndex) {
     const nextButton = document.getElementById("modalNext");
     const modalClose = document.getElementById("modal-close");
 
-    if (!modal || !carrosselImagens || !carrosselDots || !prevButton || !nextButton) {
+    if (!modal || !carrosselImagens || !carrosselDots || !prevButton || !nextButton || !modalClose) {
         console.error("Elementos do modal não encontrados");
         return;
     }
@@ -393,9 +430,9 @@ async function openModal(index, imageIndex) {
         prevButton.classList.toggle("visible", validImages.length > 1);
         nextButton.classList.toggle("visible", validImages.length > 1);
         modal.style.display = "flex";
-        modal.querySelector(".modal-close").focus();
+        modalClose.focus();
     } catch (error) {
-        console.error("Erro ao abrir modal:", error);
+        console.error("Erro ao abrir modal:", error.message, error.stack);
         alert("Erro ao carregar as imagens. Tente novamente.");
     }
 }
@@ -438,14 +475,14 @@ if (searchInput && searchButton) {
     const debouncedSearch = debounce(() => {
         currentSearch = searchInput.value.trim();
         currentPage = 1;
-        carregarProdutos(currentCategory, currentStore, currentSearch);
+        carregarProdutos(currentCategory, currentStore);
     }, 500);
 
     searchInput.addEventListener("input", debouncedSearch);
     searchButton.addEventListener("click", () => {
         currentSearch = searchInput.value.trim();
         currentPage = 1;
-        carregarProdutos(currentCategory, currentStore, currentSearch);
+        carregarProdutos(currentCategory, currentStore);
     });
 }
 
@@ -456,9 +493,7 @@ document.querySelectorAll(".category-item").forEach(item => {
         item.classList.add("active");
         currentCategory = item.dataset.categoria;
         currentPage = 1;
-        carregarProdutos(currentCategory, currentStore, currentSearch);
-        categoriesSidebar.classList.remove("active");
-        overlay.classList.remove("active");
+        carregarProdutos(currentCategory, currentStore);
     });
 });
 
@@ -469,14 +504,14 @@ document.querySelectorAll(".store-card").forEach(card => {
         card.classList.add("active");
         currentStore = card.dataset.loja;
         currentPage = 1;
-        carregarProdutos(currentCategory, currentStore, currentSearch);
+        carregarProdutos(currentCategory, currentStore);
     });
 });
 
 // Carregar mais produtos
 document.getElementById("load-more")?.addEventListener("click", () => {
     currentPage++;
-    carregarProdutos(currentCategory, currentStore, currentSearch);
+    carregarProdutos(currentCategory, currentStore);
 });
 
 // Fechar modal
@@ -488,19 +523,28 @@ document.getElementById("modalNext")?.addEventListener("click", () => moveModalC
 socket.on('connect', () => console.log('Conectado ao Socket.IO'));
 socket.on('disconnect', () => console.log('Desconectado do Socket.IO'));
 socket.on('novoProduto', () => {
+    console.log('Novo produto detectado, recarregando lista');
     currentPage = 1;
-    carregarProdutos(currentCategory, currentStore, currentSearch);
-    carregarProdutosAdmin();
+    carregarProdutos(currentCategory, currentStore);
+    if (window.location.pathname.includes('admin-xyz-123.html')) {
+        carregarProdutosAdmin();
+    }
 });
 socket.on('produtoAtualizado', () => {
+    console.log('Produto atualizado, recarregando lista');
     currentPage = 1;
-    carregarProdutos(currentCategory, currentStore, currentSearch);
-    carregarProdutosAdmin();
+    carregarProdutos(currentCategory, currentStore);
+    if (window.location.pathname.includes('admin-xyz-123.html')) {
+        carregarProdutosAdmin();
+    }
 });
 socket.on('produtoExcluido', () => {
+    console.log('Produto excluído, recarregando lista');
     currentPage = 1;
-    carregarProdutos(currentCategory, currentStore, currentSearch);
-    carregarProdutosAdmin();
+    carregarProdutos(currentCategory, currentStore);
+    if (window.location.pathname.includes('admin-xyz-123.html')) {
+        carregarProdutosAdmin();
+    }
 });
 
 // Carregar produtos iniciais e verificar conexão
