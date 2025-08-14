@@ -689,3 +689,23 @@ body {
     background: #4a5568;
   }
 }
+
+/* Garantir visibilidade dos produtos */
+.products-grid {
+  display: grid !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.produto-card {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  min-height: 200px;
+  border: 1px solid #ccc;
+}
+
+.visible {
+  display: block !important;
+  visibility: visible !important;
+}
