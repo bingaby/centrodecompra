@@ -4,12 +4,11 @@ let currentImages = [];
 let currentImageIndex = 0;
 let currentPage = 1;
 const productsPerPage = 12;
-let allProducts = [];
 let isLoading = false;
 let currentCategory = "todas";
 let currentStore = "todas";
 let currentSearch = "";
-let totalPages = 1; // Nova variável para total de páginas
+let totalPages = 1; // Total de páginas
 
 // Conectar ao Socket.IO
 const socket = io(API_URL, { transports: ['websocket'], reconnectionAttempts: 5 });
@@ -203,7 +202,7 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
             if (shuffledProducts.length === 0) {
                 mensagemVazia.style.display = "flex";
                 gridProdutos.style.display = "none";
-                mensagemVazia.textContent = busca ? `Nenhum produto encontrado para "${busca}"` : "Nenhum produto disponível";
+                mensagemVazia.querySelector("h3").textContent = busca ? `Nenhum produto encontrado para "${busca}"` : "Nenhum produto disponível";
             } else {
                 mensagemVazia.style.display = "none";
                 gridProdutos.style.display = "grid";
@@ -260,7 +259,7 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
                 errorMessage.style.display = "flex";
                 mensagemVazia.style.display = "none";
                 gridProdutos.style.display = "none";
-                errorMessage.querySelector("p").textContent = `Erro ao carregar os produtos: ${error.message}. Tente novamente mais tarde.`;
+                errorMessage.querySelector("p").textContent = `Não foi possível carregar os produtos: ${error.message}.`;
             }
             attempt++;
             await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
@@ -473,7 +472,7 @@ async function openModal(index, imageIndex) {
     prevButton.classList.remove("visible");
     nextButton.classList.remove("visible");
 
-    const produto = allProducts[index];
+    const produto = shuffledProducts[index];
     if (!produto || !produto.imagens || produto.imagens.length === 0) {
         alert("Nenhuma imagem disponível para este produto.");
         return;
