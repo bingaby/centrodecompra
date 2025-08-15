@@ -1,4 +1,4 @@
-const VERSION = "1.0.16"; // Atualizado para nova funcionalidade
+const VERSION = "1.0.19"; // Atualizado para paginação
 const API_URL = 'https://minha-api-produtos.onrender.com';
 let currentImages = [];
 let currentImageIndex = 0;
@@ -9,6 +9,7 @@ let isLoading = false;
 let currentCategory = "todas";
 let currentStore = "todas";
 let currentSearch = "";
+let totalPages = 1; // Nova variável para total de páginas
 
 // Conectar ao Socket.IO
 const socket = io(API_URL, { transports: ['websocket'], reconnectionAttempts: 5 });
@@ -17,7 +18,7 @@ const socket = io(API_URL, { transports: ['websocket'], reconnectionAttempts: 5 
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]]; // Troca elementos
+        [array[i], array[j]] = [array[j], array[i]];
     }
     return array;
 }
@@ -85,6 +86,54 @@ function checkConnectionStatus() {
         });
 }
 
+// Função para renderizar controles de paginação
+function renderPaginationControls(total) {
+    const paginationControls = document.getElementById("pagination-controls");
+    if (!paginationControls) return;
+
+    totalPages = Math.ceil(total / productsPerPage);
+    paginationControls.innerHTML = "";
+
+    // Botão "Anterior"
+    const prevButton = document.createElement("button");
+    prevButton.classList.add("pagination-button");
+    prevButton.textContent = "Anterior";
+    prevButton.disabled = currentPage === 1;
+    prevButton.addEventListener("click", () => {
+        if (currentPage > 1) {
+            currentPage--;
+            carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
+        }
+    });
+    paginationControls.appendChild(prevButton);
+
+    // Botões de página
+    for (let i = 1; i <= totalPages; i++) {
+        const pageButton = document.createElement("button");
+        pageButton.classList.add("pagination-button");
+        pageButton.classList.toggle("active", i === currentPage);
+        pageButton.textContent = i;
+        pageButton.addEventListener("click", () => {
+            currentPage = i;
+            carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
+        });
+        paginationControls.appendChild(pageButton);
+    }
+
+    // Botão "Próxima"
+    const nextButton = document.createElement("button");
+    nextButton.classList.add("pagination-button");
+    nextButton.textContent = "Próxima";
+    nextButton.disabled = currentPage === totalPages;
+    nextButton.addEventListener("click", () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
+        }
+    });
+    paginationControls.appendChild(nextButton);
+}
+
 // Função para carregar produtos
 async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, busca = currentSearch) {
     console.log('Iniciando carregarProdutos:', { categoria, loja, page, busca });
@@ -106,10 +155,7 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
     isLoading = true;
 
     loadingSpinner.style.display = "block";
-    if (page === 1) {
-        gridProdutos.innerHTML = "";
-        allProducts = [];
-    }
+    gridProdutos.innerHTML = ""; // Limpar o grid sempre
     mensagemVazia.style.display = "none";
     errorMessage.style.display = "none";
     loadMoreButton.style.display = "none";
@@ -142,13 +188,22 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
                 throw new Error(`Resposta inválida: ${data.message || 'Dados não são um array'}`);
             }
 
-            // Embaralhar os produtos
-            const shuffledProducts = shuffleArray([...data.data]);
-            allProducts = [...allProducts, ...shuffledProducts];
+            // Filtro no frontend como fallback
+            let filteredProducts = data.data;
+            if (busca) {
+                filteredProducts = data.data.filter(produto =>
+                    produto.nome && produto.nome.toLowerCase().includes(busca.toLowerCase())
+                );
+                console.log('Produtos filtrados no frontend:', filteredProducts);
+            }
 
-            if (allProducts.length === 0) {
+            // Embaralhar os produtos da página atual
+            const shuffledProducts = shuffleArray([...filteredProducts]);
+
+            if (shuffledProducts.length === 0) {
                 mensagemVazia.style.display = "flex";
                 gridProdutos.style.display = "none";
+                mensagemVazia.textContent = busca ? `Nenhum produto encontrado para "${busca}"` : "Nenhum produto disponível";
             } else {
                 mensagemVazia.style.display = "none";
                 gridProdutos.style.display = "grid";
@@ -163,7 +218,7 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
                     card.classList.add("produto-card", "visible");
                     card.setAttribute("data-categoria", produto.categoria.toLowerCase());
                     card.setAttribute("data-loja", produto.loja.toLowerCase());
-                    const globalIndex = allProducts.indexOf(produto);
+                    const globalIndex = (page - 1) * productsPerPage + index;
 
                     const imagens = produto.imagens.length > 0
                         ? produto.imagens
@@ -194,8 +249,9 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
                 });
             }
 
-            console.log('Total de produtos no grid:', allProducts.length);
-            loadMoreButton.style.display = data.total > allProducts.length ? "flex" : "none";
+            // Renderizar controles de paginação
+            renderPaginationControls(data.total);
+            loadMoreButton.style.display = data.total > page * productsPerPage ? "flex" : "none";
             isLoading = false;
             return;
         } catch (error) {
@@ -297,7 +353,7 @@ async function salvarProduto(event) {
             form.reset();
             delete form.dataset.id;
             carregarProdutosAdmin();
-            carregarProdutos('todas', 'todas'); // Forçar atualização no index
+            carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
         }
     } catch (error) {
         console.error('Erro ao salvar produto:', error.message, error.stack);
@@ -360,6 +416,7 @@ async function excluirProduto(id) {
 
         if (data.status === 'success') {
             carregarProdutosAdmin();
+            carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
         }
     } catch (error) {
         console.error('Erro ao excluir produto:', error.message, error.stack);
@@ -490,24 +547,30 @@ const searchInput = document.getElementById("busca");
 if (searchInput) {
     const debouncedSearch = debounce(() => {
         currentSearch = searchInput.value.trim();
+        if (currentSearch.length < 2 && currentSearch.length > 0) {
+            console.log(`Termo de busca "${currentSearch}" muito curto, ignorando`);
+            return;
+        }
         currentPage = 1;
         console.log(`Busca automática disparada: ${currentSearch}`);
         carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
-    }, 300); // Reduzido para 300ms para maior responsividade
+    }, 300);
 
     searchInput.addEventListener("input", debouncedSearch);
 
-    // Suporte ao Enter para busca imediata
     searchInput.addEventListener("keypress", (e) => {
         if (e.key === "Enter") {
             currentSearch = searchInput.value.trim();
+            if (currentSearch.length < 2 && currentSearch.length > 0) {
+                console.log(`Termo de busca "${currentSearch}" muito curto, ignorando`);
+                return;
+            }
             currentPage = 1;
             console.log(`Busca via Enter: ${currentSearch}`);
             carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
         }
     });
 
-    // Limpar resultados quando o campo de busca estiver vazio
     searchInput.addEventListener("input", () => {
         if (searchInput.value.trim() === "") {
             currentSearch = "";
@@ -525,8 +588,9 @@ document.querySelectorAll(".category-item").forEach(item => {
         item.classList.add("active");
         currentCategory = item.dataset.categoria;
         currentPage = 1;
-        currentSearch = ""; // Limpar busca ao mudar categoria
-        searchInput.value = ""; // Limpar input de busca
+        currentSearch = "";
+        searchInput.value = "";
+        console.log(`Filtro de categoria aplicado: ${currentCategory}`);
         carregarProdutos(currentCategory, currentStore, currentPage, "");
     });
 });
@@ -538,8 +602,9 @@ document.querySelectorAll(".store-card").forEach(card => {
         card.classList.add("active");
         currentStore = card.dataset.loja;
         currentPage = 1;
-        currentSearch = ""; // Limpar busca ao mudar loja
-        searchInput.value = ""; // Limpar input de busca
+        currentSearch = "";
+        searchInput.value = "";
+        console.log(`Filtro de loja aplicado: ${currentStore}`);
         carregarProdutos(currentCategory, currentStore, currentPage, "");
     });
 });
@@ -547,6 +612,7 @@ document.querySelectorAll(".store-card").forEach(card => {
 // Carregar mais produtos
 document.getElementById("load-more")?.addEventListener("click", () => {
     currentPage++;
+    console.log(`Carregando mais produtos, página: ${currentPage}`);
     carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
 });
 
@@ -597,7 +663,7 @@ async function testarRenderizacao() {
         });
         const data = await response.json();
         console.log('Dados da API:', data);
-        const shuffledData = shuffleArray([...data.data]); // Embaralhar no teste
+        const shuffledData = shuffleArray([...data.data]);
         shuffledData.forEach(produto => {
             const card = document.createElement('div');
             card.classList.add('produto-card', 'visible');
