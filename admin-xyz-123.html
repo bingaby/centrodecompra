@@ -4,182 +4,78 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Painel Administrativo - Cadastro de Produtos</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
   <style>
-    /* Estilos específicos para admin-xyz-123.html */
-    .form-container, .produtos-container {
-      max-width: 800px;
-      margin: 0 auto 20px;
-      padding: 1rem;
-      background: var(--background-primary);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-    }
-    .form-container h1, .produtos-container h2 {
-      color: var(--text-primary);
-      margin-bottom: 1rem;
-    }
-    label {
-      display: block;
-      margin: 10px 0 5px;
-      color: var(--text-secondary);
-      font-weight: 500;
-    }
-    input, select {
-      width: 100%;
-      padding: 8px;
-      margin-bottom: 10px;
-      box-sizing: border-box;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      font-size: 0.9rem;
-    }
-    input:focus, select:focus {
-      outline: none;
-      border-color: var(--primary-color);
-      box-shadow: 0 0 4px rgba(43, 108, 176, 0.3);
-    }
-    button {
-      padding: 8px 16px;
-      background: var(--primary-color);
-      color: white;
-      border: none;
-      cursor: pointer;
-      border-radius: var(--radius-md);
-      transition: var(--transition);
-      font-size: 0.9rem;
-    }
-    button:hover {
-      background: var(--primary-hover);
-    }
-    .btn-editar {
-      background: #007bff;
-    }
-    .btn-editar:hover {
-      background: #0056b3;
-    }
-    .btn-excluir {
-      background: #dc3545;
-    }
-    .btn-excluir:hover {
-      background: #b02a37;
-    }
-    .feedback-message {
-      display: none;
-      margin-top: 10px;
-      padding: 10px;
-      border-radius: var(--radius-md);
-      font-size: 0.9rem;
-    }
-    .feedback-error {
-      background: #f8d7da;
-      color: #721c24;
-    }
-    .feedback-success {
-      background: #d4edda;
-      color: #155724;
-    }
-    .produtos-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      background: var(--background-primary);
-    }
-    .produtos-table th, .produtos-table td {
-      border: 1px solid var(--border-color);
-      padding: 8px;
-      text-align: left;
-      font-size: 0.9rem;
-    }
-    .produtos-table th {
-      background: var(--background-secondary);
-      color: var(--text-primary);
-      font-weight: 600;
-    }
-    .produto-imagem {
-      width: 50px;
-      height: 50px;
-      object-fit: contain;
-    }
-    #loading-spinner {
-      display: none;
-      text-align: center;
-      margin: 10px 0;
-    }
-    #loading-spinner::before {
-      content: 'Carregando...';
-      font-size: 1rem;
-      color: var(--text-secondary);
-    }
-    @media (max-width: 768px) {
-      .form-container, .produtos-container {
-        padding: 0.75rem;
-      }
-      .produtos-table th, .produtos-table td {
-        font-size: 0.85rem;
-        padding: 6px;
-      }
-      .produto-imagem {
-        width: 40px;
-        height: 40px;
-      }
-    }
+    body { font-family: 'Roboto', sans-serif; padding: 20px; background-color: #fff; color: #333; }
+    .form-container, .produtos-container { max-width: 800px; margin: 0 auto 20px; }
+    label { display: block; margin: 10px 0 5px; }
+    input, select { width: 100%; padding: 8px; margin-bottom: 10px; box-sizing: border-box; border: 1px solid #e0e0e0; border-radius: 4px; }
+    button { padding: 8px 16px; background: #28a745; color: white; border: none; cursor: pointer; border-radius: 4px; }
+    button:hover { background: #218838; }
+    #error-message, #success-message { display: none; margin-top: 10px; padding: 10px; border-radius: 4px; }
+    #error-message { background: #f8d7da; color: #721c24; }
+    #success-message { background: #d4edda; color: #155724; }
+    .produtos-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    .produtos-table th, .produtos-table td { border: 1px solid #e0e0e0; padding: 8px; text-align: left; font-size: 14px; }
+    .produtos-table th { background: #f2f2f2; color: #444; }
+    .produto-imagem { width: 50px; height: 50px; object-fit: contain; }
+    .btn-editar { background: #007bff; }
+    .btn-editar:hover { background: #0056b3; }
+    .btn-excluir { background: #dc3545; }
+    .btn-excluir:hover { background: #b02a37; }
+    #loading-spinner { display: none; text-align: center; margin: 10px 0; }
+    #loading-spinner::before { content: 'Carregando...'; font-size: 16px; }
   </style>
-  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-  <script src="script.js"></script>
 </head>
 <body>
   <div class="form-container">
     <h1>Cadastro de Produtos</h1>
-    <form id="product-form" enctype="multipart/form-data">
+    <form id="cadastro-produto" enctype="multipart/form-data">
       <label for="nome">Nome do Produto</label>
       <input type="text" id="nome" name="nome" required aria-required="true">
 
-      <label for="preco">Preço (R$)</label>
-      <input type="number" id="preco" name="preco" step="0.01" min="0" placeholder="0.00" required aria-required="true">
+  <label for="preco">Preço (R$)</label>
+  <input type="number" id="preco" name="preco" step="0.01" min="0" placeholder="0.00">
 
-      <label for="categoria">Categoria</label>
-      <select id="categoria" name="categoria" required aria-required="true">
-        <option value="" disabled selected>Selecione uma categoria</option>
-        <option value="Eletrônicos">Eletrônicos</option>
-        <option value="Moda">Moda</option>
-        <option value="Casa">Casa</option>
-        <option value="Esportes">Esportes</option>
-        <option value="Beleza">Beleza</option>
-        <option value="Livros">Livros</option>
-        <option value="Brinquedos">Brinquedos</option>
-        <option value="Saúde">Saúde</option>
-        <option value="Automotivo">Automotivo</option>
-        <option value="Alimentos">Alimentos</option>
-        <option value="Pet Shop">Pet Shop</option>
-        <option value="Celulares">Celulares</option>
-      </select>
+  <label for="categoria">Categoria</label>
+  <select id="categoria" name="categoria" required aria-required="true">
+    <option value="todas">Todas</option>
+    <option value="pet">Pet</option>
+    <option value="eletronicos">Eletrônicos</option>
+    <option value="moda">Moda</option>
+    <option value="automotivo">Automotivo</option>
+    <option value="fitness">Fitness</option>
+    <option value="casa">Casa e Decoração</option>
+    <option value="beleza">Beleza</option>
+    <option value="esportes">Esportes</option>
+    <option value="livros">Livros</option>
+    <option value="infantil">Infantil</option>
+    <option value="Celulares">Celulares</option>
+    <option value="Eletrodomésticos">Eletrodomésticos</option>
+  </select>
 
-      <label for="loja">Loja</label>
-      <select id="loja" name="loja" required aria-required="true">
-        <option value="" disabled selected>Selecione uma loja</option>
-        <option value="Amazon">Amazon</option>
-        <option value="Mercado Livre">Mercado Livre</option>
-        <option value="Shopee">Shopee</option>
-        <option value="Magalu">Magalu</option>
-        <option value="Shein">Shein</option>
-        <option value="Alibaba">Alibaba</option>
-        <option value="AliExpress">AliExpress</option>
-      </select>
+  <label for="loja">Loja</label>
+  <select id="loja" name="loja" required aria-required="true">
+    <option value="todas">Todas</option>
+    <option value="amazon">Amazon</option>
+    <option value="shein">Shein</option>
+    <option value="shopee">Shopee</option>
+    <option value="magalu">Magalu</option>
+    <option value="mercadolivre">Mercado Livre</option>
+    <option value="alibaba">Alibaba</option>
+  </select>
 
-      <label for="imagens">Imagens do Produto (máximo 5, JPEG/PNG)</label>
-      <input type="file" id="imagens" name="imagens" accept="image/jpeg,image/png" multiple>
+  <label for="imagens">Imagens do Produto (máximo 5, JPEG/PNG/GIF)</label>
+  <input type="file" id="imagens" name="imagens" accept="image/jpeg,image/png,image/gif" multiple>
 
-      <label for="link">Link do Produto</label>
-      <input type="url" id="link" name="link" placeholder="https://exemplo.com/produto" required aria-required="true">
+  <label for="link">Link do Produto</label>
+  <input type="url" id="link" name="link" placeholder="https://exemplo.com/produto">
 
-      <input type="hidden" id="produto-id" name="id">
-      <button type="submit" id="submit-btn">Cadastrar Produto</button>
-    </form>
-    <div id="error-message" class="feedback-message feedback-error"></div>
-    <div id="success-message" class="feedback-message feedback-success"></div>
-  </div>
+  <input type="hidden" id="produto-id" name="id">
+  <button type="submit" id="submit-btn">Cadastrar Produto</button>
+</form>
+<div id="error-message"></div>
+<div id="success-message"></div>  </div>
 
   <div class="produtos-container">
     <h2>Produtos Cadastrados</h2>
@@ -196,8 +92,212 @@
           <th>Ações</th>
         </tr>
       </thead>
-      <tbody class="products-table"></tbody>
+      <tbody id="produtos-lista"></tbody>
     </table>
   </div>
+
+  <script>
+    const API_URL = 'https://minha-api-produtos.onrender.com';
+    const socket = io(API_URL, { transports: ['websocket'], reconnectionAttempts: 5 });
+
+    async function carregarProdutos() {
+      const lista = document.getElementById('produtos-lista');
+      const errorMessage = document.getElementById('error-message');
+      const loadingSpinner = document.getElementById('loading-spinner');
+      if (!lista || !errorMessage || !loadingSpinner) {
+        console.error('Elementos do DOM não encontrados');
+        return;
+      }
+
+      try {
+        loadingSpinner.style.display = 'block';
+        errorMessage.style.display = 'none';
+        const response = await fetch(`${API_URL}/api/produtos?page=1&limit=1000`, { cache: 'no-store' });
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Erro HTTP ${response.status}: ${errorText || 'Resposta vazia'}`);
+        }
+        const data = await response.json();
+        console.log('Resposta da API:', JSON.stringify(data, null, 2));
+
+        if (data.status !== 'success' || !Array.isArray(data.data)) {
+          throw new Error(data.message || 'Resposta inválida');
+        }
+
+        const produtos = data.data;
+        lista.innerHTML = '';
+
+        if (produtos.length === 0) {
+          lista.innerHTML = '<tr><td colspan="7">Nenhum produto cadastrado.</td></tr>';
+          return;
+        }
+
+        produtos.forEach(produto => {
+          const tr = document.createElement('tr');
+          const imagem = produto.imagens && produto.imagens[0] 
+            ? produto.imagens[0] 
+            : 'https://minha-api-produtos.onrender.com/imagens/placeholder.jpg';
+          tr.innerHTML = `
+            <td><img src="${imagem}" class="produto-imagem" alt="${produto.nome}" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'"></td>
+            <td>${produto.nome || 'Sem nome'}</td>
+            <td>R$ ${produto.preco || '0.00'}</td>
+            <td>${produto.categoria || 'Sem categoria'}</td>
+            <td>${produto.loja || 'Sem loja'}</td>
+            <td><a href="${produto.link || '#'}" target="_blank">Link</a></td>
+            <td>
+              <button class="btn-editar" onclick="editarProduto('${produto.id}')">Editar</button>
+              <button class="btn-excluir" onclick="excluirProduto('${produto.id}')">Excluir</button>
+            </td>
+          `;
+          lista.appendChild(tr);
+        });
+      } catch (error) {
+        console.error('Erro ao carregar produtos:', error.message, error.stack);
+        errorMessage.textContent = `Erro ao carregar produtos: ${error.message}`;
+        errorMessage.style.display = 'block';
+      } finally {
+        loadingSpinner.style.display = 'none';
+      }
+    }
+
+    async function cadastrarProduto(event) {
+      event.preventDefault();
+      const form = document.getElementById('cadastro-produto');
+      const errorMessage = document.getElementById('error-message');
+      const successMessage = document.getElementById('success-message');
+      const submitBtn = document.getElementById('submit-btn');
+      const produtoId = document.getElementById('produto-id').value;
+
+      if (!form || !errorMessage || !successMessage || !submitBtn) {
+        console.error('Elementos do formulário não encontrados');
+        errorMessage.textContent = 'Erro interno. Tente novamente.';
+        errorMessage.style.display = 'block';
+        return;
+      }
+
+      const formData = new FormData(form);
+      const imagens = formData.getAll('imagens');
+      console.log('Dados do formulário:', {
+        nome: formData.get('nome'),
+        preco: formData.get('preco'),
+        categoria: formData.get('categoria'),
+        loja: formData.get('loja'),
+        link: formData.get('link'),
+        imagensCount: imagens.length,
+        imagens: imagens.map(f => f.name)
+      });
+
+      if (imagens.length > 5) {
+        errorMessage.textContent = 'Máximo de 5 imagens permitido.';
+        errorMessage.style.display = 'block';
+        successMessage.style.display = 'none';
+        return;
+      }
+      if (!produtoId && imagens.length === 0) {
+        errorMessage.textContent = 'Selecione pelo menos uma imagem para novos produtos.';
+        errorMessage.style.display = 'block';
+        successMessage.style.display = 'none';
+        return;
+      }
+
+      try {
+        errorMessage.style.display = 'none';
+        successMessage.style.display = 'none';
+        const url = produtoId ? `${API_URL}/api/produtos/${produtoId}` : `${API_URL}/api/produtos`;
+        const method = produtoId ? 'PUT' : 'POST';
+
+        console.log(`Enviando para ${url} com método ${method}`);
+        const response = await fetch(url, { method, body: formData });
+        console.log('Resposta:', response.status);
+        const data = await response.json();
+        console.log('Dados da API:', JSON.stringify(data, null, 2));
+
+        if (!response.ok) {
+          throw new Error(data.message || `Erro ${response.status}`);
+        }
+
+        successMessage.textContent = data.message || (produtoId ? 'Produto atualizado com sucesso!' : 'Produto cadastrado com sucesso!');
+        successMessage.style.display = 'block';
+        form.reset();
+        submitBtn.textContent = 'Cadastrar Produto';
+        document.getElementById('produto-id').value = '';
+        carregarProdutos();
+      } catch (error) {
+        console.error('Erro:', error.message, error.stack);
+        errorMessage.textContent = `Erro ao ${produtoId ? 'atualizar' : 'cadastrar'}: ${error.message}`;
+        errorMessage.style.display = 'block';
+        successMessage.style.display = 'none';
+      }
+    }
+
+    async function editarProduto(id) {
+      try {
+        const response = await fetch(`${API_URL}/api/produtos/${id}`, { cache: 'no-store' });
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Erro HTTP ${response.status}: ${errorText || 'Resposta vazia'}`);
+        }
+        const data = await response.json();
+        console.log('Resposta da API:', JSON.stringify(data, null, 2));
+
+        if (data.status !== 'success' || !data.data) {
+          throw new Error(data.message || 'Produto não encontrado');
+        }
+
+        const produto = data.data;
+        document.getElementById('nome').value = produto.nome || '';
+        document.getElementById('preco').value = produto.preco || '0';
+        document.getElementById('categoria').value = produto.categoria || 'todas';
+        document.getElementById('loja').value = produto.loja || 'todas';
+        document.getElementById('link').value = produto.link || '';
+        document.getElementById('produto-id').value = produto.id;
+        document.getElementById('submit-btn').textContent = 'Atualizar Produto';
+        window.scrollTo(0, 0);
+      } catch (error) {
+        console.error('Erro ao carregar produto para edição:', error.message, error.stack);
+        document.getElementById('error-message').textContent = `Erro ao carregar produto: ${error.message}`;
+        document.getElementById('error-message').style.display = 'block';
+      }
+    }
+
+    async function excluirProduto(id) {
+      if (!confirm('Tem certeza que deseja excluir este produto?')) return;
+
+      try {
+        const response = await fetch(`${API_URL}/api/produtos/${id}`, { method: 'DELETE' });
+        const data = await response.json();
+        console.log('Resposta:', response.status, JSON.stringify(data, null, 2));
+
+        if (!response.ok) {
+          throw new Error(data.message || `Erro ${response.status}`);
+        }
+
+        document.getElementById('success-message').textContent = data.message || 'Produto excluído com sucesso!';
+        document.getElementById('success-message').style.display = 'block';
+        carregarProdutos();
+      } catch (error) {
+        console.error('Erro ao excluir produto:', error.message, error.stack);
+        document.getElementById('error-message').textContent = `Erro ao excluir: ${error.message}`;
+        document.getElementById('error-message').style.display = 'block';
+      }
+    }
+
+    socket.on('connect', () => console.log('Conectado ao Socket.IO'));
+    socket.on('novoProduto', () => carregarProdutos());
+    socket.on('produtoAtualizado', () => carregarProdutos());
+    socket.on('produtoExcluido', () => carregarProdutos());
+
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('Script do admin carregado');
+      const form = document.getElementById('cadastro-produto');
+      if (form) {
+        form.addEventListener('submit', cadastrarProduto);
+      } else {
+        console.error('Formulário não encontrado');
+      }
+      carregarProdutos();
+    });
+  </script>
 </body>
 </html>
+
