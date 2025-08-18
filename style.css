@@ -105,7 +105,6 @@ body {
 .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; margin-top: 1rem; visibility: visible !important; opacity: 1 !important; }
 .produto-card {
   background: var(--background-primary); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); padding: 0.75rem; display: flex; flex-direction: column; transition: var(--transition); min-height: 280px;
-  /* Removida a borda do cartão */
 }
 .produto-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
 .produto-card .carrossel { position: relative; height: 160px; /* Estilo Mercado Livre */ }
@@ -118,9 +117,16 @@ body {
 .carrossel-dots { text-align: center; padding: 0.4rem; position: absolute; bottom: 4px; width: 100%; }
 .carrossel-dot { display: inline-block; width: 8px; height: 8px; background: #ccc; border-radius: 50%; margin: 0 4px; cursor: pointer; transition: var(--transition); }
 .carrossel-dot.ativo { background: var(--primary-color); }
-.produto-nome { font-size: 1rem; font-weight: 600; padding: 0.5rem 0; line-height: 1.4; }
-.descricao { font-size: 0.85rem; color: var(--text-secondary); padding: 0 0 0.5rem; }
-.tarja-preco { display: block; padding: 0.4rem; margin: 0.5rem 0 0; background: var(--primary-color); color: white; text-align: center; border-radius: var(--radius-md); text-decoration: none; font-size: 0.85rem; }
+.produto-nome {
+  font-size: 1rem; font-weight: 600; padding: 0.5rem 0; line-height: 1.4; text-align: center; /* Centralizado */
+}
+.descricao {
+  font-size: 0.85rem; color: var(--text-secondary); padding: 0 0 0.5rem; text-align: center; /* Centralizado */
+}
+.tarja-preco {
+  display: block; padding: 0.4rem; margin: 0.5rem auto 0; background: var(--primary-color); color: white; text-align: center;
+  border-radius: var(--radius-md); text-decoration: none; font-size: 0.85rem; width: 100%; max-width: 150px; /* Alinhado com largura fixa */
+}
 .tarja-preco:hover { background: var(--primary-hover); }
 
 /* Modal */
