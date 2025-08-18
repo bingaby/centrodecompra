@@ -6,6 +6,126 @@
   <title>Painel Administrativo - Cadastro de Produtos</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Estilos específicos para admin-xyz-123.html */
+    .form-container, .produtos-container {
+      max-width: 800px;
+      margin: 0 auto 20px;
+      padding: 1rem;
+      background: var(--background-primary);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+    }
+    .form-container h1, .produtos-container h2 {
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 4px rgba(43, 108, 176, 0.3);
+    }
+    button {
+      padding: 8px 16px;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: var(--radius-md);
+      transition: var(--transition);
+      font-size: 0.9rem;
+    }
+    button:hover {
+      background: var(--primary-hover);
+    }
+    .btn-editar {
+      background: #007bff;
+    }
+    .btn-editar:hover {
+      background: #0056b3;
+    }
+    .btn-excluir {
+      background: #dc3545;
+    }
+    .btn-excluir:hover {
+      background: #b02a37;
+    }
+    .feedback-message {
+      display: none;
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+    }
+    .feedback-error {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    .feedback-success {
+      background: #d4edda;
+      color: #155724;
+    }
+    .produtos-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: var(--background-primary);
+    }
+    .produtos-table th, .produtos-table td {
+      border: 1px solid var(--border-color);
+      padding: 8px;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+    .produtos-table th {
+      background: var(--background-secondary);
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+    .produto-imagem {
+      width: 50px;
+      height: 50px;
+      object-fit: contain;
+    }
+    #loading-spinner {
+      display: none;
+      text-align: center;
+      margin: 10px 0;
+    }
+    #loading-spinner::before {
+      content: 'Carregando...';
+      font-size: 1rem;
+      color: var(--text-secondary);
+    }
+    @media (max-width: 768px) {
+      .form-container, .produtos-container {
+        padding: 0.75rem;
+      }
+      .produtos-table th, .produtos-table td {
+        font-size: 0.85rem;
+        padding: 6px;
+      }
+      .produto-imagem {
+        width: 40px;
+        height: 40px;
+      }
+    }
+  </style>
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <script src="script.js"></script>
 </head>
@@ -55,7 +175,7 @@
       <input type="url" id="link" name="link" placeholder="https://exemplo.com/produto" required aria-required="true">
 
       <input type="hidden" id="produto-id" name="id">
-      <button type="submit" id="submit-btn" class="btn-primary">Cadastrar Produto</button>
+      <button type="submit" id="submit-btn">Cadastrar Produto</button>
     </form>
     <div id="error-message" class="feedback-message feedback-error"></div>
     <div id="success-message" class="feedback-message feedback-success"></div>
@@ -63,7 +183,7 @@
 
   <div class="produtos-container">
     <h2>Produtos Cadastrados</h2>
-    <div id="loading-spinner" class="loading-container"></div>
+    <div id="loading-spinner"></div>
     <table class="produtos-table">
       <thead>
         <tr>
