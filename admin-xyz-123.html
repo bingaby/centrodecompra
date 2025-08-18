@@ -4,199 +4,78 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Painel Administrativo - Cadastro de Produtos</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
   <style>
-    /* Estilos específicos para admin-xyz-123.html */
-    .form-container, .produtos-container {
-      max-width: 800px;
-      margin: 0 auto 20px;
-      padding: 1rem;
-      background: var(--background-primary);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-    }
-    .form-container h1, .produtos-container h2 {
-      color: var(--text-primary);
-      margin-bottom: 1rem;
-    }
-    label {
-      display: block;
-      margin: 10px 0 5px;
-      color: var(--text-secondary);
-      font-weight: 500;
-    }
-    input, select {
-      width: 100%;
-      padding: 8px;
-      margin-bottom: 10px;
-      box-sizing: border-box;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      font-size: 0.9rem;
-    }
-    input:focus, select:focus {
-      outline: none;
-      border-color: var(--primary-color);
-      box-shadow: 0 0 4px rgba(43, 108, 176, 0.3);
-    }
-    button {
-      padding: 8px 16px;
-      background: var(--primary-color);
-      color: white;
-      border: none;
-      cursor: pointer;
-      border-radius: var(--radius-md);
-      transition: var(--transition);
-      font-size: 0.9rem;
-    }
-    button:hover {
-      background: var(--primary-hover);
-    }
-    .btn-editar {
-      background: #007bff;
-    }
-    .btn-editar:hover {
-      background: #0056b3;
-    }
-    .btn-excluir {
-      background: #dc3545;
-    }
-    .btn-excluir:hover {
-      background: #b02a37;
-    }
-    #error-message, #success-message {
-      display: none;
-      margin-top: 10px;
-      padding: 10px;
-      border-radius: var(--radius-md);
-      font-size: 0.9rem;
-    }
-    #error-message {
-      background: #f8d7da;
-      color: #721c24;
-    }
-    #success-message {
-      background: #d4edda;
-      color: #155724;
-    }
-    .produtos-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      background: var(--background-primary);
-    }
-    .produtos-table th, .produtos-table td {
-      border: 1px solid var(--border-color);
-      padding: 8px;
-      text-align: left;
-      font-size: 0.9rem;
-    }
-    .produtos-table th {
-      background: var(--background-secondary);
-      color: var(--text-primary);
-      font-weight: 600;
-    }
-    .produto-imagem {
-      width: 50px;
-      height: 50px;
-      object-fit: contain;
-    }
-    .feedback-message {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      padding: 10px 20px;
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-md);
-      z-index: 1000;
-      font-size: 0.9rem;
-    }
-    .feedback-success {
-      background: #d4edda;
-      color: #155724;
-    }
-    .feedback-error {
-      background: #f8d7da;
-      color: #721c24;
-    }
-    #loading-spinner {
-      display: none;
-      text-align: center;
-      margin: 10px 0;
-    }
-    #loading-spinner::before {
-      content: 'Carregando...';
-      font-size: 1rem;
-      color: var(--text-secondary);
-    }
-    @media (max-width: 768px) {
-      .form-container, .produtos-container {
-        padding: 0.75rem;
-      }
-      .produtos-table th, .produtos-table td {
-        font-size: 0.85rem;
-        padding: 6px;
-      }
-      .produto-imagem {
-        width: 40px;
-        height: 40px;
-      }
-    }
+    body { font-family: 'Roboto', sans-serif; padding: 20px; background-color: #fff; color: #333; }
+    .form-container, .produtos-container { max-width: 800px; margin: 0 auto 20px; }
+    label { display: block; margin: 10px 0 5px; }
+    input, select { width: 100%; padding: 8px; margin-bottom: 10px; box-sizing: border-box; border: 1px solid #e0e0e0; border-radius: 4px; }
+    button { padding: 8px 16px; background: #28a745; color: white; border: none; cursor: pointer; border-radius: 4px; }
+    button:hover { background: #218838; }
+    #error-message, #success-message { display: none; margin-top: 10px; padding: 10px; border-radius: 4px; }
+    #error-message { background: #f8d7da; color: #721c24; }
+    #success-message { background: #d4edda; color: #155724; }
+    .produtos-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    .produtos-table th, .produtos-table td { border: 1px solid #e0e0e0; padding: 8px; text-align: left; font-size: 14px; }
+    .produtos-table th { background: #f2f2f2; color: #444; }
+    .produto-imagem { width: 50px; height: 50px; object-fit: contain; }
+    .btn-editar { background: #007bff; }
+    .btn-editar:hover { background: #0056b3; }
+    .btn-excluir { background: #dc3545; }
+    .btn-excluir:hover { background: #b02a37; }
+    #loading-spinner { display: none; text-align: center; margin: 10px 0; }
+    #loading-spinner::before { content: 'Carregando...'; font-size: 16px; }
   </style>
-  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-  <script src="script.js"></script>
 </head>
 <body>
   <div class="form-container">
     <h1>Cadastro de Produtos</h1>
-    <form id="product-form" enctype="multipart/form-data">
+    <form id="cadastro-produto" enctype="multipart/form-data">
       <label for="nome">Nome do Produto</label>
       <input type="text" id="nome" name="nome" required aria-required="true">
 
       <label for="preco">Preço (R$)</label>
-      <input type="number" id="preco" name="preco" step="0.01" min="0" placeholder="0.00" required aria-required="true">
+      <input type="number" id="preco" name="preco" step="0.01" min="0" placeholder="0.00">
 
       <label for="categoria">Categoria</label>
       <select id="categoria" name="categoria" required aria-required="true">
-        <option value="" disabled selected>Selecione uma categoria</option>
-        <option value="Eletrônicos">Eletrônicos</option>
-        <option value="Moda">Moda</option>
-        <option value="Casa">Casa</option>
-        <option value="Esportes">Esportes</option>
-        <option value="Beleza">Beleza</option>
-        <option value="Livros">Livros</option>
-        <option value="Brinquedos">Brinquedos</option>
-        <option value="Saúde">Saúde</option>
-        <option value="Automotivo">Automotivo</option>
-        <option value="Alimentos">Alimentos</option>
-        <option value="Pet Shop">Pet Shop</option>
+        <option value="todas">Todas</option>
+        <option value="pet">Pet</option>
+        <option value="eletronicos">Eletrônicos</option>
+        <option value="moda">Moda</option>
+        <option value="automotivo">Automotivo</option>
+        <option value="fitness">Fitness</option>
+        <option value="casa">Casa e Decoração</option>
+        <option value="beleza">Beleza</option>
+        <option value="esportes">Esportes</option>
+        <option value="livros">Livros</option>
+        <option value="infantil">Infantil</option>
         <option value="Celulares">Celulares</option>
+        <option value="Eletrodomésticos">Eletrodomésticos</option>
       </select>
 
       <label for="loja">Loja</label>
       <select id="loja" name="loja" required aria-required="true">
-        <option value="" disabled selected>Selecione uma loja</option>
-        <option value="Amazon">Amazon</option>
-        <option value="Mercado Livre">Mercado Livre</option>
-        <option value="Shopee">Shopee</option>
-        <option value="Magalu">Magalu</option>
-        <option value="Shein">Shein</option>
-        <option value="Alibaba">Alibaba</option>
-        <option value="AliExpress">AliExpress</option>
+        <option value="todas">Todas</option>
+        <option value="amazon">Amazon</option>
+        <option value="shein">Shein</option>
+        <option value="shopee">Shopee</option>
+        <option value="magalu">Magalu</option>
+        <option value="mercadolivre">Mercado Livre</option>
+        <option value="alibaba">Alibaba</option>
       </select>
 
-      <label for="imagens">Imagens do Produto (máximo 5, JPEG/PNG)</label>
-      <input type="file" id="imagens" name="imagens" accept="image/jpeg,image/png" multiple>
+      <label for="imagens">Imagens do Produto (máximo 5, JPEG/PNG/GIF)</label>
+      <input type="file" id="imagens" name="imagens" accept="image/jpeg,image/png,image/gif" multiple>
 
       <label for="link">Link do Produto</label>
-      <input type="url" id="link" name="link" placeholder="https://exemplo.com/produto" required aria-required="true">
+      <input type="url" id="link" name="link" placeholder="https://exemplo.com/produto">
 
       <input type="hidden" id="produto-id" name="id">
       <button type="submit" id="submit-btn">Cadastrar Produto</button>
     </form>
-    <div id="error-message" class="feedback-message feedback-error"></div>
-    <div id="success-message" class="feedback-message feedback-success"></div>
+    <div id="error-message"></div>
+    <div id="success-message"></div>
   </div>
 
   <div class="produtos-container">
@@ -214,7 +93,7 @@
           <th>Ações</th>
         </tr>
       </thead>
-      <tbody class="products-table"></tbody>
+      <tbody id="produtos-lista"></tbody>
     </table>
   </div>
 
@@ -422,4 +301,3 @@
   </script>
 </body>
 </html>
-
