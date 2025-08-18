@@ -7,8 +7,8 @@
   --background-primary: #ffffff;
   --background-secondary: #f7fafc;
   --border-color: #e2e8f0;
-  --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
-  --shadow-md: 0 4px 8px rgba(0,0,0,0.15);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.15);
   --radius-md: 8px;
   --transition: 0.3s ease;
 }
@@ -18,7 +18,7 @@
 body {
   font-family: "Inter", sans-serif;
   color: var(--text-primary);
-  background: var(--background-secondary); /* Removido fundo fixo para melhor performance */
+  background: var(--background-secondary);
 }
 .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
 
@@ -102,38 +102,44 @@ body {
 
 /* Produtos */
 .products-section { margin-bottom: 2rem; }
-.products-grid { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); visibility: visible !important; opacity: 1 !important; }
-.product-card {
-  background: var(--background-primary); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); padding-bottom: 1rem; border: 1px solid var(--border-color); display: flex; flex-direction: column; transition: var(--transition);
+.products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; margin-top: 1rem; visibility: visible !important; opacity: 1 !important; }
+.produto-card {
+  background: var(--background-primary); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); padding: 0.75rem; border: 1px solid var(--border-color); display: flex; flex-direction: column; transition: var(--transition); min-height: 280px;
 }
-.product-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
-.product-card .carrossel { position: relative; height: 220px; }
+.produto-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+.produto-card .carrossel { position: relative; height: 160px; } /* Reduzido de 220px para estilo Mercado Livre */
 .carrossel-imagens { display: flex; width: 100%; height: 100%; transition: transform 0.3s ease; }
 .carrossel-imagens img { width: 100%; height: 100%; object-fit: contain; flex: 0 0 100%; cursor: pointer; }
-.product-card .title { font-size: 1.1rem; font-weight: 600; padding: 0.75rem 1rem; color: var(--text-primary); }
-.product-card .descricao { font-size: 0.9rem; color: var(--text-secondary); padding: 0 1rem 0.75rem; }
-.product-card .price { font-size: 1.1rem; font-weight: bold; color: #e63946; padding: 0 1rem; margin: 8px 0; }
-.product-card .buy-btn { display: inline-block; background: var(--primary-color); color: white; text-align: center; padding: 10px; border-radius: var(--radius-md); text-decoration: none; font-weight: 500; margin: 0 1rem auto; transition: var(--transition); }
-.product-card .buy-btn:hover { background: var(--primary-hover); }
+.carrossel-prev, .carrossel-next { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; padding: 0.4rem; cursor: pointer; font-size: 1rem; transition: var(--transition); }
+.carrossel-prev:hover, .carrossel-next:hover { background: rgba(0,0,0,0.7); }
+.carrossel-prev { left: 4px; }
+.carrossel-next { right: 4px; }
+.carrossel-dots { text-align: center; padding: 0.4rem; position: absolute; bottom: 4px; width: 100%; }
+.carrossel-dot { display: inline-block; width: 8px; height: 8px; background: #ccc; border-radius: 50%; margin: 0 4px; cursor: pointer; transition: var(--transition); }
+.carrossel-dot.ativo { background: var(--primary-color); }
+.produto-nome { font-size: 1rem; font-weight: 600; padding: 0.5rem 0; line-height: 1.4; }
+.descricao { font-size: 0.85rem; color: var(--text-secondary); padding: 0 0 0.5rem; }
+.tarja-preco { display: block; padding: 0.4rem; margin: 0.5rem 0 0; background: var(--primary-color); color: white; text-align: center; border-radius: var(--radius-md); text-decoration: none; font-size: 0.85rem; }
+.tarja-preco:hover { background: var(--primary-hover); }
 
 /* Modal */
-.image-modal {
+#imageModal {
   display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2000; justify-content: center; align-items: center;
 }
-.image-modal.active { display: flex; }
+#imageModal.active { display: flex; }
 .modal-backdrop { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); }
-.modal-container { max-width: 90vw; max-height: 80vh; background: var(--background-primary); border-radius: var(--radius-md); position: relative; overflow: hidden; }
-.modal-close { position: absolute; top: 0.75rem; right: 0.75rem; background: #e53e3e; color: white; border: none; padding: 0.3rem 0.6rem; border-radius: 50%; cursor: pointer; font-size: 1.2rem; transition: var(--transition); }
-.modal-close:hover { background: #c53030; }
-.carousel-images { display: flex; width: 100%; height: 100%; transition: transform 0.3s ease; }
-.carousel-images img { max-width: 800px; max-height: 600px; object-fit: contain; flex: 0 0 100%; }
-.carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; padding: 0.5rem; cursor: pointer; font-size: 1.2rem; transition: var(--transition); }
-.carousel-btn:hover { background: rgba(0,0,0,0.7); }
-.carousel-btn.prev { left: 8px; }
-.carousel-btn.next { right: 8px; }
-.carousel-dots { text-align: center; padding: 0.5rem; position: absolute; bottom: 10px; width: 100%; }
-.carousel-dot { display: inline-block; width: 10px; height: 10px; background: #ccc; border-radius: 50%; margin: 0 5px; cursor: pointer; transition: var(--transition); }
-.carousel-dot.active { background: var(--primary-color); }
+.modal-container { max-width: 90vw; max-height: 85vh; background: var(--background-primary); border-radius: var(--radius-md); position: relative; overflow: hidden; }
+#modal-close { position: absolute; top: 0.75rem; right: 0.75rem; background: #e53e3e; color: white; border: none; padding: 0.3rem 0.6rem; border-radius: 50%; cursor: pointer; font-size: 1.2rem; transition: var(--transition); }
+#modal-close:hover { background: #c53030; }
+#modalCarrosselImagens { display: flex; width: 100%; height: 100%; transition: transform 0.3s ease; }
+#modalCarrosselImagens img { max-width: 90vw; max-height: 80vh; object-fit: contain; flex: 0 0 100%; }
+#modalPrev, #modalNext { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; padding: 0.5rem; cursor: pointer; font-size: 1.2rem; transition: var(--transition); }
+#modalPrev:hover, #modalNext:hover { background: rgba(0,0,0,0.7); }
+#modalPrev { left: 8px; }
+#modalNext { right: 8px; }
+#modalCarrosselDots { text-align: center; padding: 0.5rem; position: absolute; bottom: 10px; width: 100%; }
+#modalCarrosselDots .carrossel-dot { display: inline-block; width: 10px; height: 10px; background: #ccc; border-radius: 50%; margin: 0 5px; cursor: pointer; transition: var(--transition); }
+#modalCarrosselDots .carrossel-dot.ativo { background: var(--primary-color); }
 
 /* Paginação */
 #pagination-controls { display: flex; justify-content: center; align-items: center; margin: 1.5rem 0; gap: 0.5rem; }
@@ -152,15 +158,10 @@ body {
 .payment-icon { height: 20px; object-fit: contain; }
 .footer-bottom { margin-top: 1rem; text-align: center; font-size: 0.9rem; }
 
-/* Loading e Estados */
-.loading-container { display: none; text-align: center; padding: 1.5rem; }
-.loading-spinner { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; }
-.spinner { width: 36px; height: 36px; border: 3px solid var(--border-color); border-top: 3px solid var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; }
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-.empty-state, .error-state { display: none; flex-direction: column; align-items: center; gap: 0.75rem; padding: 1.5rem; background: var(--background-primary); border-radius: var(--radius-md); }
-.empty-icon, .error-icon { font-size: 3.5rem; color: var(--text-secondary); }
-.btn-primary { padding: 0.3rem 0.75rem; background: var(--primary-color); color: white; text-decoration: none; border-radius: var(--radius-md); font-size: 0.9rem; }
-.btn-primary:hover { background: var(--primary-hover); }
+/* Feedback Messages */
+.feedback-message { position: fixed; top: 20px; right: 20px; padding: 1rem; border-radius: var(--radius-md); z-index: 2000; }
+.feedback-error { background: #e53e3e; color: white; }
+.feedback-success { background: var(--secondary-color); color: white; }
 
 /* Responsividade */
 @media (max-width: 1024px) { .products-grid { grid-template-columns: repeat(3, 1fr); } }
@@ -173,6 +174,7 @@ body {
   .stores-grid { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 0.75rem; padding: 0.75rem; }
   .store-card { padding: 0.75rem; }
   .store-logo { max-height: 35px; max-width: 90px; }
+  #modalCarrosselImagens img { max-width: 100%; max-height: 70vh; }
 }
 @media (max-width: 480px) { .products-grid { grid-template-columns: 1fr; } }
 
@@ -186,4 +188,5 @@ body {
     --border-color: #4a5568;
   }
   .store-card::after { background: #4a5568; }
+  .modal-container { background: var(--background-primary); }
 }
