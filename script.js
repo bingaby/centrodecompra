@@ -1,4 +1,4 @@
-const VERSION = "1.0.19"; // Atualizado para paginação
+const VERSION = "1.0.20"; // Atualizado para embaralhamento de todos os produtos
 const API_URL = 'https://minha-api-produtos.onrender.com';
 let currentImages = [];
 let currentImageIndex = 0;
@@ -9,6 +9,7 @@ let currentCategory = "todas";
 let currentStore = "todas";
 let currentSearch = "";
 let totalPages = 1; // Total de páginas
+let shuffledProducts = []; // Cache dos produtos embaralhados
 
 // Conectar ao Socket.IO
 const socket = io(API_URL, { transports: ['websocket'], reconnectionAttempts: 5 });
@@ -134,7 +135,7 @@ function renderPaginationControls(total) {
 }
 
 // Função para carregar produtos
-async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, busca = currentSearch) {
+async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, busca = "") {
     console.log('Iniciando carregarProdutos:', { categoria, loja, page, busca });
     const gridProdutos = document.getElementById("grid-produtos");
     const mensagemVazia = document.getElementById("mensagem-vazia");
@@ -154,125 +155,126 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
     isLoading = true;
 
     loadingSpinner.style.display = "block";
-    gridProdutos.innerHTML = ""; // Limpar o grid sempre
+    gridProdutos.innerHTML = "";
     mensagemVazia.style.display = "none";
     errorMessage.style.display = "none";
     loadMoreButton.style.display = "none";
 
-    const maxRetries = 3;
-    let attempt = 1;
+    try {
+        // Se for a inicialização (sem filtros), carregar todos os produtos
+        let url = `${API_URL}/api/produtos?page=1&limit=1000`; // Carregar todos os produtos para embaralhamento
+        if (categoria !== 'todas') url = `${API_URL}/api/produtos?page=${page}&limit=${productsPerPage}&categoria=${encodeURIComponent(categoria)}`;
+        if (loja !== 'todas') url += `&loja=${encodeURIComponent(loja)}`;
+        if (busca) url += `&busca=${encodeURIComponent(busca)}`;
+        console.log(`Carregando de ${url}`);
 
-    while (attempt <= maxRetries) {
-        try {
-            let url = `${API_URL}/api/produtos?page=${page}&limit=${productsPerPage}`;
-            if (categoria !== 'todas') url += `&categoria=${encodeURIComponent(categoria)}`;
-            if (loja !== 'todas') url += `&loja=${encodeURIComponent(loja)}`;
-            if (busca) url += `&busca=${encodeURIComponent(busca)}`;
-            console.log(`Tentativa ${attempt}: Carregando de ${url}`);
-            const response = await fetch(url, {
-                cache: "no-store",
-                headers: {
-                    'Accept': 'application/json'
-                }
-            });
-            console.log('Status da resposta:', response.status);
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Erro HTTP ${response.status}: ${errorText || 'Resposta vazia'}`);
+        const response = await fetch(url, {
+            cache: "no-store",
+            headers: {
+                'Accept': 'application/json'
             }
-            const data = await response.json();
-            console.log('Resposta da API:', JSON.stringify(data, null, 2));
+        });
+        console.log('Status da resposta:', response.status);
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Erro HTTP ${response.status}: ${errorText || 'Resposta vazia'}`);
+        }
+        const data = await response.json();
+        console.log('Resposta da API:', JSON.stringify(data, null, 2));
 
-            if (data.status !== 'success' || !Array.isArray(data.data)) {
-                throw new Error(`Resposta inválida: ${data.message || 'Dados não são um array'}`);
-            }
+        if (data.status !== 'success' || !Array.isArray(data.data)) {
+            throw new Error(`Resposta inválida: ${data.message || 'Dados não são um array'}`);
+        }
 
-            // Filtro no frontend como fallback
-            let filteredProducts = data.data;
+        let products = data.data;
+        let total = data.total || products.length;
+
+        // Se não houver filtros (inicialização), embaralhar todos os produtos e paginar
+        if (categoria === 'todas' && loja === 'todas' && !busca) {
+            shuffledProducts = shuffleArray([...products]);
+            total = shuffledProducts.length;
+            // Paginar os produtos embaralhados
+            products = shuffledProducts.slice((page - 1) * productsPerPage, page * productsPerPage);
+        } else {
+            // Aplicar filtros e busca
             if (busca) {
-                filteredProducts = data.data.filter(produto =>
+                products = products.filter(produto =>
                     produto.nome && produto.nome.toLowerCase().includes(busca.toLowerCase())
                 );
-                console.log('Produtos filtrados no frontend:', filteredProducts);
+                total = products.length;
             }
-
-            // Embaralhar os produtos da página atual
-            const shuffledProducts = shuffleArray([...filteredProducts]);
-
-            if (shuffledProducts.length === 0) {
-                mensagemVazia.style.display = "flex";
-                gridProdutos.style.display = "none";
-                mensagemVazia.querySelector("h3").textContent = busca ? `Nenhum produto encontrado para "${busca}"` : "Nenhum produto disponível";
-            } else {
-                mensagemVazia.style.display = "none";
-                gridProdutos.style.display = "grid";
-
-                shuffledProducts.forEach((produto, index) => {
-                    if (!produto || typeof produto.nome !== 'string' || !Array.isArray(produto.imagens)) {
-                        console.warn('Produto inválido ignorado:', produto);
-                        return;
-                    }
-                    console.log('Renderizando produto:', produto);
-                    const card = document.createElement("div");
-                    card.classList.add("produto-card", "visible");
-                    card.setAttribute("data-categoria", produto.categoria.toLowerCase());
-                    card.setAttribute("data-loja", produto.loja.toLowerCase());
-                    const globalIndex = (page - 1) * productsPerPage + index;
-
-                    const imagens = produto.imagens.length > 0
-                        ? produto.imagens
-                        : ["https://minha-api-produtos.onrender.com/imagens/placeholder.jpg"];
-                    const carrosselId = `carrossel-${globalIndex}`;
-                    const lojaClass = produto.loja.toLowerCase();
-                    card.innerHTML = `
-                        <div class="carrossel" id="${carrosselId}">
-                            <div class="carrossel-imagens">
-                                ${imagens.map((img, idx) => `<img src="${img}" alt="${produto.nome}" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'" onclick="event.stopPropagation(); openModal(${globalIndex}, ${idx})">`).join("")}
-                            </div>
-                            ${imagens.length > 1 ? `
-                                <button class="carrossel-prev" onclick="event.stopPropagation(); moveCarrossel('${carrosselId}', -1)" aria-label="Imagem anterior"><i class="fas fa-chevron-left"></i></button>
-                                <button class="carrossel-next" onclick="event.stopPropagation(); moveCarrossel('${carrosselId}', 1)" aria-label="Próxima imagem"><i class="fas fa-chevron-right"></i></button>
-                                <div class="carrossel-dots">
-                                    ${imagens.map((_, idx) => `<span class="carrossel-dot ${idx === 0 ? "ativo" : ""}" onclick="event.stopPropagation(); setCarrosselImage('${carrosselId}', ${idx})" aria-label="Selecionar imagem ${idx + 1}"></span>`).join("")}
-                                </div>
-                            ` : ""}
-                        </div>
-                        <span class="produto-nome">${produto.nome}</span>
-                        <span class="descricao">Loja: ${produto.loja}</span>
-                        <a href="${produto.link}" target="_blank" class="tarja-preco tarja-${lojaClass}" aria-label="Clique para ver o preço de ${produto.nome} na loja">
-                            <i class="fas fa-shopping-cart"></i> Ver Preço
-                        </a>
-                    `;
-                    gridProdutos.appendChild(card);
-                    console.log('Card adicionado:', card.outerHTML);
-                });
-            }
-
-            // Renderizar controles de paginação
-            renderPaginationControls(data.total);
-            loadMoreButton.style.display = data.total > page * productsPerPage ? "flex" : "none";
-            isLoading = false;
-            return;
-        } catch (error) {
-            console.error(`⚠️ Tentativa ${attempt} falhou: ${error.message}`);
-            if (attempt === maxRetries) {
-                errorMessage.style.display = "flex";
-                mensagemVazia.style.display = "none";
-                gridProdutos.style.display = "none";
-                errorMessage.querySelector("p").textContent = `Não foi possível carregar os produtos: ${error.message}.`;
-            }
-            attempt++;
-            await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
-        } finally {
-            loadingSpinner.style.display = "none";
-            isLoading = false;
+            products = shuffleArray([...products]).slice(0, productsPerPage);
         }
+
+        if (products.length === 0) {
+            mensagemVazia.style.display = "flex";
+            gridProdutos.style.display = "none";
+            mensagemVazia.querySelector("h3").textContent = busca ? `Nenhum produto encontrado para "${busca}"` : "Nenhum produto disponível";
+        } else {
+            mensagemVazia.style.display = "none";
+            gridProdutos.style.display = "grid";
+
+            products.forEach((produto, index) => {
+                if (!produto || typeof produto.nome !== 'string' || !Array.isArray(produto.imagens)) {
+                    console.warn('Produto inválido ignorado:', produto);
+                    return;
+                }
+                console.log('Renderizando produto:', produto);
+                const card = document.createElement("div");
+                card.classList.add("produto-card", "visible");
+                card.setAttribute("data-categoria", produto.categoria.toLowerCase());
+                card.setAttribute("data-loja", produto.loja.toLowerCase());
+                const globalIndex = (categoria === 'todas' && loja === 'todas' && !busca)
+                    ? (page - 1) * productsPerPage + index
+                    : index;
+
+                const imagens = produto.imagens.length > 0
+                    ? produto.imagens
+                    : ["https://minha-api-produtos.onrender.com/imagens/placeholder.jpg"];
+                const carrosselId = `carrossel-${globalIndex}`;
+                const lojaClass = produto.loja.toLowerCase();
+                card.innerHTML = `
+                    <div class="carrossel" id="${carrosselId}">
+                        <div class="carrossel-imagens">
+                            ${imagens.map((img, idx) => `<img src="${img}" alt="${produto.nome}" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'" onclick="event.stopPropagation(); openModal(${globalIndex}, ${idx})">`).join("")}
+                        </div>
+                        ${imagens.length > 1 ? `
+                            <button class="carrossel-prev" onclick="event.stopPropagation(); moveCarrossel('${carrosselId}', -1)" aria-label="Imagem anterior"><i class="fas fa-chevron-left"></i></button>
+                            <button class="carrossel-next" onclick="event.stopPropagation(); moveCarrossel('${carrosselId}', 1)" aria-label="Próxima imagem"><i class="fas fa-chevron-right"></i></button>
+                            <div class="carrossel-dots">
+                                ${imagens.map((_, idx) => `<span class="carrossel-dot ${idx === 0 ? "ativo" : ""}" onclick="event.stopPropagation(); setCarrosselImage('${carrosselId}', ${idx})" aria-label="Selecionar imagem ${idx + 1}"></span>`).join("")}
+                            </div>
+                        ` : ""}
+                    </div>
+                    <span class="produto-nome">${produto.nome}</span>
+                    <span class="descricao">Loja: ${produto.loja}</span>
+                    <a href="${produto.link}" target="_blank" class="tarja-preco tarja-${lojaClass}" aria-label="Clique para ver o preço de ${produto.nome} na loja">
+                        <i class="fas fa-shopping-cart"></i> Ver Preço
+                    </a>
+                `;
+                gridProdutos.appendChild(card);
+                console.log('Card adicionado:', card.outerHTML);
+            });
+        }
+
+        renderPaginationControls(total);
+        loadMoreButton.style.display = total > page * productsPerPage ? "flex" : "none";
+        isLoading = false;
+    } catch (error) {
+        console.error('Erro ao carregar produtos:', error.message, error.stack);
+        errorMessage.style.display = "flex";
+        mensagemVazia.style.display = "none";
+        gridProdutos.style.display = "none";
+        errorMessage.querySelector("p").textContent = `Não foi possível carregar os produtos: ${error.message}.`;
+        isLoading = false;
+    } finally {
+        loadingSpinner.style.display = "none";
     }
 }
 
 // Função para carregar produtos no admin
 async function carregarProdutosAdmin() {
-    const tableBody = document.querySelector('.products-table tbody');
+    const tableBody = document.querySelector('.products-table');
     if (!tableBody) return;
 
     try {
@@ -289,15 +291,15 @@ async function carregarProdutosAdmin() {
 
         tableBody.innerHTML = data.data.map(produto => `
             <tr>
-                <td>${produto.id}</td>
-                <td><img src="${produto.imagens[0] || 'https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'}" alt="${produto.nome}" style="width: 50px; height: 50px;" /></td>
+                <td><img src="${produto.imagens[0] || 'https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'}" alt="${produto.nome}" class="produto-imagem" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'" /></td>
                 <td>${produto.nome}</td>
+                <td>R$ ${produto.preco || '0.00'}</td>
                 <td>${produto.categoria}</td>
                 <td>${produto.loja}</td>
-                <td><a href="${produto.link}" target="_blank">Ver</a></td>
-                <td class="actions">
-                    <button class="btn btn-edit" onclick="editarProduto(${produto.id})"><i class="fas fa-edit"></i> Editar</button>
-                    <button class="btn btn-delete" onclick="excluirProduto(${produto.id})"><i class="fas fa-trash"></i> Excluir</button>
+                <td><a href="${produto.link}" target="_blank">Link</a></td>
+                <td>
+                    <button class="btn-editar" onclick="editarProduto('${produto.id}')">Editar</button>
+                    <button class="btn-excluir" onclick="excluirProduto('${produto.id}')">Excluir</button>
                 </td>
             </tr>
         `).join('');
@@ -308,6 +310,17 @@ async function carregarProdutosAdmin() {
 }
 
 // Função para salvar/editar produto
+const validCategories = [
+    'Eletrônicos', 'Moda', 'Casa', 'Esportes', 'Beleza',
+    'Livros', 'Brinquedos', 'Saúde', 'Automotivo',
+    'Alimentos', 'Pet Shop', 'Celulares'
+];
+
+const validStores = [
+    'Amazon', 'Mercado Livre', 'Shopee', 'Magalu',
+    'Shein', 'Alibaba', 'AliExpress'
+];
+
 async function salvarProduto(event) {
     event.preventDefault();
     const form = document.getElementById('product-form');
@@ -318,16 +331,50 @@ async function salvarProduto(event) {
     const url = id ? `${API_URL}/api/produtos/${id}` : `${API_URL}/api/produtos`;
     const method = id ? 'PUT' : 'POST';
 
-    const formDataObj = {
-        nome: formData.get('nome'),
-        preco: formData.get('preco'),
-        categoria: formData.get('categoria'),
-        loja: formData.get('loja'),
-        link: formData.get('link'),
-        imagensCount: formData.getAll('imagens').length,
-        imagens: formData.getAll('imagens').map(f => f.name)
-    };
-    console.log('Dados do formulário:', JSON.stringify(formDataObj, null, 2));
+    // Validar categoria e loja
+    let categoria = formData.get('categoria');
+    let loja = formData.get('loja');
+
+    if (!validCategories.includes(categoria)) {
+        const feedback = document.createElement('div');
+        feedback.className = 'feedback-message feedback-error';
+        feedback.textContent = `Categoria inválida: ${categoria}. Escolha uma categoria válida.`;
+        document.body.appendChild(feedback);
+        feedback.style.display = 'block';
+        setTimeout(() => feedback.remove(), 3000);
+        return;
+    }
+
+    if (!validStores.includes(loja)) {
+        const feedback = document.createElement('div');
+        feedback.className = 'feedback-message feedback-error';
+        feedback.textContent = `Loja inválida: ${loja}. Escolha uma loja válida.`;
+        document.body.appendChild(feedback);
+        feedback.style.display = 'block';
+        setTimeout(() => feedback.remove(), 3000);
+        return;
+    }
+
+    // Validar imagens
+    const imagens = formData.getAll('imagens');
+    if (!id && imagens.length === 0) {
+        const feedback = document.createElement('div');
+        feedback.className = 'feedback-message feedback-error';
+        feedback.textContent = 'Selecione pelo menos uma imagem para novos produtos.';
+        document.body.appendChild(feedback);
+        feedback.style.display = 'block';
+        setTimeout(() => feedback.remove(), 3000);
+        return;
+    }
+    if (imagens.length > 5) {
+        const feedback = document.createElement('div');
+        feedback.className = 'feedback-message feedback-error';
+        feedback.textContent = 'Máximo de 5 imagens permitido.';
+        document.body.appendChild(feedback);
+        feedback.style.display = 'block';
+        setTimeout(() => feedback.remove(), 3000);
+        return;
+    }
 
     try {
         console.log(`Enviando para ${url} com método ${method}`);
@@ -343,7 +390,7 @@ async function salvarProduto(event) {
 
         const feedback = document.createElement('div');
         feedback.className = `feedback-message feedback-${data.status}`;
-        feedback.textContent = data.message;
+        feedback.textContent = data.message || (id ? 'Produto atualizado com sucesso!' : 'Produto cadastrado com sucesso!');
         document.body.appendChild(feedback);
         feedback.style.display = 'block';
         setTimeout(() => feedback.remove(), 3000);
@@ -351,7 +398,9 @@ async function salvarProduto(event) {
         if (data.status === 'success') {
             form.reset();
             delete form.dataset.id;
+            document.getElementById('submit-btn').textContent = 'Cadastrar Produto';
             carregarProdutosAdmin();
+            shuffledProducts = []; // Limpar cache para recarregar produtos embaralhados
             carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
         }
     } catch (error) {
@@ -381,20 +430,27 @@ async function editarProduto(id) {
         const produto = data.data;
         const form = document.getElementById('product-form');
         form.dataset.id = id;
-        form.querySelector('#nome').value = produto.nome;
-        form.querySelector('#categoria').value = produto.categoria;
-        form.querySelector('#loja').value = produto.loja;
-        form.querySelector('#link').value = produto.link;
-        form.querySelector('#preco').value = produto.preco;
+        form.querySelector('#nome').value = produto.nome || '';
+        form.querySelector('#categoria').value = produto.categoria || '';
+        form.querySelector('#loja').value = produto.loja || '';
+        form.querySelector('#link').value = produto.link || '';
+        form.querySelector('#preco').value = produto.preco || '0';
+        form.querySelector('#submit-btn').textContent = 'Atualizar Produto';
+        window.scrollTo(0, 0);
     } catch (error) {
         console.error('Erro ao carregar produto para edição:', error.message, error.stack);
-        alert('Erro ao carregar produto para edição: ' + error.message);
+        const feedback = document.createElement('div');
+        feedback.className = 'feedback-message feedback-error';
+        feedback.textContent = 'Erro ao carregar produto: ' + error.message;
+        document.body.appendChild(feedback);
+        feedback.style.display = 'block';
+        setTimeout(() => feedback.remove(), 3000);
     }
 }
 
 // Função para excluir produto
 async function excluirProduto(id) {
-    if (!confirm('Deseja realmente excluir este produto?')) return;
+    if (!confirm('Tem certeza que deseja excluir este produto?')) return;
 
     try {
         const response = await fetch(`${API_URL}/api/produtos/${id}`, {
@@ -408,18 +464,24 @@ async function excluirProduto(id) {
 
         const feedback = document.createElement('div');
         feedback.className = `feedback-message feedback-${data.status}`;
-        feedback.textContent = data.message;
+        feedback.textContent = data.message || 'Produto excluído com sucesso!';
         document.body.appendChild(feedback);
         feedback.style.display = 'block';
         setTimeout(() => feedback.remove(), 3000);
 
         if (data.status === 'success') {
             carregarProdutosAdmin();
+            shuffledProducts = []; // Limpar cache para recarregar produtos embaralhados
             carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
         }
     } catch (error) {
         console.error('Erro ao excluir produto:', error.message, error.stack);
-        alert('Erro ao excluir produto: ' + error.message);
+        const feedback = document.createElement('div');
+        feedback.className = 'feedback-message feedback-error';
+        feedback.textContent = 'Erro ao excluir: ' + error.message;
+        document.body.appendChild(feedback);
+        feedback.style.display = 'block';
+        setTimeout(() => feedback.remove(), 3000);
     }
 }
 
@@ -472,9 +534,16 @@ async function openModal(index, imageIndex) {
     prevButton.classList.remove("visible");
     nextButton.classList.remove("visible");
 
-    const produto = shuffledProducts[index];
+    const produto = shuffledProducts[index] || (await fetch(`${API_URL}/api/produtos?page=${currentPage}&limit=${productsPerPage}`)
+        .then(res => res.json())
+        .then(data => data.data[index]));
     if (!produto || !produto.imagens || produto.imagens.length === 0) {
-        alert("Nenhuma imagem disponível para este produto.");
+        const feedback = document.createElement('div');
+        feedback.className = 'feedback-message feedback-error';
+        feedback.textContent = "Nenhuma imagem disponível para este produto.";
+        document.body.appendChild(feedback);
+        feedback.style.display = 'block';
+        setTimeout(() => feedback.remove(), 3000);
         return;
     }
 
@@ -506,7 +575,12 @@ async function openModal(index, imageIndex) {
         modalClose.focus();
     } catch (error) {
         console.error("Erro ao abrir modal:", error.message, error.stack);
-        alert("Erro ao carregar as imagens. Tente novamente.");
+        const feedback = document.createElement('div');
+        feedback.className = 'feedback-message feedback-error';
+        feedback.textContent = "Erro ao carregar as imagens. Tente novamente.";
+        document.body.appendChild(feedback);
+        feedback.style.display = 'block';
+        setTimeout(() => feedback.remove(), 3000);
     }
 }
 
@@ -551,6 +625,7 @@ if (searchInput) {
             return;
         }
         currentPage = 1;
+        shuffledProducts = []; // Limpar cache ao aplicar busca
         console.log(`Busca automática disparada: ${currentSearch}`);
         carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
     }, 300);
@@ -565,6 +640,7 @@ if (searchInput) {
                 return;
             }
             currentPage = 1;
+            shuffledProducts = []; // Limpar cache ao aplicar busca
             console.log(`Busca via Enter: ${currentSearch}`);
             carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
         }
@@ -574,6 +650,7 @@ if (searchInput) {
         if (searchInput.value.trim() === "") {
             currentSearch = "";
             currentPage = 1;
+            shuffledProducts = []; // Limpar cache ao limpar busca
             console.log("Campo de busca vazio, recarregando todos os produtos");
             carregarProdutos(currentCategory, currentStore, currentPage, "");
         }
@@ -588,6 +665,7 @@ document.querySelectorAll(".category-item").forEach(item => {
         currentCategory = item.dataset.categoria;
         currentPage = 1;
         currentSearch = "";
+        shuffledProducts = []; // Limpar cache ao mudar categoria
         searchInput.value = "";
         console.log(`Filtro de categoria aplicado: ${currentCategory}`);
         carregarProdutos(currentCategory, currentStore, currentPage, "");
@@ -602,6 +680,7 @@ document.querySelectorAll(".store-card").forEach(card => {
         currentStore = card.dataset.loja;
         currentPage = 1;
         currentSearch = "";
+        shuffledProducts = []; // Limpar cache ao mudar loja
         searchInput.value = "";
         console.log(`Filtro de loja aplicado: ${currentStore}`);
         carregarProdutos(currentCategory, currentStore, currentPage, "");
@@ -623,9 +702,10 @@ document.getElementById("modalNext")?.addEventListener("click", () => moveModalC
 // Socket.IO eventos
 socket.on('connect', () => console.log('Conectado ao Socket.IO'));
 socket.on('disconnect', () => console.log('Desconectado do Socket.IO'));
-socket.on('novoProduto', (produto) => {
-    console.log('Novo produto detectado:', produto);
+socket.on('novoProduto', () => {
+    console.log('Novo produto detectado');
     currentPage = 1;
+    shuffledProducts = []; // Limpar cache ao adicionar produto
     carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
     if (window.location.pathname.includes('admin-xyz-123.html')) {
         carregarProdutosAdmin();
@@ -634,6 +714,7 @@ socket.on('novoProduto', (produto) => {
 socket.on('produtoAtualizado', () => {
     console.log('Produto atualizado, recarregando lista');
     currentPage = 1;
+    shuffledProducts = []; // Limpar cache ao atualizar produto
     carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
     if (window.location.pathname.includes('admin-xyz-123.html')) {
         carregarProdutosAdmin();
@@ -642,6 +723,7 @@ socket.on('produtoAtualizado', () => {
 socket.on('produtoExcluido', () => {
     console.log('Produto excluído, recarregando lista');
     currentPage = 1;
+    shuffledProducts = []; // Limpar cache ao excluir produto
     carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
     if (window.location.pathname.includes('admin-xyz-123.html')) {
         carregarProdutosAdmin();
@@ -654,7 +736,7 @@ async function testarRenderizacao() {
     const grid = document.getElementById('grid-produtos');
     grid.innerHTML = '';
     try {
-        const response = await fetch('https://minha-api-produtos.onrender.com/api/produtos?page=1&limit=12', {
+        const response = await fetch(`${API_URL}/api/produtos?page=1&limit=12`, {
             cache: 'no-store',
             headers: {
                 'Accept': 'application/json'
@@ -686,6 +768,7 @@ document.addEventListener("DOMContentLoaded", () => {
     currentCategory = 'todas';
     currentStore = 'todas';
     currentSearch = '';
+    shuffledProducts = []; // Inicializar vazio
     carregarProdutos('todas', 'todas', 1, '');
     if (window.location.pathname.includes('admin-xyz-123.html')) {
         carregarProdutosAdmin();
