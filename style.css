@@ -104,10 +104,11 @@ body {
 .products-section { margin-bottom: 2rem; }
 .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; margin-top: 1rem; visibility: visible !important; opacity: 1 !important; }
 .produto-card {
-  background: var(--background-primary); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); padding: 0.75rem; border: 1px solid var(--border-color); display: flex; flex-direction: column; transition: var(--transition); min-height: 280px;
+  background: var(--background-primary); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); padding: 0.75rem; display: flex; flex-direction: column; transition: var(--transition); min-height: 280px;
+  /* Removida a borda do cartão */
 }
 .produto-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
-.produto-card .carrossel { position: relative; height: 160px; } /* Reduzido de 220px para estilo Mercado Livre */
+.produto-card .carrossel { position: relative; height: 160px; /* Estilo Mercado Livre */ }
 .carrossel-imagens { display: flex; width: 100%; height: 100%; transition: transform 0.3s ease; }
 .carrossel-imagens img { width: 100%; height: 100%; object-fit: contain; flex: 0 0 100%; cursor: pointer; }
 .carrossel-prev, .carrossel-next { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; padding: 0.4rem; cursor: pointer; font-size: 1rem; transition: var(--transition); }
