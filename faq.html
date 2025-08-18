@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FAQ - Centro de Compra</title>
+  <meta name="description" content="Perguntas Frequentes do Centro de Compra: como funcionam os links de afiliado, preços, entrega, garantia e mais." />
+
+  <!-- SEO: FAQ Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "O Centro de Compra vende produtos diretamente?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Não. Somos um site de afiliados que reúne ofertas de lojas parceiras como Amazon, Shopee, Magalu e outras."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Comprar pelos links tem algum custo adicional?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Não. Você paga exatamente o mesmo preço que pagaria na loja parceira."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Quem é responsável pela entrega e garantia?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A entrega, garantia e suporte são de responsabilidade exclusiva da loja parceira onde a compra foi realizada."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Os preços exibidos estão sempre atualizados?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Buscamos manter tudo atualizado, mas preços e condições podem mudar a qualquer momento conforme as lojas."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Como o Centro de Compra ganha dinheiro?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Recebemos comissão quando você compra através dos nossos links de afiliado. Isso não altera o preço para você."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Preciso me cadastrar para comprar?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Não. As compras acontecem diretamente nas lojas parceiras; não é necessário cadastro no nosso site."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <style>
+    :root{
+      --blue-600:#1e40af; /* primário */
+      --blue-700:#1d4ed8; /* hover */
+      --blue-50:#eff6ff;  /* fundo suave */
+      --text:#1f2937;
+      --muted:#6b7280;
+      --card:#ffffff;
+      --border:#e5e7eb;
+      --radius:16px;
+      --shadow:0 8px 24px rgba(0,0,0,.08);
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+      color:var(--text);
+      background:linear-gradient(180deg,var(--blue-50),#fff);
+    }
+
+    header{
+      background:var(--card);
+      border-bottom:1px solid var(--border);
+      position:sticky;top:0;z-index:10;
+    }
+    .wrap{max-width:980px;margin:0 auto;padding:16px;}
+    .brand{
+      display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--text);
+    }
+    .logo{
+      width:40px;height:40px;border-radius:50%;
+      background:linear-gradient(135deg,var(--blue-600),var(--blue-700));
+      display:grid;place-items:center;color:white;font-weight:800;
+      box-shadow:var(--shadow);
+    }
+    .brand span{font-weight:700;font-size:1.05rem}
+
+    main{padding:32px 16px;}
+    .hero{
+      text-align:center;margin-bottom:28px;
+    }
+    .title{
+      font-size:clamp(1.6rem,3.5vw,2.2rem);
+      margin:0 0 8px;color:var(--blue-600);
+    }
+    .subtitle{
+      margin:0 auto;color:var(--muted);max-width:720px;
+    }
+
+    .faq{
+      max-width:980px;margin:28px auto;display:grid;gap:12px;
+    }
+    .item{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .q{
+      width:100%;text-align:left;background:transparent;border:0;
+      padding:18px 20px;cursor:pointer;display:flex;align-items:center;gap:12px;
+      font-weight:600;color:var(--text);
+    }
+    .q:focus{outline:3px solid #93c5fd;outline-offset:2px;border-radius:8px}
+    .badge{
+      background:var(--blue-600);color:#fff;font-size:.75rem;font-weight:700;
+      padding:4px 10px;border-radius:999px;
+    }
+    .icon{
+      margin-left:auto;transition:transform .25s ease;
+    }
+    .item[open] .icon{transform:rotate(180deg)}
+
+    .a{
+      padding:0 20px 18px;color:#374151;line-height:1.6;
+      border-top:1px dashed var(--border);background:#fff;
+    }
+
+    .tip{
+      margin:28px auto 0;max-width:980px;
+      padding:16px 20px;border:1px solid var(--border);background:#fff;border-radius:12px;
+    }
+    .tip strong{color:var(--blue-600)}
+    footer{
+      padding:24px 16px;color:var(--muted);text-align:center;
+    }
+    .btn-primary{
+      display:inline-block;margin-top:12px;text-decoration:none;
+      background:var(--blue-600);color:#fff;padding:10px 14px;border-radius:12px;
+      border:1px solid transparent;transition:.2s;
+    }
+    .btn-primary:hover{background:var(--blue-700)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <a class="brand" href="https://www.centrodecompra.com.br" rel="home">
+        <div class="logo" aria-hidden="true">CC</div>
+        <span>Centro de Compra</span>
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1 class="title">Perguntas Frequentes (FAQ)</h1>
+      <p class="subtitle">Tire suas principais dúvidas sobre como funcionamos, preços, entregas e nossa política de afiliados.</p>
+      <a class="btn-primary" href="https://www.centrodecompra.com.br">Voltar à página inicial</a>
+    </section>
+
+    <section class="faq" role="list">
+      <!-- Item 1 -->
+      <details class="item" role="listitem">
+        <summary class="q">
+          <span class="badge">1</span>
+          O Centro de Compra vende produtos diretamente?
+          <svg class="icon" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </summary>
+        <div class="a">
+          Não. Somos um site de afiliados que reúne ofertas de diversas lojas parceiras como Amazon, Shopee, Magalu, entre outras.
+        </div>
+      </details>
+
+      <!-- Item 2 -->
+      <details class="item" role="listitem">
+        <summary class="q">
+          <span class="badge">2</span>
+          Comprar pelos links do site tem algum custo adicional?
+          <svg class="icon" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </summary>
+        <div class="a">
+          Não. Você paga exatamente o mesmo preço que pagaria comprando diretamente na loja parceira.
+        </div>
+      </details>
+
+      <!-- Item 3 -->
+      <details class="item" role="listitem">
+        <summary class="q">
+          <span class="badge">3</span>
+          Quem é responsável pela entrega e garantia dos produtos?
+          <svg class="icon" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </summary>
+        <div class="a">
+          A entrega, garantia e suporte são de responsabilidade exclusiva da loja parceira onde a compra foi realizada.
+        </div>
+      </details>
+
+      <!-- Item 4 -->
+      <details class="item" role="listitem">
+        <summary class="q">
+          <span class="badge">4</span>
+          Os preços exibidos aqui estão sempre atualizados?
+          <svg class="icon" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </summary>
+        <div class="a">
+          Buscamos manter tudo atualizado, mas preços e condições podem mudar a qualquer momento conforme as lojas parceiras.
+        </div>
+      </details>
+
+      <!-- Item 5 -->
+      <details class="item" role="listitem">
+        <summary class="q">
+          <span class="badge">5</span>
+          Como o Centro de Compra ganha dinheiro?
+          <svg class="icon" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </summary>
+        <div class="a">
+          Recebemos uma comissão quando você compra através dos nossos links de afiliado. Isso não altera o preço para você.
+        </div>
+      </details>
+
+      <!-- Item 6 -->
+      <details class="item" role="listitem">
+        <summary class="q">
+          <span class="badge">6</span>
+          Preciso me cadastrar para comprar?
+          <svg class="icon" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </summary>
+        <div class="a">
+          Não. As compras são feitas diretamente nas lojas parceiras, sem necessidade de cadastro no nosso site.
+        </div>
+      </details>
+    </section>
+
+    <div class="tip">
+      <strong>Aviso de Afiliado:</strong> Ao comprar pelos nossos links, podemos receber uma comissão. O preço é o mesmo para você, sem custo extra.
+    </div>
+  </main>
+
+  <footer>
+    © <span id="y"></span> Centro de Compra — www.centrodecompra.com.br
+  </footer>
+
+  <script>
+    // Atualiza ano no rodapé
+    document.getElementById('y').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
