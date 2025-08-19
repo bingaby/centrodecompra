@@ -53,6 +53,7 @@
         <option value="pet-shop">Pet Shop</option>
         <option value="celulares">Celulares</option>
         <option value="eletrodomesticos">Eletrodomésticos</option>
+        <option value="infantil">Infantil</option>
       </select>
 
       <label for="loja">Loja</label>
@@ -134,6 +135,24 @@
           return;
         }
 
+        // Mapeamento para exibir rótulos amigáveis na tabela
+        const categoriaMap = {
+          'eletronicos': 'Eletrônicos',
+          'moda': 'Moda',
+          'casa-e-decoracao': 'Casa e Decoração',
+          'esportes': 'Esportes',
+          'beleza': 'Beleza',
+          'livros': 'Livros',
+          'brinquedos': 'Brinquedos',
+          'saude': 'Saúde',
+          'automotivo': 'Automotivo',
+          'alimentos': 'Alimentos',
+          'pet-shop': 'Pet Shop',
+          'celulares': 'Celulares',
+          'eletrodomesticos': 'Eletrodomésticos',
+          'infantil': 'Infantil'
+        };
+
         produtos.forEach(produto => {
           const tr = document.createElement('tr');
           const imagem = produto.imagens && produto.imagens[0] 
@@ -143,7 +162,7 @@
             <td><img src="${imagem}" class="produto-imagem" alt="${produto.nome}" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'"></td>
             <td>${produto.nome || 'Sem nome'}</td>
             <td>R$ ${produto.preco || '0.00'}</td>
-            <td>${produto.categoria || 'Sem categoria'}</td>
+            <td>${categoriaMap[produto.categoria] || 'Sem categoria'}</td>
             <td>${produto.loja || 'Sem loja'}</td>
             <td><a href="${produto.link || '#'}" target="_blank">Link</a></td>
             <td>
