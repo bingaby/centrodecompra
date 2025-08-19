@@ -1,4 +1,4 @@
-const VERSION = "1.0.20"; // Atualizado para embaralhamento de todos os produtos
+const VERSION = "1.0.21"; // Atualizado para alinhar categorias e lojas
 const API_URL = 'https://minha-api-produtos.onrender.com';
 let currentImages = [];
 let currentImageIndex = 0;
@@ -8,11 +8,40 @@ let isLoading = false;
 let currentCategory = "todas";
 let currentStore = "todas";
 let currentSearch = "";
-let totalPages = 1; // Total de páginas
-let shuffledProducts = []; // Cache dos produtos embaralhados
+let totalPages = 1;
+let shuffledProducts = [];
 
 // Conectar ao Socket.IO
 const socket = io(API_URL, { transports: ['websocket'], reconnectionAttempts: 5 });
+
+// Mapeamento de categorias para exibição (valores do backend para rótulos amigáveis)
+const categoriaMap = {
+    'eletronicos': 'Eletrônicos',
+    'moda': 'Moda',
+    'casa-e-decoracao': 'Casa e Decoração',
+    'esportes': 'Esportes',
+    'beleza': 'Beleza',
+    'livros': 'Livros',
+    'brinquedos': 'Brinquedos',
+    'saude': 'Saúde',
+    'automotivo': 'Automotivo',
+    'alimentos': 'Alimentos',
+    'pet-shop': 'Pet Shop',
+    'celulares': 'Celulares',
+    'eletrodomesticos': 'Eletrodomésticos',
+    'infantil': 'Infantil'
+};
+
+// Mapeamento de lojas para exibição
+const lojaMap = {
+    'amazon': 'Amazon',
+    'shein': 'Shein',
+    'shopee': 'Shopee',
+    'magalu': 'Magalu',
+    'mercadolivre': 'Mercado Livre',
+    'alibaba': 'Alibaba',
+    'aliexpress': 'AliExpress'
+};
 
 // Função para embaralhar array (algoritmo Fisher-Yates)
 function shuffleArray(array) {
@@ -161,8 +190,7 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
     loadMoreButton.style.display = "none";
 
     try {
-        // Se for a inicialização (sem filtros), carregar todos os produtos
-        let url = `${API_URL}/api/produtos?page=1&limit=1000`; // Carregar todos os produtos para embaralhamento
+        let url = `${API_URL}/api/produtos?page=1&limit=1000`;
         if (categoria !== 'todas') url = `${API_URL}/api/produtos?page=${page}&limit=${productsPerPage}&categoria=${encodeURIComponent(categoria)}`;
         if (loja !== 'todas') url += `&loja=${encodeURIComponent(loja)}`;
         if (busca) url += `&busca=${encodeURIComponent(busca)}`;
@@ -189,14 +217,11 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
         let products = data.data;
         let total = data.total || products.length;
 
-        // Se não houver filtros (inicialização), embaralhar todos os produtos e paginar
         if (categoria === 'todas' && loja === 'todas' && !busca) {
             shuffledProducts = shuffleArray([...products]);
             total = shuffledProducts.length;
-            // Paginar os produtos embaralhados
             products = shuffledProducts.slice((page - 1) * productsPerPage, page * productsPerPage);
         } else {
-            // Aplicar filtros e busca
             if (busca) {
                 products = products.filter(produto =>
                     produto.nome && produto.nome.toLowerCase().includes(busca.toLowerCase())
@@ -247,7 +272,7 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
                         ` : ""}
                     </div>
                     <span class="produto-nome">${produto.nome}</span>
-                    <span class="descricao">Loja: ${produto.loja}</span>
+                    <span class="descricao">Loja: ${lojaMap[produto.loja] || produto.loja}</span>
                     <a href="${produto.link}" target="_blank" class="tarja-preco tarja-${lojaClass}" aria-label="Clique para ver o preço de ${produto.nome} na loja">
                         <i class="fas fa-shopping-cart"></i> Ver Preço
                     </a>
@@ -274,7 +299,7 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
 
 // Função para carregar produtos no admin
 async function carregarProdutosAdmin() {
-    const tableBody = document.querySelector('.products-table');
+    const tableBody = document.querySelector('.produtos-table tbody');
     if (!tableBody) return;
 
     try {
@@ -294,8 +319,8 @@ async function carregarProdutosAdmin() {
                 <td><img src="${produto.imagens[0] || 'https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'}" alt="${produto.nome}" class="produto-imagem" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'" /></td>
                 <td>${produto.nome}</td>
                 <td>R$ ${produto.preco || '0.00'}</td>
-                <td>${produto.categoria}</td>
-                <td>${produto.loja}</td>
+                <td>${categoriaMap[produto.categoria] || produto.categoria}</td>
+                <td>${lojaMap[produto.loja] || produto.loja}</td>
                 <td><a href="${produto.link}" target="_blank">Link</a></td>
                 <td>
                     <button class="btn-editar" onclick="editarProduto('${produto.id}')">Editar</button>
@@ -311,19 +336,35 @@ async function carregarProdutosAdmin() {
 
 // Função para salvar/editar produto
 const validCategories = [
-    'Eletrônicos', 'Moda', 'Casa', 'Esportes', 'Beleza',
-    'Livros', 'Brinquedos', 'Saúde', 'Automotivo',
-    'Alimentos', 'Pet Shop', 'Celulares'
+    'eletronicos',
+    'moda',
+    'casa-e-decoracao',
+    'esportes',
+    'beleza',
+    'livros',
+    'brinquedos',
+    'saude',
+    'automotivo',
+    'alimentos',
+    'pet-shop',
+    'celulares',
+    'eletrodomesticos',
+    'infantil'
 ];
 
 const validStores = [
-    'Amazon', 'Mercado Livre', 'Shopee', 'Magalu',
-    'Shein', 'Alibaba', 'AliExpress'
+    'amazon',
+    'shein',
+    'shopee',
+    'magalu',
+    'mercadolivre',
+    'alibaba',
+    'aliexpress'
 ];
 
 async function salvarProduto(event) {
     event.preventDefault();
-    const form = document.getElementById('product-form');
+    const form = document.getElementById('cadastro-produto');
     if (!form) return;
 
     const formData = new FormData(form);
@@ -400,7 +441,7 @@ async function salvarProduto(event) {
             delete form.dataset.id;
             document.getElementById('submit-btn').textContent = 'Cadastrar Produto';
             carregarProdutosAdmin();
-            shuffledProducts = []; // Limpar cache para recarregar produtos embaralhados
+            shuffledProducts = [];
             carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
         }
     } catch (error) {
@@ -428,7 +469,7 @@ async function editarProduto(id) {
         if (data.status !== 'success' || !data.data) throw new Error('Produto não encontrado');
 
         const produto = data.data;
-        const form = document.getElementById('product-form');
+        const form = document.getElementById('cadastro-produto');
         form.dataset.id = id;
         form.querySelector('#nome').value = produto.nome || '';
         form.querySelector('#categoria').value = produto.categoria || '';
@@ -471,7 +512,7 @@ async function excluirProduto(id) {
 
         if (data.status === 'success') {
             carregarProdutosAdmin();
-            shuffledProducts = []; // Limpar cache para recarregar produtos embaralhados
+            shuffledProducts = [];
             carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
         }
     } catch (error) {
@@ -625,7 +666,7 @@ if (searchInput) {
             return;
         }
         currentPage = 1;
-        shuffledProducts = []; // Limpar cache ao aplicar busca
+        shuffledProducts = [];
         console.log(`Busca automática disparada: ${currentSearch}`);
         carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
     }, 300);
@@ -640,7 +681,7 @@ if (searchInput) {
                 return;
             }
             currentPage = 1;
-            shuffledProducts = []; // Limpar cache ao aplicar busca
+            shuffledProducts = [];
             console.log(`Busca via Enter: ${currentSearch}`);
             carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
         }
@@ -650,7 +691,7 @@ if (searchInput) {
         if (searchInput.value.trim() === "") {
             currentSearch = "";
             currentPage = 1;
-            shuffledProducts = []; // Limpar cache ao limpar busca
+            shuffledProducts = [];
             console.log("Campo de busca vazio, recarregando todos os produtos");
             carregarProdutos(currentCategory, currentStore, currentPage, "");
         }
@@ -665,7 +706,7 @@ document.querySelectorAll(".category-item").forEach(item => {
         currentCategory = item.dataset.categoria;
         currentPage = 1;
         currentSearch = "";
-        shuffledProducts = []; // Limpar cache ao mudar categoria
+        shuffledProducts = [];
         searchInput.value = "";
         console.log(`Filtro de categoria aplicado: ${currentCategory}`);
         carregarProdutos(currentCategory, currentStore, currentPage, "");
@@ -680,7 +721,7 @@ document.querySelectorAll(".store-card").forEach(card => {
         currentStore = card.dataset.loja;
         currentPage = 1;
         currentSearch = "";
-        shuffledProducts = []; // Limpar cache ao mudar loja
+        shuffledProducts = [];
         searchInput.value = "";
         console.log(`Filtro de loja aplicado: ${currentStore}`);
         carregarProdutos(currentCategory, currentStore, currentPage, "");
@@ -705,27 +746,27 @@ socket.on('disconnect', () => console.log('Desconectado do Socket.IO'));
 socket.on('novoProduto', () => {
     console.log('Novo produto detectado');
     currentPage = 1;
-    shuffledProducts = []; // Limpar cache ao adicionar produto
+    shuffledProducts = [];
     carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
-    if (window.location.pathname.includes('admin-xyz-123.html')) {
+    if (window.location.pathname.includes('admin.html')) {
         carregarProdutosAdmin();
     }
 });
 socket.on('produtoAtualizado', () => {
     console.log('Produto atualizado, recarregando lista');
     currentPage = 1;
-    shuffledProducts = []; // Limpar cache ao atualizar produto
+    shuffledProducts = [];
     carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
-    if (window.location.pathname.includes('admin-xyz-123.html')) {
+    if (window.location.pathname.includes('admin.html')) {
         carregarProdutosAdmin();
     }
 });
 socket.on('produtoExcluido', () => {
     console.log('Produto excluído, recarregando lista');
     currentPage = 1;
-    shuffledProducts = []; // Limpar cache ao excluir produto
+    shuffledProducts = [];
     carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
-    if (window.location.pathname.includes('admin-xyz-123.html')) {
+    if (window.location.pathname.includes('admin.html')) {
         carregarProdutosAdmin();
     }
 });
@@ -751,7 +792,7 @@ async function testarRenderizacao() {
             card.innerHTML = `
                 <img src="${produto.imagens[0]}" alt="${produto.nome}">
                 <span>${produto.nome}</span>
-                <span>Loja: ${produto.loja}</span>
+                <span>Loja: ${lojaMap[produto.loja] || produto.loja}</span>
             `;
             grid.appendChild(card);
             console.log('Card de teste:', card.outerHTML);
@@ -768,10 +809,10 @@ document.addEventListener("DOMContentLoaded", () => {
     currentCategory = 'todas';
     currentStore = 'todas';
     currentSearch = '';
-    shuffledProducts = []; // Inicializar vazio
+    shuffledProducts = [];
     carregarProdutos('todas', 'todas', 1, '');
-    if (window.location.pathname.includes('admin-xyz-123.html')) {
+    if (window.location.pathname.includes('admin.html')) {
         carregarProdutosAdmin();
-        document.getElementById('product-form')?.addEventListener('submit', salvarProduto);
+        document.getElementById('cadastro-produto')?.addEventListener('submit', salvarProduto);
     }
 });
