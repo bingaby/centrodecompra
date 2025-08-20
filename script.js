@@ -98,12 +98,11 @@ function adicionarProduto(produto) {
         ${carrossel}
         <a href="${produto.link}" target="_blank" class="produto-nome">${produto.nome}</a>
         <span class="descricao">Loja: ${produto.loja.charAt(0).toUpperCase() + produto.loja.slice(1)}</span>
-        <a href="${produto.link}" target="_blank" class="tarja-preco tarja-${produto.loja}">R$ ${produto.preco} - Ver Oferta</a>
+        <a href="${produto.link}" target="_blank" class="tarja-preco tarja-${produto.loja}">Clique para ver o preço</a>
     `;
     gridProdutos.appendChild(card);
     console.log('Card adicionado:', produto.nome);
 
-    // Inicializar carrossel
     if (imagens.length > 1) {
         inicializarCarrossel(card);
     }
@@ -176,7 +175,6 @@ function abrirModal(imagens) {
     modal.classList.add('active');
     modalImagens.style.transform = `translateX(0%)`;
 
-    // Inicializar navegação do modal
     document.getElementById('modalPrev').onclick = () => {
         if (currentIndex > 0) {
             currentIndex--;
@@ -235,7 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Carregar produtos iniciais
     carregarProdutos();
 
-    // Evento para abrir/fechar sidebar
+    // Sidebar
     const categoriesToggle = document.getElementById('categories-toggle');
     const categoriesSidebar = document.getElementById('categories-sidebar');
     const closeSidebar = document.getElementById('close-sidebar');
