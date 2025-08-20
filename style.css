@@ -102,7 +102,7 @@ body {
 
 /* Produtos */
 .products-section { margin-bottom: 2rem; }
-.products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; margin-top: 1rem; visibility: visible !important; opacity: 1 !important; }
+.products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; margin-top: 1rem; margin-bottom: 40px; visibility: visible !important; opacity: 1 !important; } /* Adicionada margem inferior */
 .produto-card {
   background: var(--background-primary); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); padding: 0.75rem; display: flex; flex-direction: column; transition: var(--transition); min-height: 280px;
 }
@@ -128,6 +128,43 @@ body {
   border-radius: var(--radius-md); text-decoration: none; font-size: 0.85rem; width: 100%; max-width: 150px; /* Alinhado com largura fixa */
 }
 .tarja-preco:hover { background: var(--primary-hover); }
+
+/* Estilos para o contêiner de anúncios */
+.ad-container {
+  margin: 40px auto;
+  text-align: center;
+  border: 1px solid var(--border-color);
+  background-color: #f9f9f9;
+  padding: 10px;
+  border-radius: var(--radius-md);
+}
+.ad-label {
+  display: block;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+/* Estilo para o botão Ver Mais */
+.load-more-btn {
+  background-color: var(--secondary-color); /* Verde para diferenciar de anúncios */
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  margin: 20px auto;
+  border: 2px solid var(--secondary-color);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.load-more-btn:hover {
+  background-color: #2f855a; /* Tom mais escuro de verde */
+  border-color: #2f855a;
+}
 
 /* Modal */
 #imageModal {
@@ -196,4 +233,5 @@ body {
   }
   .store-card::after { background: #4a5568; }
   .modal-container { background: var(--background-primary); }
+  .ad-container { background-color: #2d3748; }
 }
