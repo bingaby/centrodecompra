@@ -5,8 +5,12 @@
     box-sizing: border-box;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 body {
-    font-family: Arial, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
     line-height: 1.6;
     background-color: #f8f9fa;
     color: #333;
@@ -58,6 +62,11 @@ main {
     text-decoration: none;
     font-size: 14px;
     margin-left: 20px;
+    transition: color 0.2s;
+}
+
+.header-links .header-link:hover {
+    color: #0056b3;
 }
 
 .header-links .header-link i {
@@ -66,6 +75,7 @@ main {
 
 .header-main {
     padding: 20px 0;
+    background-color: #fff;
 }
 
 .header-content {
@@ -80,6 +90,7 @@ main {
 .site-title {
     font-size: 28px;
     color: #333;
+    font-weight: bold;
 }
 
 .search-section {
@@ -100,6 +111,11 @@ main {
     border: 1px solid #ccc;
     border-radius: 5px 0 0 5px;
     font-size: 16px;
+    outline: none;
+}
+
+.search-input:focus {
+    border-color: #007bff;
 }
 
 .search-btn {
@@ -109,6 +125,7 @@ main {
     padding: 10px 15px;
     border-radius: 0 5px 5px 0;
     cursor: pointer;
+    transition: background 0.2s;
 }
 
 .search-btn:hover {
@@ -128,6 +145,7 @@ main {
     display: flex;
     align-items: center;
     gap: 5px;
+    transition: background 0.2s;
 }
 
 .whatsapp-btn {
@@ -169,6 +187,7 @@ main {
     cursor: pointer;
     border-radius: 5px;
     font-size: 16px;
+    transition: background 0.2s;
 }
 
 .categories-btn:hover {
@@ -184,13 +203,14 @@ main {
     text-decoration: none;
     margin: 0 15px;
     font-size: 16px;
+    transition: border 0.2s;
 }
 
 .nav-link:hover, .nav-link.active {
     border-bottom: 2px solid #fff;
 }
 
-/* Sidebar */
+/* Overlay */
 .overlay {
     display: none;
     position: fixed;
@@ -206,6 +226,7 @@ main {
     display: block;
 }
 
+/* Sidebar */
 .categories-sidebar {
     position: fixed;
     top: 0;
@@ -241,6 +262,11 @@ main {
     font-size: 24px;
     cursor: pointer;
     color: #333;
+    transition: color 0.2s;
+}
+
+.close-sidebar:hover {
+    color: #007bff;
 }
 
 .categories-list {
@@ -256,6 +282,7 @@ main {
     align-items: center;
     gap: 10px;
     color: #333;
+    transition: background 0.2s, color 0.2s;
 }
 
 .category-item:hover, .category-item.active {
@@ -268,7 +295,7 @@ main {
     color: #007bff;
 }
 
-.category-item.active i {
+.category-item.active i, .category-item:hover i {
     color: #fff;
 }
 
@@ -331,12 +358,34 @@ main {
     text-align: center;
     padding: 15px;
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: transform 0.2s, border-color 0.2s;
+    position: relative;
 }
 
 .store-card:hover, .store-card.active {
     border-color: #007bff;
     transform: translateY(-5px);
+}
+
+.store-card::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+}
+
+.store-card:hover::after {
+    opacity: 1;
 }
 
 .store-logo {
@@ -377,9 +426,22 @@ main {
     text-align: center;
 }
 
+.adsbygoogle {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
 .loading-container {
     text-align: center;
     padding: 20px;
+}
+
+.loading-spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
 }
 
 .spinner {
@@ -389,7 +451,6 @@ main {
     width: 40px;
     height: 40px;
     animation: spin 1s linear infinite;
-    margin: 0 auto 10px;
 }
 
 @keyframes spin {
@@ -404,6 +465,14 @@ main {
     padding: 20px;
     text-align: center;
     margin: 20px 0;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.empty-state.active, .error-state.active {
+    display: flex;
 }
 
 .empty-icon, .error-icon {
@@ -425,6 +494,7 @@ main {
     display: inline-flex;
     align-items: center;
     gap: 5px;
+    transition: background 0.2s;
 }
 
 .btn-primary:hover {
@@ -454,6 +524,7 @@ main {
     width: 100%;
     height: 200px;
     object-fit: cover;
+    background: url('logos/placeholder.png') center/cover no-repeat;
 }
 
 .produto-nome {
@@ -462,6 +533,11 @@ main {
     font-size: 16px;
     font-weight: bold;
     color: #333;
+    text-decoration: none;
+}
+
+.produto-nome:hover {
+    color: #007bff;
 }
 
 .descricao {
@@ -479,6 +555,7 @@ main {
     text-align: center;
     text-decoration: none;
     font-size: 16px;
+    transition: background 0.2s;
 }
 
 .tarja-preco:hover {
@@ -499,6 +576,68 @@ main {
 .tarja-alibaba:hover { background: #e65f00; }
 .tarja-aliexpress { background: #e62e2e; }
 .tarja-aliexpress:hover { background: #cc2626; }
+
+/* Carrossel */
+.carrossel {
+    position: relative;
+    overflow: hidden;
+}
+
+.carrossel-imagens {
+    display: flex;
+    transition: transform 0.3s ease;
+}
+
+.carrossel-imagens img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.carrossel-prev, .carrossel-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.carrossel-prev:hover, .carrossel-next:hover {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.carrossel-prev {
+    left: 10px;
+}
+
+.carrossel-next {
+    right: 10px;
+}
+
+.carrossel-dots {
+    text-align: center;
+    padding: 10px 0;
+}
+
+.carrossel-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background: #ccc;
+    border-radius: 50%;
+    margin: 0 5px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.carrossel-dot.ativo {
+    background: #007bff;
+}
 
 /* Modal */
 .image-modal {
@@ -541,6 +680,11 @@ main {
     cursor: pointer;
     background: none;
     border: none;
+    transition: color 0.2s;
+}
+
+.modal-close:hover {
+    color: #ccc;
 }
 
 .modal-carousel {
@@ -557,6 +701,7 @@ main {
     height: auto;
     max-height: 500px;
     object-fit: contain;
+    flex-shrink: 0;
 }
 
 .carousel-btn {
@@ -568,10 +713,20 @@ main {
     border: none;
     padding: 10px;
     cursor: pointer;
+    transition: background 0.2s;
 }
 
-.carousel-btn.prev { left: 10px; }
-.carousel-btn.next { right: 10px; }
+.carousel-btn:hover {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.carousel-btn.prev {
+    left: 10px;
+}
+
+.carousel-btn.next {
+    right: 10px;
+}
 
 .carousel-dots {
     text-align: center;
@@ -586,6 +741,7 @@ main {
     border-radius: 50%;
     margin: 0 5px;
     cursor: pointer;
+    transition: background 0.2s;
 }
 
 .carousel-dot.ativo {
@@ -608,6 +764,8 @@ main {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    font-size: 16px;
+    transition: background 0.2s;
 }
 
 .pagination-button:hover {
@@ -624,6 +782,7 @@ main {
     font-weight: bold;
 }
 
+/* Botão Carregar Mais */
 .load-more-container {
     text-align: center;
     margin: 20px 0;
@@ -640,6 +799,7 @@ main {
     display: inline-flex;
     align-items: center;
     gap: 5px;
+    transition: background 0.2s;
 }
 
 .load-more-btn:hover {
@@ -682,6 +842,7 @@ main {
 .footer-section a {
     color: #fff;
     text-decoration: none;
+    transition: text-decoration 0.2s;
 }
 
 .footer-section a:hover {
@@ -696,6 +857,7 @@ main {
 .social-icon {
     width: 30px;
     height: 30px;
+    object-fit: contain;
 }
 
 .payment-methods {
@@ -724,6 +886,27 @@ main {
 .footer-copyright {
     font-size: 12px;
     text-align: center;
+}
+
+/* Feedback Messages (usado no script.js para admin) */
+.feedback-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px;
+    border-radius: 5px;
+    z-index: 1000;
+    display: none;
+}
+
+.feedback-success {
+    background: #d4edda;
+    color: #155724;
+}
+
+.feedback-error {
+    background: #f8d7da;
+    color: #721c24;
 }
 
 /* Responsividade */
@@ -776,5 +959,38 @@ main {
 
     .modal-container {
         width: 95%;
+    }
+
+    .banner-text h1 {
+        font-size: 28px;
+    }
+
+    .banner-text p {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .site-title {
+        font-size: 24px;
+    }
+
+    .categories-btn {
+        font-size: 14px;
+        padding: 8px 15px;
+    }
+
+    .nav-link {
+        font-size: 14px;
+        margin: 0 10px;
+    }
+
+    .store-logo {
+        width: 40px;
+        height: 40px;
+    }
+
+    .store-name {
+        font-size: 14px;
     }
 }
