@@ -84,17 +84,27 @@ main {
   gap: 0.4rem;
 }
 
-.header-links .header-link {
+.header-links {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.header-link {
   color: white;
   text-decoration: none;
   display: flex;
   align-items: center;
   gap: 0.4rem;
+  font-size: 0.8rem;
   transition: var(--transition);
 }
 
-.header-links .header-link:hover {
+.header-link:hover {
   color: var(--primary-hover);
+}
+
+.header-link i {
+  font-size: 1rem;
 }
 
 .header-main {
@@ -608,7 +618,7 @@ main {
 
 .produto-card .carrossel {
   position: relative;
-  height: 150px; /* Altura menor, estilo Mercado Livre */
+  height: 150px;
   width: 100%;
   display: flex;
   align-items: center;
@@ -625,11 +635,12 @@ main {
 
 .carrossel-imagens img {
   width: 100%;
-  max-height: 120px; /* Imagem menor, centralizada */
+  max-height: 120px;
   object-fit: contain;
   flex: 0 0 100%;
   cursor: pointer;
   background: url('logos/placeholder.png') center/contain no-repeat;
+  border-radius: var(--radius-md);
 }
 
 .carrossel-prev,
@@ -847,7 +858,7 @@ main {
 
 .carousel-images img {
   max-width: 90vw;
-  max-height: 80vh; /* Imagem maior no modal */
+  max-height: 80vh;
   object-fit: contain;
   flex: 0 0 100%;
 }
@@ -1135,11 +1146,11 @@ main {
   }
 
   .produto-card .carrossel {
-    height: 120px; /* Altura menor para mobile */
+    height: 120px;
   }
 
   .carrossel-imagens img {
-    max-height: 100px; /* Imagem ainda menor em mobile */
+    max-height: 100px;
   }
 
   .modal-container {
@@ -1147,7 +1158,7 @@ main {
   }
 
   .carousel-images img {
-    max-height: 70vh; /* Ajustado para mobile */
+    max-height: 70vh;
   }
 
   .banner-text h1 {
@@ -1156,6 +1167,16 @@ main {
 
   .banner-text p {
     font-size: 0.9rem;
+  }
+
+  .header-links {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .social-links .social-icon {
+    width: 24px;
+    height: 24px;
   }
 }
 
@@ -1191,10 +1212,15 @@ main {
   }
 
   .produto-card .carrossel {
-    height: 100px; /* Ainda menor para telas pequenas */
+    height: 100px;
   }
 
   .carrossel-imagens img {
     max-height: 80px;
+  }
+
+  .social-links .social-icon {
+    width: 20px;
+    height: 20px;
   }
 }
