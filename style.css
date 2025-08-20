@@ -21,7 +21,7 @@
 }
 
 body {
-  font-family: "Roboto", "Inter", sans-serif; /* Adiciona Roboto como preferência, similar ao Mercado Livre */
+  font-family: "Roboto", "Inter", sans-serif;
   color: var(--text-primary);
   background: var(--background-secondary);
 }
@@ -413,7 +413,7 @@ body {
   display: flex;
   flex-direction: column;
   transition: var(--transition);
-  min-height: 280px;
+  min-height: 320px; /* Aumentado para acomodar textos mais longos */
 }
 
 .produto-card:hover {
@@ -423,7 +423,7 @@ body {
 
 .produto-card .carrossel {
   position: relative;
-  height: 160px; /* Estilo Mercado Livre */
+  height: 160px;
 }
 
 .carrossel-imagens {
@@ -493,26 +493,24 @@ body {
 
 .produto-nome {
   font-size: 0.95rem; /* ~15px, similar ao Mercado Livre */
-  font-weight: 600; /* Peso médio-negrito */
+  font-weight: 400; /* Remove negrito, peso normal */
   padding: 0.5rem 0;
-  line-height: 1.3; /* Altura de linha otimizada */
-  text-align: center; /* Centralizado */
+  line-height: 1.4; /* Aumenta ligeiramente para melhor legibilidade */
+  text-align: center; /* Mantém centralizado */
   color: var(--text-primary);
-  display: -webkit-box;
-  -webkit-line-clamp: 2; /* Limita a 2 linhas */
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis; /* Adiciona reticências para texto longo */
+  overflow: visible; /* Remove truncamento para mostrar texto completo */
+  text-overflow: unset; /* Remove reticências */
+  max-height: none; /* Remove qualquer limitação de altura */
 }
 
 .descricao {
-  font-size: 0.8rem; /* ~13px, para descrição sutil */
+  font-size: 0.8rem;
   color: var(--text-secondary);
   padding: 0 0.5rem 0.5rem;
-  text-align: center; /* Centralizado */
+  text-align: center;
   line-height: 1.4;
   display: -webkit-box;
-  -webkit-line-clamp: 3; /* Limita a 3 linhas */
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -522,15 +520,15 @@ body {
   display: block;
   padding: 0.5rem;
   margin: 0.5rem auto 0;
-  background: var(--primary-color); /* Fundo azul, similar ao Mercado Livre */
+  background: var(--primary-color);
   color: white;
   text-align: center;
   border-radius: var(--radius-md);
   text-decoration: none;
-  font-size: 0.9rem; /* ~14px, para destaque */
-  font-weight: 500; /* Peso médio, como no Mercado Livre */
+  font-size: 0.9rem;
+  font-weight: 500;
   width: 100%;
-  max-width: 160px; /* Largura fixa para consistência */
+  max-width: 160px;
   transition: var(--transition);
 }
 
@@ -799,11 +797,18 @@ body {
     max-width: 100%;
     max-height: 70vh;
   }
+  .produto-nome {
+    font-size: 0.9rem; /* Reduz ligeiramente o tamanho da fonte */
+    padding: 0.4rem 0;
+  }
 }
 
 @media (max-width: 480px) {
   .products-grid {
     grid-template-columns: 1fr;
+  }
+  .produto-nome {
+    font-size: 0.85rem; /* Ainda menor para telas muito pequenas */
   }
 }
 
