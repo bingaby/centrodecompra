@@ -8,7 +8,7 @@
     <meta name="author" content="Centro de Compra">
     <title>Centro de Compra - Melhores Ofertas Online</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/styles.css"> <!-- Ajustado para caminho absoluto; ajuste conforme necessário -->
+    <link rel="stylesheet" href="/styles.css"> <!-- Ajuste o caminho se necessário -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9781903408224276"
             crossorigin="anonymous"></script>
 </head>
@@ -66,7 +66,7 @@
 
         <div class="connection-status"></div>
 
-        <div class="ad-container" style="margin: 40px auto; text-align: center;">
+        <div class="ad-container">
             <span class="ad-label">Anúncio</span>
             <ins class="adsbygoogle"
                  style="display:block"
@@ -79,16 +79,16 @@
             </script>
         </div>
 
-        <div id="loading-spinner" style="display: none; text-align: center;">
+        <div id="loading-spinner" style="display: none;">
             <i class="fas fa-spinner fa-spin"></i> Carregando...
         </div>
 
-        <div id="mensagem-vazia" style="display: none; text-align: center;">
+        <div id="mensagem-vazia" style="display: none;">
             <h3>Nenhum produto encontrado</h3>
             <p>Tente ajustar os filtros, verificar a conexão ou explorar outras categorias.</p>
         </div>
 
-        <div id="error-message" style="display: none; text-align: center; color: red;">
+        <div id="error-message" style="display: none;">
             <h3>Erro</h3>
             <p>Não foi possível carregar os produtos.</p>
         </div>
@@ -97,10 +97,10 @@
 
         <div id="pagination-controls" class="pagination-controls"></div>
 
-        <button id="load-more" style="display: none; margin: 20px auto;">Carregar Mais</button>
+        <button id="load-more" style="display: none;">Carregar Mais</button>
     </main>
 
-    <div id="imageModal" class="modal" style="display: none;">
+    <div id="imageModal" class="modal">
         <span id="modal-close" class="modal-close" aria-label="Fechar modal">&times;</span>
         <div class="modal-content">
             <button id="modalPrev" class="carrossel-prev" aria-label="Imagem anterior"><i class="fas fa-chevron-left"></i></button>
@@ -115,13 +115,19 @@
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.1/socket.io.min.js"></script>
-    <script src="/script.js"></script> <!-- Ajustado para caminho absoluto; ajuste conforme necessário -->
+    <script src="/script.js"></script> <!-- Ajuste o caminho se necessário -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             if (window.adsbygoogle) {
                 console.log("Script do AdSense carregado com sucesso.");
             } else {
                 console.warn("Script do AdSense não carregado.");
+            }
+            const cssLink = document.querySelector('link[href="/styles.css"]');
+            if (cssLink && cssLink.sheet) {
+                console.log("CSS carregado com sucesso.");
+            } else {
+                console.warn("CSS não carregado.");
             }
         });
     </script>
