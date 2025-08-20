@@ -1,4 +1,4 @@
-const VERSION = "1.0.21"; // Atualizado para alinhar categorias e lojas
+const VERSION = "1.0.22"; // Atualizado após correções de conformidade com AdSense
 const API_URL = 'https://minha-api-produtos.onrender.com';
 let currentImages = [];
 let currentImageIndex = 0;
@@ -14,7 +14,7 @@ let shuffledProducts = [];
 // Conectar ao Socket.IO
 const socket = io(API_URL, { transports: ['websocket'], reconnectionAttempts: 5 });
 
-// Mapeamento de categorias para exibição (valores do backend para rótulos amigáveis)
+// Mapeamento de categorias para exibição
 const categoriaMap = {
     'eletronicos': 'Eletrônicos',
     'moda': 'Moda',
@@ -42,6 +42,16 @@ const lojaMap = {
     'alibaba': 'Alibaba',
     'aliexpress': 'AliExpress'
 };
+
+// Função para validar URLs
+function isValidUrl(url) {
+    try {
+        new URL(url);
+        return true;
+    } catch {
+        return false;
+    }
+}
 
 // Função para embaralhar array (algoritmo Fisher-Yates)
 function shuffleArray(array) {
@@ -217,6 +227,15 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
         let products = data.data;
         let total = data.total || products.length;
 
+        // Validar links de produtos
+        products = products.filter(produto => {
+            if (!produto.link || !isValidUrl(produto.link)) {
+                console.warn(`Link inválido para o produto: ${produto.nome}`);
+                return false;
+            }
+            return true;
+        });
+
         if (categoria === 'todas' && loja === 'todas' && !busca) {
             shuffledProducts = shuffleArray([...products]);
             total = shuffledProducts.length;
@@ -234,7 +253,8 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
         if (products.length === 0) {
             mensagemVazia.style.display = "flex";
             gridProdutos.style.display = "none";
-            mensagemVazia.querySelector("h3").textContent = busca ? `Nenhum produto encontrado para "${busca}"` : "Nenhum produto disponível";
+            mensagemVazia.querySelector("h3").textContent = busca ? `Nenhum produto encontrado para "${busca}"` : "Nenhum produto disponível no momento";
+            mensagemVazia.querySelector("p").textContent = "Tente ajustar os filtros, verificar a conexão ou explorar outras categorias.";
         } else {
             mensagemVazia.style.display = "none";
             gridProdutos.style.display = "grid";
@@ -274,7 +294,7 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
                     <span class="produto-nome">${produto.nome}</span>
                     <span class="descricao">Loja: ${lojaMap[produto.loja] || produto.loja}</span>
                     <a href="${produto.link}" target="_blank" class="tarja-preco tarja-${lojaClass}" aria-label="Clique para ver o preço de ${produto.nome} na loja">
-                        <i class="fas fa-shopping-cart"></i> Ver Preço
+                        <i class="fas fa-shopping-cart"></i> Ver Oferta
                     </a>
                 `;
                 gridProdutos.appendChild(card);
@@ -375,6 +395,7 @@ async function salvarProduto(event) {
     // Validar categoria e loja
     let categoria = formData.get('categoria');
     let loja = formData.get('loja');
+    let link = formData.get('link');
 
     if (!validCategories.includes(categoria)) {
         const feedback = document.createElement('div');
@@ -390,6 +411,17 @@ async function salvarProduto(event) {
         const feedback = document.createElement('div');
         feedback.className = 'feedback-message feedback-error';
         feedback.textContent = `Loja inválida: ${loja}. Escolha uma loja válida.`;
+        document.body.appendChild(feedback);
+        feedback.style.display = 'block';
+        setTimeout(() => feedback.remove(), 3000);
+        return;
+    }
+
+    // Validar link
+    if (!isValidUrl(link)) {
+        const feedback = document.createElement('div');
+        feedback.className = 'feedback-message feedback-error';
+        feedback.textContent = `Link inválido: ${link}. Insira um URL válido.`;
         document.body.appendChild(feedback);
         feedback.style.display = 'block';
         setTimeout(() => feedback.remove(), 3000);
@@ -660,159 +692,4 @@ function closeModal() {
 const searchInput = document.getElementById("busca");
 if (searchInput) {
     const debouncedSearch = debounce(() => {
-        currentSearch = searchInput.value.trim();
-        if (currentSearch.length < 2 && currentSearch.length > 0) {
-            console.log(`Termo de busca "${currentSearch}" muito curto, ignorando`);
-            return;
-        }
-        currentPage = 1;
-        shuffledProducts = [];
-        console.log(`Busca automática disparada: ${currentSearch}`);
-        carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
-    }, 300);
-
-    searchInput.addEventListener("input", debouncedSearch);
-
-    searchInput.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") {
-            currentSearch = searchInput.value.trim();
-            if (currentSearch.length < 2 && currentSearch.length > 0) {
-                console.log(`Termo de busca "${currentSearch}" muito curto, ignorando`);
-                return;
-            }
-            currentPage = 1;
-            shuffledProducts = [];
-            console.log(`Busca via Enter: ${currentSearch}`);
-            carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
-        }
-    });
-
-    searchInput.addEventListener("input", () => {
-        if (searchInput.value.trim() === "") {
-            currentSearch = "";
-            currentPage = 1;
-            shuffledProducts = [];
-            console.log("Campo de busca vazio, recarregando todos os produtos");
-            carregarProdutos(currentCategory, currentStore, currentPage, "");
-        }
-    });
-}
-
-// Filtros de categoria
-document.querySelectorAll(".category-item").forEach(item => {
-    item.addEventListener("click", () => {
-        document.querySelector(".category-item.active")?.classList.remove("active");
-        item.classList.add("active");
-        currentCategory = item.dataset.categoria;
-        currentPage = 1;
-        currentSearch = "";
-        shuffledProducts = [];
-        searchInput.value = "";
-        console.log(`Filtro de categoria aplicado: ${currentCategory}`);
-        carregarProdutos(currentCategory, currentStore, currentPage, "");
-    });
-});
-
-// Filtros de loja
-document.querySelectorAll(".store-card").forEach(card => {
-    card.addEventListener("click", () => {
-        document.querySelector(".store-card.active")?.classList.remove("active");
-        card.classList.add("active");
-        currentStore = card.dataset.loja;
-        currentPage = 1;
-        currentSearch = "";
-        shuffledProducts = [];
-        searchInput.value = "";
-        console.log(`Filtro de loja aplicado: ${currentStore}`);
-        carregarProdutos(currentCategory, currentStore, currentPage, "");
-    });
-});
-
-// Carregar mais produtos
-document.getElementById("load-more")?.addEventListener("click", () => {
-    currentPage++;
-    console.log(`Carregando mais produtos, página: ${currentPage}`);
-    carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
-});
-
-// Fechar modal
-document.getElementById("modal-close")?.addEventListener("click", closeModal);
-document.getElementById("modalPrev")?.addEventListener("click", () => moveModalCarrossel(-1));
-document.getElementById("modalNext")?.addEventListener("click", () => moveModalCarrossel(1));
-
-// Socket.IO eventos
-socket.on('connect', () => console.log('Conectado ao Socket.IO'));
-socket.on('disconnect', () => console.log('Desconectado do Socket.IO'));
-socket.on('novoProduto', () => {
-    console.log('Novo produto detectado');
-    currentPage = 1;
-    shuffledProducts = [];
-    carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
-    if (window.location.pathname.includes('admin.html')) {
-        carregarProdutosAdmin();
-    }
-});
-socket.on('produtoAtualizado', () => {
-    console.log('Produto atualizado, recarregando lista');
-    currentPage = 1;
-    shuffledProducts = [];
-    carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
-    if (window.location.pathname.includes('admin.html')) {
-        carregarProdutosAdmin();
-    }
-});
-socket.on('produtoExcluido', () => {
-    console.log('Produto excluído, recarregando lista');
-    currentPage = 1;
-    shuffledProducts = [];
-    carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
-    if (window.location.pathname.includes('admin.html')) {
-        carregarProdutosAdmin();
-    }
-});
-
-// Função de teste para renderização
-async function testarRenderizacao() {
-    console.log('Executando teste de renderização');
-    const grid = document.getElementById('grid-produtos');
-    grid.innerHTML = '';
-    try {
-        const response = await fetch(`${API_URL}/api/produtos?page=1&limit=12`, {
-            cache: 'no-store',
-            headers: {
-                'Accept': 'application/json'
-            }
-        });
-        const data = await response.json();
-        console.log('Dados da API:', data);
-        const shuffledData = shuffleArray([...data.data]);
-        shuffledData.forEach(produto => {
-            const card = document.createElement('div');
-            card.classList.add('produto-card', 'visible');
-            card.innerHTML = `
-                <img src="${produto.imagens[0]}" alt="${produto.nome}">
-                <span>${produto.nome}</span>
-                <span>Loja: ${lojaMap[produto.loja] || produto.loja}</span>
-            `;
-            grid.appendChild(card);
-            console.log('Card de teste:', card.outerHTML);
-        });
-    } catch (error) {
-        console.error('Erro no teste:', error);
-    }
-}
-
-// Carregar produtos iniciais e verificar conexão
-document.addEventListener("DOMContentLoaded", () => {
-    console.log(`Iniciando carregamento de produtos - Versão ${VERSION}`);
-    checkConnectionStatus();
-    currentCategory = 'todas';
-    currentStore = 'todas';
-    currentSearch = '';
-    shuffledProducts = [];
-    carregarProdutos('todas', 'todas', 1, '');
-    if (window.location.pathname.includes('admin.html')) {
-        carregarProdutosAdmin();
-        document.getElementById('cadastro-produto')?.addEventListener('submit', salvarProduto);
-    }
-});
+        current
