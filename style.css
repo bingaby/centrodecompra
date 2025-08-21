@@ -36,15 +36,7 @@ body {
   padding: 0 1rem;
 }
 
-/* Header */
-.main-header {
-  background: var(--background-primary);
-  box-shadow: var(--shadow-sm);
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-}
-
+/* Header Top */
 .header-top {
   background: var(--primary-color);
   color: white;
@@ -56,18 +48,51 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: nowrap; /* Garante que header-info e header-links fiquem na mesma linha */
+  gap: 0.5rem;
 }
 
-.header-info span,
-.header-links a {
+.header-info {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 1; /* Permite que header-info encolha se necessário */
+  overflow: hidden; /* Evita overflow em telas pequenas */
+  max-width: 50%; /* Limita a largura para priorizar header-links */
+}
+
+.header-info span {
   display: flex;
   align-items: center;
   gap: 0.4rem;
+  white-space: nowrap; /* Evita quebra de linha no texto */
+}
+
+.header-links {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* Espaço entre ícones */
+  flex-wrap: nowrap; /* Garante que os ícones fiquem na mesma linha */
+  flex-shrink: 0; /* Impede que header-links encolha */
 }
 
 .header-links a {
   color: white;
   text-decoration: none;
+  font-size: 0.9rem;
+  transition: var(--transition);
+}
+
+.header-links a:hover {
+  color: var(--primary-hover);
+}
+
+/* Header Main */
+.main-header {
+  background: var(--background-primary);
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
 .header-main {
@@ -800,13 +825,14 @@ body {
   }
 }
 
-/* Responsividade para tablets e dispositivos móveis */
+/* Responsividade para tablets */
 @media (max-width: 1024px) {
   .products-grid {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
+/* Responsividade para tablets e dispositivos móveis */
 @media (max-width: 768px) {
   body {
     font-size: 16px;
@@ -819,18 +845,38 @@ body {
   }
 
   .header-top {
-    padding: 0.5rem 0;
-    font-size: 0.75rem;
+    padding: 0.2rem 0; /* Reduzido para diminuir a altura no mobile */
+    font-size: 0.7rem; /* Tamanho de fonte menor */
   }
 
   .header-top .container {
-    flex-wrap: wrap;
+    flex-wrap: nowrap; /* Mantém header-info e header-links na mesma linha */
+    gap: 0.2rem; /* Reduz espaçamento horizontal */
   }
 
-  .header-info span,
+  .header-info {
+    gap: 0.2rem; /* Reduz espaçamento entre itens */
+    max-width: 40%; /* Limita largura para priorizar header-links */
+    flex-shrink: 1;
+  }
+
+  .header-info span {
+    font-size: 0.65rem; /* Tamanho de fonte reduzido */
+    gap: 0.2rem; /* Espaçamento menor entre ícone e texto */
+  }
+
+  .header-links {
+    gap: 0.2rem; /* Espaçamento reduzido entre ícones */
+    flex-wrap: nowrap; /* Garante que ícones fiquem na mesma linha */
+    flex-shrink: 0;
+  }
+
   .header-links a {
-    gap: 0.3rem;
-    font-size: 0.75rem;
+    font-size: 0.7rem; /* Tamanho de fonte reduzido */
+  }
+
+  .header-links a i {
+    font-size: 0.9rem; /* Ícones menores para economizar espaço */
   }
 
   .header-main {
@@ -1077,6 +1123,37 @@ body {
 }
 
 @media (max-width: 480px) {
+  .header-top {
+    padding: 0.15rem 0; /* Ainda mais compacto para telas muito pequenas */
+    font-size: 0.65rem;
+  }
+
+  .header-top .container {
+    gap: 0.15rem; /* Espaçamento mínimo */
+  }
+
+  .header-info {
+    max-width: 35%; /* Reduz ainda mais a largura do header-info */
+    gap: 0.15rem;
+  }
+
+  .header-info span {
+    font-size: 0.6rem; /* Fonte ainda menor */
+    gap: 0.15rem;
+  }
+
+  .header-links {
+    gap: 0.15rem; /* Espaçamento mínimo entre ícones */
+  }
+
+  .header-links a {
+    font-size: 0.65rem;
+  }
+
+  .header-links a i {
+    font-size: 0.85rem; /* Ícones ainda menores */
+  }
+
   .products-grid {
     grid-template-columns: 1fr;
   }
