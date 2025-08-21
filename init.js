@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const ads = document.querySelectorAll('.adsbygoogle');
   ads.forEach(ad => {
     const container = ad.closest('.ad-container');
-    if (!ad.getAttribute('data-ad-slot') || ad.getAttribute('data-ad-slot').includes('google.com')) {
+    if (!ad.getAttribute('data-ad-slot') || ad.getAttribute('data-ad-slot').includes('YOUR_AD_SLOT_ID')) {
       container.querySelector('.ad-fallback').style.display = 'block';
       ad.style.display = 'none';
       console.warn('Anúncio com data-ad-slot inválido ou não configurado.');
