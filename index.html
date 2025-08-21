@@ -296,6 +296,14 @@
       } else {
         console.warn("CSS não carregado. Verifique o caminho do arquivo style.css.");
       }
+      // Verificar se os anúncios estão carregando corretamente
+      const ads = document.querySelectorAll('.adsbygoogle');
+      ads.forEach(ad => {
+        if (!ad.getAttribute('data-ad-slot') || ad.getAttribute('data-ad-slot') === 'INSIRA_SEU_AD_SLOT_ID_AQUI') {
+          ad.closest('.ad-container').style.display = 'none';
+          console.warn('Anúncio com data-ad-slot inválido ou não configurado.');
+        }
+      });
     });
   </script>
 </body>
