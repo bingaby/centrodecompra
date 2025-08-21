@@ -55,6 +55,9 @@
       <script>
         (adsbygoogle = window.adsbygoogle || []).push({});
       </script>
+      <div class="ad-fallback" style="display: none; text-align: center; font-size: 0.8rem; color: var(--text-secondary);">
+        <p>Anúncio não disponível no momento.</p>
+      </div>
     </div>
     <div class="header-main">
       <div class="container header-content">
@@ -127,6 +130,9 @@
       <script>
         (adsbygoogle = window.adsbygoogle || []).push({});
       </script>
+      <div class="ad-fallback" style="display: none; text-align: center; font-size: 0.8rem; color: var(--text-secondary);">
+        <p>Anúncio não disponível no momento.</p>
+      </div>
     </div>
     <section class="stores-section" id="lojas">
       <div class="container">
@@ -188,6 +194,9 @@
           <script>
             (adsbygoogle = window.adsbygoogle || []).push({});
           </script>
+          <div class="ad-fallback" style="display: none; text-align: center; font-size: 0.8rem; color: var(--text-secondary);">
+            <p>Anúncio não disponível no momento.</p>
+          </div>
         </div>
         <div class="loading-container" id="loading-spinner">
           <div class="loading-spinner">
@@ -296,11 +305,13 @@
       } else {
         console.warn("CSS não carregado. Verifique o caminho do arquivo style.css.");
       }
-      // Verificar se os anúncios estão carregando corretamente
+      // Verificar anúncios e exibir fallback se necessário
       const ads = document.querySelectorAll('.adsbygoogle');
       ads.forEach(ad => {
+        const container = ad.closest('.ad-container');
         if (!ad.getAttribute('data-ad-slot') || ad.getAttribute('data-ad-slot') === 'google.com, pub-9781903408224276, DIRECT, f08c47fec0942fa0') {
-          ad.closest('.ad-container').style.display = 'none';
+          container.querySelector('.ad-fallback').style.display = 'block';
+          ad.style.display = 'none';
           console.warn('Anúncio com data-ad-slot inválido ou não configurado.');
         }
       });
