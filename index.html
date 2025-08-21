@@ -13,9 +13,7 @@
   <meta name="twitter:card" content="summary_large_image" />
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9781903408224276" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <!-- CSS para desktop e mobile com media queries -->
-  <link rel="stylesheet" href="styles-desktop.css" media="screen and (min-width: 1025px)" />
-  <link rel="stylesheet" href="styles-mobile.css" media="screen and (max-width: 1024px)" />
+  <link rel="stylesheet" href="style.css" />
   <link rel="icon" href="logos/favicon.ico" type="image/x-icon" />
   <link rel="icon" type="image/png" sizes="16x16" href="logos/favicon-16x16.png" />
   <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32x32.png" />
@@ -23,15 +21,14 @@
   <link rel="icon" type="image/png" sizes="192x192" href="logos/android-chrome-192x192.png" />
   <link rel="icon" type="image/png" sizes="512x512" href="logos/android-chrome-512x512.png" />
   <link rel="manifest" href="logos/site.webmanifest" />
-  <!-- Preload dos CSS para melhorar o desempenho -->
-  <link rel="preload" href="styles-desktop.css" as="style" media="screen and (min-width: 1025px)" />
-  <link rel="preload" href="styles-mobile.css" as="style" media="screen and (max-width: 1024px)" />
+  <link rel="preload" href="style.css" as="style" />
 </head>
 <body>
   <header class="main-header">
     <div class="header-top">
       <div class="container">
         <div class="header-info">
+          <span><i class="fas fa-phone-alt"></i> (21) 99812-3073</span>
           <span><i class="fas fa-envelope"></i> centrodecompracontato@gmail.com</span>
         </div>
         <div class="header-links">
@@ -101,7 +98,7 @@
       <div class="container banner-content">
         <div class="banner-text">
           <h1>Ofertas Exclusivas</h1>
-          <p>Economize até 30% em milhares de produtos das melhores lojas!</p>
+          <p>Economize até 70% em milhares de produtos das melhores lojas!</p>
         </div>
       </div>
     </section>
@@ -266,12 +263,11 @@
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("year").textContent = new Date().getFullYear();
-      const cssDesktop = document.querySelector('link[href="styles-desktop.css"]');
-      const cssMobile = document.querySelector('link[href="styles-mobile.css"]');
-      if ((cssDesktop && cssDesktop.sheet) || (cssMobile && cssMobile.sheet)) {
+      const cssLink = document.querySelector('link[href="style.css"]');
+      if (cssLink && cssLink.sheet) {
         console.log("CSS carregado com sucesso.");
       } else {
-        console.warn("CSS não carregado. Verifique os caminhos dos arquivos styles-desktop.css e styles-mobile.css.");
+        console.warn("CSS não carregado. Verifique o caminho do arquivo style.css.");
       }
     });
   </script>
