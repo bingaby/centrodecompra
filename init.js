@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Atualizar o ano no footer
   document.getElementById("year").textContent = new Date().getFullYear();
 
-  // Verificar carregamento do CSS
+  // Verificar se o CSS foi carregado
   const cssLink = document.querySelector('link[href="style.css"]');
   if (cssLink && cssLink.sheet) {
     console.log("CSS carregado com sucesso.");
@@ -15,17 +15,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const ads = document.querySelectorAll('.adsbygoogle');
   ads.forEach(ad => {
     const container = ad.closest('.ad-container');
-    if (!ad.getAttribute('data-ad-slot') || ad.getAttribute('data-ad-slot').includes('YOUR_AD_SLOT_ID')) {
-      container.querySelector('.ad-fallback').style.display = 'block';
-      ad.style.display = 'none';
+    if (!ad.getAttribute('data-ad-slot') || ad.getAttribute('data-ad-slot') === 'YOUR_AD_SLOT_ID') {
       console.warn('Anúncio com data-ad-slot inválido ou não configurado.');
+      if (container) {
+        container.innerHTML = '<p>Anúncio não configurado corretamente.</p>';
+      }
     } else {
       try {
         (adsbygoogle = window.adsbygoogle || []).push({});
       } catch (e) {
         console.error('Erro ao inicializar anúncio:', e);
-        container.querySelector('.ad-fallback').style.display = 'block';
-        ad.style.display = 'none';
+        if (container) {
+          container.innerHTML = '<p>Erro ao carregar anúncio.</p>';
+        }
       }
     }
   });
