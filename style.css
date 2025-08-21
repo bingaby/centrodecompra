@@ -326,9 +326,9 @@ input:focus {
 .offers-banner {
   background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
   color: white;
-  padding: 1rem;
+  padding: 0.8rem;
   border-radius: var(--radius-md);
-  margin-bottom: 0.7rem;
+  margin-bottom: 0.4rem; /* Reduzido para diminuir espaço */
   text-align: center;
 }
 
@@ -343,11 +343,11 @@ input:focus {
 
 /* Lojas */
 .stores-section {
-  margin-bottom: 0.7rem;
+  margin-bottom: 0.5rem; /* Reduzido para diminuir espaço */
 }
 
 .section-header {
-  margin-bottom: 0.7rem;
+  margin-bottom: 0.5rem;
 }
 
 .section-header h2 {
@@ -444,11 +444,11 @@ input:focus {
 
 /* Produtos */
 .products-section {
-  margin-bottom: 1.2rem;
+  margin-bottom: 1rem;
 }
 
 .ad-container {
-  margin: 0.7rem auto;
+  margin: 0.4rem auto; /* Reduzido para diminuir espaço */
   text-align: center;
   min-height: 90px;
   max-width: 100%;
@@ -488,7 +488,7 @@ input:focus {
 .main-content {
   position: relative;
   z-index: 100;
-  margin-top: 250px; /* Aumentado para compensar header + ad-container */
+  margin-top: 180px; /* Reduzido para diminuir espaço */
 }
 
 .products-grid {
@@ -994,7 +994,7 @@ input:focus {
     grid-template-columns: repeat(3, 1fr);
   }
   .main-content {
-    margin-top: 280px;
+    margin-top: 200px; /* Reduzido para diminuir espaço */
   }
 }
 
@@ -1133,8 +1133,8 @@ input:focus {
   }
 
   .offers-banner {
-    padding: 0.7rem;
-    margin-bottom: 0.5rem;
+    padding: 0.6rem; /* Reduzido para diminuir espaço */
+    margin-bottom: 0.3rem; /* Reduzido para diminuir espaço */
   }
 
   .banner-text h1 {
@@ -1146,7 +1146,7 @@ input:focus {
   }
 
   .stores-section {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem; /* Reduzido para diminuir espaço */
   }
 
   .stores-grid {
@@ -1174,7 +1174,7 @@ input:focus {
   }
 
   .products-section {
-    margin-bottom: 1rem;
+    margin-bottom: 0.8rem;
   }
 
   .products-grid {
@@ -1297,11 +1297,11 @@ input:focus {
   .ad-container {
     max-width: 100%;
     min-height: 250px;
-    margin: 0.3rem auto;
+    margin: 0.2rem auto; /* Reduzido para diminuir espaço */
   }
 
   .main-content {
-    margin-top: 300px;
+    margin-top: 220px; /* Reduzido para diminuir espaço */
   }
 }
 
@@ -1331,11 +1331,21 @@ input:focus {
     font-size: 0.8rem;
   }
 
+  .offers-banner {
+    padding: 0.5rem; /* Reduzido para diminuir espaço */
+    margin-bottom: 0.3rem; /* Reduzido para diminuir espaço */
+  }
+
+  .stores-section {
+    margin-bottom: 0.3rem; /* Reduzido para diminuir espaço */
+  }
+
   .ad-container {
     min-height: 300px;
+    margin: 0.2rem auto; /* Reduzido para diminuir espaço */
   }
 
   .main-content {
-    margin-top: 350px;
+    margin-top: 260px; /* Reduzido para diminuir espaço */
   }
 }
