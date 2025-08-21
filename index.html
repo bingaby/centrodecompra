@@ -14,7 +14,7 @@
   <meta property="og:image" content="https://www.centrodecompra.com/logos/og-image.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:creator" content="@ComprasCdc" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://pagead2.googlesyndication.com https://cdn.socket.io; style-src 'self' https://cdnjs.cloudflare.com; img-src 'self' https://www.centrodecompra.com;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://pagead2.googlesyndication.com https://cdn.socket.io; style-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline'; img-src 'self' https://www.centrodecompra.com; connect-src 'self' https://minha-api-produtos.onrender.com https://ep1.adtrafficquality.google; frame-src 'self' https://googleads.g.doubleclick.net;">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9781903408224276" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="style.css" />
@@ -51,7 +51,8 @@
       <ins class="adsbygoogle"
            style="display:block"
            data-ad-client="ca-pub-9781903408224276"
-           data-ad-slot="google.com, pub-9781903408224276, DIRECT, f08c47fec0942fa0" <!-- Substitua pelo valor correto do Google AdSense -->
+           data-ad-slot="google.com, pub-9781903408224276, DIRECT, f08c47fec0942fa0
+" <!-- Substitua pelo valor correto do Google AdSense -->
            data-ad-format="auto"
            data-full-width-responsive="true"></ins>
       <script>
@@ -131,7 +132,8 @@
       <ins class="adsbygoogle"
            style="display:block"
            data-ad-client="ca-pub-9781903408224276"
-           data-ad-slot="google.com, pub-9781903408224276, DIRECT, f08c47fec0942fa0" <!-- Substitua pelo valor correto do Google AdSense -->
+           data-ad-slot="google.com, pub-9781903408224276, DIRECT, f08c47fec0942fa0
+" <!-- Substitua pelo valor correto do Google AdSense -->
            data-ad-format="auto"
            data-full-width-responsive="true"></ins>
       <script>
@@ -195,7 +197,8 @@
           <ins class="adsbygoogle"
                style="display:block"
                data-ad-client="ca-pub-9781903408224276"
-               data-ad-slot="google.com, pub-9781903408224276, DIRECT, f08c47fec0942fa0" <!-- Substitua pelo valor correto do Google AdSense -->
+               data-ad-slot="google.com, pub-9781903408224276, DIRECT, f08c47fec0942fa0
+" <!-- Substitua pelo valor correto do Google AdSense -->
                data-ad-format="auto"
                data-full-width-responsive="true"></ins>
           <script>
@@ -215,13 +218,13 @@
           <i class="fas fa-box-open empty-icon"></i>
           <h3>Nenhum produto encontrado</h3>
           <p>Tente ajustar os filtros ou a busca.</p>
-          <a href="#" class="btn-primary" onclick="window.location.reload()"><i class="fas fa-redo"></i> Limpar Filtros</a>
+          <a href="#" class="btn-primary reset-filters"><i class="fas fa-redo"></i> Limpar Filtros</a>
         </div>
         <div class="error-state" id="error-message">
           <i class="fas fa-exclamation-circle error-icon"></i>
           <h3>Ops! Algo deu errado</h3>
           <p>Não foi possível carregar os produtos.</p>
-          <a href="#" class="btn-primary" onclick="window.location.reload()"><i class="fas fa-redo"></i> Tentar Novamente</a>
+          <a href="#" class="btn-primary retry-load"><i class="fas fa-redo"></i> Tentar Novamente</a>
         </div>
         <div class="products-grid" id="grid-produtos">
           <noscript>
@@ -288,7 +291,7 @@
           <p><i class="fas fa-info-circle"></i> Aviso: Este site participa de programas de afiliados. Ao realizar compras por meio dos nossos links, podemos receber uma comissão sem custo adicional para você.</p>
         </div>
         <div class="footer-copyright">
-          <p>&copy; <span id="year">2025</span> Centro de Compra. Todos os direitos reservados.</p>
+          <p>&copy; <span id="year"></span> Centro de Compra. Todos os direitos reservados.</p>
         </div>
       </div>
     </div>
@@ -325,6 +328,13 @@
           ad.style.display = 'none';
           console.warn('Anúncio com data-ad-slot inválido ou não configurado.');
         }
+      });
+      // Adicionar eventos para botões de reset e retry
+      document.querySelectorAll('.reset-filters, .retry-load').forEach(button => {
+        button.addEventListener('click', (e) => {
+          e.preventDefault();
+          window.location.reload();
+        });
       });
     });
   </script>
