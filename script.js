@@ -1,9 +1,9 @@
-const VERSION = "1.0.17"; // Atualizado para refletir correções
+const VERSION = "1.0.16"; // Atualizado para nova funcionalidade
 const API_URL = 'https://minha-api-produtos.onrender.com';
 let currentImages = [];
 let currentImageIndex = 0;
 let currentPage = 1;
-const productsPerPage = 21;
+const productsPerPage = 12;
 let allProducts = [];
 let isLoading = false;
 let currentCategory = "todas";
@@ -17,7 +17,7 @@ const socket = io(API_URL, { transports: ['websocket'], reconnectionAttempts: 5 
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+        [array[i], array[j]] = [array[j], array[i]]; // Troca elementos
     }
     return array;
 }
@@ -114,7 +114,7 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
     errorMessage.style.display = "none";
     loadMoreButton.style.display = "none";
 
-    const maxRetries = 5;
+    const maxRetries = 3;
     let attempt = 1;
 
     while (attempt <= maxRetries) {
@@ -124,7 +124,6 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
             if (loja !== 'todas') url += `&loja=${encodeURIComponent(loja)}`;
             if (busca) url += `&busca=${encodeURIComponent(busca)}`;
             console.log(`Tentativa ${attempt}: Carregando de ${url}`);
-
             const response = await fetch(url, {
                 cache: "no-store",
                 headers: {
@@ -143,6 +142,7 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
                 throw new Error(`Resposta inválida: ${data.message || 'Dados não são um array'}`);
             }
 
+            // Embaralhar os produtos
             const shuffledProducts = shuffleArray([...data.data]);
             allProducts = [...allProducts, ...shuffledProducts];
 
@@ -154,36 +154,26 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
                 gridProdutos.style.display = "grid";
 
                 shuffledProducts.forEach((produto, index) => {
-                    if (!produto || typeof produto.nome !== 'string' || !produto.categoria || !produto.loja) {
+                    if (!produto || typeof produto.nome !== 'string' || !Array.isArray(produto.imagens)) {
                         console.warn('Produto inválido ignorado:', produto);
                         return;
                     }
-                    console.log('Renderizando produto:', {
-                        nome: produto.nome,
-                        imagens: produto.imagens,
-                        loja: produto.loja,
-                        categoria: produto.categoria
-                    });
-
+                    console.log('Renderizando produto:', produto);
                     const card = document.createElement("div");
                     card.classList.add("produto-card", "visible");
                     card.setAttribute("data-categoria", produto.categoria.toLowerCase());
                     card.setAttribute("data-loja", produto.loja.toLowerCase());
                     const globalIndex = allProducts.indexOf(produto);
 
-                    // Garantir que imagens seja um array válido
-                    const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0 && produto.imagens.every(img => typeof img === 'string')
+                    const imagens = produto.imagens.length > 0
                         ? produto.imagens
-                        : ["https://www.centrodecompra.com/logos/placeholder.png"];
+                        : ["https://minha-api-produtos.onrender.com/imagens/placeholder.jpg"];
                     const carrosselId = `carrossel-${globalIndex}`;
                     const lojaClass = produto.loja.toLowerCase();
-
                     card.innerHTML = `
                         <div class="carrossel" id="${carrosselId}">
                             <div class="carrossel-imagens">
-                                ${imagens.map((img, idx) => `
-                                    <img src="${img}" alt="${produto.nome} - Imagem ${idx + 1}" loading="lazy" onerror="this.src='https://www.centrodecompra.com/logos/placeholder.png'" onclick="event.stopPropagation(); openModal(${globalIndex}, ${idx})">
-                                `).join("")}
+                                ${imagens.map((img, idx) => `<img src="${img}" alt="${produto.nome}" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'" onclick="event.stopPropagation(); openModal(${globalIndex}, ${idx})">`).join("")}
                             </div>
                             ${imagens.length > 1 ? `
                                 <button class="carrossel-prev" onclick="event.stopPropagation(); moveCarrossel('${carrosselId}', -1)" aria-label="Imagem anterior"><i class="fas fa-chevron-left"></i></button>
@@ -214,10 +204,10 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
                 errorMessage.style.display = "flex";
                 mensagemVazia.style.display = "none";
                 gridProdutos.style.display = "none";
-                errorMessage.querySelector("p").textContent = `Erro ao carregar os produtos: ${error.message}. Verifique sua conexão ou tente novamente mais tarde.`;
+                errorMessage.querySelector("p").textContent = `Erro ao carregar os produtos: ${error.message}. Tente novamente mais tarde.`;
             }
             attempt++;
-            await new Promise(resolve => setTimeout(resolve, 2000 * attempt));
+            await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
         } finally {
             loadingSpinner.style.display = "none";
             isLoading = false;
@@ -245,7 +235,7 @@ async function carregarProdutosAdmin() {
         tableBody.innerHTML = data.data.map(produto => `
             <tr>
                 <td>${produto.id}</td>
-                <td><img src="${Array.isArray(produto.imagens) && produto.imagens.length > 0 ? produto.imagens[0] : 'https://www.centrodecompra.com/logos/placeholder.png'}" alt="${produto.nome}" style="width: 50px; height: 50px;" onerror="this.src='https://www.centrodecompra.com/logos/placeholder.png'" /></td>
+                <td><img src="${produto.imagens[0] || 'https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'}" alt="${produto.nome}" style="width: 50px; height: 50px;" /></td>
                 <td>${produto.nome}</td>
                 <td>${produto.categoria}</td>
                 <td>${produto.loja}</td>
@@ -307,7 +297,7 @@ async function salvarProduto(event) {
             form.reset();
             delete form.dataset.id;
             carregarProdutosAdmin();
-            carregarProdutos('todas', 'todas');
+            carregarProdutos('todas', 'todas'); // Forçar atualização no index
         }
     } catch (error) {
         console.error('Erro ao salvar produto:', error.message, error.stack);
@@ -427,29 +417,26 @@ async function openModal(index, imageIndex) {
     nextButton.classList.remove("visible");
 
     const produto = allProducts[index];
-    if (!produto || !Array.isArray(produto.imagens) || produto.imagens.length === 0) {
-        console.warn("Nenhuma imagem válida para o produto:", produto);
+    if (!produto || !produto.imagens || produto.imagens.length === 0) {
         alert("Nenhuma imagem disponível para este produto.");
         return;
     }
 
     try {
-        currentImages = produto.imagens.every(img => typeof img === 'string') 
-            ? produto.imagens 
-            : ["https://www.centrodecompra.com/logos/placeholder.png"];
+        currentImages = produto.imagens;
         currentImageIndex = Math.max(0, Math.min(imageIndex, currentImages.length - 1));
 
         const validImages = await Promise.all(currentImages.map(async (img, idx) => {
             try {
                 const response = await fetch(img, { method: 'HEAD' });
-                return response.ok ? img : 'https://www.centrodecompra.com/logos/placeholder.png';
+                return response.ok ? img : 'https://minha-api-produtos.onrender.com/imagens/placeholder.jpg';
             } catch {
-                return 'https://www.centrodecompra.com/logos/placeholder.png';
+                return 'https://minha-api-produtos.onrender.com/imagens/placeholder.jpg';
             }
         }));
 
         carrosselImagens.innerHTML = validImages.map((img, idx) => 
-            `<img src="${img}" alt="${produto.nome} - Imagem ${idx + 1}" loading="lazy" onerror="this.src='https://www.centrodecompra.com/logos/placeholder.png'">`
+            `<img src="${img}" alt="${produto.nome} - Imagem ${idx + 1}" loading="lazy" onerror="this.src='https://minha-api-produtos.onrender.com/imagens/placeholder.jpg'">`
         ).join("");
         carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
 
@@ -506,10 +493,11 @@ if (searchInput) {
         currentPage = 1;
         console.log(`Busca automática disparada: ${currentSearch}`);
         carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
-    }, 300);
+    }, 300); // Reduzido para 300ms para maior responsividade
 
     searchInput.addEventListener("input", debouncedSearch);
 
+    // Suporte ao Enter para busca imediata
     searchInput.addEventListener("keypress", (e) => {
         if (e.key === "Enter") {
             currentSearch = searchInput.value.trim();
@@ -519,6 +507,7 @@ if (searchInput) {
         }
     });
 
+    // Limpar resultados quando o campo de busca estiver vazio
     searchInput.addEventListener("input", () => {
         if (searchInput.value.trim() === "") {
             currentSearch = "";
@@ -536,8 +525,8 @@ document.querySelectorAll(".category-item").forEach(item => {
         item.classList.add("active");
         currentCategory = item.dataset.categoria;
         currentPage = 1;
-        currentSearch = "";
-        searchInput.value = "";
+        currentSearch = ""; // Limpar busca ao mudar categoria
+        searchInput.value = ""; // Limpar input de busca
         carregarProdutos(currentCategory, currentStore, currentPage, "");
     });
 });
@@ -549,8 +538,8 @@ document.querySelectorAll(".store-card").forEach(card => {
         card.classList.add("active");
         currentStore = card.dataset.loja;
         currentPage = 1;
-        currentSearch = "";
-        searchInput.value = "";
+        currentSearch = ""; // Limpar busca ao mudar loja
+        searchInput.value = ""; // Limpar input de busca
         carregarProdutos(currentCategory, currentStore, currentPage, "");
     });
 });
@@ -608,15 +597,12 @@ async function testarRenderizacao() {
         });
         const data = await response.json();
         console.log('Dados da API:', data);
-        const shuffledData = shuffleArray([...data.data]);
+        const shuffledData = shuffleArray([...data.data]); // Embaralhar no teste
         shuffledData.forEach(produto => {
             const card = document.createElement('div');
             card.classList.add('produto-card', 'visible');
-            const imagem = Array.isArray(produto.imagens) && produto.imagens.length > 0 
-                ? produto.imagens[0] 
-                : 'https://www.centrodecompra.com/logos/placeholder.png';
             card.innerHTML = `
-                <img src="${imagem}" alt="${produto.nome}" class="product-image" loading="lazy" onerror="this.src='https://www.centrodecompra.com/logos/placeholder.png'">
+                <img src="${produto.imagens[0]}" alt="${produto.nome}">
                 <span>${produto.nome}</span>
                 <span>Loja: ${produto.loja}</span>
             `;
