@@ -514,7 +514,7 @@ body {
 }
 
 /* Modal */
-#imageModal {
+.image-modal {
   display: none;
   position: fixed;
   top: 0;
@@ -526,7 +526,7 @@ body {
   align-items: center;
 }
 
-#imageModal.active {
+.image-modal.active {
   display: flex;
 }
 
@@ -548,7 +548,7 @@ body {
   overflow: hidden;
 }
 
-#modal-close {
+.modal-close {
   position: absolute;
   top: 0.75rem;
   right: 0.75rem;
@@ -562,7 +562,7 @@ body {
   transition: var(--transition);
 }
 
-#modal-close:hover {
+.modal-close:hover {
   background: #c53030;
 }
 
@@ -720,6 +720,60 @@ body {
 .feedback-success {
   background: var(--secondary-color);
   color: white;
+}
+
+/* Estilos para loading, empty-state e error-state (não fornecidos no CSS original, adicionados para compatibilidade com o HTML) */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.loading-spinner {
+  text-align: center;
+}
+
+.spinner {
+  border: 4px solid var(--border-color);
+  border-top: 4px solid var(--primary-color);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.empty-state,
+.error-state {
+  text-align: center;
+  padding: 2rem;
+}
+
+.empty-icon,
+.error-icon {
+  font-size: 2rem;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+.btn-primary {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: var(--primary-color);
+  color: white;
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  transition: var(--transition);
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
 }
 
 /* Modo escuro */
@@ -952,7 +1006,7 @@ body {
     max-height: 80vh;
   }
 
-  #modal-close {
+  .modal-close {
     top: 0.5rem;
     right: 0.5rem;
     font-size: 1rem;
