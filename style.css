@@ -722,7 +722,7 @@ body {
   color: white;
 }
 
-/* Estilos para loading, empty-state e error-state (não fornecidos no CSS original, adicionados para compatibilidade com o HTML) */
+/* Estilos para loading, empty-state e error-state */
 .loading-container {
   display: flex;
   justify-content: center;
