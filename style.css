@@ -40,6 +40,7 @@ input:focus {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem;
+  width: 100%;
 }
 
 /* Header */
@@ -49,13 +50,16 @@ input:focus {
   position: sticky;
   top: 0;
   z-index: 1000;
+  width: 100%;
 }
 
 .header-top {
   background: var(--primary-color);
   color: white;
-  padding: 0.5rem 0;
-  font-size: 0.9rem;
+  padding: 0.3rem 0;
+  font-size: 0.85rem;
+  width: 100%;
+  overflow: hidden;
 }
 
 .header-top .container {
@@ -63,25 +67,26 @@ input:focus {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.3rem;
+  max-width: 100%;
 }
 
 .header-info {
   display: flex;
-  gap: 1rem;
+  gap: 0.5rem;
   align-items: center;
 }
 
 .header-info span {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.3rem;
 }
 
 .header-links {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.4rem;
   flex-wrap: wrap;
 }
 
@@ -91,8 +96,8 @@ input:focus {
   transition: var(--transition);
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.3rem 0.5rem;
+  gap: 0.2rem;
+  padding: 0.2rem 0.3rem;
   border-radius: var(--radius-md);
 }
 
@@ -101,26 +106,26 @@ input:focus {
 }
 
 .header-links .social-link i {
-  font-size: 1.2rem;
+  font-size: 1rem;
 }
 
 .header-links .header-link:not(.social-link) {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
 }
 
 .header-main {
-  padding: 0.5rem 0;
+  padding: 0.3rem 0;
 }
 
 .header-content {
   display: grid;
   grid-template-columns: auto 1fr auto;
-  gap: 1rem;
+  gap: 0.5rem;
   align-items: center;
 }
 
 .site-title {
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   font-weight: 800;
   background: linear-gradient(45deg, var(--primary-color), var(--primary-hover));
   -webkit-background-clip: text;
@@ -142,14 +147,14 @@ input:focus {
 
 .search-input {
   flex: 1;
-  padding: 0.5rem;
+  padding: 0.3rem;
   border: none;
   outline: none;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
 }
 
 .search-btn {
-  padding: 0.5rem 0.75rem;
+  padding: 0.3rem 0.5rem;
   background: var(--primary-color);
   color: white;
   border: none;
@@ -164,15 +169,15 @@ input:focus {
 /* Header actions */
 .header-actions {
   display: flex;
-  gap: 0.3rem;
+  gap: 0.2rem;
 }
 
 .action-btn {
-  padding: 0.3rem 0.75rem;
+  padding: 0.2rem 0.5rem;
   border-radius: var(--radius-md);
   text-decoration: none;
   color: white;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   transition: var(--transition);
 }
 
@@ -196,34 +201,34 @@ input:focus {
 .main-nav {
   background: var(--background-primary);
   border-top: 1px solid var(--border-color);
-  padding: 0.5rem 0;
+  padding: 0.3rem 0;
 }
 
 .nav-content {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.4rem;
 }
 
 .categories-btn {
-  padding: 0.3rem 0.75rem;
+  padding: 0.2rem 0.5rem;
   background: var(--background-secondary);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
 }
 
 .nav-links {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.4rem;
 }
 
 .nav-link {
   color: var(--text-secondary);
   text-decoration: none;
-  padding: 0.3rem 0;
-  font-size: 0.9rem;
+  padding: 0.2rem 0;
+  font-size: 0.8rem;
 }
 
 .nav-link:hover,
@@ -253,7 +258,7 @@ input:focus {
 .sidebar-header {
   display: flex;
   justify-content: space-between;
-  padding: 0.75rem;
+  padding: 0.5rem;
   background: var(--primary-color);
   color: white;
 }
@@ -262,22 +267,22 @@ input:focus {
   background: none;
   border: none;
   color: white;
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   cursor: pointer;
 }
 
 .categories-list {
   list-style: none;
-  padding: 0.75rem 0;
+  padding: 0.5rem 0;
 }
 
 .category-item {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
+  gap: 0.5rem;
+  padding: 0.5rem 0.7rem;
   cursor: pointer;
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   transition: var(--transition);
 }
 
@@ -291,7 +296,7 @@ input:focus {
 }
 
 .category-item i {
-  font-size: 1.3rem;
+  font-size: 1.1rem;
 }
 
 .category-item.active i {
@@ -321,48 +326,48 @@ input:focus {
 .offers-banner {
   background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
   color: white;
-  padding: 1.5rem;
+  padding: 1rem;
   border-radius: var(--radius-md);
-  margin-bottom: 1rem;
+  margin-bottom: 0.7rem;
   text-align: center;
 }
 
 .banner-text h1 {
-  font-size: 2rem;
+  font-size: 1.7rem;
   font-weight: 800;
 }
 
 .banner-text p {
-  font-size: 1rem;
+  font-size: 0.85rem;
 }
 
 /* Lojas */
 .stores-section {
-  margin-bottom: 1rem;
+  margin-bottom: 0.7rem;
 }
 
 .section-header {
-  margin-bottom: 1rem;
+  margin-bottom: 0.7rem;
 }
 
 .section-header h2 {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   font-weight: 700;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.3rem;
 }
 
 .section-header p {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: var(--text-secondary);
 }
 
 .stores-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 1rem;
-  padding: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 0.7rem;
+  padding: 0.7rem;
   background: var(--background-primary);
   border-radius: var(--radius-md);
 }
@@ -371,7 +376,7 @@ input:focus {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 1rem;
+  padding: 0.7rem;
   border: 2px solid var(--border-color);
   border-radius: var(--radius-md);
   cursor: pointer;
@@ -398,34 +403,34 @@ input:focus {
 .store-card[data-loja="aliexpress"]:hover { border-color: #e21b2b; }
 
 .store-logo {
-  max-height: 40px;
-  max-width: 100px;
+  max-height: 30px;
+  max-width: 80px;
   width: 100%;
   object-fit: contain;
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.2rem;
 }
 
 .store-icon {
-  font-size: 2rem;
+  font-size: 1.7rem;
   color: var(--text-primary);
 }
 
 .store-name {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   font-weight: 600;
 }
 
 .store-card::after {
   content: attr(data-tooltip);
   position: absolute;
-  top: -30px;
+  top: -20px;
   left: 50%;
   transform: translateX(-50%);
   background: var(--text-primary);
   color: white;
-  padding: 0.3rem 0.75rem;
+  padding: 0.2rem 0.5rem;
   border-radius: var(--radius-md);
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   opacity: 0;
   visibility: hidden;
   transition: var(--transition);
@@ -439,54 +444,69 @@ input:focus {
 
 /* Produtos */
 .products-section {
-  margin-bottom: 2rem;
+  margin-bottom: 1.2rem;
 }
 
 .ad-container {
-  margin: 1rem auto;
+  margin: 0.7rem auto;
   text-align: center;
-  min-height: 90px; /* Previne CLS em telas maiores */
-  max-width: 728px; /* Padrão para banners horizontais */
+  min-height: 90px;
+  max-width: 100%;
   position: relative;
   background: var(--background-primary);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  padding: 0.5rem;
-  z-index: 500; /* Abaixo do header, acima do conteúdo */
+  padding: 0.3rem;
+  z-index: 500;
+  overflow: hidden;
+}
+
+/* Ocultar ad-container se o anúncio não carregar */
+.ad-container:empty,
+.ad-container:not(:has(.adsbygoogle[data-ad-status="filled"])) {
+  display: none;
+}
+
+.ad-container .ad-fallback {
+  display: none;
+}
+
+.ad-container:not(:has(.adsbygoogle[data-ad-status="filled"])) .ad-fallback {
+  display: block;
 }
 
 .ad-container::before {
   content: "Publicidade";
   display: block;
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   color: var(--text-secondary);
   text-align: center;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.3rem;
 }
 
 /* Main Content */
 .main-content {
   position: relative;
-  z-index: 100; /* Abaixo do header e anúncios, acima do fundo */
-  margin-top: 180px; /* Compensa a altura do header + primeiro ad-container */
+  z-index: 100;
+  margin-top: 250px; /* Aumentado para compensar header + ad-container */
 }
 
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 1rem;
-  margin-top: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.7rem;
+  margin-top: 0.7rem;
 }
 
 .produto-card {
   background: var(--background-primary);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
-  padding: 0.75rem;
+  padding: 0.5rem;
   display: flex;
   flex-direction: column;
   transition: var(--transition);
-  min-height: 320px;
+  min-height: 280px;
 }
 
 .produto-card:hover {
@@ -496,7 +516,7 @@ input:focus {
 
 .produto-card .carrossel {
   position: relative;
-  height: 160px;
+  height: 130px;
   overflow: hidden;
 }
 
@@ -523,9 +543,9 @@ input:focus {
   background: rgba(0, 0, 0, 0.5);
   color: white;
   border: none;
-  padding: 0.4rem;
+  padding: 0.2rem;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.8rem;
   transition: var(--transition);
 }
 
@@ -534,24 +554,24 @@ input:focus {
   background: rgba(0, 0, 0, 0.7);
 }
 
-.carrossel-prev { left: 4px; }
-.carrossel-next { right: 4px; }
+.carrossel-prev { left: 2px; }
+.carrossel-next { right: 2px; }
 
 .carrossel-dots {
   text-align: center;
-  padding: 0.4rem;
+  padding: 0.2rem;
   position: absolute;
-  bottom: 4px;
+  bottom: 2px;
   width: 100%;
 }
 
 .carrossel-dot {
   display: inline-block;
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   background: #ccc;
   border-radius: 50%;
-  margin: 0 4px;
+  margin: 0 2px;
   cursor: pointer;
   transition: var(--transition);
 }
@@ -561,9 +581,9 @@ input:focus {
 }
 
 .produto-nome {
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   font-weight: 400;
-  padding: 0.5rem 0;
+  padding: 0.3rem 0;
   line-height: 1.4;
   text-align: center;
   color: var(--text-primary);
@@ -572,9 +592,9 @@ input:focus {
 }
 
 .descricao {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   color: var(--text-secondary);
-  padding: 0 0.5rem 0.5rem;
+  padding: 0 0.3rem 0.3rem;
   text-align: center;
   line-height: 1.4;
   display: -webkit-box;
@@ -586,17 +606,17 @@ input:focus {
 
 .tarja-preco {
   display: block;
-  padding: 0.5rem;
-  margin: 0.5rem auto 0;
+  padding: 0.3rem;
+  margin: 0.3rem auto 0;
   background: var(--primary-color);
   color: white;
   text-align: center;
   border-radius: var(--radius-md);
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   font-weight: 500;
   width: 100%;
-  max-width: 160px;
+  max-width: 130px;
   transition: var(--transition);
 }
 
@@ -657,15 +677,15 @@ input:focus {
 
 .modal-close {
   position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
+  top: 0.5rem;
+  right: 0.5rem;
   background: #e53e3e;
   color: white;
   border: none;
-  padding: 0.3rem 0.6rem;
+  padding: 0.2rem 0.4rem;
   border-radius: 50%;
   cursor: pointer;
-  font-size: 1.2rem;
+  font-size: 1rem;
   transition: var(--transition);
 }
 
@@ -695,9 +715,9 @@ input:focus {
   background: rgba(0, 0, 0, 0.5);
   color: white;
   border: none;
-  padding: 0.5rem;
+  padding: 0.3rem;
   cursor: pointer;
-  font-size: 1.2rem;
+  font-size: 1rem;
   transition: var(--transition);
 }
 
@@ -706,24 +726,24 @@ input:focus {
   background: rgba(0, 0, 0, 0.7);
 }
 
-#modalPrev { left: 8px; }
-#modalNext { right: 8px; }
+#modalPrev { left: 5px; }
+#modalNext { right: 5px; }
 
 #modalCarrosselDots {
   text-align: center;
-  padding: 0.5rem;
+  padding: 0.3rem;
   position: absolute;
-  bottom: 10px;
+  bottom: 7px;
   width: 100%;
 }
 
 #modalCarrosselDots .carousel-dot {
   display: inline-block;
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   background: #ccc;
   border-radius: 50%;
-  margin: 0 5px;
+  margin: 0 3px;
   cursor: pointer;
   transition: var(--transition);
 }
@@ -737,17 +757,17 @@ input:focus {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 1.5rem 0;
-  gap: 0.5rem;
+  margin: 1rem 0;
+  gap: 0.3rem;
 }
 
 .pagination-button {
-  padding: 0.5rem 1rem;
+  padding: 0.3rem 0.7rem;
   background: var(--background-primary);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   transition: var(--transition);
 }
 
@@ -770,20 +790,20 @@ input:focus {
 /* Load More Button */
 .load-more-container {
   text-align: center;
-  margin: 1.5rem 0;
+  margin: 1rem 0;
 }
 
 .load-more-btn {
-  padding: 0.5rem 1rem;
+  padding: 0.3rem 0.7rem;
   background: var(--primary-color);
   color: white;
   border: none;
   border-radius: var(--radius-md);
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.3rem;
   transition: var(--transition);
 }
 
@@ -795,23 +815,23 @@ input:focus {
 .main-footer {
   background: linear-gradient(135deg, #2d3748, #1a202c);
   color: white;
-  padding: 1rem 0;
+  padding: 0.7rem 0;
 }
 
 .footer-content {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 0.7rem;
 }
 
 .footer-section h4 {
-  font-size: 1.1rem;
-  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  margin-bottom: 0.3rem;
 }
 
 .footer-section p,
 .footer-section ul {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
 }
 
 .footer-section ul {
@@ -819,7 +839,7 @@ input:focus {
 }
 
 .footer-section ul li {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.3rem;
 }
 
 .footer-section ul li a {
@@ -835,13 +855,13 @@ input:focus {
 .social-links,
 .payment-methods {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.5rem;
   flex-wrap: wrap;
 }
 
 .social-link .social-icon {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   object-fit: contain;
   transition: var(--transition);
 }
@@ -851,22 +871,22 @@ input:focus {
 }
 
 .payment-icon {
-  height: 20px;
+  height: 16px;
   object-fit: contain;
 }
 
 .footer-bottom {
-  margin-top: 1rem;
+  margin-top: 0.7rem;
   text-align: center;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
 }
 
 /* Feedback Messages */
 .feedback-message {
   position: fixed;
-  top: 20px;
-  right: 20px;
-  padding: 1rem;
+  top: 10px;
+  right: 10px;
+  padding: 0.7rem;
   border-radius: var(--radius-md);
   z-index: 2000;
 }
@@ -886,7 +906,7 @@ input:focus {
   display: none;
   justify-content: center;
   align-items: center;
-  padding: 2rem;
+  padding: 1.2rem;
 }
 
 .loading-container.active {
@@ -901,10 +921,10 @@ input:focus {
   border: 4px solid var(--border-color);
   border-top: 4px solid var(--primary-color);
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   animation: spin 1s linear infinite;
-  margin: 0 auto 1rem;
+  margin: 0 auto 0.7rem;
 }
 
 @keyframes spin {
@@ -915,7 +935,7 @@ input:focus {
 .empty-state,
 .error-state {
   text-align: center;
-  padding: 2rem;
+  padding: 1.2rem;
   display: none;
   flex-direction: column;
   align-items: center;
@@ -928,14 +948,14 @@ input:focus {
 
 .empty-icon,
 .error-icon {
-  font-size: 2rem;
+  font-size: 1.7rem;
   color: var(--text-secondary);
-  margin-bottom: 1rem;
+  margin-bottom: 0.7rem;
 }
 
 .btn-primary {
   display: inline-block;
-  padding: 0.5rem 1rem;
+  padding: 0.3rem 0.7rem;
   background: var(--primary-color);
   color: white;
   text-decoration: none;
@@ -973,17 +993,20 @@ input:focus {
   .products-grid {
     grid-template-columns: repeat(3, 1fr);
   }
+  .main-content {
+    margin-top: 280px;
+  }
 }
 
 @media (max-width: 768px) {
   body {
-    font-size: 16px;
+    font-size: 14px;
     line-height: 1.5;
   }
 
   .container {
     max-width: 100%;
-    padding: 0 0.75rem;
+    padding: 0 0.5rem;
   }
 
   .main-header {
@@ -992,52 +1015,52 @@ input:focus {
   }
 
   .header-top {
-    padding: 0.5rem 0;
-    font-size: 0.8rem;
+    padding: 0.2rem 0;
+    font-size: 0.7rem;
   }
 
   .header-top .container {
     flex-direction: column;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.2rem;
   }
 
   .header-info {
     justify-content: center;
-    gap: 0.75rem;
+    gap: 0.4rem;
   }
 
   .header-links {
     justify-content: center;
-    gap: 0.5rem;
+    gap: 0.2rem;
   }
 
   .header-links a {
-    padding: 0.3rem;
+    padding: 0.1rem;
   }
 
   .header-links .social-link i {
-    font-size: 1.1rem;
+    font-size: 0.9rem;
   }
 
   .header-links .header-link:not(.social-link) {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
   }
 
   .header-main {
-    padding: 0.75rem 0;
+    padding: 0.5rem 0;
   }
 
   .header-content {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.3rem;
     text-align: center;
   }
 
   .site-title {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
   }
 
   .site-title:hover {
@@ -1050,45 +1073,45 @@ input:focus {
   }
 
   .search-input {
-    padding: 0.6rem;
-    font-size: 0.9rem;
+    padding: 0.4rem;
+    font-size: 0.8rem;
     width: 100%;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.3rem;
   }
 
   .search-btn {
-    padding: 0.6rem;
-    font-size: 0.9rem;
+    padding: 0.4rem;
+    font-size: 0.8rem;
     border-radius: var(--radius-md);
   }
 
   .header-actions {
-    gap: 0.5rem;
+    gap: 0.3rem;
     justify-content: center;
   }
 
   .action-btn {
-    padding: 0.5rem 1rem;
-    font-size: 0.85rem;
+    padding: 0.3rem 0.7rem;
+    font-size: 0.75rem;
   }
 
   .nav-content {
-    gap: 0.5rem;
+    gap: 0.3rem;
     flex-wrap: wrap;
   }
 
   .categories-btn {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.85rem;
+    padding: 0.3rem 0.5rem;
+    font-size: 0.75rem;
   }
 
   .nav-links {
-    gap: 0.5rem;
+    gap: 0.3rem;
     flex-wrap: wrap;
   }
 
   .nav-link {
-    font-size: 0.85rem;
+    font-size: 0.75rem;
   }
 
   .categories-sidebar {
@@ -1097,106 +1120,106 @@ input:focus {
   }
 
   .close-sidebar {
-    font-size: 1.2rem;
-  }
-
-  .category-item {
-    gap: 0.5rem;
     font-size: 1rem;
   }
 
-  .category-item i {
-    font-size: 1.2rem;
-  }
-
-  .offers-banner {
-    padding: 1rem;
-    margin-bottom: 0.75rem;
-  }
-
-  .banner-text h1 {
-    font-size: 1.5rem;
-  }
-
-  .banner-text p {
-    font-size: 0.9rem;
-  }
-
-  .stores-section {
-    margin-bottom: 0.75rem;
-  }
-
-  .stores-grid {
-    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
-    gap: 0.75rem;
-    padding: 0.75rem;
-  }
-
-  .store-card {
-    padding: 0.75rem;
-  }
-
-  .store-logo {
-    max-height: 30px;
-    max-width: 80px;
-  }
-
-  .store-name {
+  .category-item {
+    gap: 0.3rem;
     font-size: 0.85rem;
   }
 
-  .store-card::after {
-    top: -25px;
+  .category-item i {
+    font-size: 1rem;
+  }
+
+  .offers-banner {
+    padding: 0.7rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .banner-text h1 {
+    font-size: 1.3rem;
+  }
+
+  .banner-text p {
+    font-size: 0.8rem;
+  }
+
+  .stores-section {
+    margin-bottom: 0.5rem;
+  }
+
+  .stores-grid {
+    grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
+
+  .store-card {
+    padding: 0.5rem;
+  }
+
+  .store-logo {
+    max-height: 20px;
+    max-width: 60px;
+  }
+
+  .store-name {
     font-size: 0.75rem;
   }
 
+  .store-card::after {
+    top: -18px;
+    font-size: 0.65rem;
+  }
+
   .products-section {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
   }
 
   .products-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 0.75rem;
-    margin-top: 0.75rem;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
   }
 
   .produto-card {
-    padding: 0.5rem;
-    min-height: 280px;
+    padding: 0.3rem;
+    min-height: 240px;
   }
 
   .produto-card .carrossel {
-    height: 140px;
+    height: 110px;
   }
 
   .carrossel-prev,
   .carrossel-next {
-    padding: 0.3rem;
-    font-size: 0.9rem;
+    padding: 0.1rem;
+    font-size: 0.7rem;
   }
 
   .carrossel-dots {
-    padding: 0.3rem;
+    padding: 0.1rem;
   }
 
   .carrossel-dot {
-    width: 6px;
-    height: 6px;
-    margin: 0 3px;
+    width: 4px;
+    height: 4px;
+    margin: 0 1px;
   }
 
   .produto-nome {
-    font-size: 0.85rem;
-    padding: 0.4rem 0;
+    font-size: 0.75rem;
+    padding: 0.2rem 0;
   }
 
   .descricao {
-    font-size: 0.75rem;
+    font-size: 0.65rem;
   }
 
   .tarja-preco {
-    font-size: 0.85rem;
-    max-width: 140px;
+    font-size: 0.75rem;
+    max-width: 110px;
   }
 
   .modal-container {
@@ -1205,9 +1228,9 @@ input:focus {
   }
 
   .modal-close {
-    top: 0.5rem;
-    right: 0.5rem;
-    font-size: 1rem;
+    top: 0.3rem;
+    right: 0.3rem;
+    font-size: 0.8rem;
   }
 
   #modalCarrosselImagens img {
@@ -1217,28 +1240,28 @@ input:focus {
 
   #modalPrev,
   #modalNext {
-    padding: 0.4rem;
-    font-size: 1rem;
+    padding: 0.2rem;
+    font-size: 0.8rem;
   }
 
   #modalCarrosselDots {
-    bottom: 8px;
+    bottom: 5px;
   }
 
   #modalCarrosselDots .carousel-dot {
-    width: 8px;
-    height: 8px;
-    margin: 0 4px;
+    width: 6px;
+    height: 6px;
+    margin: 0 2px;
   }
 
   .pagination-button {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.85rem;
+    padding: 0.3rem 0.5rem;
+    font-size: 0.75rem;
   }
 
   .load-more-btn {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.85rem;
+    padding: 0.3rem 0.5rem;
+    font-size: 0.75rem;
   }
 
   .footer-content {
@@ -1248,37 +1271,37 @@ input:focus {
 
   .social-links,
   .payment-methods {
-    gap: 0.5rem;
+    gap: 0.3rem;
     justify-content: center;
   }
 
   .social-link .social-icon {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
   }
 
   .payment-icon {
-    height: 18px;
+    height: 14px;
   }
 
   .footer-bottom {
-    font-size: 0.85rem;
+    font-size: 0.75rem;
   }
 
   .feedback-message {
-    top: 15px;
-    right: 15px;
-    padding: 0.75rem;
+    top: 8px;
+    right: 8px;
+    padding: 0.5rem;
   }
 
   .ad-container {
     max-width: 100%;
-    min-height: 250px; /* Ajustado para anúncios verticais */
-    margin: 0.5rem auto;
+    min-height: 250px;
+    margin: 0.3rem auto;
   }
 
   .main-content {
-    margin-top: 220px; /* Compensa a altura maior do header em telas menores */
+    margin-top: 300px;
   }
 }
 
@@ -1288,31 +1311,31 @@ input:focus {
   }
 
   .produto-nome {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
   }
 
   .stores-grid {
-    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
   }
 
   .header-top {
-    font-size: 0.75rem;
-    padding: 0.4rem 0;
+    font-size: 0.65rem;
+    padding: 0.1rem 0;
   }
 
   .header-links {
-    gap: 0.4rem;
+    gap: 0.1rem;
   }
 
   .header-links .social-link i {
-    font-size: 1rem;
+    font-size: 0.8rem;
   }
 
   .ad-container {
-    min-height: 300px; /* Ajustado para anúncios verticais em telas muito pequenas */
+    min-height: 300px;
   }
 
   .main-content {
-    margin-top: 250px; /* Ajuste fino para telas muito pequenas */
+    margin-top: 350px;
   }
 }
