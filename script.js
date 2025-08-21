@@ -28,7 +28,7 @@ const categoriaMap = {
 
 // Função para carregar produtos da API
 async function carregarProdutos(page = 1, reset = false) {
-    console.log('Iniciando carregamento de produtos...');
+    console.log(`Carregando produtos: página ${page}, categoria: ${currentCategoria}, loja: ${currentLoja}, busca: ${currentBusca}`);
     const loadingSpinner = document.getElementById('loading-spinner');
     const mensagemVazia = document.getElementById('mensagem-vazia');
     const errorMessage = document.getElementById('error-message');
@@ -47,13 +47,21 @@ async function carregarProdutos(page = 1, reset = false) {
             loja: currentLoja !== 'todas' ? currentLoja : '',
             busca: currentBusca
         });
-        const response = await fetch(`${API_URL}?${params}`);
-        if (!response.ok) throw new Error('Erro na API');
+        const response = await fetch(`${API_URL}?${params}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        if (!response.ok) {
+            throw new Error(`Erro na API: ${response.status} ${response.statusText}`);
+        }
         const { data, total } = await response.json();
         totalItems = total;
 
         if (data.length === 0) {
             mensagemVazia.style.display = 'flex';
+            console.log('Nenhum produto encontrado.');
             return;
         }
 
@@ -63,9 +71,9 @@ async function carregarProdutos(page = 1, reset = false) {
 
         atualizarPaginacao();
         atualizarBotaoCarregarMais();
-        console.log('Produtos carregados com sucesso.');
+        console.log(`Produtos carregados: ${data.length} itens.`);
     } catch (error) {
-        console.error('Erro ao carregar produtos:', error);
+        console.error('Erro ao carregar produtos:', error.message);
         errorMessage.style.display = 'flex';
     } finally {
         loadingSpinner.style.display = 'none';
@@ -86,10 +94,10 @@ function adicionarProduto(produto) {
                 ${imagens.map(img => `<img src="${img}" alt="${produto.nome}" loading="lazy">`).join('')}
             </div>
             ${imagens.length > 1 ? `
-                <button class="carrossel-prev"><i class="fas fa-chevron-left"></i></button>
-                <button class="carrossel-next"><i class="fas fa-chevron-right"></i></button>
+                <button class="carrossel-prev" tabindex="0" aria-label="Imagem anterior"><i class="fas fa-chevron-left"></i></button>
+                <button class="carrossel-next" tabindex="0" aria-label="Próxima imagem"><i class="fas fa-chevron-right"></i></button>
                 <div class="carrossel-dots">
-                    ${imagens.map((_, index) => `<span class="carrossel-dot ${index === 0 ? 'ativo' : ''}"></span>`).join('')}
+                    ${imagens.map((_, index) => `<span class="carrossel-dot ${index === 0 ? 'ativo' : ''}" tabindex="0" aria-label="Selecionar imagem ${index + 1}"></span>`).join('')}
                 </div>
             ` : ''}
         </div>
@@ -136,10 +144,37 @@ function inicializarCarrossel(card) {
         }
     });
 
+    prevBtn.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            if (currentIndex > 0) {
+                currentIndex--;
+                atualizarCarrossel();
+            }
+        }
+    });
+
+    nextBtn.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            if (currentIndex < dots.length - 1) {
+                currentIndex++;
+                atualizarCarrossel();
+            }
+        }
+    });
+
     dots.forEach((dot, index) => {
         dot.addEventListener('click', () => {
             currentIndex = index;
             atualizarCarrossel();
+        });
+        dot.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                currentIndex = index;
+                atualizarCarrossel();
+            }
         });
     });
 }
@@ -162,6 +197,8 @@ function abrirModal(imagens) {
 
         const dot = document.createElement('span');
         dot.classList.add('carousel-dot');
+        dot.setAttribute('tabindex', '0');
+        dot.setAttribute('aria-label', `Selecionar imagem ${index + 1}`);
         if (index === 0) dot.classList.add('ativo');
         dot.addEventListener('click', () => {
             currentIndex = index;
@@ -169,13 +206,25 @@ function abrirModal(imagens) {
             modalDots.querySelectorAll('.carousel-dot').forEach(d => d.classList.remove('ativo'));
             dot.classList.add('ativo');
         });
+        dot.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                currentIndex = index;
+                modalImagens.style.transform = `translateX(-${currentIndex * 100}%)`;
+                modalDots.querySelectorAll('.carousel-dot').forEach(d => d.classList.remove('ativo'));
+                dot.classList.add('ativo');
+            }
+        });
         modalDots.appendChild(dot);
     });
 
     modal.classList.add('active');
     modalImagens.style.transform = `translateX(0%)`;
 
-    document.getElementById('modalPrev').onclick = () => {
+    const prevBtn = document.getElementById('modalPrev');
+    const nextBtn = document.getElementById('modalNext');
+
+    prevBtn.onclick = () => {
         if (currentIndex > 0) {
             currentIndex--;
             modalImagens.style.transform = `translateX(-${currentIndex * 100}%)`;
@@ -184,7 +233,7 @@ function abrirModal(imagens) {
         }
     };
 
-    document.getElementById('modalNext').onclick = () => {
+    nextBtn.onclick = () => {
         if (currentIndex < modalImagens.children.length - 1) {
             currentIndex++;
             modalImagens.style.transform = `translateX(-${currentIndex * 100}%)`;
@@ -192,6 +241,30 @@ function abrirModal(imagens) {
             modalDots.children[currentIndex].classList.add('ativo');
         }
     };
+
+    prevBtn.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            if (currentIndex > 0) {
+                currentIndex--;
+                modalImagens.style.transform = `translateX(-${currentIndex * 100}%)`;
+                modalDots.querySelectorAll('.carousel-dot').forEach(d => d.classList.remove('ativo'));
+                modalDots.children[currentIndex].classList.add('ativo');
+            }
+        }
+    });
+
+    nextBtn.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            if (currentIndex < modalImagens.children.length - 1) {
+                currentIndex++;
+                modalImagens.style.transform = `translateX(-${currentIndex * 100}%)`;
+                modalDots.querySelectorAll('.carousel-dot').forEach(d => d.classList.remove('ativo'));
+                modalDots.children[currentIndex].classList.add('ativo');
+            }
+        }
+    });
 }
 
 // Função para fechar o modal
@@ -211,6 +284,7 @@ function atualizarPaginacao() {
         button.classList.add('pagination-button');
         if (i === currentPage) button.classList.add('active');
         button.textContent = i;
+        button.setAttribute('aria-label', `Ir para a página ${i}`);
         button.addEventListener('click', () => {
             currentPage = i;
             carregarProdutos(currentPage, true);
