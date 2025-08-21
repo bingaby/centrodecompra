@@ -396,6 +396,7 @@ body {
   flex-direction: column;
   transition: var(--transition);
   min-height: 320px;
+  overflow: visible; /* Garantir que o conteúdo não seja cortado */
 }
 
 .produto-card:hover {
@@ -405,7 +406,9 @@ body {
 
 .produto-card .carrossel {
   position: relative;
-  height: 160px;
+  width: 100%;
+  height: 160px; /* Altura fixa para o carrossel */
+  overflow: hidden;
 }
 
 .carrossel-imagens {
@@ -418,9 +421,10 @@ body {
 .carrossel-imagens img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: contain; /* Ajustar imagem sem distorção */
   flex: 0 0 100%;
   cursor: pointer;
+  display: block; /* Garantir que a imagem seja exibida como bloco */
 }
 
 .carrossel-prev,
@@ -435,6 +439,7 @@ body {
   cursor: pointer;
   font-size: 1rem;
   transition: var(--transition);
+  z-index: 10; /* Garantir que os botões estejam acima das imagens */
 }
 
 .carrossel-prev:hover,
@@ -451,6 +456,7 @@ body {
   position: absolute;
   bottom: 4px;
   width: 100%;
+  z-index: 10; /* Garantir que os dots estejam visíveis */
 }
 
 .carrossel-dot {
@@ -578,6 +584,7 @@ body {
   max-height: 80vh;
   object-fit: contain;
   flex: 0 0 100%;
+  display: block; /* Garantir que a imagem do modal seja exibida */
 }
 
 #modalPrev,
@@ -968,7 +975,7 @@ body {
   }
 
   .produto-card .carrossel {
-    height: 140px;
+    height: 140px; /* Reduzido para dispositivos móveis */
   }
 
   .carrossel-prev,
