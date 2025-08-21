@@ -48,31 +48,31 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: nowrap; /* Garante que header-info e header-links fiquem na mesma linha */
+  flex-wrap: nowrap;
   gap: 0.5rem;
 }
 
 .header-info {
   display: flex;
   gap: 0.5rem;
-  flex-shrink: 1; /* Permite que header-info encolha se necessário */
-  overflow: hidden; /* Evita overflow em telas pequenas */
-  max-width: 50%; /* Limita a largura para priorizar header-links */
+  flex-shrink: 1;
+  overflow: hidden;
+  max-width: 50%;
 }
 
 .header-info span {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  white-space: nowrap; /* Evita quebra de linha no texto */
+  white-space: nowrap;
 }
 
 .header-links {
   display: flex;
   align-items: center;
-  gap: 0.5rem; /* Espaço entre ícones */
-  flex-wrap: nowrap; /* Garante que os ícones fiquem na mesma linha */
-  flex-shrink: 0; /* Impede que header-links encolha */
+  gap: 0.5rem;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
 }
 
 .header-links a {
@@ -398,6 +398,21 @@ body {
   transform: translateX(-50%) translateY(-8px);
 }
 
+/* Anúncio */
+.ad-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1rem 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.ad-container ins {
+  width: 100%;
+  max-width: 728px; /* Limita a largura máxima do anúncio */
+}
+
 /* Produtos */
 .products-section {
   margin-bottom: 2rem;
@@ -692,6 +707,28 @@ body {
   opacity: 0.5;
 }
 
+/* Load More Button */
+.load-more-container {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+.load-more-btn {
+  padding: 0.5rem 1rem;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: var(--transition);
+}
+
+.load-more-btn:hover {
+  background: var(--primary-hover);
+}
+
 /* Footer */
 .main-footer {
   background: linear-gradient(135deg, #2d3748, #1a202c);
@@ -736,12 +773,17 @@ body {
 
 /* Feedback Messages */
 .feedback-message {
+  display: none; /* Oculta por padrão */
   position: fixed;
   top: 20px;
   right: 20px;
   padding: 1rem;
   border-radius: var(--radius-md);
   z-index: 2000;
+}
+
+.feedback-message.active {
+  display: block; /* Mostra apenas quando ativado via JavaScript */
 }
 
 .feedback-error {
@@ -752,6 +794,12 @@ body {
 .feedback-success {
   background: var(--secondary-color);
   color: white;
+}
+
+/* Connection Status */
+.connection-status,
+.connection-status .status-content {
+  display: none; /* Oculta mensagens de status de conexão */
 }
 
 /* Estilos para loading, empty-state e error-state */
@@ -830,6 +878,10 @@ body {
   .products-grid {
     grid-template-columns: repeat(3, 1fr);
   }
+
+  .ad-container {
+    margin: 0.75rem 0;
+  }
 }
 
 /* Responsividade para tablets e dispositivos móveis */
@@ -845,38 +897,38 @@ body {
   }
 
   .header-top {
-    padding: 0.2rem 0; /* Reduzido para diminuir a altura no mobile */
-    font-size: 0.7rem; /* Tamanho de fonte menor */
+    padding: 0.2rem 0;
+    font-size: 0.7rem;
   }
 
   .header-top .container {
-    flex-wrap: nowrap; /* Mantém header-info e header-links na mesma linha */
-    gap: 0.2rem; /* Reduz espaçamento horizontal */
+    flex-wrap: nowrap;
+    gap: 0.2rem;
   }
 
   .header-info {
-    gap: 0.2rem; /* Reduz espaçamento entre itens */
-    max-width: 40%; /* Limita largura para priorizar header-links */
+    gap: 0.2rem;
+    max-width: 40%;
     flex-shrink: 1;
   }
 
   .header-info span {
-    font-size: 0.65rem; /* Tamanho de fonte reduzido */
-    gap: 0.2rem; /* Espaçamento menor entre ícone e texto */
+    font-size: 0.65rem;
+    gap: 0.2rem;
   }
 
   .header-links {
-    gap: 0.2rem; /* Espaçamento reduzido entre ícones */
-    flex-wrap: nowrap; /* Garante que ícones fiquem na mesma linha */
+    gap: 0.2rem;
+    flex-wrap: nowrap;
     flex-shrink: 0;
   }
 
   .header-links a {
-    font-size: 0.7rem; /* Tamanho de fonte reduzido */
+    font-size: 0.7rem;
   }
 
   .header-links a i {
-    font-size: 0.9rem; /* Ícones menores para economizar espaço */
+    font-size: 0.9rem;
   }
 
   .header-main {
@@ -1054,6 +1106,16 @@ body {
     max-width: 140px;
   }
 
+  .ad-container {
+    margin: 0.5rem 0;
+    max-width: 100%;
+  }
+
+  .ad-container ins {
+    max-width: 100%;
+    min-height: 50px; /* Evita colapso se o anúncio não carregar */
+  }
+
   .modal-container {
     max-width: 95vw;
     max-height: 80vh;
@@ -1124,26 +1186,26 @@ body {
 
 @media (max-width: 480px) {
   .header-top {
-    padding: 0.15rem 0; /* Ainda mais compacto para telas muito pequenas */
+    padding: 0.15rem 0;
     font-size: 0.65rem;
   }
 
   .header-top .container {
-    gap: 0.15rem; /* Espaçamento mínimo */
+    gap: 0.15rem;
   }
 
   .header-info {
-    max-width: 35%; /* Reduz ainda mais a largura do header-info */
+    max-width: 35%;
     gap: 0.15rem;
   }
 
   .header-info span {
-    font-size: 0.6rem; /* Fonte ainda menor */
+    font-size: 0.6rem;
     gap: 0.15rem;
   }
 
   .header-links {
-    gap: 0.15rem; /* Espaçamento mínimo entre ícones */
+    gap: 0.15rem;
   }
 
   .header-links a {
@@ -1151,7 +1213,7 @@ body {
   }
 
   .header-links a i {
-    font-size: 0.85rem; /* Ícones ainda menores */
+    font-size: 0.85rem;
   }
 
   .products-grid {
@@ -1164,5 +1226,9 @@ body {
 
   .stores-grid {
     grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  }
+
+  .ad-container {
+    margin: 0.3rem 0;
   }
 }
