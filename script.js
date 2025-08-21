@@ -63,32 +63,18 @@ function debounce(func, wait) {
   };
 }
 
-// Função para verificar conexão com a API
+// Função para verificar conexão com a API (sem exibir mensagem na UI)
 function checkConnectionStatus() {
-  const statusElement = document.createElement('div');
-  statusElement.className = 'connection-status';
-  document.body.appendChild(statusElement);
-
   fetch(`${API_URL}/api/produtos`, { cache: 'no-store' })
     .then(response => {
-      statusElement.classList.toggle('online', response.ok);
-      statusElement.classList.toggle('offline', !response.ok);
-      statusElement.innerHTML = `
-        <div class="status-content">
-          <i class="fas fa-${response.ok ? 'check-circle' : 'exclamation-circle'}"></i>
-          <span>API ${response.ok ? 'Online' : 'Offline'}</span>
-          <small>${response.ok ? 'Conectado ao servidor' : 'Verifique sua conexão'}</small>
-        </div>`;
+      if (response.ok) {
+        console.log('API Online: Conectado ao servidor');
+      } else {
+        console.warn('API Offline: Resposta não OK', response.status);
+      }
     })
-    .catch(() => {
-      statusElement.classList.add('offline');
-      statusElement.classList.remove('online');
-      statusElement.innerHTML = `
-        <div class="status-content">
-          <i class="fas fa-exclamation-circle"></i>
-          <span>API Offline</span>
-          <small>Verifique sua conexão</small>
-        </div>`;
+    .catch(error => {
+      console.error('API Offline: Erro na conexão', error.message);
     });
 }
 
