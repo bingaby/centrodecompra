@@ -773,17 +773,12 @@ body {
 
 /* Feedback Messages */
 .feedback-message {
-  display: none; /* Oculta por padrão */
   position: fixed;
   top: 20px;
   right: 20px;
   padding: 1rem;
   border-radius: var(--radius-md);
   z-index: 2000;
-}
-
-.feedback-message.active {
-  display: block; /* Mostra apenas quando ativado via JavaScript */
 }
 
 .feedback-error {
@@ -794,12 +789,6 @@ body {
 .feedback-success {
   background: var(--secondary-color);
   color: white;
-}
-
-/* Connection Status */
-.connection-status,
-.connection-status .status-content {
-  display: none; /* Oculta mensagens de status de conexão */
 }
 
 /* Estilos para loading, empty-state e error-state */
