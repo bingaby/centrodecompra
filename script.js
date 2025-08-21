@@ -1,10 +1,10 @@
-const VERSION = "1.0.20"; // Atualizado para correção de imagens da Cloudinary
+const VERSION = "1.0.21"; // Atualizado para correção de imagens da Cloudinary
 const API_URL = 'https://minha-api-produtos.onrender.com';
 const PLACEHOLDER_IMAGE = 'https://www.centrodecompra.com/logos/placeholder.png';
 let currentImages = [];
 let currentImageIndex = 0;
 let currentPage = 1;
-const productsPerPage = 12;
+const productsPerPage = 18;
 let allProducts = [];
 let isLoading = false;
 let currentCategory = "todas";
@@ -94,7 +94,7 @@ function checkConnectionStatus() {
 
 // Função para validar URLs de imagens da Cloudinary
 function isValidImageUrl(url) {
-  return typeof url === 'string' && url.trim() !== '' && url.includes('cloudinary.com');
+  return typeof url === 'string' && url.trim() !== '' && url.includes('cloudinary.com') && url.startsWith('https://res.cloudinary.com');
 }
 
 // Função para carregar produtos
@@ -218,8 +218,8 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
 
       console.log('Total de produtos no grid:', allProducts.length);
       loadMoreButton.style.display = data.total > allProducts.length ? "flex" : "none";
-      isLoading = false;
       updatePaginationControls(data.total);
+      isLoading = false;
       return;
     } catch (error) {
       console.error(`⚠️ Tentativa ${attempt} falhou: ${error.message}`);
@@ -292,7 +292,7 @@ function setCarrosselImage(id, index) {
 }
 
 // Modal de imagens
-async function openModal(index, imageIndex) {
+function openModal(index, imageIndex) {
   const modal = document.getElementById("imageModal");
   const carrosselImagens = document.getElementById("modalCarrosselImagens");
   const carrosselDots = document.getElementById("modalCarrosselDots");
@@ -409,22 +409,22 @@ document.addEventListener("DOMContentLoaded", () => {
       carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
     });
   }
+
+  // Socket.IO listeners
+  if (socket) {
+    socket.on('novoProduto', (produto) => {
+      console.log('Novo produto recebido:', produto);
+      carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
+    });
+
+    socket.on('produtoAtualizado', (produto) => {
+      console.log('Produto atualizado:', produto);
+      carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
+    });
+
+    socket.on('produtoExcluido', (id) => {
+      console.log('Produto excluído:', id);
+      carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
+    });
+  }
 });
-
-// Socket.IO listeners
-if (socket) {
-  socket.on('novo-produto', (produto) => {
-    console.log('Novo produto recebido:', produto);
-    carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
-  });
-
-  socket.on('produto-atualizado', (produto) => {
-    console.log('Produto atualizado:', produto);
-    carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
-  });
-
-  socket.on('produto-excluido', (id) => {
-    console.log('Produto excluído:', id);
-    carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
-  });
-}
