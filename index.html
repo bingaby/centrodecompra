@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Centro de Compra - Ofertas Online</title>
   <meta name="description" content="As melhores ofertas de lojas online em um só lugar. Filtre por categoria, loja ou busque produtos com descontos!" />
   <meta name="keywords" content="e-commerce, compras online, ofertas, descontos, lojas" />
@@ -13,7 +13,8 @@
   <meta name="twitter:card" content="summary_large_image" />
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9781903408224276" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preload" href="styles.css" as="style" />
   <link rel="icon" href="logos/favicon.ico" type="image/x-icon" />
   <link rel="icon" type="image/png" sizes="16x16" href="logos/favicon-16x16.png" />
   <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32x32.png" />
@@ -21,14 +22,12 @@
   <link rel="icon" type="image/png" sizes="192x192" href="logos/android-chrome-192x192.png" />
   <link rel="icon" type="image/png" sizes="512x512" href="logos/android-chrome-512x512.png" />
   <link rel="manifest" href="logos/site.webmanifest" />
-  <link rel="preload" href="style.css" as="style" />
 </head>
 <body>
   <header class="main-header">
     <div class="header-top">
       <div class="container">
         <div class="header-info">
-          <span><i class="fas fa-phone-alt"></i> (21) 99812-3073</span>
           <span><i class="fas fa-envelope"></i> centrodecompracontato@gmail.com</span>
         </div>
         <div class="header-links">
@@ -98,7 +97,7 @@
       <div class="container banner-content">
         <div class="banner-text">
           <h1>Ofertas Exclusivas</h1>
-          <p>Economize até 70% em milhares de produtos das melhores lojas!</p>
+          <p>Economize até 30% em milhares de produtos das melhores lojas!</p>
         </div>
       </div>
     </section>
@@ -116,31 +115,31 @@
             <div class="store-name">Todas</div>
           </div>
           <div class="store-card" data-loja="amazon" data-tooltip="Líder em eletrônicos e livros">
-            <img src="logos/amazon.png" alt="Amazon" class="store-logo" />
+            <img src="logos/amazon.png" alt="Amazon" class="store-logo" loading="lazy" />
             <div class="store-name">Amazon</div>
           </div>
           <div class="store-card" data-loja="mercadolivre" data-tooltip="Marketplace com ampla variedade">
-            <img src="logos/mercadolivre.jpg" alt="Mercado Livre" class="store-logo" />
+            <img src="logos/mercadolivre.jpg" alt="Mercado Livre" class="store-logo" loading="lazy" />
             <div class="store-name">Mercado Livre</div>
           </div>
           <div class="store-card" data-loja="shopee" data-tooltip="Ofertas em moda e acessórios">
-            <img src="logos/shopee.png" alt="Shopee" class="store-logo" />
+            <img src="logos/shopee.png" alt="Shopee" class="store-logo" loading="lazy" />
             <div class="store-name">Shopee</div>
           </div>
           <div class="store-card" data-loja="magalu" data-tooltip="Loja completa para casa e tecnologia">
-            <img src="logos/magalu.png" alt="Magalu" class="store-logo" />
+            <img src="logos/magalu.png" alt="Magalu" class="store-logo" loading="lazy" />
             <div class="store-name">Magalu</div>
           </div>
           <div class="store-card" data-loja="shein" data-tooltip="Moda acessível e variada">
-            <img src="logos/shein.png" alt="Shein" class="store-logo" />
+            <img src="logos/shein.png" alt="Shein" class="store-logo" loading="lazy" />
             <div class="store-name">Shein</div>
           </div>
           <div class="store-card" data-loja="alibaba" data-tooltip="Produtos direto da China">
-            <img src="logos/alibaba.png" alt="Alibaba" class="store-logo" />
+            <img src="logos/alibaba.png" alt="Alibaba" class="store-logo" loading="lazy" />
             <div class="store-name">Alibaba</div>
           </div>
           <div class="store-card" data-loja="aliexpress" data-tooltip="Ofertas internacionais com frete acessível">
-            <img src="logos/aliexpress.png" alt="AliExpress" class="store-logo" />
+            <img src="logos/aliexpress.png" alt="AliExpress" class="store-logo" loading="lazy" />
             <div class="store-name">AliExpress</div>
           </div>
         </div>
@@ -207,31 +206,31 @@
         <h4>Siga-nos</h4>
         <div class="social-links">
           <a href="https://www.instagram.com/cdccentrodecompra/" class="social-link" aria-label="Instagram" target="_blank" rel="noopener">
-            <img src="logos/instagram.png" alt="Instagram" class="social-icon" />
+            <img src="logos/instagram.png" alt="Instagram" class="social-icon" loading="lazy" />
           </a>
           <a href="https://x.com/ComprasCdc" class="social-link" aria-label="X" target="_blank" rel="noopener">
-            <img src="logos/X.png" alt="X" class="social-icon" />
+            <img src="logos/X.png" alt="X" class="social-icon" loading="lazy" />
           </a>
           <a href="https://www.youtube.com/@CentrodeComprasCdC" class="social-link" aria-label="YouTube" target="_blank" rel="noopener">
-            <img src="logos/youtube.png" alt="YouTube" class="social-icon" />
+            <img src="logos/youtube.png" alt="YouTube" class="social-icon" loading="lazy" />
           </a>
           <a href="https://www.tiktok.com/@cdc.centrodecompra?_t=ZM-8yz9x3HnhKQ&_r=1" class="social-link" aria-label="TikTok" target="_blank" rel="noopener">
-            <img src="logos/tiktok.png" alt="TikTok" class="social-icon" />
+            <img src="logos/tiktok.png" alt="TikTok" class="social-icon" loading="lazy" />
           </a>
           <a href="https://t.me/+NYwkHFP3uX8yMzYx" class="social-link" aria-label="Telegram" target="_blank" rel="noopener">
-            <img src="logos/telegram.jpg" alt="Telegram" class="social-icon" />
+            <img src="logos/telegram.jpg" alt="Telegram" class="social-icon" loading="lazy" />
           </a>
           <a href="https://kwai-video.com/u/@centrodecompracdc/sApFCgvk" class="social-link" aria-label="Kwai" target="_blank" rel="noopener">
-            <img src="logos/kwai.png" alt="Kwai" class="social-icon" />
+            <img src="logos/kwai.png" alt="Kwai" class="social-icon" loading="lazy" />
           </a>
         </div>
       </div>
       <div class="footer-section">
         <h4>Formas de Pagamento</h4>
         <div class="payment-methods">
-          <img src="logos/visa.png" alt="Visa" class="payment-icon" />
-          <img src="logos/mastercard.png" alt="Mastercard" class="payment-icon" />
-          <img src="logos/boleto.png" alt="Boleto" class="payment-icon" />
+          <img src="logos/visa.png" alt="Visa" class="payment-icon" loading="lazy" />
+          <img src="logos/mastercard.png" alt="Mastercard" class="payment-icon" loading="lazy" />
+          <img src="logos/boleto.png" alt="Boleto" class="payment-icon" loading="lazy" />
         </div>
       </div>
     </div>
@@ -263,11 +262,11 @@
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("year").textContent = new Date().getFullYear();
-      const cssLink = document.querySelector('link[href="style.css"]');
-      if (cssLink && cssLink.sheet) {
+      const css = document.querySelector('link[href="styles.css"]');
+      if (css && css.sheet) {
         console.log("CSS carregado com sucesso.");
       } else {
-        console.warn("CSS não carregado. Verifique o caminho do arquivo style.css.");
+        console.warn("CSS não carregado. Verifique o caminho do arquivo styles.css.");
       }
     });
   </script>
