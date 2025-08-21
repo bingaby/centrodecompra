@@ -412,6 +412,21 @@ button:focus, a:focus, input:focus {
   margin: 1.5rem auto;
   text-align: center;
   min-height: 90px; /* Prevent layout shift */
+  max-width: 728px; /* Padrão para banners horizontais */
+  position: relative;
+  background: var(--background-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.5rem;
+}
+
+.ad-container::before {
+  content: "Publicidade";
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-align: center;
+  margin-bottom: 0.5rem;
 }
 
 .products-grid {
@@ -905,6 +920,10 @@ button:focus, a:focus, input:focus {
   .modal-container {
     background: var(--background-primary);
   }
+  .ad-container {
+    background: var(--background-primary);
+    border-color: var(--border-color);
+  }
 }
 
 /* Responsividade para tablets e dispositivos móveis */
@@ -1186,6 +1205,11 @@ button:focus, a:focus, input:focus {
     right: 15px;
     padding: 0.75rem;
   }
+
+  .ad-container {
+    max-width: 100%;
+    padding: 0.5rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -1199,5 +1223,9 @@ button:focus, a:focus, input:focus {
 
   .stores-grid {
     grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  }
+
+  .ad-container {
+    min-height: 250px; /* Ajustado para anúncios verticais em dispositivos menores */
   }
 }
