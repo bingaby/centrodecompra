@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="pt-BR" dir="ltr">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Centro de Compra - Ofertas Online</title>
   <meta name="description" content="As melhores ofertas de lojas online em um só lugar. Filtre por categoria, loja ou busque produtos com descontos!" />
   <meta name="keywords" content="e-commerce, compras online, ofertas, descontos, lojas" />
@@ -14,7 +14,6 @@
   <meta property="og:image" content="https://www.centrodecompra.com/logos/og-image.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:creator" content="@ComprasCdc" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://pagead2.googlesyndication.com https://cdn.socket.io; style-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline'; img-src 'self' https://www.centrodecompra.com; connect-src 'self' https://minha-api-produtos.onrender.com https://ep1.adtrafficquality.google; frame-src 'self' https://googleads.g.doubleclick.net;">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9781903408224276" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="style.css" />
@@ -25,7 +24,6 @@
   <link rel="icon" type="image/png" sizes="192x192" href="logos/android-chrome-192x192.png" />
   <link rel="icon" type="image/png" sizes="512x512" href="logos/android-chrome-512x512.png" />
   <link rel="manifest" href="logos/site.webmanifest" />
-  <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
   <link rel="preload" href="style.css" as="style" />
 </head>
 <body>
@@ -37,12 +35,12 @@
         </div>
         <div class="header-links">
           <a href="cupom.html" class="header-link" aria-label="Cupons"><i class="fas fa-tags"></i> Cupons</a>
-          <a href="https://www.instagram.com/cdccentrodecompra/" class="header-link social-link" target="_blank" rel="noopener nofollow" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-          <a href="https://x.com/ComprasCdc" class="header-link social-link" target="_blank" rel="noopener nofollow" aria-label="X"><i class="fab fa-x-twitter"></i></a>
-          <a href="https://www.youtube.com/@CentrodeComprasCdC" class="header-link social-link" target="_blank" rel="noopener nofollow" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
-          <a href="https://www.tiktok.com/@cdc.centrodecompra?_t=ZM-8yz9x3HnhKQ&_r=1" class="header-link social-link" target="_blank" rel="noopener nofollow" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
-          <a href="https://t.me/+NYwkHFP3uX8yMzYx" class="header-link social-link" target="_blank" rel="noopener nofollow" aria-label="Telegram"><i class="fab fa-telegram-plane"></i></a>
-          <a href="https://kwai-video.com/u/@centrodecompracdc/sApFCgvk" class="header-link social-link" target="_blank" rel="noopener nofollow" aria-label="Kwai"><i class="fas fa-video"></i></a>
+          <a href="https://www.instagram.com/cdccentrodecompra/" class="header-link social-link" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="https://x.com/ComprasCdc" class="header-link social-link" target="_blank" rel="noopener" aria-label="X"><i class="fab fa-x-twitter"></i></a>
+          <a href="https://www.youtube.com/@CentrodeComprasCdC" class="header-link social-link" target="_blank" rel="noopener" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+          <a href="https://www.tiktok.com/@cdc.centrodecompra?_t=ZM-8yz9x3HnhKQ&_r=1" class="header-link social-link" target="_blank" rel="noopener" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+          <a href="https://t.me/+NYwkHFP3uX8yMzYx" class="header-link social-link" target="_blank" rel="noopener" aria-label="Telegram"><i class="fab fa-telegram-plane"></i></a>
+          <a href="https://kwai-video.com/u/@centrodecompracdc/sApFCgvk" class="header-link social-link" target="_blank" rel="noopener" aria-label="Kwai"><i class="fas fa-video"></i></a>
         </div>
       </div>
     </div>
@@ -51,8 +49,7 @@
       <ins class="adsbygoogle"
            style="display:block"
            data-ad-client="ca-pub-9781903408224276"
-           data-ad-slot="google.com, pub-9781903408224276, DIRECT, f08c47fec0942fa0
-" <!-- Substitua pelo valor correto do Google AdSense -->
+           data-ad-slot="google.com, pub-9781903408224276, DIRECT, f08c47fec0942fa0"
            data-ad-format="auto"
            data-full-width-responsive="true"></ins>
       <script>
@@ -69,14 +66,11 @@
           <div class="search-container">
             <input type="text" id="busca" class="search-input" placeholder="Busque produtos ou lojas..." aria-label="Pesquisar produtos" />
             <button class="search-btn" aria-label="Iniciar busca"><i class="fas fa-search"></i></button>
-            <noscript>
-              <p>Por favor, ative o JavaScript para usar a busca.</p>
-            </noscript>
           </div>
         </div>
         <div class="header-actions">
-          <a href="https://chat.whatsapp.com/CYdOho9nYbKAwzDA8I9QeQ?mode=ac_t" class="action-btn whatsapp-btn" target="_blank" rel="noopener nofollow"><i class="fab fa-whatsapp"></i> WhatsApp</a>
-          <a href="https://t.me/+NYwkHFP3uX8yMzYx" class="action-btn telegram-btn" target="_blank" rel="noopener nofollow"><i class="fab fa-telegram-plane"></i> Telegram</a>
+          <a href="https://chat.whatsapp.com/CYdOho9nYbKAwzDA8I9QeQ?mode=ac_t" class="action-btn whatsapp-btn" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+          <a href="https://t.me/+NYwkHFP3uX8yMzYx" class="action-btn telegram-btn" target="_blank" rel="noopener"><i class="fab fa-telegram-plane"></i> Telegram</a>
         </div>
       </div>
     </div>
@@ -93,29 +87,27 @@
     </nav>
   </header>
   <aside class="categories-sidebar" id="categories-sidebar" role="navigation" aria-label="Menu de categorias">
-    <nav>
-      <div class="sidebar-header">
-        <h3><i class="fas fa-list"></i> Categorias</h3>
-        <button class="close-sidebar" id="close-sidebar" aria-label="Fechar menu de categorias"><i class="fas fa-times"></i></button>
-      </div>
-      <ul class="categories-list">
-        <li class="category-item active" data-categoria="todas" aria-label="Filtrar por todas as categorias"><i class="fas fa-th"></i> Todas</li>
-        <li class="category-item" data-categoria="eletronicos" aria-label="Filtrar por eletrônicos"><i class="fas fa-laptop"></i> Eletrônicos</li>
-        <li class="category-item" data-categoria="moda" aria-label="Filtrar por moda"><i class="fas fa-tshirt"></i> Moda</li>
-        <li class="category-item" data-categoria="casa-e-decoracao" aria-label="Filtrar por casa e decoração"><i class="fas fa-home"></i> Casa e Decoração</li>
-        <li class="category-item" data-categoria="esportes" aria-label="Filtrar por esportes"><i class="fas fa-futbol"></i> Esportes</li>
-        <li class="category-item" data-categoria="beleza" aria-label="Filtrar por beleza"><i class="fas fa-spa"></i> Beleza</li>
-        <li class="category-item" data-categoria="livros" aria-label="Filtrar por livros"><i class="fas fa-book"></i> Livros</li>
-        <li class="category-item" data-categoria="brinquedos" aria-label="Filtrar por brinquedos"><i class="fas fa-gamepad"></i> Brinquedos</li>
-        <li class="category-item" data-categoria="saude" aria-label="Filtrar por saúde"><i class="fas fa-heartbeat"></i> Saúde</li>
-        <li class="category-item" data-categoria="automotivo" aria-label="Filtrar por automotivo"><i class="fas fa-car"></i> Automotivo</li>
-        <li class="category-item" data-categoria="alimentos" aria-label="Filtrar por alimentos"><i class="fas fa-utensils"></i> Alimentos</li>
-        <li class="category-item" data-categoria="pet-shop" aria-label="Filtrar por pet shop"><i class="fas fa-paw"></i> Pet Shop</li>
-        <li class="category-item" data-categoria="celulares" aria-label="Filtrar por celulares"><i class="fas fa-mobile-alt"></i> Celulares</li>
-        <li class="category-item" data-categoria="eletrodomesticos" aria-label="Filtrar por eletrodomésticos"><i class="fas fa-blender"></i> Eletrodomésticos</li>
-        <li class="category-item" data-categoria="infantil" aria-label="Filtrar por infantil"><i class="fas fa-baby"></i> Infantil</li>
-      </ul>
-    </nav>
+    <div class="sidebar-header">
+      <h3><i class="fas fa-list"></i> Categorias</h3>
+      <button class="close-sidebar" id="close-sidebar" aria-label="Fechar menu de categorias"><i class="fas fa-times"></i></button>
+    </div>
+    <ul class="categories-list">
+      <li class="category-item active" data-categoria="todas" aria-label="Filtrar por todas as categorias"><i class="fas fa-th"></i> Todas</li>
+      <li class="category-item" data-categoria="eletronicos" aria-label="Filtrar por eletrônicos"><i class="fas fa-laptop"></i> Eletrônicos</li>
+      <li class="category-item" data-categoria="moda" aria-label="Filtrar por moda"><i class="fas fa-tshirt"></i> Moda</li>
+      <li class="category-item" data-categoria="casa-e-decoracao" aria-label="Filtrar por casa e decoração"><i class="fas fa-home"></i> Casa e Decoração</li>
+      <li class="category-item" data-categoria="esportes" aria-label="Filtrar por esportes"><i class="fas fa-futbol"></i> Esportes</li>
+      <li class="category-item" data-categoria="beleza" aria-label="Filtrar por beleza"><i class="fas fa-spa"></i> Beleza</li>
+      <li class="category-item" data-categoria="livros" aria-label="Filtrar por livros"><i class="fas fa-book"></i> Livros</li>
+      <li class="category-item" data-categoria="brinquedos" aria-label="Filtrar por brinquedos"><i class="fas fa-gamepad"></i> Brinquedos</li>
+      <li class="category-item" data-categoria="saude" aria-label="Filtrar por saúde"><i class="fas fa-heartbeat"></i> Saúde</li>
+      <li class="category-item" data-categoria="automotivo" aria-label="Filtrar por automotivo"><i class="fas fa-car"></i> Automotivo</li>
+      <li class="category-item" data-categoria="alimentos" aria-label="Filtrar por alimentos"><i class="fas fa-utensils"></i> Alimentos</li>
+      <li class="category-item" data-categoria="pet-shop" aria-label="Filtrar por pet shop"><i class="fas fa-paw"></i> Pet Shop</li>
+      <li class="category-item" data-categoria="celulares" aria-label="Filtrar por celulares"><i class="fas fa-mobile-alt"></i> Celulares</li>
+      <li class="category-item" data-categoria="eletrodomesticos" aria-label="Filtrar por eletrodomésticos"><i class="fas fa-blender"></i> Eletrodomésticos</li>
+      <li class="category-item" data-categoria="infantil" aria-label="Filtrar por infantil"><i class="fas fa-baby"></i> Infantil</li>
+    </ul>
   </aside>
   <div class="overlay" id="overlay"></div>
   <main class="main-content">
@@ -132,8 +124,7 @@
       <ins class="adsbygoogle"
            style="display:block"
            data-ad-client="ca-pub-9781903408224276"
-           data-ad-slot="google.com, pub-9781903408224276, DIRECT, f08c47fec0942fa0
-" <!-- Substitua pelo valor correto do Google AdSense -->
+           data-ad-slot="google.com, pub-9781903408224276, DIRECT, f08c47fec0942fa0"
            data-ad-format="auto"
            data-full-width-responsive="true"></ins>
       <script>
@@ -157,31 +148,31 @@
             <div class="store-name">Todas</div>
           </div>
           <div class="store-card" data-loja="amazon" data-tooltip="Líder em eletrônicos e livros">
-            <img src="logos/amazon.png" alt="Logotipo da Amazon" class="store-logo" loading="lazy" />
+            <img src="logos/amazon.png" alt="Amazon" class="store-logo" />
             <div class="store-name">Amazon</div>
           </div>
           <div class="store-card" data-loja="mercadolivre" data-tooltip="Marketplace com ampla variedade">
-            <img src="logos/mercadolivre.jpg" alt="Logotipo do Mercado Livre" class="store-logo" loading="lazy" />
+            <img src="logos/mercadolivre.jpg" alt="Mercado Livre" class="store-logo" />
             <div class="store-name">Mercado Livre</div>
           </div>
           <div class="store-card" data-loja="shopee" data-tooltip="Ofertas em moda e acessórios">
-            <img src="logos/shopee.png" alt="Logotipo da Shopee" class="store-logo" loading="lazy" />
+            <img src="logos/shopee.png" alt="Shopee" class="store-logo" />
             <div class="store-name">Shopee</div>
           </div>
           <div class="store-card" data-loja="magalu" data-tooltip="Loja completa para casa e tecnologia">
-            <img src="logos/magalu.png" alt="Logotipo da Magalu" class="store-logo" loading="lazy" />
+            <img src="logos/magalu.png" alt="Magalu" class="store-logo" />
             <div class="store-name">Magalu</div>
           </div>
           <div class="store-card" data-loja="shein" data-tooltip="Moda acessível e variada">
-            <img src="logos/shein.png" alt="Logotipo da Shein" class="store-logo" loading="lazy" />
+            <img src="logos/shein.png" alt="Shein" class="store-logo" />
             <div class="store-name">Shein</div>
           </div>
           <div class="store-card" data-loja="alibaba" data-tooltip="Produtos direto da China">
-            <img src="logos/alibaba.png" alt="Logotipo da Alibaba" class="store-logo" loading="lazy" />
+            <img src="logos/alibaba.png" alt="Alibaba" class="store-logo" />
             <div class="store-name">Alibaba</div>
           </div>
           <div class="store-card" data-loja="aliexpress" data-tooltip="Ofertas internacionais com frete acessível">
-            <img src="logos/aliexpress.png" alt="Logotipo da AliExpress" class="store-logo" loading="lazy" />
+            <img src="logos/aliexpress.png" alt="AliExpress" class="store-logo" />
             <div class="store-name">AliExpress</div>
           </div>
         </div>
@@ -197,8 +188,7 @@
           <ins class="adsbygoogle"
                style="display:block"
                data-ad-client="ca-pub-9781903408224276"
-               data-ad-slot="google.com, pub-9781903408224276, DIRECT, f08c47fec0942fa0
-" <!-- Substitua pelo valor correto do Google AdSense -->
+               data-ad-slot="google.com, pub-9781903408224276, DIRECT, f08c47fec0942fa0"
                data-ad-format="auto"
                data-full-width-responsive="true"></ins>
           <script>
@@ -218,19 +208,15 @@
           <i class="fas fa-box-open empty-icon"></i>
           <h3>Nenhum produto encontrado</h3>
           <p>Tente ajustar os filtros ou a busca.</p>
-          <a href="#" class="btn-primary reset-filters"><i class="fas fa-redo"></i> Limpar Filtros</a>
+          <a href="#" class="btn-primary" onclick="window.location.reload()"><i class="fas fa-redo"></i> Limpar Filtros</a>
         </div>
         <div class="error-state" id="error-message">
           <i class="fas fa-exclamation-circle error-icon"></i>
           <h3>Ops! Algo deu errado</h3>
           <p>Não foi possível carregar os produtos.</p>
-          <a href="#" class="btn-primary retry-load"><i class="fas fa-redo"></i> Tentar Novamente</a>
+          <a href="#" class="btn-primary" onclick="window.location.reload()"><i class="fas fa-redo"></i> Tentar Novamente</a>
         </div>
-        <div class="products-grid" id="grid-produtos">
-          <noscript>
-            <p>Os produtos estão indisponíveis no momento. Ative o JavaScript para visualizá-los.</p>
-          </noscript>
-        </div>
+        <div class="products-grid" id="grid-produtos"></div>
         <div id="pagination-controls"></div>
         <div class="load-more-container">
           <button class="load-more-btn" id="load-more"><i class="fas fa-plus"></i> Ver Mais</button>
@@ -256,32 +242,32 @@
       <div class="footer-section">
         <h4>Siga-nos</h4>
         <div class="social-links">
-          <a href="https://www.instagram.com/cdccentrodecompra/" class="social-link" aria-label="Instagram" target="_blank" rel="noopener nofollow">
-            <img src="logos/instagram.png" alt="" class="social-icon" loading="lazy" />
+          <a href="https://www.instagram.com/cdccentrodecompra/" class="social-link" aria-label="Instagram" target="_blank" rel="noopener">
+            <img src="logos/instagram.png" alt="Instagram" class="social-icon" />
           </a>
-          <a href="https://x.com/ComprasCdc" class="social-link" aria-label="X" target="_blank" rel="noopener nofollow">
-            <img src="logos/X.png" alt="" class="social-icon" loading="lazy" />
+          <a href="https://x.com/ComprasCdc" class="social-link" aria-label="X" target="_blank" rel="noopener">
+            <img src="logos/X.png" alt="X" class="social-icon" />
           </a>
-          <a href="https://www.youtube.com/@CentrodeComprasCdC" class="social-link" aria-label="YouTube" target="_blank" rel="noopener nofollow">
-            <img src="logos/youtube.png" alt="" class="social-icon" loading="lazy" />
+          <a href="https://www.youtube.com/@CentrodeComprasCdC" class="social-link" aria-label="YouTube" target="_blank" rel="noopener">
+            <img src="logos/youtube.png" alt="YouTube" class="social-icon" />
           </a>
-          <a href="https://www.tiktok.com/@cdc.centrodecompra?_t=ZM-8yz9x3HnhKQ&_r=1" class="social-link" aria-label="TikTok" target="_blank" rel="noopener nofollow">
-            <img src="logos/tiktok.png" alt="" class="social-icon" loading="lazy" />
+          <a href="https://www.tiktok.com/@cdc.centrodecompra?_t=ZM-8yz9x3HnhKQ&_r=1" class="social-link" aria-label="TikTok" target="_blank" rel="noopener">
+            <img src="logos/tiktok.png" alt="TikTok" class="social-icon" />
           </a>
-          <a href="https://t.me/+NYwkHFP3uX8yMzYx" class="social-link" aria-label="Telegram" target="_blank" rel="noopener nofollow">
-            <img src="logos/telegram.jpg" alt="" class="social-icon" loading="lazy" />
+          <a href="https://t.me/+NYwkHFP3uX8yMzYx" class="social-link" aria-label="Telegram" target="_blank" rel="noopener">
+            <img src="logos/telegram.jpg" alt="Telegram" class="social-icon" />
           </a>
-          <a href="https://kwai-video.com/u/@centrodecompracdc/sApFCgvk" class="social-link" aria-label="Kwai" target="_blank" rel="noopener nofollow">
-            <img src="logos/kwai.png" alt="" class="social-icon" loading="lazy" />
+          <a href="https://kwai-video.com/u/@centrodecompracdc/sApFCgvk" class="social-link" aria-label="Kwai" target="_blank" rel="noopener">
+            <img src="logos/kwai.png" alt="Kwai" class="social-icon" />
           </a>
         </div>
       </div>
       <div class="footer-section">
         <h4>Formas de Pagamento</h4>
         <div class="payment-methods">
-          <img src="logos/visa.png" alt="Visa" class="payment-icon" loading="lazy" />
-          <img src="logos/mastercard.png" alt="Mastercard" class="payment-icon" loading="lazy" />
-          <img src="logos/boleto.png" alt="Boleto" class="payment-icon" loading="lazy" />
+          <img src="logos/visa.png" alt="Visa" class="payment-icon" />
+          <img src="logos/mastercard.png" alt="Mastercard" class="payment-icon" />
+          <img src="logos/boleto.png" alt="Boleto" class="payment-icon" />
         </div>
       </div>
     </div>
@@ -291,7 +277,7 @@
           <p><i class="fas fa-info-circle"></i> Aviso: Este site participa de programas de afiliados. Ao realizar compras por meio dos nossos links, podemos receber uma comissão sem custo adicional para você.</p>
         </div>
         <div class="footer-copyright">
-          <p>&copy; <span id="year"></span> Centro de Compra. Todos os direitos reservados.</p>
+          <p>&copy; <span id="year">2025</span> Centro de Compra. Todos os direitos reservados.</p>
         </div>
       </div>
     </div>
@@ -302,13 +288,13 @@
       <button class="modal-close" id="modal-close" aria-label="Fechar modal"><i class="fas fa-times"></i></button>
       <div class="modal-carousel">
         <div class="carousel-images" id="modalCarrosselImagens"></div>
-        <button class="carousel-btn prev" id="modalPrev" tabindex="0" aria-label="Imagem anterior"><i class="fas fa-chevron-left"></i></button>
-        <button class="carousel-btn next" id="modalNext" tabindex="0" aria-label="Próxima imagem"><i class="fas fa-chevron-right"></i></button>
+        <button class="carousel-btn prev" id="modalPrev"><i class="fas fa-chevron-left"></i></button>
+        <button class="carousel-btn next" id="modalNext"><i class="fas fa-chevron-right"></i></button>
         <div class="carousel-dots" id="modalCarrosselDots"></div>
       </div>
     </div>
   </div>
-  <script defer src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <script src="script.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -323,20 +309,14 @@
       const ads = document.querySelectorAll('.adsbygoogle');
       ads.forEach(ad => {
         const container = ad.closest('.ad-container');
-        if (!ad.getAttribute('data-ad-slot') || ad.getAttribute('data-ad-slot').includes('google.com')) {
+        if (!ad.getAttribute('data-ad-slot') || ad.getAttribute('data-ad-slot') === 'google.com, pub-9781903408224276, DIRECT, f08c47fec0942fa0') {
           container.querySelector('.ad-fallback').style.display = 'block';
           ad.style.display = 'none';
           console.warn('Anúncio com data-ad-slot inválido ou não configurado.');
         }
       });
-      // Adicionar eventos para botões de reset e retry
-      document.querySelectorAll('.reset-filters, .retry-load').forEach(button => {
-        button.addEventListener('click', (e) => {
-          e.preventDefault();
-          window.location.reload();
-        });
-      });
     });
   </script>
 </body>
 </html>
+
