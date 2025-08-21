@@ -1228,4 +1228,149 @@ button:focus, a:focus, input:focus {
   .ad-container {
     min-height: 250px; /* Ajustado para anúncios verticais em dispositivos menores */
   }
+}/* Header Top */
+.header-top {
+  background: var(--primary-color);
+  color: white;
+  padding: 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+.header-top .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.header-info {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.header-info span {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.header-links {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.header-links a {
+  color: white;
+  text-decoration: none;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: var(--radius-md);
+}
+
+.header-links a:hover {
+  background: var(--primary-hover);
+}
+
+.header-links .social-link i {
+  font-size: 1.2rem;
+}
+
+.header-links .header-link:not(.social-link) {
+  font-size: 0.9rem;
+}
+
+/* Ad Container */
+.ad-container {
+  margin: 1.5rem auto;
+  text-align: center;
+  min-height: 90px; /* Previne CLS em telas maiores */
+  max-width: 728px; /* Padrão para banners horizontais */
+  position: relative;
+  background: var(--background-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.5rem;
+}
+
+.ad-container::before {
+  content: "Publicidade";
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+/* Modo escuro */
+@media (prefers-color-scheme: dark) {
+  .ad-container {
+    background: var(--background-primary);
+    border-color: var(--border-color);
+  }
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .header-top {
+    padding: 0.75rem 0;
+    font-size: 0.8rem;
+  }
+
+  .header-top .container {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .header-info {
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  .header-links {
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .header-links a {
+    padding: 0.3rem;
+  }
+
+  .header-links .social-link i {
+    font-size: 1.1rem;
+  }
+
+  .header-links .header-link:not(.social-link) {
+    font-size: 0.8rem;
+  }
+
+  .ad-container {
+    max-width: 100%;
+    padding: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-top {
+    font-size: 0.75rem;
+  }
+
+  .header-links {
+    gap: 0.4rem;
+  }
+
+  .header-links .social-link i {
+    font-size: 1rem;
+  }
+
+  .ad-container {
+    min-height: 250px; /* Ajustado para anúncios verticais em dispositivos menores */
+  }
 }
