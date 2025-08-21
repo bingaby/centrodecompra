@@ -1,6 +1,6 @@
 // Configurações iniciais
 const API_URL = 'https://minha-api-produtos.onrender.com/api/produtos';
-const ITEMS_PER_PAGE = 18;
+const ITEMS_PER_PAGE = 21;
 let currentPage = 1;
 let currentCategoria = 'todas';
 let currentLoja = 'todas';
