@@ -1,4 +1,4 @@
-const VERSION = "1.0.17"; // Atualizado para correção de imagens
+const VERSION = "1.0.18"; // Atualizado para correção de imagens
 const API_URL = 'https://minha-api-produtos.onrender.com';
 let currentImages = [];
 let currentImageIndex = 0;
@@ -176,7 +176,7 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
           card.setAttribute("data-loja", produto.loja.toLowerCase());
           const globalIndex = allProducts.indexOf(produto);
 
-          // Garantir que imagens seja um array válido
+          // Validação robusta para imagens
           const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0 && produto.imagens.every(img => typeof img === 'string' && img.trim() !== '')
             ? produto.imagens
             : ["https://www.centrodecompra.com/logos/placeholder.png"];
@@ -444,9 +444,10 @@ async function openModal(index, imageIndex) {
       : ["https://www.centrodecompra.com/logos/placeholder.png"];
     currentImageIndex = Math.max(0, Math.min(imageIndex, currentImages.length - 1));
 
+    // Validação das URLs das imagens
     const validImages = await Promise.all(currentImages.map(async (img, idx) => {
       try {
-        const response = await fetch(img, { method: 'HEAD' });
+        const response = await fetch(img, { method: 'HEAD', cache: 'no-store' });
         return response.ok ? img : 'https://www.centrodecompra.com/logos/placeholder.png';
       } catch {
         return 'https://www.centrodecompra.com/logos/placeholder.png';
