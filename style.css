@@ -344,7 +344,7 @@ body {
   cursor: pointer;
   transition: var(--transition);
   text-align: center;
-  position: relative; /* Para o tooltip */
+  position: relative;
 }
 
 .store-card:hover {
@@ -373,11 +373,11 @@ body {
 }
 
 .store-logo[src$="placeholder.png"] {
-  opacity: 0.5; /* Reduz opacidade do placeholder para indicar erro */
+  opacity: 0.5;
 }
 
 .store-logo[onerror] {
-  display: none; /* Oculta a imagem se houver erro, mostrando apenas o nome da loja */
+  display: none;
 }
 
 .store-name {
@@ -413,18 +413,21 @@ body {
   justify-content: center;
   align-items: center;
   margin: 1rem 0;
-  max-width: 100%;
+  min-width: 300px; /* Garante largura mínima para anúncios */
+  min-height: 50px; /* Garante altura mínima para anúncios */
+  width: 100%;
+  max-width: 728px;
   overflow: hidden;
 }
 
-.ad-container ins.adsbygoogle {
+ins.adsbygoogle {
+  display: block !important; /* Força visibilidade */
   width: 100%;
-  max-width: 728px;
+  min-height: 50px; /* Altura mínima para evitar erro */
 }
 
-ins.adsbygoogle[data-ad-status="unfilled"],
-ins.adsbygoogle:not([data-ad-status]) {
-  display: none !important;
+ins.adsbygoogle[data-ad-status="unfilled"] {
+  display: none !important; /* Oculta anúncios não preenchidos */
 }
 
 /* Produtos */
@@ -721,28 +724,6 @@ ins.adsbygoogle:not([data-ad-status]) {
   opacity: 0.5;
 }
 
-/* Load More Button */
-.load-more-container {
-  display: flex;
-  justify-content: center;
-  margin: 1rem 0;
-}
-
-.load-more-btn {
-  padding: 0.5rem 1rem;
-  background: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: var(--transition);
-}
-
-.load-more-btn:hover {
-  background: var(--primary-hover);
-}
-
 /* Footer */
 .main-footer {
   background: linear-gradient(135deg, #2d3748, #1a202c);
@@ -818,10 +799,14 @@ ins.adsbygoogle:not([data-ad-status]) {
 
 /* Estilos para loading, empty-state e error-state */
 .loading-container {
-  display: flex;
+  display: none; /* Inicialmente escondido */
   justify-content: center;
   align-items: center;
   padding: 2rem;
+}
+
+.loading-container.active {
+  display: flex; /* Exibe quando ativo */
 }
 
 .loading-spinner {
@@ -845,8 +830,16 @@ ins.adsbygoogle:not([data-ad-status]) {
 
 .empty-state,
 .error-state {
+  display: none; /* Inicialmente escondido */
   text-align: center;
   padding: 2rem;
+}
+
+.empty-state.active,
+.error-state.active {
+  display: flex; /* Exibe quando ativo */
+  flex-direction: column;
+  align-items: center;
 }
 
 .empty-icon,
@@ -1122,7 +1115,7 @@ ins.adsbygoogle:not([data-ad-status]) {
 
   .ad-container {
     margin: 0.5rem 0;
-    max-width: 100%;
+    min-width: 250px; /* Ajustado para dispositivos menores */
   }
 
   .ad-container ins.adsbygoogle {
@@ -1244,5 +1237,6 @@ ins.adsbygoogle:not([data-ad-status]) {
 
   .ad-container {
     margin: 0.3rem 0;
+    min-width: 200px; /* Ajustado para telas pequenas */
   }
 }
