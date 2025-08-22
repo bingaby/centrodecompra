@@ -1,4 +1,4 @@
-/* styles.css (Combinado Desktop e Mobile) */
+/* styles.css (Atualizado) */
 
 /* Variáveis globais */
 :root {
@@ -344,6 +344,7 @@ body {
   cursor: pointer;
   transition: var(--transition);
   text-align: center;
+  position: relative; /* Para o tooltip */
 }
 
 .store-card:hover {
@@ -369,6 +370,14 @@ body {
   width: 100%;
   object-fit: contain;
   margin-bottom: 0.3rem;
+}
+
+.store-logo[src$="placeholder.png"] {
+  opacity: 0.5; /* Reduz opacidade do placeholder para indicar erro */
+}
+
+.store-logo[onerror] {
+  display: none; /* Oculta a imagem se houver erro, mostrando apenas o nome da loja */
 }
 
 .store-name {
@@ -408,9 +417,14 @@ body {
   overflow: hidden;
 }
 
-.ad-container ins {
+.ad-container ins.adsbygoogle {
   width: 100%;
-  max-width: 728px; /* Limita a largura máxima do anúncio */
+  max-width: 728px;
+}
+
+ins.adsbygoogle[data-ad-status="unfilled"],
+ins.adsbygoogle:not([data-ad-status]) {
+  display: none !important;
 }
 
 /* Produtos */
@@ -773,12 +787,17 @@ body {
 
 /* Feedback Messages */
 .feedback-message {
+  display: none;
   position: fixed;
   top: 20px;
   right: 20px;
   padding: 1rem;
   border-radius: var(--radius-md);
   z-index: 2000;
+}
+
+.feedback-message.active {
+  display: block;
 }
 
 .feedback-error {
@@ -789,6 +808,12 @@ body {
 .feedback-success {
   background: var(--secondary-color);
   color: white;
+}
+
+/* Connection Status */
+.connection-status,
+.connection-status .status-content {
+  display: none;
 }
 
 /* Estilos para loading, empty-state e error-state */
@@ -1100,9 +1125,9 @@ body {
     max-width: 100%;
   }
 
-  .ad-container ins {
+  .ad-container ins.adsbygoogle {
     max-width: 100%;
-    min-height: 50px; /* Evita colapso se o anúncio não carregar */
+    min-height: 50px;
   }
 
   .modal-container {
