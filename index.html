@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://pagead2.googlesyndication.com https://www.googletagservices.com https://tpc.googlesyndication.com https://cdn.socket.io https://ep2.adtrafficquality.google 'unsafe-inline'; style-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline'; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' https://www.centrodecompra.com https://minha-api-produtos.onrender.com https://res.cloudinary.com https://*.google.com https://*.gstatic.com https://*.doubleclick.net data:; connect-src 'self' https://minha-api-produtos.onrender.com https://ep1.adtrafficquality.google https://*.google.com https://*.doubleclick.net; frame-src 'self' https://googleads.g.doubleclick.net https://tpc.googlesyndication.com;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://pagead2.googlesyndication.com https://cdn.socket.io https://ep2.adtrafficquality.google; style-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline'; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' https://www.centrodecompra.com https://minha-api-produtos.onrender.com https://res.cloudinary.com data:; connect-src 'self' https://minha-api-produtos.onrender.com https://ep1.adtrafficquality.google; frame-src 'self' https://googleads.g.doubleclick.net;">
   <title>Centro de Compra - Ofertas Online</title>
   <meta name="description" content="As melhores ofertas de lojas online em um só lugar. Filtre por categoria, loja ou busque produtos com descontos!" />
   <meta name="keywords" content="e-commerce, compras online, ofertas, descontos, lojas" />
@@ -20,224 +20,246 @@
   <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32x32.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="logos/apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="logos/android-chrome-192x192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="logos/android-chrome-512x512.png" />
+  <link rel="manifest" href="logos/site.webmanifest" />
+  <link rel="preload" href="style.css" as="style" />
 </head>
 <body>
-  <!-- Header Top -->
-  <header class="header-top">
-    <div class="container">
-      <div class="header-info">
-        <span><i class="fas fa-tags"></i> As melhores ofertas</span>
-        <span><i class="fas fa-truck"></i> Frete grátis em várias lojas</span>
-      </div>
-      <div class="header-links">
-        <a href="#" class="social-link"><i class="fas fa-ticket-alt"></i> Cupons</a>
-        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
-        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-        <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
-        <a href="#" class="social-link"><i class="fab fa-tiktok"></i></a>
-        <a href="#" class="social-link"><i class="fab fa-telegram"></i></a>
-        <a href="#" class="social-link"><i class="fab fa-kwai"></i></a>
+  <header class="main-header">
+    <div class="header-top">
+      <div class="container">
+        <div class="header-info">
+          <span><i class="fas fa-envelope"></i> centrodecompracontato@gmail.com</span>
+        </div>
+        <div class="header-links">
+          <a href="cupom.html" class="header-link"><i class="fas fa-tags"></i> Cupons</a>
+          <a href="https://www.instagram.com/cdccentrodecompra/" class="header-link" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="https://x.com/ComprasCdc" class="header-link" target="_blank" rel="noopener" aria-label="X"><i class="fab fa-x-twitter"></i></a>
+          <a href="https://www.youtube.com/@CentrodeComprasCdC" class="header-link" target="_blank" rel="noopener" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+          <a href="https://www.tiktok.com/@cdc.centrodecompra?_t=ZM-8yz9x3HnhKQ&_r=1" class="header-link" target="_blank" rel="noopener" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+          <a href="https://t.me/+NYwkHFP3uX8yMzYx" class="header-link" target="_blank" rel="noopener" aria-label="Telegram"><i class="fab fa-telegram-plane"></i></a>
+          <a href="https://kwai-video.com/u/@centrodecompracdc/sApFCgvk" class="header-link" target="_blank" rel="noopener" aria-label="Kwai"><i class="fas fa-video"></i></a>
+        </div>
       </div>
     </div>
-  </header>
-
-  <!-- Main Header -->
-  <header class="main-header">
     <div class="header-main">
-      <div class="container">
-        <div class="header-content">
-          <a href="/" class="site-title">Centro de Compra</a>
+      <div class="container header-content">
+        <h1 class="site-title">Centro de Compra</h1>
+        <div class="search-section">
           <div class="search-container">
-            <input type="text" id="busca" class="search-input" placeholder="Busque por produtos ou lojas..." aria-label="Busque por produtos ou lojas">
-            <button class="search-btn"><i class="fas fa-search"></i></button>
+            <input type="text" id="busca" class="search-input" placeholder="Busque produtos ou lojas..." aria-label="Pesquisar produtos" />
+            <button class="search-btn" aria-label="Iniciar busca"><i class="fas fa-search"></i></button>
           </div>
-          <div class="header-actions">
-            <a href="#" class="action-btn whatsapp-btn"><i class="fab fa-whatsapp"></i> Participe do Grupo</a>
-            <a href="#" class="action-btn telegram-btn"><i class="fab fa-telegram"></i> Siga no Telegram</a>
-          </div>
+        </div>
+        <div class="header-actions">
+          <a href="https://chat.whatsapp.com/CYdOho9nYbKAwzDA8I9QeQ?mode=ac_t" class="action-btn whatsapp-btn" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+          <a href="https://t.me/+NYwkHFP3uX8yMzYx" class="action-btn telegram-btn" target="_blank" rel="noopener"><i class="fab fa-telegram-plane"></i> Telegram</a>
         </div>
       </div>
     </div>
     <nav class="main-nav">
-      <div class="container">
-        <div class="nav-content">
-          <button class="categories-btn" id="categories-toggle">
-            <i class="fas fa-bars"></i> Categorias
-          </button>
-          <div class="nav-links">
-            <a href="#ofertas" class="nav-link active">Ofertas</a>
-            <a href="#" class="nav-link">Cupons</a>
-            <a href="#" class="nav-link">Novidades</a>
-          </div>
+      <div class="container nav-content">
+        <button class="categories-btn" id="categories-toggle" aria-label="Abrir menu de categorias"><i class="fas fa-bars"></i> Categorias</button>
+        <div class="nav-links">
+          <a href="#inicio" class="nav-link active">Início</a>
+          <a href="#ofertas" class="nav-link">Ofertas</a>
+          <a href="#lojas" class="nav-link">Lojas</a>
+          <a href="contato.html" class="nav-link">Contato</a>
         </div>
       </div>
     </nav>
   </header>
-
-  <!-- Sidebar de Categorias -->
-  <aside class="categories-sidebar" id="categories-sidebar">
+  <aside class="categories-sidebar" id="categories-sidebar" role="navigation" aria-label="Menu de categorias">
     <div class="sidebar-header">
-      <h3>Categorias</h3>
-      <button class="close-sidebar" id="close-sidebar"><i class="fas fa-times"></i></button>
+      <h3><i class="fas fa-list"></i> Categorias</h3>
+      <button class="close-sidebar" id="close-sidebar" aria-label="Fechar menu de categorias"><i class="fas fa-times"></i></button>
     </div>
     <ul class="categories-list">
-      <li class="category-item active" data-categoria="todas"><i class="fas fa-star"></i> Todas as Categorias</li>
-      <li class="category-item" data-categoria="eletronicos"><i class="fas fa-laptop"></i> Eletrônicos</li>
-      <li class="category-item" data-categoria="moda"><i class="fas fa-tshirt"></i> Moda</li>
-      <li class="category-item" data-categoria="casa"><i class="fas fa-home"></i> Casa e Decoração</li>
-      <li class="category-item" data-categoria="esportes"><i class="fas fa-futbol"></i> Esportes</li>
-      <li class="category-item" data-categoria="beleza"><i class="fas fa-spa"></i> Beleza</li>
+      <li class="category-item active" data-categoria="todas" aria-label="Filtrar por todas as categorias"><i class="fas fa-th"></i> Todas</li>
+      <li class="category-item" data-categoria="eletronicos" aria-label="Filtrar por eletrônicos"><i class="fas fa-laptop"></i> Eletrônicos</li>
+      <li class="category-item" data-categoria="moda" aria-label="Filtrar por moda"><i class="fas fa-tshirt"></i> Moda</li>
+      <li class="category-item" data-categoria="casa-e-decoracao" aria-label="Filtrar por casa e decoração"><i class="fas fa-home"></i> Casa e Decoração</li>
+      <li class="category-item" data-categoria="esportes" aria-label="Filtrar por esportes"><i class="fas fa-futbol"></i> Esportes</li>
+      <li class="category-item" data-categoria="beleza" aria-label="Filtrar por beleza"><i class="fas fa-spa"></i> Beleza</li>
+      <li class="category-item" data-categoria="livros" aria-label="Filtrar por livros"><i class="fas fa-book"></i> Livros</li>
+      <li class="category-item" data-categoria="brinquedos" aria-label="Filtrar por brinquedos"><i class="fas fa-gamepad"></i> Brinquedos</li>
+      <li class="category-item" data-categoria="saude" aria-label="Filtrar por saúde"><i class="fas fa-heartbeat"></i> Saúde</li>
+      <li class="category-item" data-categoria="automotivo" aria-label="Filtrar por automotivo"><i class="fas fa-car"></i> Automotivo</li>
+      <li class="category-item" data-categoria="alimentos" aria-label="Filtrar por alimentos"><i class="fas fa-utensils"></i> Alimentos</li>
+      <li class="category-item" data-categoria="pet-shop" aria-label="Filtrar por pet shop"><i class="fas fa-paw"></i> Pet Shop</li>
+      <li class="category-item" data-categoria="celulares" aria-label="Filtrar por celulares"><i class="fas fa-mobile-alt"></i> Celulares</li>
+      <li class="category-item" data-categoria="eletrodomesticos" aria-label="Filtrar por eletrodomésticos"><i class="fas fa-blender"></i> Eletrodomésticos</li>
+      <li class="category-item" data-categoria="infantil" aria-label="Filtrar por infantil"><i class="fas fa-baby"></i> Infantil</li>
     </ul>
   </aside>
   <div class="overlay" id="overlay"></div>
-
-  <!-- Banner -->
-  <section class="offers-banner">
-    <div class="container">
-      <div class="banner-text">
-        <h1>Encontre as Melhores Ofertas!</h1>
-        <p>Explore promoções exclusivas de lojas confiáveis em um só lugar.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Lojas -->
-  <section class="stores-section">
-    <div class="container">
-      <div class="stores-grid">
-        <div class="store-card active" data-loja="todas" data-tooltip="Todas as Lojas">
-          <img src="logos/todas.png" alt="Todas as Lojas" class="store-logo" loading="lazy">
-          <span class="store-name">Todas</span>
-        </div>
-        <div class="store-card" data-loja="amazon" data-tooltip="Amazon">
-          <img src="logos/amazon.png" alt="Amazon" class="store-logo" loading="lazy">
-          <span class="store-name">Amazon</span>
-        </div>
-        <div class="store-card" data-loja="mercadolivre" data-tooltip="Mercado Livre">
-          <img src="logos/mercadolivre.png" alt="Mercado Livre" class="store-logo" loading="lazy">
-          <span class="store-name">Mercado Livre</span>
-        </div>
-        <div class="store-card" data-loja="shopee" data-tooltip="Shopee">
-          <img src="logos/shopee.png" alt="Shopee" class="store-logo" loading="lazy">
-          <span class="store-name">Shopee</span>
-        </div>
-        <div class="store-card" data-loja="magalu" data-tooltip="Magalu">
-          <img src="logos/magalu.png" alt="Magalu" class="store-logo" loading="lazy">
-          <span class="store-name">Magalu</span>
-        </div>
-        <div class="store-card" data-loja="shein" data-tooltip="Shein">
-          <img src="logos/shein.png" alt="Shein" class="store-logo" loading="lazy">
-          <span class="store-name">Shein</span>
-        </div>
-        <div class="store-card" data-loja="alibaba" data-tooltip="Alibaba">
-          <img src="logos/alibaba.png" alt="Alibaba" class="store-logo" loading="lazy">
-          <span class="store-name">Alibaba</span>
-        </div>
-        <div class="store-card" data-loja="aliexpress" data-tooltip="AliExpress">
-          <img src="logos/aliexpress.png" alt="AliExpress" class="store-logo" loading="lazy">
-          <span class="store-name">AliExpress</span>
+  <main class="main-content">
+    <section class="offers-banner" id="inicio">
+      <div class="container banner-content">
+        <div class="banner-text">
+          <h1>Ofertas Exclusivas</h1>
+          <p>Economize até 30% em milhares de produtos das melhores lojas!</p>
         </div>
       </div>
-    </div>
-  </section>
-
-  <!-- Produtos -->
-  <section class="products-section" id="ofertas">
-    <div class="container">
-      <div class="section-header">
-        <h2 id="ofertas-titulo">Produtos em Destaque</h2>
-      </div>
-      <div class="products-grid" id="grid-produtos"></div>
-      <div class="ad-container">
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-9781903408224276"
-             data-ad-slot="1234567890"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-        <script>
-          (function() {
-            try {
-              (adsbygoogle = window.adsbygoogle || []).push({});
-            } catch (e) {
-              console.error('Erro ao inicializar anúncio do AdSense:', e);
-            }
-          })();
-        </script>
-      </div>
-      <div class="loading-container" id="loading-spinner">
-        <div class="loading-spinner">
-          <div class="spinner"></div>
-          <p>Carregando produtos...</p>
-        </div>
-      </div>
-      <div class="empty-state" id="mensagem-vazia">
-        <i class="fas fa-box-open empty-icon"></i>
-        <h3>Nenhum produto encontrado</h3>
-        <p>Tente ajustar os filtros ou a busca.</p>
-        <a href="#" class="btn-primary reset-filters"><i class="fas fa-redo"></i> Limpar Filtros</a>
-      </div>
-      <div class="error-state" id="error-message">
-        <i class="fas fa-exclamation-circle error-icon"></i>
-        <h3>Ops! Algo deu errado</h3>
-        <p>Não foi possível carregar os produtos.</p>
-        <a href="#" class="btn-primary retry-load"><i class="fas fa-redo"></i> Tentar Novamente</a>
-      </div>
-      <div id="pagination-controls"></div>
-      <div class="load-more-container">
-        <button class="load-more-btn" id="load-more"><i class="fas fa-plus"></i> Ver Mais</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- Modal de Imagens -->
-  <div class="image-modal" id="imageModal">
-    <div class="modal-backdrop"></div>
-    <div class="modal-container">
-      <button class="modal-close" id="modal-close"><i class="fas fa-times"></i></button>
-      <div id="modalCarrosselImagens"></div>
-      <button id="modalPrev"><i class="fas fa-chevron-left"></i></button>
-      <button id="modalNext"><i class="fas fa-chevron-right"></i></button>
-      <div id="modalCarrosselDots"></div>
-    </div>
-  </div>
-
-  <!-- Footer -->
-  <footer class="main-footer">
-    <div class="container">
-      <div class="footer-content">
-        <div class="footer-section">
-          <h3>Centro de Compra</h3>
-          <p>As melhores ofertas de lojas online em um só lugar.</p>
-        </div>
-        <div class="footer-section">
-          <h3>Redes Sociais</h3>
-          <div class="social-links">
-            <a href="#" class="social-link"><img src="logos/instagram.png" alt="Instagram" class="social-icon" loading="lazy"></a>
-            <a href="#" class="social-link"><img src="logos/twitter.png" alt="Twitter" class="social-icon" loading="lazy"></a>
-            <a href="#" class="social-link"><img src="logos/youtube.png" alt="YouTube" class="social-icon" loading="lazy"></a>
-            <a href="#" class="social-link"><img src="logos/tiktok.png" alt="TikTok" class="social-icon" loading="lazy"></a>
-            <a href="#" class="social-link"><img src="logos/telegram.png" alt="Telegram" class="social-icon" loading="lazy"></a>
-            <a href="#" class="social-link"><img src="logos/kwai.png" alt="Kwai" class="social-icon" loading="lazy"></a>
+    </section>
+    <section class="stores-section" id="lojas">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <h2><i class="fas fa-store"></i> Lojas Parceiras</h2>
+            <p>Explore produtos das lojas mais confiáveis</p>
           </div>
         </div>
-        <div class="footer-section">
-          <h3>Formas de Pagamento</h3>
-          <div class="payment-methods">
-            <img src="logos/visa.png" alt="Visa" class="payment-icon" loading="lazy">
-            <img src="logos/mastercard.png" alt="Mastercard" class="payment-icon" loading="lazy">
-            <img src="logos/pix.png" alt="Pix" class="payment-icon" loading="lazy">
-            <img src="logos/boleto.png" alt="Boleto" class="payment-icon" loading="lazy">
+        <div class="stores-grid">
+          <div class="store-card active" data-loja="todas" data-tooltip="Ver produtos de todas as lojas">
+            <i class="fas fa-th store-icon"></i>
+            <div class="store-name">Todas</div>
+          </div>
+          <div class="store-card" data-loja="amazon" data-tooltip="Líder em eletrônicos e livros">
+            <img src="logos/amazon.png" alt="Amazon" class="store-logo" />
+            <div class="store-name">Amazon</div>
+          </div>
+          <div class="store-card" data-loja="mercadolivre" data-tooltip="Marketplace com ampla variedade">
+            <img src="logos/mercadolivre.jpg" alt="Mercado Livre" class="store-logo" />
+            <div class="store-name">Mercado Livre</div>
+          </div>
+          <div class="store-card" data-loja="shopee" data-tooltip="Ofertas em moda e acessórios">
+            <img src="logos/shopee.png" alt="Shopee" class="store-logo" />
+            <div class="store-name">Shopee</div>
+          </div>
+          <div class="store-card" data-loja="magalu" data-tooltip="Loja completa para casa e tecnologia">
+            <img src="logos/magalu.png" alt="Magalu" class="store-logo" />
+            <div class="store-name">Magalu</div>
+          </div>
+          <div class="store-card" data-loja="shein" data-tooltip="Moda acessível e variada">
+            <img src="logos/shein.png" alt="Shein" class="store-logo" />
+            <div class="store-name">Shein</div>
+          </div>
+          <div class="store-card" data-loja="alibaba" data-tooltip="Produtos direto da China">
+            <img src="logos/alibaba.png" alt="Alibaba" class="store-logo" />
+            <div class="store-name">Alibaba</div>
+          </div>
+          <div class="store-card" data-loja="aliexpress" data-tooltip="Ofertas internacionais com frete acessível">
+            <img src="logos/aliexpress.png" alt="AliExpress" class="store-logo" />
+            <div class="store-name">AliExpress</div>
           </div>
         </div>
       </div>
-      <div class="footer-bottom">
-        <p>&copy; 2025 Centro de Compra. Todos os direitos reservados.</p>
+    </section>
+    <section class="products-section" id="ofertas">
+      <div class="container">
+        <div class="section-header">
+          <h2 id="ofertas-titulo">Produtos em Destaque</h2>
+        </div>
+        <div class="products-grid" id="grid-produtos"></div>
+        <div class="ad-container">
+          <ins class="adsbygoogle"
+               style="display:block"
+               data-ad-client="ca-pub-9781903408224276"
+               data-ad-slot="google.com, pub-9781903408224276, DIRECT, f08c47fec0942fa0" <!-- Substitua pelo seu ID real do AdSense -->
+               data-ad-format="auto"
+               data-full-width-responsive="true"></ins>
+          <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+          </script>
+        </div>
+        <div class="loading-container" id="loading-spinner">
+          <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Carregando produtos...</p>
+          </div>
+        </div>
+        <div class="empty-state" id="mensagem-vazia">
+          <i class="fas fa-box-open empty-icon"></i>
+          <h3>Nenhum produto encontrado</h3>
+          <p>Tente ajustar os filtros ou a busca.</p>
+          <a href="#" class="btn-primary reset-filters"><i class="fas fa-redo"></i> Limpar Filtros</a>
+        </div>
+        <div class="error-state" id="error-message">
+          <i class="fas fa-exclamation-circle error-icon"></i>
+          <h3>Ops! Algo deu errado</h3>
+          <p>Não foi possível carregar os produtos.</p>
+          <a href="#" class="btn-primary retry-load"><i class="fas fa-redo"></i> Tentar Novamente</a>
+        </div>
+        <div id="pagination-controls"></div>
+        <div class="load-more-container">
+          <button class="load-more-btn" id="load-more"><i class="fas fa-plus"></i> Ver Mais</button>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="main-footer" id="contato">
+    <div class="container footer-content">
+      <div class="footer-section">
+        <h4>Sobre Nós</h4>
+        <p>Centro de Compra reúne as melhores ofertas de lojas online confiáveis. Economize tempo e dinheiro!</p>
+      </div>
+      <div class="footer-section">
+        <h4>Links Úteis</h4>
+        <ul>
+          <li><a href="#termos">Termos de Uso</a></li>
+          <li><a href="sobre.html">Política de Privacidade</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="contato.html">Suporte</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Siga-nos</h4>
+        <div class="social-links">
+          <a href="https://www.instagram.com/cdccentrodecompra/" class="social-link" aria-label="Instagram" target="_blank" rel="noopener">
+            <img src="logos/instagram.png" alt="Instagram" class="social-icon" />
+          </a>
+          <a href="https://x.com/ComprasCdc" class="social-link" aria-label="X" target="_blank" rel="noopener">
+            <img src="logos/X.png" alt="X" class="social-icon" />
+          </a>
+          <a href="https://www.youtube.com/@CentrodeComprasCdC" class="social-link" aria-label="YouTube" target="_blank" rel="noopener">
+            <img src="logos/youtube.png" alt="YouTube" class="social-icon" />
+          </a>
+          <a href="https://www.tiktok.com/@cdc.centrodecompra?_t=ZM-8yz9x3HnhKQ&_r=1" class="social-link" aria-label="TikTok" target="_blank" rel="noopener">
+            <img src="logos/tiktok.png" alt="TikTok" class="social-icon" />
+          </a>
+          <a href="https://t.me/+NYwkHFP3uX8yMzYx" class="social-link" aria-label="Telegram" target="_blank" rel="noopener">
+            <img src="logos/telegram.jpg" alt="Telegram" class="social-icon" />
+          </a>
+          <a href="https://kwai-video.com/u/@centrodecompracdc/sApFCgvk" class="social-link" aria-label="Kwai" target="_blank" rel="noopener">
+            <img src="logos/kwai.png" alt="Kwai" class="social-icon" />
+          </a>
+        </div>
+      </div>
+      <div class="footer-section">
+        <h4>Formas de Pagamento</h4>
+        <div class="payment-methods">
+          <img src="logos/visa.png" alt="Visa" class="payment-icon" />
+          <img src="logos/mastercard.png" alt="Mastercard" class="payment-icon" />
+          <img src="logos/boleto.png" alt="Boleto" class="payment-icon" />
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">
+        <div class="footer-disclaimer">
+          <p><i class="fas fa-info-circle"></i> Aviso: Somos um site de afiliados. Ao comprar pelos nossos links, podemos receber comissão, mas o preço é o mesmo para você, sem custo extra.</p>
+        </div>
+        <div class="footer-copyright">
+          <p>&copy; <span id="year">2025</span> Centro de Compra.</p>
+        </div>
       </div>
     </div>
   </footer>
-
-  <script src="https://cdn.socket.io/4.5.0/socket.io.min.js" integrity="sha384-/0eHnIVGUCc6Q2uAOrB1J51yJ+UPB3ATrM3y4N5JHsW1z5aP0DAf/2TVhCLXbWSp" crossorigin="anonymous"></script>
+  <div class="image-modal" id="imageModal" role="dialog" aria-modal="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-container">
+      <button class="modal-close" id="modal-close" aria-label="Fechar modal"><i class="fas fa-times"></i></button>
+      <div class="modal-carousel">
+        <div class="carousel-images" id="modalCarrosselImagens"></div>
+        <button class="carousel-btn prev" id="modalPrev"><i class="fas fa-chevron-left"></i></button>
+        <button class="carousel-btn next" id="modalNext"><i class="fas fa-chevron-right"></i></button>
+        <div class="carousel-dots" id="modalCarrosselDots"></div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="init.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
