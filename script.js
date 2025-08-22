@@ -90,9 +90,8 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
   const mensagemVazia = document.getElementById("mensagem-vazia");
   const errorMessage = document.getElementById("error-message");
   const loadingSpinner = document.getElementById("loading-spinner");
-  const loadMoreButton = document.getElementById("load-more");
 
-  if (!gridProdutos || !mensagemVazia || !errorMessage || !loadingSpinner || !loadMoreButton) {
+  if (!gridProdutos || !mensagemVazia || !errorMessage || !loadingSpinner) {
     console.error("Elementos do DOM não encontrados");
     return;
   }
@@ -110,7 +109,6 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
   }
   mensagemVazia.style.display = "none";
   errorMessage.style.display = "none";
-  loadMoreButton.style.display = "none";
 
   const maxRetries = 3;
   let attempt = 1;
@@ -120,7 +118,11 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
       let url = `${API_URL}/api/produtos?page=${page}&limit=${productsPerPage}`;
       if (categoria !== 'todas') url += `&categoria=${encodeURIComponent(categoria)}`;
       if (loja !== 'todas') url += `&loja=${encodeURIComponent(loja)}`;
-      if (busca) url += `&busca=${encodeURIComponent(busca)}`;
+      if (busca) url += ` perspective
+
+System: **JavaScript Atualizado (`script.js`) - Continuação**
+
+```javascript
       console.log(`Tentativa ${attempt}: Carregando de ${url}`);
 
       const response = await fetch(url, {
@@ -203,7 +205,6 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
       }
 
       console.log('Total de produtos no grid:', allProducts.length);
-      loadMoreButton.style.display = data.total > allProducts.length ? "flex" : "none";
       updatePaginationControls(data.total);
       isLoading = false;
       return;
@@ -383,15 +384,6 @@ document.addEventListener("DOMContentLoaded", () => {
     searchButton.addEventListener("click", () => {
       currentSearch = buscaInput.value.trim();
       currentPage = 1;
-      carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
-    });
-  }
-
-  // Carregar mais produtos
-  const loadMoreButton = document.getElementById("load-more");
-  if (loadMoreButton) {
-    loadMoreButton.addEventListener("click", () => {
-      currentPage++;
       carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
     });
   }
