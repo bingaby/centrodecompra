@@ -157,7 +157,7 @@ body {
   padding: 0.3rem 0.75rem;
   border-radius: var(--radius-md);
   text-decoration: none;
-  color: white;
+  color589;
   font-size: 0.9rem;
   transition: var(--transition);
 }
@@ -413,21 +413,21 @@ body {
   justify-content: center;
   align-items: center;
   margin: 1rem 0;
-  min-width: 300px; /* Garante largura mínima para anúncios */
-  min-height: 50px; /* Garante altura mínima para anúncios */
+  min-width: 300px;
+  min-height: 50px;
   width: 100%;
   max-width: 728px;
   overflow: hidden;
 }
 
 ins.adsbygoogle {
-  display: block !important; /* Força visibilidade */
+  display: block !important;
   width: 100%;
-  min-height: 50px; /* Altura mínima para evitar erro */
+  min-height: 50px;
 }
 
 ins.adsbygoogle[data-ad-status="unfilled"] {
-  display: none !important; /* Oculta anúncios não preenchidos */
+  display: none !important;
 }
 
 /* Produtos */
@@ -576,6 +576,21 @@ ins.adsbygoogle[data-ad-status="unfilled"] {
   background: var(--primary-hover);
 }
 
+.tarja-preco.tarja-amazon { background: #ff9900; }
+.tarja-preco.tarja-amazon:hover { background: #e68a00; }
+.tarja-preco.tarja-mercadolivre { background: #ffe600; }
+.tarja-preco.tarja-mercadolivre:hover { background: #e6cf00; }
+.tarja-preco.tarja-shopee { background: #ee4d2d; }
+.tarja-preco.tarja-shopee:hover { background: #d43f21; }
+.tarja-preco.tarja-magalu { background: #0086ff; }
+.tarja-preco.tarja-magalu:hover { background: #0066cc; }
+.tarja-preco.tarja-shein { background: #000000; }
+.tarja-preco.tarja-shein:hover { background: #333333; }
+.tarja-preco.tarja-alibaba { background: #f60; }
+.tarja-preco.tarja-alibaba:hover { background: #cc5200; }
+.tarja-preco.tarja-aliexpress { background: #e21b2b; }
+.tarja-preco.tarja-aliexpress:hover { background: #b31522; }
+
 /* Modal */
 .image-modal {
   display: none;
@@ -609,6 +624,7 @@ ins.adsbygoogle[data-ad-status="unfilled"] {
   border-radius: var(--radius-md);
   position: relative;
   overflow: hidden;
+  padding: 10px;
 }
 
 .modal-close {
@@ -642,6 +658,7 @@ ins.adsbygoogle[data-ad-status="unfilled"] {
   object-fit: contain;
   flex: 0 0 100%;
   display: block;
+  border-radius: var(--radius-md);
 }
 
 #modalPrev,
@@ -656,6 +673,7 @@ ins.adsbygoogle[data-ad-status="unfilled"] {
   cursor: pointer;
   font-size: 1.2rem;
   transition: var(--transition);
+  border-radius: 4px;
 }
 
 #modalPrev:hover,
@@ -663,8 +681,8 @@ ins.adsbygoogle[data-ad-status="unfilled"] {
   background: rgba(0, 0, 0, 0.7);
 }
 
-#modalPrev { left: 8px; }
-#modalNext { right: 8px; }
+#modalPrev { left: 12px; }
+#modalNext { right: 12px; }
 
 #modalCarrosselDots {
   text-align: center;
@@ -799,14 +817,14 @@ ins.adsbygoogle[data-ad-status="unfilled"] {
 
 /* Estilos para loading, empty-state e error-state */
 .loading-container {
-  display: none; /* Inicialmente escondido */
+  display: none;
   justify-content: center;
   align-items: center;
   padding: 2rem;
 }
 
 .loading-container.active {
-  display: flex; /* Exibe quando ativo */
+  display: flex;
 }
 
 .loading-spinner {
@@ -830,14 +848,14 @@ ins.adsbygoogle[data-ad-status="unfilled"] {
 
 .empty-state,
 .error-state {
-  display: none; /* Inicialmente escondido */
+  display: none;
   text-align: center;
   padding: 2rem;
 }
 
 .empty-state.active,
 .error-state.active {
-  display: flex; /* Exibe quando ativo */
+  display: flex;
   flex-direction: column;
   align-items: center;
 }
@@ -1115,7 +1133,7 @@ ins.adsbygoogle[data-ad-status="unfilled"] {
 
   .ad-container {
     margin: 0.5rem 0;
-    min-width: 250px; /* Ajustado para dispositivos menores */
+    min-width: 250px;
   }
 
   .ad-container ins.adsbygoogle {
@@ -1126,6 +1144,7 @@ ins.adsbygoogle[data-ad-status="unfilled"] {
   .modal-container {
     max-width: 95vw;
     max-height: 80vh;
+    padding: 5px;
   }
 
   .modal-close {
@@ -1237,6 +1256,16 @@ ins.adsbygoogle[data-ad-status="unfilled"] {
 
   .ad-container {
     margin: 0.3rem 0;
-    min-width: 200px; /* Ajustado para telas pequenas */
+    min-width: 200px;
+  }
+
+  .modal-container {
+    max-width: 98vw;
+    max-height: 75vh;
+  }
+
+  #modalCarrosselImagens img {
+    max-width: 98vw;
+    max-height: 70vh;
   }
 }
