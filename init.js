@@ -15,8 +15,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const ads = document.querySelectorAll('.adsbygoogle');
   ads.forEach(ad => {
     const container = ad.closest('.ad-container');
-    if (!ad.getAttribute('data-ad-slot') || ad.getAttribute('data-ad-slot') === 'YOUR_AD_SLOT_ID') {
-      console.warn('Anúncio com data-ad-slot inválido ou não configurado.');
+    const adClient = ad.getAttribute('data-ad-client');
+    const adSlot = ad.getAttribute('data-ad-slot');
+    if (!adClient || adClient !== 'ca-pub-9781903408224276') {
+      console.warn('data-ad-client inválido ou não configurado:', adClient);
+      if (container) {
+        container.innerHTML = '<p>Anúncio com client inválido.</p>';
+      }
+    } else if (!adSlot || adSlot === 'YOUR_AD_SLOT_ID' || adSlot === '1234567890' || adSlot === '9876543210') {
+      console.warn('Anúncio com data-ad-slot inválido ou não configurado:', adSlot);
       if (container) {
         container.innerHTML = '<p>Anúncio não configurado corretamente.</p>';
       }
