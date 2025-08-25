@@ -437,9 +437,9 @@ ins.adsbygoogle[data-ad-status="unfilled"] {
 
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 1rem;
-  margin-top: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.8rem;
+  margin-top: 0.8rem;
   visibility: visible !important;
   opacity: 1 !important;
 }
@@ -448,11 +448,11 @@ ins.adsbygoogle[data-ad-status="unfilled"] {
   background: var(--background-primary);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
-  padding: 0.75rem;
+  padding: 0.6rem;
   display: flex;
   flex-direction: column;
   transition: var(--transition);
-  min-height: 320px;
+  min-height: 280px;
   overflow: visible;
 }
 
@@ -464,7 +464,7 @@ ins.adsbygoogle[data-ad-status="unfilled"] {
 .produto-card .carrossel {
   position: relative;
   width: 100%;
-  height: 160px;
+  height: 140px;
   overflow: hidden;
 }
 
@@ -492,9 +492,9 @@ ins.adsbygoogle[data-ad-status="unfilled"] {
   background: rgba(0, 0, 0, 0.5);
   color: white;
   border: none;
-  padding: 0.4rem;
+  padding: 0.3rem;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.9rem;
   transition: var(--transition);
   z-index: 10;
 }
@@ -504,25 +504,25 @@ ins.adsbygoogle[data-ad-status="unfilled"] {
   background: rgba(0, 0, 0, 0.7);
 }
 
-.carrossel-prev { left: 4px; }
-.carrossel-next { right: 4px; }
+.carrossel-prev { left: 3px; }
+.carrossel-next { right: 3px; }
 
 .carrossel-dots {
   text-align: center;
-  padding: 0.4rem;
+  padding: 0.3rem;
   position: absolute;
-  bottom: 4px;
+  bottom: 3px;
   width: 100%;
   z-index: 10;
 }
 
 .carrossel-dot {
   display: inline-block;
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   background: #ccc;
   border-radius: 50%;
-  margin: 0 4px;
+  margin: 0 3px;
   cursor: pointer;
   transition: var(--transition);
 }
@@ -532,10 +532,10 @@ ins.adsbygoogle[data-ad-status="unfilled"] {
 }
 
 .produto-nome {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 400;
-  padding: 0.5rem 0;
-  line-height: 1.4;
+  padding: 0.4rem 0;
+  line-height: 1.3;
   text-align: center;
   color: var(--text-primary);
   overflow: visible;
@@ -544,11 +544,11 @@ ins.adsbygoogle[data-ad-status="unfilled"] {
 }
 
 .descricao {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: var(--text-secondary);
-  padding: 0 0.5rem 0.5rem;
+  padding: 0 0.4rem 0.4rem;
   text-align: center;
-  line-height: 1.4;
+  line-height: 1.3;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
@@ -558,17 +558,17 @@ ins.adsbygoogle[data-ad-status="unfilled"] {
 
 .tarja-preco {
   display: block;
-  padding: 0.5rem;
-  margin: 0.5rem auto 0;
+  padding: 0.4rem;
+  margin: 0.4rem auto 0;
   background: var(--primary-color);
   color: white;
   text-align: center;
   border-radius: var(--radius-md);
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 500;
   width: 100%;
-  max-width: 160px;
+  max-width: 140px;
   transition: var(--transition);
 }
 
@@ -1088,47 +1088,47 @@ ins.adsbygoogle[data-ad-status="unfilled"] {
 
   .products-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 0.75rem;
-    margin-top: 0.75rem;
+    gap: 0.6rem;
+    margin-top: 0.6rem;
   }
 
   .produto-card {
     padding: 0.5rem;
-    min-height: 280px;
+    min-height: 260px;
   }
 
   .produto-card .carrossel {
-    height: 140px;
+    height: 120px;
   }
 
   .carrossel-prev,
   .carrossel-next {
-    padding: 0.3rem;
-    font-size: 0.9rem;
+    padding: 0.2rem;
+    font-size: 0.8rem;
   }
 
   .carrossel-dots {
-    padding: 0.3rem;
+    padding: 0.2rem;
   }
 
   .carrossel-dot {
     width: 6px;
     height: 6px;
-    margin: 0 3px;
+    margin: 0 2px;
   }
 
   .produto-nome {
-    font-size: 0.85rem;
-    padding: 0.4rem 0;
+    font-size: 0.8rem;
+    padding: 0.3rem 0;
   }
 
   .descricao {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
   }
 
   .tarja-preco {
-    font-size: 0.85rem;
-    max-width: 140px;
+    font-size: 0.8rem;
+    max-width: 120px;
   }
 
   .ad-container {
@@ -1247,7 +1247,7 @@ ins.adsbygoogle[data-ad-status="unfilled"] {
   }
 
   .produto-nome {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
   }
 
   .stores-grid {
