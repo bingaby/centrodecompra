@@ -108,10 +108,10 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
   isLoading = true;
 
   loadingSpinner.style.display = "block";
-  if (page === 1) {
-    gridProdutos.innerHTML = "";
-    allProducts = [];
-  }
+  // Sempre limpar o grid ao carregar uma nova página
+  gridProdutos.innerHTML = "";
+  // Limpar allProducts para armazenar apenas os produtos da página atual
+  allProducts = [];
   mensagemVazia.style.display = "none";
   errorMessage.style.display = "none";
 
@@ -149,8 +149,9 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
         throw new Error(`Resposta inválida: ${data?.message || 'Formato inesperado'}`);
       }
 
+      // Embaralhar apenas os produtos da página atual
       const shuffledProducts = shuffleArray([...data.data]);
-      allProducts = [...allProducts, ...shuffledProducts];
+      allProducts = shuffledProducts; // Armazenar apenas os produtos da página atual
 
       if (allProducts.length === 0) {
         mensagemVazia.style.display = "flex";
@@ -175,12 +176,12 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
           card.classList.add("produto-card", "visible");
           card.setAttribute("data-categoria", produto.categoria.toLowerCase());
           card.setAttribute("data-loja", produto.loja.toLowerCase());
-          const globalIndex = allProducts.indexOf(produto);
+          const globalIndex = index; // Índice relativo à página atual
 
           const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0 && produto.imagens.some(isValidImageUrl)
             ? produto.imagens.filter(isValidImageUrl)
             : [PLACEHOLDER_IMAGE];
-          const carrosselId = `carrossel-${globalIndex}`;
+          const carrosselId = `carrossel-${(page - 1) * productsPerPage + index}`; // ID único baseado na página
           const lojaClass = produto.loja.toLowerCase();
 
           card.innerHTML = `
