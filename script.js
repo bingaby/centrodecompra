@@ -1,10 +1,10 @@
-const VERSION = "1.0.21"; // Atualizado para correção de imagens da Cloudinary
+const VERSION = "1.0.23"; // Atualizado para correção do modal e ajustes no grid
 const API_URL = 'https://minha-api-produtos.onrender.com';
 const PLACEHOLDER_IMAGE = 'https://www.centrodecompra.com/logos/placeholder.png';
 let currentImages = [];
 let currentImageIndex = 0;
 let currentPage = 1;
-const productsPerPage = 18;
+const productsPerPage = 18; // Mantendo 18 produtos por página
 let allProducts = [];
 let isLoading = false;
 let currentCategory = "todas";
@@ -185,14 +185,14 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
             <div class="carrossel" id="${carrosselId}">
               <div class="carrossel-imagens">
                 ${imagens.map((img, idx) => `
-                  <img src="${img}" alt="${produto.nome} - Imagem ${idx + 1}" loading="lazy" onerror="this.src='${PLACEHOLDER_IMAGE}'" onclick="event.stopPropagation(); openModal(${globalIndex}, ${idx})">
+                  <img src="${img}" alt="${produto.nome} - Imagem ${idx + 1}" loading="lazy" onerror="this.src='${PLACEHOLDER_IMAGE}'" data-index="${globalIndex}" data-image-index="${idx}">
                 `).join("")}
               </div>
               ${imagens.length > 1 ? `
-                <button class="carrossel-prev" onclick="event.stopPropagation(); moveCarrossel('${carrosselId}', -1)" aria-label="Imagem anterior"><i class="fas fa-chevron-left"></i></button>
-                <button class="carrossel-next" onclick="event.stopPropagation(); moveCarrossel('${carrosselId}', 1)" aria-label="Próxima imagem"><i class="fas fa-chevron-right"></i></button>
+                <button class="carrossel-prev" aria-label="Imagem anterior"><i class="fas fa-chevron-left"></i></button>
+                <button class="carrossel-next" aria-label="Próxima imagem"><i class="fas fa-chevron-right"></i></button>
                 <div class="carrossel-dots">
-                  ${imagens.map((_, idx) => `<span class="carrossel-dot ${idx === 0 ? "ativo" : ""}" onclick="event.stopPropagation(); setCarrosselImage('${carrosselId}', ${idx})" aria-label="Selecionar imagem ${idx + 1}"></span>`).join("")}
+                  ${imagens.map((_, idx) => `<span class="carrossel-dot ${idx === 0 ? "ativo" : ""}" data-carrossel-id="${carrosselId}" data-image-index="${idx}" aria-label="Selecionar imagem ${idx + 1}"></span>`).join("")}
                 </div>
               ` : ""}
             </div>
@@ -203,7 +203,42 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
             </a>
           `;
           gridProdutos.appendChild(card);
-          console.log('Card adicionado:', card.outerHTML);
+        });
+
+        // Adicionar eventos de clique às imagens e controles do carrossel
+        document.querySelectorAll('.carrossel-imagens img').forEach(img => {
+          img.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const index = parseInt(img.dataset.index);
+            const imageIndex = parseInt(img.dataset.imageIndex);
+            console.log('Imagem clicada:', { index, imageIndex });
+            openModal(index, imageIndex);
+          });
+        });
+
+        document.querySelectorAll('.carrossel-prev').forEach(button => {
+          button.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const carrosselId = button.parentElement.id;
+            moveCarrossel(carrosselId, -1);
+          });
+        });
+
+        document.querySelectorAll('.carrossel-next').forEach(button => {
+          button.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const carrosselId = button.parentElement.id;
+            moveCarrossel(carrosselId, 1);
+          });
+        });
+
+        document.querySelectorAll('.carrossel-dot').forEach(dot => {
+          dot.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const carrosselId = dot.dataset.carrosselId;
+            const index = parseInt(dot.dataset.imageIndex);
+            setCarrosselImage(carrosselId, index);
+          });
         });
       }
 
@@ -284,6 +319,7 @@ function setCarrosselImage(id, index) {
 
 // Modal de imagens
 function openModal(index, imageIndex) {
+  console.log('Abrindo modal:', { index, imageIndex });
   const modal = document.getElementById("imageModal");
   const carrosselImagens = document.getElementById("modalCarrosselImagens");
   const carrosselDots = document.getElementById("modalCarrosselDots");
@@ -292,7 +328,14 @@ function openModal(index, imageIndex) {
   const modalClose = document.getElementById("modal-close");
 
   if (!modal || !carrosselImagens || !carrosselDots || !prevButton || !nextButton || !modalClose) {
-    console.error("Elementos do modal não encontrados");
+    console.error("Elementos do modal não encontrados:", {
+      modal: !!modal,
+      carrosselImagens: !!carrosselImagens,
+      carrosselDots: !!carrosselDots,
+      prevButton: !!prevButton,
+      nextButton: !!nextButton,
+      modalClose: !!modalClose
+    });
     return;
   }
 
@@ -307,27 +350,44 @@ function openModal(index, imageIndex) {
     : [PLACEHOLDER_IMAGE];
   currentImageIndex = imageIndex >= 0 && imageIndex < currentImages.length ? imageIndex : 0;
 
+  console.log('Imagens no modal:', currentImages);
+
   carrosselImagens.innerHTML = currentImages.map((img, idx) => `
     <img src="${img}" alt="${produto.nome} - Imagem ${idx + 1}" loading="lazy" onerror="this.src='${PLACEHOLDER_IMAGE}'">
   `).join("");
 
   carrosselDots.innerHTML = currentImages.map((_, idx) => `
-    <span class="carrossel-dot ${idx === currentImageIndex ? "ativo" : ""}" onclick="setModalImage(${idx})" role="button" aria-label="Selecionar imagem ${idx + 1}"></span>
+    <span class="carrossel-dot ${idx === currentImageIndex ? "ativo" : ""}" data-modal-image-index="${idx}" role="button" aria-label="Selecionar imagem ${idx + 1}"></span>
   `).join("");
 
   carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
   modal.classList.add("active");
 
+  // Limpar eventos anteriores
   prevButton.onclick = null;
   nextButton.onclick = null;
   modalClose.onclick = null;
 
+  // Adicionar novos eventos
   prevButton.onclick = () => moveModalCarrossel(-1);
   nextButton.onclick = () => moveModalCarrossel(1);
-  modalClose.onclick = () => modal.classList.remove("active");
+  modalClose.onclick = () => {
+    console.log('Fechando modal');
+    modal.classList.remove("active");
+  };
 
+  // Adicionar eventos aos dots do modal
+  carrosselDots.querySelectorAll('.carrossel-dot').forEach(dot => {
+    dot.addEventListener('click', () => {
+      const idx = parseInt(dot.dataset.modalImageIndex);
+      setModalImage(idx);
+    });
+  });
+
+  // Fechar modal com ESC
   const closeModalOnEsc = (event) => {
     if (event.key === 'Escape' && modal.classList.contains('active')) {
+      console.log('Modal fechado via ESC');
       modal.classList.remove('active');
       document.removeEventListener('keydown', closeModalOnEsc);
     }
@@ -392,40 +452,53 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Busca
-  const buscaInput = document.getElementById("busca");
+  const searchInput = document.getElementById("busca");
   const searchButton = document.querySelector(".search-btn");
-  if (buscaInput && searchButton) {
+  if (searchInput && searchButton) {
     const debouncedSearch = debounce(() => {
-      currentSearch = buscaInput.value.trim();
+      currentSearch = searchInput.value.trim();
       currentPage = 1;
       carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
-    }, 500);
+    }, 300);
 
-    buscaInput.addEventListener("input", debouncedSearch);
+    searchInput.addEventListener("input", debouncedSearch);
     searchButton.addEventListener("click", () => {
-      currentSearch = buscaInput.value.trim();
+      currentSearch = searchInput.value.trim();
       currentPage = 1;
       carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
     });
   }
 
-  // Os eventos para .reset-filters e .retry-load são tratados em init.js
-
-  // Socket.IO listeners
-  if (socket) {
-    socket.on('novoProduto', (produto) => {
-      console.log('Novo produto recebido:', produto);
-      carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
+  // Resetar filtros
+  const resetFilters = document.querySelector(".reset-filters");
+  if (resetFilters) {
+    resetFilters.addEventListener("click", (e) => {
+      e.preventDefault();
+      currentCategory = "todas";
+      currentStore = "todas";
+      currentSearch = "";
+      currentPage = 1;
+      document.querySelectorAll(".category-item").forEach(i => i.classList.remove("active"));
+      document.querySelector(".category-item[data-categoria='todas']").classList.add("active");
+      document.querySelectorAll(".store-card").forEach(c => c.classList.remove("active"));
+      document.querySelector(".store-card[data-loja='todas']").classList.add("active");
+      if (searchInput) searchInput.value = "";
+      carregarProdutos();
     });
+  }
 
-    socket.on('produtoAtualizado', (produto) => {
-      console.log('Produto atualizado:', produto);
-      carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
-    });
-
-    socket.on('produtoExcluido', (id) => {
-      console.log('Produto excluído:', id);
+  // Tentar novamente em caso de erro
+  const retryLoad = document.querySelector(".retry-load");
+  if (retryLoad) {
+    retryLoad.addEventListener("click", (e) => {
+      e.preventDefault();
       carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
     });
   }
 });
+
+// Atualizar ano no footer
+const yearSpan = document.getElementById("year");
+if (yearSpan) {
+  yearSpan.textContent = new Date().getFullYear();
+}
