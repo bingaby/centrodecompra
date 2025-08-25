@@ -1,4 +1,5 @@
-const VERSION = "1.0.24"; // Atualizado para correção do modal
+// script.js
+const VERSION = "1.0.25"; // Atualizado para correção do modal
 const API_URL = 'https://minha-api-produtos.onrender.com';
 const PLACEHOLDER_IMAGE = 'https://www.centrodecompra.com/logos/placeholder.png';
 let currentImages = [];
@@ -10,6 +11,7 @@ let isLoading = false;
 let currentCategory = "todas";
 let currentStore = "todas";
 let currentSearch = "";
+const socket = io(API_URL, { transports: ['websocket'], path: '/socket.io' });
 
 // Função para validar URLs de imagens da Cloudinary
 function isValidImageUrl(url) {
@@ -161,7 +163,7 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
   }
 }
 
-// Função openModal
+// Função para abrir o modal
 function openModal(index, imageIndex) {
   console.log('Abrindo modal:', { index, imageIndex });
   const modal = document.getElementById("imageModal");
@@ -280,4 +282,156 @@ function setModalImage(index) {
   }
 }
 
-// (O restante do script.js continua com as funções de filtros, busca, etc., como fornecido anteriormente)
+// Função para atualizar controles de paginação
+function updatePaginationControls(total) {
+  const paginationControls = document.getElementById("pagination-controls");
+  if (!paginationControls) return;
+
+  const totalPages = Math.ceil(total / productsPerPage);
+  paginationControls.innerHTML = '';
+
+  if (totalPages <= 1) return;
+
+  const prevButton = document.createElement("button");
+  prevButton.innerHTML = '<i class="fas fa-chevron-left"></i>';
+  prevButton.classList.add("pagination-btn");
+  prevButton.disabled = currentPage === 1;
+  prevButton.addEventListener("click", () => {
+    if (currentPage > 1) {
+      currentPage--;
+      carregarProdutos(currentCategory, currentStore, currentPage);
+    }
+  });
+
+  const nextButton = document.createElement("button");
+  nextButton.innerHTML = '<i class="fas fa-chevron-right"></i>';
+  nextButton.classList.add("pagination-btn");
+  nextButton.disabled = currentPage === totalPages;
+  nextButton.addEventListener("click", () => {
+    if (currentPage < totalPages) {
+      currentPage++;
+      carregarProdutos(currentCategory, currentStore, currentPage);
+    }
+  });
+
+  const pageInfo = document.createElement("span");
+  pageInfo.textContent = `Página ${currentPage} de ${totalPages}`;
+  pageInfo.classList.add("pagination-info");
+
+  paginationControls.appendChild(prevButton);
+  paginationControls.appendChild(pageInfo);
+  paginationControls.appendChild(nextButton);
+}
+
+// Inicializar filtros e busca
+document.addEventListener("DOMContentLoaded", () => {
+  const categoriesToggle = document.getElementById("categories-toggle");
+  const categoriesSidebar = document.getElementById("categories-sidebar");
+  const closeSidebar = document.getElementById("close-sidebar");
+  const overlay = document.getElementById("overlay");
+  const buscaInput = document.getElementById("busca");
+  const buscaBtn = document.querySelector(".search-btn");
+  const resetFilters = document.querySelector(".reset-filters");
+  const retryLoad = document.querySelector(".retry-load");
+
+  if (categoriesToggle && categoriesSidebar && closeSidebar && overlay) {
+    categoriesToggle.addEventListener("click", () => {
+      categoriesSidebar.classList.add("active");
+      overlay.classList.add("active");
+    });
+
+    closeSidebar.addEventListener("click", () => {
+      categoriesSidebar.classList.remove("active");
+      overlay.classList.remove("active");
+    });
+
+    overlay.addEventListener("click", () => {
+      categoriesSidebar.classList.remove("active");
+      overlay.classList.remove("active");
+    });
+  }
+
+  document.querySelectorAll(".category-item").forEach(item => {
+    item.addEventListener("click", () => {
+      document.querySelectorAll(".category-item").forEach(i => i.classList.remove("active"));
+      item.classList.add("active");
+      currentCategory = item.dataset.categoria;
+      currentPage = 1;
+      carregarProdutos(currentCategory, currentStore, currentPage);
+      categoriesSidebar.classList.remove("active");
+      overlay.classList.remove("active");
+    });
+  });
+
+  document.querySelectorAll(".store-card").forEach(card => {
+    card.addEventListener("click", () => {
+      document.querySelectorAll(".store-card").forEach(c => c.classList.remove("active"));
+      card.classList.add("active");
+      currentStore = card.dataset.loja;
+      currentPage = 1;
+      carregarProdutos(currentCategory, currentStore, currentPage);
+    });
+  });
+
+  if (buscaInput && buscaBtn) {
+    buscaBtn.addEventListener("click", () => {
+      currentSearch = buscaInput.value.trim();
+      currentPage = 1;
+      carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
+    });
+
+    buscaInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        currentSearch = buscaInput.value.trim();
+        currentPage = 1;
+        carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
+      }
+    });
+  }
+
+  if (resetFilters) {
+    resetFilters.addEventListener("click", (e) => {
+      e.preventDefault();
+      currentCategory = "todas";
+      currentStore = "todas";
+      currentSearch = "";
+      currentPage = 1;
+      document.querySelectorAll(".category-item").forEach(i => i.classList.remove("active"));
+      document.querySelector(".category-item[data-categoria='todas']").classList.add("active");
+      document.querySelectorAll(".store-card").forEach(c => c.classList.remove("active"));
+      document.querySelector(".store-card[data-loja='todas']").classList.add("active");
+      buscaInput.value = "";
+      carregarProdutos(currentCategory, currentStore, currentPage);
+    });
+  }
+
+  if (retryLoad) {
+    retryLoad.addEventListener("click", (e) => {
+      e.preventDefault();
+      carregarProdutos(currentCategory, currentStore, currentPage);
+    });
+  }
+
+  // Atualizar ano no footer
+  const yearSpan = document.getElementById("year");
+  if (yearSpan) {
+    yearSpan.textContent = new Date().getFullYear();
+  }
+
+  // Carregar produtos iniciais
+  carregarProdutos();
+
+  // WebSocket para atualização de produtos
+  socket.on('connect', () => {
+    console.log('Conectado ao WebSocket');
+  });
+
+  socket.on('produto_atualizado', () => {
+    console.log('Produto atualizado via WebSocket');
+    carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('Desconectado do WebSocket');
+  });
+});
