@@ -4,7 +4,7 @@ const PLACEHOLDER_IMAGE = 'https://www.centrodecompra.com/logos/placeholder.png'
 let currentImages = [];
 let currentImageIndex = 0;
 let currentPage = 1;
-const productsPerPage = 24;
+const productsPerPage = 18;
 let allProducts = [];
 let isLoading = false;
 let currentCategory = "todas";
@@ -107,13 +107,11 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
   }
   isLoading = true;
 
-  loadingSpinner.style.display = "block";
-  // Sempre limpar o grid ao carregar uma nova página
+  loadingSpinner.classList.add("active");
   gridProdutos.innerHTML = "";
-  // Limpar allProducts para armazenar apenas os produtos da página atual
   allProducts = [];
-  mensagemVazia.style.display = "none";
-  errorMessage.style.display = "none";
+  mensagemVazia.classList.remove("active");
+  errorMessage.classList.remove("active");
 
   const maxRetries = 3;
   let attempt = 1;
@@ -127,7 +125,7 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
       console.log(`Tentativa ${attempt}: Carregando de ${url}`);
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // Timeout de 10 segundos
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
       const response = await fetch(url, {
         signal: controller.signal,
         cache: "no-store",
@@ -149,15 +147,14 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
         throw new Error(`Resposta inválida: ${data?.message || 'Formato inesperado'}`);
       }
 
-      // Embaralhar apenas os produtos da página atual
       const shuffledProducts = shuffleArray([...data.data]);
-      allProducts = shuffledProducts; // Armazenar apenas os produtos da página atual
+      allProducts = shuffledProducts;
 
       if (allProducts.length === 0) {
-        mensagemVazia.style.display = "flex";
+        mensagemVazia.classList.add("active");
         gridProdutos.style.display = "none";
       } else {
-        mensagemVazia.style.display = "none";
+        mensagemVazia.classList.remove("active");
         gridProdutos.style.display = "grid";
 
         shuffledProducts.forEach((produto, index) => {
@@ -176,12 +173,12 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
           card.classList.add("produto-card", "visible");
           card.setAttribute("data-categoria", produto.categoria.toLowerCase());
           card.setAttribute("data-loja", produto.loja.toLowerCase());
-          const globalIndex = index; // Índice relativo à página atual
+          const globalIndex = index;
 
           const imagens = Array.isArray(produto.imagens) && produto.imagens.length > 0 && produto.imagens.some(isValidImageUrl)
             ? produto.imagens.filter(isValidImageUrl)
             : [PLACEHOLDER_IMAGE];
-          const carrosselId = `carrossel-${(page - 1) * productsPerPage + index}`; // ID único baseado na página
+          const carrosselId = `carrossel-${(page - 1) * productsPerPage + index}`;
           const lojaClass = produto.loja.toLowerCase();
 
           card.innerHTML = `
@@ -218,15 +215,15 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
       console.error(`⚠️ Erro ao carregar produtos (Tentativa ${attempt}):`, error.message, error.stack);
       console.error('Detalhes da requisição:', { url });
       if (attempt === maxRetries) {
-        errorMessage.style.display = "flex";
-        mensagemVazia.style.display = "none";
+        errorMessage.classList.add("active");
+        mensagemVazia.classList.remove("active");
         gridProdutos.style.display = "none";
         errorMessage.querySelector("p").textContent = `Erro ao carregar os produtos: ${error.message}. Verifique sua conexão ou tente novamente mais tarde.`;
       }
       attempt++;
       await new Promise(resolve => setTimeout(resolve, 2000 * Math.pow(2, attempt)));
     } finally {
-      loadingSpinner.style.display = "none";
+      loadingSpinner.classList.remove("active");
       isLoading = false;
     }
   }
@@ -315,39 +312,48 @@ function openModal(index, imageIndex) {
   `).join("");
 
   carrosselDots.innerHTML = currentImages.map((_, idx) => `
-    <span class="carrossel-dot ${idx === currentImageIndex ? "ativo" : ""}" onclick="setModalImage(${idx})" aria-label="Selecionar imagem ${idx + 1}"></span>
+    <span class="carrossel-dot ${idx === currentImageIndex ? "ativo" : ""}" onclick="setModalImage(${idx})" role="button" aria-label="Selecionar imagem ${idx + 1}"></span>
   `).join("");
 
   carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
   modal.classList.add("active");
 
+  prevButton.onclick = null;
+  nextButton.onclick = null;
+  modalClose.onclick = null;
+
   prevButton.onclick = () => moveModalCarrossel(-1);
   nextButton.onclick = () => moveModalCarrossel(1);
   modalClose.onclick = () => modal.classList.remove("active");
 
-  // Fechar modal com tecla ESC
-  document.addEventListener('keydown', function closeModalOnEsc(event) {
+  const closeModalOnEsc = (event) => {
     if (event.key === 'Escape' && modal.classList.contains('active')) {
       modal.classList.remove('active');
       document.removeEventListener('keydown', closeModalOnEsc);
     }
-  });
+  };
+  document.removeEventListener('keydown', closeModalOnEsc);
+  document.addEventListener('keydown', closeModalOnEsc);
 }
 
 function moveModalCarrossel(direction) {
   currentImageIndex = (currentImageIndex + direction + currentImages.length) % currentImages.length;
   const carrosselImagens = document.getElementById("modalCarrosselImagens");
   const carrosselDots = document.getElementById("modalCarrosselDots");
-  carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
-  carrosselDots.querySelectorAll(".carrossel-dot").forEach((dot, i) => dot.classList.toggle("ativo", i === currentImageIndex));
+  if (carrosselImagens && carrosselDots) {
+    carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+    carrosselDots.querySelectorAll(".carrossel-dot").forEach((dot, i) => dot.classList.toggle("ativo", i === currentImageIndex));
+  }
 }
 
 function setModalImage(index) {
   currentImageIndex = index;
   const carrosselImagens = document.getElementById("modalCarrosselImagens");
   const carrosselDots = document.getElementById("modalCarrosselDots");
-  carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
-  carrosselDots.querySelectorAll(".carrossel-dot").forEach((dot, i) => dot.classList.toggle("ativo", i === currentImageIndex));
+  if (carrosselImagens && carrosselDots) {
+    carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+    carrosselDots.querySelectorAll(".carrossel-dot").forEach((dot, i) => dot.classList.toggle("ativo", i === currentImageIndex));
+  }
 }
 
 // Event listeners para filtros e busca
@@ -399,6 +405,31 @@ document.addEventListener("DOMContentLoaded", () => {
     searchButton.addEventListener("click", () => {
       currentSearch = buscaInput.value.trim();
       currentPage = 1;
+      carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
+    });
+  }
+
+  // Botões de reset e retry
+  const resetFilters = document.querySelector(".reset-filters");
+  const retryLoad = document.querySelector(".retry-load");
+  if (resetFilters) {
+    resetFilters.addEventListener("click", (e) => {
+      e.preventDefault();
+      currentCategory = "todas";
+      currentStore = "todas";
+      currentSearch = "";
+      currentPage = 1;
+      document.querySelectorAll(".category-item").forEach(i => i.classList.remove("active"));
+      document.querySelectorAll(".store-card").forEach(c => c.classList.remove("active"));
+      document.querySelector(".category-item[data-categoria='todas']").classList.add("active");
+      document.querySelector(".store-card[data-loja='todas']").classList.add("active");
+      buscaInput.value = "";
+      carregarProdutos();
+    });
+  }
+  if (retryLoad) {
+    retryLoad.addEventListener("click", (e) => {
+      e.preventDefault();
       carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
     });
   }
