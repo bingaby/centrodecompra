@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     } else {
       try {
-        (adsbygoogle = window.adsbygoogle || []).push({});
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
       } catch (e) {
         console.error('Erro ao inicializar anúncio:', e);
         if (container) {
@@ -33,10 +33,27 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Adicionar eventos para botões de reset e retry
-  document.querySelectorAll('.reset-filters, .retry-load').forEach(button => {
-    button.addEventListener('click', (e) => {
+  const resetFilters = document.querySelector(".reset-filters");
+  const retryLoad = document.querySelector(".retry-load");
+  if (resetFilters) {
+    resetFilters.addEventListener("click", (e) => {
       e.preventDefault();
-      window.location.reload();
+      window.currentCategory = "todas";
+      window.currentStore = "todas";
+      window.currentSearch = "";
+      window.currentPage = 1;
+      document.querySelectorAll(".category-item").forEach(i => i.classList.remove("active"));
+      document.querySelectorAll(".store-card").forEach(c => c.classList.remove("active"));
+      document.querySelector(".category-item[data-categoria='todas']").classList.add("active");
+      document.querySelector(".store-card[data-loja='todas']").classList.add("active");
+      document.getElementById("busca").value = "";
+      window.carregarProdutos();
     });
-  });
+  }
+  if (retryLoad) {
+    retryLoad.addEventListener("click", (e) => {
+      e.preventDefault();
+      window.carregarProdutos(window.currentCategory, window.currentStore, window.currentPage, window.currentSearch);
+    });
+  }
 });
