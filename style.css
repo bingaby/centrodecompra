@@ -1,4 +1,4 @@
-/* styles.css (Atualizado) */
+/* styles.css */
 
 /* Variáveis globais */
 :root {
@@ -157,7 +157,7 @@ body {
   padding: 0.3rem 0.75rem;
   border-radius: var(--radius-md);
   text-decoration: none;
-  color589;
+  color: white;
   font-size: 0.9rem;
   transition: var(--transition);
 }
