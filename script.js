@@ -409,30 +409,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Botões de reset e retry
-  const resetFilters = document.querySelector(".reset-filters");
-  const retryLoad = document.querySelector(".retry-load");
-  if (resetFilters) {
-    resetFilters.addEventListener("click", (e) => {
-      e.preventDefault();
-      currentCategory = "todas";
-      currentStore = "todas";
-      currentSearch = "";
-      currentPage = 1;
-      document.querySelectorAll(".category-item").forEach(i => i.classList.remove("active"));
-      document.querySelectorAll(".store-card").forEach(c => c.classList.remove("active"));
-      document.querySelector(".category-item[data-categoria='todas']").classList.add("active");
-      document.querySelector(".store-card[data-loja='todas']").classList.add("active");
-      buscaInput.value = "";
-      carregarProdutos();
-    });
-  }
-  if (retryLoad) {
-    retryLoad.addEventListener("click", (e) => {
-      e.preventDefault();
-      carregarProdutos(currentCategory, currentStore, currentPage, currentSearch);
-    });
-  }
+  // Os eventos para .reset-filters e .retry-load são tratados em init.js
 
   // Socket.IO listeners
   if (socket) {
