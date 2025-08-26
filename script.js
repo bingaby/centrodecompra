@@ -1,4 +1,4 @@
-const VERSION = "1.0.26"; // Atualizado para correção do modal e paginação
+const VERSION = "1.0.26"; // Mantida a versão anterior
 const API_URL = 'https://minha-api-produtos.onrender.com';
 const PLACEHOLDER_IMAGE = 'https://www.centrodecompra.com/logos/placeholder.png';
 let currentImages = [];
