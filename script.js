@@ -374,6 +374,7 @@ function updatePaginationControls(total) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Elementos do DOM
   const categoriesToggle = document.getElementById("categories-toggle");
   const categoriesSidebar = document.getElementById("categories-sidebar");
   const closeSidebar = document.getElementById("close-sidebar");
@@ -382,7 +383,78 @@ document.addEventListener("DOMContentLoaded", () => {
   const buscaBtn = document.querySelector(".search-btn");
   const resetFilters = document.querySelector(".reset-filters");
   const retryLoad = document.querySelector(".retry-load");
+  const cookieBanner = document.getElementById("cookie-banner");
+  const acceptCookies = document.getElementById("accept-cookies");
+  const rejectCookies = document.getElementById("reject-cookies");
+  const manageCookies = document.getElementById("manage-cookies");
+  const cookieModal = document.getElementById("cookie-modal");
+  const saveCookies = document.getElementById("save-cookies");
+  const cancelCookies = document.getElementById("cancel-cookies");
 
+  // Função para ocultar o banner de cookies
+  function hideCookieBanner() {
+    if (cookieBanner) {
+      cookieBanner.style.display = "none";
+    }
+  }
+
+  // Manipuladores para cookies
+  if (acceptCookies) {
+    acceptCookies.addEventListener("click", () => {
+      console.log("Cookies aceitos");
+      hideCookieBanner();
+      localStorage.setItem("cookieConsent", "accepted");
+    });
+  }
+
+  if (rejectCookies) {
+    rejectCookies.addEventListener("click", () => {
+      console.log("Cookies recusados");
+      hideCookieBanner();
+      localStorage.setItem("cookieConsent", "rejected");
+    });
+  }
+
+  if (manageCookies) {
+    manageCookies.addEventListener("click", () => {
+      console.log("Gerenciar opções clicado");
+      if (cookieModal) {
+        cookieModal.style.display = "flex";
+      }
+    });
+  }
+
+  if (saveCookies) {
+    saveCookies.addEventListener("click", () => {
+      console.log("Preferências de cookies salvas");
+      hideCookieBanner();
+      if (cookieModal) {
+        cookieModal.style.display = "none";
+      }
+      const analyticsCookies = document.getElementById("analytics-cookies").checked;
+      const adCookies = document.getElementById("ad-cookies").checked;
+      localStorage.setItem("cookiePreferences", JSON.stringify({
+        analytics: analyticsCookies,
+        ads: adCookies
+      }));
+    });
+  }
+
+  if (cancelCookies) {
+    cancelCookies.addEventListener("click", () => {
+      console.log("Gerenciamento de cookies cancelado");
+      if (cookieModal) {
+        cookieModal.style.display = "none";
+      }
+    });
+  }
+
+  // Verificar consentimento salvo
+  if (localStorage.getItem("cookieConsent") || localStorage.getItem("cookiePreferences")) {
+    hideCookieBanner();
+  }
+
+  // Manipuladores de eventos existentes
   if (categoriesToggle && categoriesSidebar && closeSidebar && overlay) {
     categoriesToggle.addEventListener("click", () => {
       categoriesSidebar.classList.add("active");
