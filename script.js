@@ -12,7 +12,6 @@ let currentStore = "todas";
 let currentSearch = "";
 const socket = io(API_URL, { transports: ['websocket'], path: '/socket.io' });
 
-// Função para validar URLs de imagens da Cloudinary
 function isValidImageUrl(url) {
   return typeof url === 'string' && url.trim() !== '' && url.includes('cloudinary.com') && url.startsWith('https://res.cloudinary.com');
 }
