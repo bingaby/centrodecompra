@@ -1,6 +1,6 @@
 const VERSION = "1.0.26"; // Mantida a versão anterior
 const API_URL = 'https://minha-api-produtos.onrender.com';
-const PLACEHOLDER_IMAGE = 'https://www.centrodecompra.com/logos/placeholder.png';
+const PLACEHOLDER_IMAGE = 
 let currentImages = [];
 let currentImageIndex = 0;
 let currentPage = 1;
