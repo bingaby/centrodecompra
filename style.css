@@ -137,6 +137,45 @@ body {
   font-size: 0.9rem;
 }
 
+.vendors-section {
+  margin-top: 1rem;
+  border-top: 1px solid var(--border-color);
+  padding-top: 1rem;
+}
+
+.vendors-section h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.75rem;
+}
+
+.vendors-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.vendor-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.vendor-item input[type="checkbox"] {
+  margin-right: 0.5rem;
+}
+
+.vendor-item a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+.vendor-item a:hover {
+  text-decoration: underline;
+}
+
 .modal-actions {
   display: flex;
   gap: 0.5rem;
@@ -149,7 +188,7 @@ body {
   background: var(--primary-color);
   color: white;
   padding: 0.3rem 0;
-  font simbol-size: 0.8rem;
+  font-size: 0.8rem;
 }
 
 .header-top .container {
@@ -1052,6 +1091,14 @@ body {
     width: 95%;
     padding: 1rem;
   }
+
+  .vendors-section h3 {
+    font-size: 1rem;
+  }
+
+  .vendors-list {
+    max-height: 150px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -1091,10 +1138,6 @@ body {
     max-height: 90vh;
   }
 
-  .pagination-controls {
-    padding: 0.5rem;
-  }
-
   .pagination-btn,
   .pagination-number {
     padding: 0.3rem 0.5rem;
@@ -1116,7 +1159,8 @@ body {
   }
 
   .modal-content p,
-  .modal-content label {
+  .modal-content label,
+  .vendor-item {
     font-size: 0.8rem;
   }
 }
