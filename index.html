@@ -25,6 +25,41 @@
   <link rel="preload" href="style.css" as="style" />
 </head>
 <body>
+  <!-- Banner de Consentimento -->
+  <div id="cookie-banner" class="cookie-banner" role="dialog" aria-describedby="cookie-description">
+    <p id="cookie-description">
+      O <strong>Centro de Compra</strong> usa cookies para melhorar sua experiência, 
+      personalizar anúncios e analisar o tráfego. 
+      <a href="sobre.html" aria-label="Saiba mais sobre nossa política de cookies">Saiba mais</a> ou gerencie suas escolhas.
+    </p>
+    <div class="cookie-actions">
+      <button id="accept-cookies" class="btn-primary">Aceitar</button>
+      <button id="reject-cookies" class="btn-secondary">Recusar</button>
+      <button id="manage-cookies" class="btn-tertiary">Gerenciar opções</button>
+    </div>
+  </div>
+
+  <!-- Modal de Gerenciamento de Cookies -->
+  <div id="cookie-modal" class="cookie-modal" role="dialog" aria-labelledby="cookie-modal-title" style="display: none;">
+    <div class="modal-content">
+      <h2 id="cookie-modal-title">Gerenciar Preferências de Cookies</h2>
+      <p>Escolha quais cookies deseja permitir:</p>
+      <label>
+        <input type="checkbox" checked disabled> Cookies Essenciais (obrigatórios)
+      </label>
+      <label>
+        <input type="checkbox" id="analytics-cookies"> Cookies Analíticos
+      </label>
+      <label>
+        <input type="checkbox" id="ad-cookies"> Cookies de Publicidade
+      </label>
+      <div class="modal-actions">
+        <button id="save-cookies" class="btn-primary">Salvar Preferências</button>
+        <button id="cancel-cookies" class="btn-secondary">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
   <header class="main-header">
     <div class="header-top">
       <div class="container">
@@ -212,7 +247,7 @@
           <a href="https://www.tiktok.com/@cdc.centrodecompra?_t=ZM-8yz9x3HnhKQ&_r=1" class="social-link" aria-label="TikTok" target="_blank" rel="noopener">
             <img src="logos/tiktok.png" alt="TikTok" class="social-icon" onerror="this.src='logos/placeholder.png'" />
           </a>
-           <a href="https://kwai-video.com/u/@centrodecompracdc/sApFCgvk" class="social-link" aria-label="Kwai" target="_blank" rel="noopener">
+          <a href="https://kwai-video.com/u/@centrodecompracdc/sApFCgvk" class="social-link" aria-label="Kwai" target="_blank" rel="noopener">
             <img src="logos/kwai.png" alt="Kwai" class="social-icon" onerror="this.src='logos/placeholder.png'" />
           </a>
         </div>
@@ -254,4 +289,3 @@
   <script src="script.js"></script>
 </body>
 </html>
-
