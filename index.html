@@ -33,9 +33,9 @@
       <a href="sobre.html" aria-label="Saiba mais sobre nossa política de cookies">Saiba mais</a> ou gerencie suas escolhas.
     </p>
     <div class="cookie-actions">
-      <button id="accept-cookies" class="btn-primary">Aceitar</button>
-      <button id="reject-cookies" class="btn-secondary">Recusar</button>
-      <button id="manage-cookies" class="btn-tertiary">Gerenciar opções</button>
+      <button id="accept-all-cookies" class="btn-primary">Aceitar Tudo</button>
+      <button id="reject-all-cookies" class="btn-secondary">Recusar Tudo</button>
+      <button id="manage-cookies" class="btn-tertiary">Gerenciar Opções</button>
     </div>
   </div>
 
@@ -53,6 +53,12 @@
       <label>
         <input type="checkbox" id="ad-cookies"> Cookies de Publicidade
       </label>
+      <div class="vendors-section">
+        <h3>Gerenciar Vendors</h3>
+        <div class="vendors-list" style="max-height: 200px; overflow-y: auto;">
+          <!-- Lista de vendors preenchida dinamicamente pelo JavaScript -->
+        </div>
+      </div>
       <div class="modal-actions">
         <button id="save-cookies" class="btn-primary">Salvar Preferências</button>
         <button id="cancel-cookies" class="btn-secondary">Cancelar</button>
