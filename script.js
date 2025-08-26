@@ -1,4 +1,4 @@
-const VERSION = "1.0.26"; // Atualizado para correção do modal
+const VERSION = "1.0.26"; // Atualizado para correção do modal e paginação
 const API_URL = 'https://minha-api-produtos.onrender.com';
 const PLACEHOLDER_IMAGE = 'https://www.centrodecompra.com/logos/placeholder.png';
 let currentImages = [];
@@ -288,10 +288,12 @@ function updatePaginationControls(total) {
 
   if (totalPages <= 1) return;
 
+  // Botão "Anterior"
   const prevButton = document.createElement("button");
   prevButton.innerHTML = '<i class="fas fa-chevron-left"></i>';
   prevButton.classList.add("pagination-btn");
   prevButton.disabled = currentPage === 1;
+  prevButton.setAttribute("aria-label", "Página anterior");
   prevButton.addEventListener("click", () => {
     if (currentPage > 1) {
       currentPage--;
@@ -299,10 +301,34 @@ function updatePaginationControls(total) {
     }
   });
 
+  // Botões numerados
+  const maxButtons = 5; // Máximo de botões numerados visíveis
+  const startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+  const endPage = Math.min(totalPages, startPage + maxButtons - 1);
+
+  const pageButtons = [];
+  for (let i = startPage; i <= endPage; i++) {
+    const pageButton = document.createElement("button");
+    pageButton.textContent = i;
+    pageButton.classList.add("pagination-number");
+    if (i === currentPage) {
+      pageButton.classList.add("active");
+      pageButton.setAttribute("aria-current", "page");
+    }
+    pageButton.setAttribute("aria-label", `Ir para página ${i}`);
+    pageButton.addEventListener("click", () => {
+      currentPage = i;
+      carregarProdutos(currentCategory, currentStore, currentPage);
+    });
+    pageButtons.push(pageButton);
+  }
+
+  // Botão "Próximo"
   const nextButton = document.createElement("button");
   nextButton.innerHTML = '<i class="fas fa-chevron-right"></i>';
   nextButton.classList.add("pagination-btn");
   nextButton.disabled = currentPage === totalPages;
+  nextButton.setAttribute("aria-label", "Próxima página");
   nextButton.addEventListener("click", () => {
     if (currentPage < totalPages) {
       currentPage++;
@@ -310,11 +336,15 @@ function updatePaginationControls(total) {
     }
   });
 
+  // Informação da página
   const pageInfo = document.createElement("span");
   pageInfo.textContent = `Página ${currentPage} de ${totalPages}`;
   pageInfo.classList.add("pagination-info");
+  pageInfo.setAttribute("aria-live", "polite");
 
+  // Montar controles
   paginationControls.appendChild(prevButton);
+  pageButtons.forEach(button => paginationControls.appendChild(button));
   paginationControls.appendChild(pageInfo);
   paginationControls.appendChild(nextButton);
 }
