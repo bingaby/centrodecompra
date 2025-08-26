@@ -25,6 +25,15 @@ function shuffleArray(array) {
   return array;
 }
 
+// Função para verificar se o consentimento expirou (1 ano)
+function isConsentExpired(consentDate) {
+  if (!consentDate) return true;
+  const date = new Date(consentDate);
+  const now = new Date();
+  const oneYearInMs = 365 * 24 * 60 * 60 * 1000;
+  return (now - date) > oneYearInMs;
+}
+
 // Função para carregar produtos
 async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, busca = currentSearch) {
   console.log('Iniciando carregarProdutos:', { categoria, loja, page, busca });
@@ -106,7 +115,9 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
           <span class="produto-nome">${produto.nome}</span>
           <span class="descricao">Loja: ${produto.loja}</span>
           <a href="${produto.link}" target="_blank" class="tarja-preco tarja-${lojaClass}" aria-label="Clique para ver o preço de ${produto.nome} na loja">
-            <i class="fas fa-shopping-cart"></i> Ver Preço
+            <i class="fas Confederate
+
+System: <i class="fas fa-shopping-cart"></i> Ver Preço
           </a>
         `;
         gridProdutos.appendChild(card);
@@ -349,6 +360,90 @@ function updatePaginationControls(total) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Cookie Banner Logic
+  const banner = document.getElementById("cookie-banner");
+  const cookieModal = document.getElementById("cookie-modal");
+  const acceptCookies = document.getElementById("accept-cookies");
+  const rejectCookies = document.getElementById("reject-cookies");
+  const manageCookies = document.getElementById("manage-cookies");
+  const saveCookies = document.getElementById("save-cookies");
+  const cancelCookies = document.getElementById("cancel-cookies");
+
+  // Verifica se o consentimento existe e não está expirado
+  const consent = localStorage.getItem("cookies_consent");
+  const consentDate = localStorage.getItem("consent_date");
+
+  if (!consent || isConsentExpired(consentDate)) {
+    banner.style.display = "block";
+  } else {
+    // Aplica configurações salvas
+    if (consent === "accepted") {
+      gtag('consent', 'update', { ad_storage: 'granted', analytics_storage: 'granted' });
+    } else if (consent === "rejected") {
+      gtag('consent', 'update', { ad_storage: 'denied', analytics_storage: 'denied' });
+    } else if (consent === "custom") {
+      const analytics = localStorage.getItem("cookies_analytics") === "true";
+      const ads = localStorage.getItem("cookies_ads") === "true";
+      gtag('consent', 'update', {
+        ad_storage: ads ? 'granted' : 'denied',
+        analytics_storage: analytics ? 'granted' : 'denied'
+      });
+    }
+  }
+
+  if (acceptCookies) {
+    acceptCookies.addEventListener("click", () => {
+      localStorage.setItem("cookies_consent", "accepted");
+      localStorage.setItem("consent_date", new Date().toISOString());
+      banner.style.display = "none";
+      gtag('consent', 'update', { ad_storage: 'granted', analytics_storage: 'granted' });
+    });
+  }
+
+  if (rejectCookies) {
+    rejectCookies.addEventListener("click", () => {
+      localStorage.setItem("cookies_consent", "rejected");
+      localStorage.setItem("consent_date", new Date().toISOString());
+      banner.style.display = "none";
+      gtag('consent', 'update', { ad_storage: 'denied', analytics_storage: 'denied' });
+    });
+  }
+
+  if (manageCookies) {
+    manageCookies.addEventListener("click", () => {
+      cookieModal.style.display = "flex";
+      const analyticsCheckbox = document.getElementById("analytics-cookies");
+      const adCheckbox = document.getElementById("ad-cookies");
+      // Carrega preferências salvas, se existirem
+      analyticsCheckbox.checked = localStorage.getItem("cookies_analytics") === "true";
+      adCheckbox.checked = localStorage.getItem("cookies_ads") === "true";
+    });
+  }
+
+  if (saveCookies) {
+    saveCookies.addEventListener("click", () => {
+      const analyticsCheckbox = document.getElementById("analytics-cookies");
+      const adCheckbox = document.getElementById("ad-cookies");
+      localStorage.setItem("cookies_consent", "custom");
+      localStorage.setItem("cookies_analytics", analyticsCheckbox.checked);
+      localStorage.setItem("cookies_ads", adCheckbox.checked);
+      localStorage.setItem("consent_date", new Date().toISOString());
+      gtag('consent', 'update', {
+        ad_storage: adCheckbox.checked ? 'granted' : 'denied',
+        analytics_storage: analyticsCheckbox.checked ? 'granted' : 'denied'
+      });
+      cookieModal.style.display = "none";
+      banner.style.display = "none";
+    });
+  }
+
+  if (cancelCookies) {
+    cancelCookies.addEventListener("click", () => {
+      cookieModal.style.display = "none";
+    });
+  }
+
+  // Lógica existente do site
   const categoriesToggle = document.getElementById("categories-toggle");
   const categoriesSidebar = document.getElementById("categories-sidebar");
   const closeSidebar = document.getElementById("close-sidebar");
