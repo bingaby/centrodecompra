@@ -1,11 +1,10 @@
-// script.js
-const VERSION = "1.0.25"; // Atualizado para correção do modal
+const VERSION = "1.0.26"; // Atualizado para correção do modal
 const API_URL = 'https://minha-api-produtos.onrender.com';
 const PLACEHOLDER_IMAGE = 'https://www.centrodecompra.com/logos/placeholder.png';
 let currentImages = [];
 let currentImageIndex = 0;
 let currentPage = 1;
-const productsPerPage = 18; // Mantendo 18 produtos por página
+const productsPerPage = 18;
 let allProducts = [];
 let isLoading = false;
 let currentCategory = "todas";
@@ -114,7 +113,6 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
         gridProdutos.appendChild(card);
       });
 
-      // Adicionar eventos de clique às imagens
       document.querySelectorAll('.carrossel-imagens img').forEach(img => {
         img.addEventListener('click', (e) => {
           e.preventDefault();
@@ -126,7 +124,6 @@ async function carregarProdutos(categoria = "todas", loja = "todas", page = 1, b
         });
       });
 
-      // Adicionar eventos do carrossel
       document.querySelectorAll('.carrossel-prev').forEach(button => {
         button.addEventListener('click', (e) => {
           e.stopPropagation();
@@ -207,7 +204,6 @@ function openModal(index, imageIndex) {
   carrosselImagens.style.transform = `translateX(-${currentImageIndex * 100}%)`;
   modal.classList.add("active");
 
-  // Limpar eventos anteriores
   const prevClone = prevButton.cloneNode(true);
   const nextClone = nextButton.cloneNode(true);
   const closeClone = modalClose.cloneNode(true);
@@ -215,7 +211,6 @@ function openModal(index, imageIndex) {
   nextButton.replaceWith(nextClone);
   modalClose.replaceWith(closeClone);
 
-  // Adicionar novos eventos
   prevClone.addEventListener('click', () => moveModalCarrossel(-1));
   nextClone.addEventListener('click', () => moveModalCarrossel(1));
   closeClone.addEventListener('click', () => {
@@ -230,15 +225,17 @@ function openModal(index, imageIndex) {
     });
   });
 
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && modal.classList.contains('active')) {
-      console.log('Modal fechado via ESC');
-      modal.classList.remove('active');
-    }
-  }, { once: true });
+  document.addEventListener('keydown', handleEscape, { once: true });
 }
 
-// Funções auxiliares do carrossel
+function handleEscape(event) {
+  const modal = document.getElementById("imageModal");
+  if (event.key === 'Escape' && modal.classList.contains('active')) {
+    console.log('Modal fechado via ESC');
+    modal.classList.remove('active');
+  }
+}
+
 function moveCarrossel(id, direction) {
   const carrossel = document.getElementById(id);
   if (!carrossel) return;
@@ -282,7 +279,6 @@ function setModalImage(index) {
   }
 }
 
-// Função para atualizar controles de paginação
 function updatePaginationControls(total) {
   const paginationControls = document.getElementById("pagination-controls");
   if (!paginationControls) return;
@@ -323,7 +319,6 @@ function updatePaginationControls(total) {
   paginationControls.appendChild(nextButton);
 }
 
-// Inicializar filtros e busca
 document.addEventListener("DOMContentLoaded", () => {
   const categoriesToggle = document.getElementById("categories-toggle");
   const categoriesSidebar = document.getElementById("categories-sidebar");
@@ -412,16 +407,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Atualizar ano no footer
   const yearSpan = document.getElementById("year");
   if (yearSpan) {
     yearSpan.textContent = new Date().getFullYear();
   }
 
-  // Carregar produtos iniciais
   carregarProdutos();
 
-  // WebSocket para atualização de produtos
   socket.on('connect', () => {
     console.log('Conectado ao WebSocket');
   });
