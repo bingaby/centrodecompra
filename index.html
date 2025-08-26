@@ -3,7 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://pagead2.googlesyndication.com https://cdn.socket.io https://ep2.adtrafficquality.google; style-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline'; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' https://www.centrodecompra.com https://minha-api-produtos.onrender.com https://res.cloudinary.com data:; connect-src 'self' https://minha-api-produtos.onrender.com wss://minha-api-produtos.onrender.com https://ep1.adtrafficquality.google; frame-src 'self' https://googleads.g.doubleclick.net https://ep2.adtrafficquality.google https://www.google.com;">
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://cdn.socket.io https://ep2.adtrafficquality.google https://www.centrodecompra.com;
+    style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com;
+    font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com;
+    img-src 'self' data: https://www.centrodecompra.com https://minha-api-produtos.onrender.com https://res.cloudinary.com https://seusite.com;
+    connect-src 'self' https://minha-api-produtos.onrender.com wss://minha-api-produtos.onrender.com https://ep1.adtrafficquality.google https://www.google-analytics.com;
+    frame-src 'self' https://googleads.g.doubleclick.net https://ep2.adtrafficquality.google https://www.google.com;
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+  ">
   <title>Centro de Compra - Ofertas Online</title>
   <meta name="description" content="As melhores ofertas de lojas online em um só lugar. Filtre por categoria, loja ou busque produtos com descontos!" />
   <meta name="keywords" content="e-commerce, compras online, ofertas, descontos, lojas" />
@@ -15,12 +26,12 @@
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9781903408224276" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <link rel="icon" href="logos/favicon.ico" type="image/x-icon" />
-  <link rel="icon" type="image/png" sizes="16x16" href="logos/favicon-16x16.png" />
-  <link rel="icon" type="image/png" sizes="32x32" href="logos/favicon-32x32.png" />
-  <link rel="apple-touch-icon" sizes="180x180" href="logos/apple-touch-icon.png" />
-  <link rel="icon" type="image/png" sizes="192x192" href="logos/android-chrome-192x192.png" />
-  <link rel="icon" type="image/png" sizes="512x512" href="logos/android-chrome-512x512.png" />
+  <link rel="icon" href="https://seusite.com/logos/favicon.ico" type="image/x-icon" />
+  <link rel="icon" type="image/png" sizes="16x16" href="https://seusite.com/logos/favicon-16x16.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="https://seusite.com/logos/favicon-32x32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="https://seusite.com/logos/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="https://seusite.com/logos/android-chrome-192x192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="https://seusite.com/logos/android-chrome-512x512.png" />
   <link rel="manifest" href="manifest.json" />
   <link rel="preload" href="style.css" as="style" />
 </head>
@@ -116,31 +127,31 @@
             <div class="store-name">Todas</div>
           </div>
           <div class="store-card" data-loja="amazon" data-tooltip="Líder em eletrônicos e livros">
-            <img src="logos/amazon.png" alt="Amazon" class="store-logo" onerror="this.src='logos/placeholder.png'" />
+            <img src="https://seusite.com/logos/amazon.png" alt="Amazon" class="store-logo" onerror="this.src='https://seusite.com/logos/placeholder.png'" />
             <div class="store-name">Amazon</div>
           </div>
           <div class="store-card" data-loja="mercadolivre" data-tooltip="Marketplace com ampla variedade">
-            <img src="logos/mercadolivre.jpg" alt="Mercado Livre" class="store-logo" onerror="this.src='logos/placeholder.png'" />
+            <img src="https://seusite.com/logos/mercadolivre.jpg" alt="Mercado Livre" class="store-logo" onerror="this.src='https://seusite.com/logos/placeholder.png'" />
             <div class="store-name">Mercado Livre</div>
           </div>
           <div class="store-card" data-loja="shopee" data-tooltip="Ofertas em moda e acessórios">
-            <img src="logos/shopee.png" alt="Shopee" class="store-logo" onerror="this.src='logos/placeholder.png'" />
+            <img src="https://seusite.com/logos/shopee.png" alt="Shopee" class="store-logo" onerror="this.src='https://seusite.com/logos/placeholder.png'" />
             <div class="store-name">Shopee</div>
           </div>
           <div class="store-card" data-loja="magalu" data-tooltip="Loja completa para casa e tecnologia">
-            <img src="logos/magalu.png" alt="Magalu" class="store-logo" onerror="this.src='logos/placeholder.png'" />
+            <img src="https://seusite.com/logos/magalu.png" alt="Magalu" class="store-logo" onerror="this.src='https://seusite.com/logos/placeholder.png'" />
             <div class="store-name">Magalu</div>
           </div>
           <div class="store-card" data-loja="shein" data-tooltip="Moda acessível e variada">
-            <img src="logos/shein.png" alt="Shein" class="store-logo" onerror="this.src='logos/placeholder.png'" />
+            <img src="https://seusite.com/logos/shein.png" alt="Shein" class="store-logo" onerror="this.src='https://seusite.com/logos/placeholder.png'" />
             <div class="store-name">Shein</div>
           </div>
           <div class="store-card" data-loja="alibaba" data-tooltip="Produtos direto da China">
-            <img src="logos/alibaba.png" alt="Alibaba" class="store-logo" onerror="this.src='logos/placeholder.png'" />
+            <img src="https://seusite.com/logos/alibaba.png" alt="Alibaba" class="store-logo" onerror="this.src='https://seusite.com/logos/placeholder.png'" />
             <div class="store-name">Alibaba</div>
           </div>
           <div class="store-card" data-loja="aliexpress" data-tooltip="Ofertas internacionais com frete acessível">
-            <img src="logos/aliexpress.png" alt="AliExpress" class="store-logo" onerror="this.src='logos/placeholder.png'" />
+            <img src="https://seusite.com/logos/aliexpress.png" alt="AliExpress" class="store-logo" onerror="this.src='https://seusite.com/logos/placeholder.png'" />
             <div class="store-name">AliExpress</div>
           </div>
         </div>
@@ -150,6 +161,7 @@
       <div class="container">
         <div class="section-header">
           <h2 id="ofertas-titulo">Produtos em Destaque</h2>
+          <a href="#" class="reset-filters"><i class="fas fa-redo"></i> Limpar Filtros</a>
         </div>
         <div class="products-grid" id="grid-produtos"></div>
         <div class="ad-container">
@@ -178,7 +190,7 @@
           <p>Não foi possível carregar os produtos.</p>
           <a href="#" class="btn-primary retry-load"><i class="fas fa-redo"></i> Tentar Novamente</a>
         </div>
-        <div id="pagination-controls"></div>
+        <div id="pagination-controls" class="pagination"></div>
       </div>
     </section>
   </main>
@@ -201,28 +213,28 @@
         <h4>Siga-nos</h4>
         <div class="social-links">
           <a href="https://www.instagram.com/cdccentrodecompra/" class="social-link" aria-label="Instagram" target="_blank" rel="noopener">
-            <img src="logos/instagram.png" alt="Instagram" class="social-icon" onerror="this.src='logos/placeholder.png'" />
+            <img src="https://seusite.com/logos/instagram.png" alt="Instagram" class="social-icon" onerror="this.src='https://seusite.com/logos/placeholder.png'" />
           </a>
           <a href="https://x.com/ComprasCdc" class="social-link" aria-label="X" target="_blank" rel="noopener">
-            <img src="logos/X.png" alt="X" class="social-icon" onerror="this.src='logos/placeholder.png'" />
+            <img src="https://seusite.com/logos/X.png" alt="X" class="social-icon" onerror="this.src='https://seusite.com/logos/placeholder.png'" />
           </a>
           <a href="https://www.youtube.com/@CentrodeComprasCdC" class="social-link" aria-label="YouTube" target="_blank" rel="noopener">
-            <img src="logos/youtube.png" alt="YouTube" class="social-icon" onerror="this.src='logos/placeholder.png'" />
+            <img src="https://seusite.com/logos/youtube.png" alt="YouTube" class="social-icon" onerror="this.src='https://seusite.com/logos/placeholder.png'" />
           </a>
           <a href="https://www.tiktok.com/@cdc.centrodecompra?_t=ZM-8yz9x3HnhKQ&_r=1" class="social-link" aria-label="TikTok" target="_blank" rel="noopener">
-            <img src="logos/tiktok.png" alt="TikTok" class="social-icon" onerror="this.src='logos/placeholder.png'" />
+            <img src="https://seusite.com/logos/tiktok.png" alt="TikTok" class="social-icon" onerror="this.src='https://seusite.com/logos/placeholder.png'" />
           </a>
-           <a href="https://kwai-video.com/u/@centrodecompracdc/sApFCgvk" class="social-link" aria-label="Kwai" target="_blank" rel="noopener">
-            <img src="logos/kwai.png" alt="Kwai" class="social-icon" onerror="this.src='logos/placeholder.png'" />
+          <a href="https://kwai-video.com/u/@centrodecompracdc/sApFCgvk" class="social-link" aria-label="Kwai" target="_blank" rel="noopener">
+            <img src="https://seusite.com/logos/kwai.png" alt="Kwai" class="social-icon" onerror="this.src='https://seusite.com/logos/placeholder.png'" />
           </a>
         </div>
       </div>
       <div class="footer-section">
         <h4>Formas de Pagamento</h4>
         <div class="payment-methods">
-          <img src="logos/visa.png" alt="Visa" class="payment-icon" onerror="this.src='logos/placeholder.png'" />
-          <img src="logos/mastercard.png" alt="Mastercard" class="payment-icon" onerror="this.src='logos/placeholder.png'" />
-          <img src="logos/boleto.png" alt="Boleto" class="payment-icon" onerror="this.src='logos/placeholder.png'" />
+          <img src="https://seusite.com/logos/visa.png" alt="Visa" class="payment-icon" onerror="this.src='https://seusite.com/logos/placeholder.png'" />
+          <img src="https://seusite.com/logos/mastercard.png" alt="Mastercard" class="payment-icon" onerror="this.src='https://seusite.com/logos/placeholder.png'" />
+          <img src="https://seusite.com/logos/boleto.png" alt="Boleto" class="payment-icon" onerror="this.src='https://seusite.com/logos/placeholder.png'" />
         </div>
       </div>
     </div>
@@ -237,6 +249,44 @@
       </div>
     </div>
   </footer>
+  <div class="cookie-banner" id="cookie-banner" role="dialog" aria-label="Banner de consentimento de cookies">
+    <div class="cookie-content">
+      <p>Usamos cookies para personalizar sua experiência e exibir anúncios relevantes. <a href="sobre.html" target="_blank" rel="noopener">Saiba mais</a>.</p>
+      <div class="cookie-buttons">
+        <button id="accept-all-cookies" class="btn-primary">Aceitar Tudo</button>
+        <button id="reject-all-cookies" class="btn-secondary">Recusar Tudo</button>
+        <button id="manage-cookies" class="btn-secondary">Personalizar</button>
+      </div>
+    </div>
+  </div>
+  <div class="cookie-modal" id="cookie-modal" role="dialog" aria-modal="true" aria-label="Gerenciar preferências de cookies">
+    <div class="modal-content">
+      <h2>Gerenciar Preferências de Cookies</h2>
+      <div class="cookie-options">
+        <label class="cookie-option">
+          <input type="checkbox" id="essential-cookies" checked disabled />
+          Cookies Essenciais
+          <p>Cookies necessários para o funcionamento do site.</p>
+        </label>
+        <label class="cookie-option">
+          <input type="checkbox" id="analytics-cookies" />
+          Cookies de Análise
+          <p>Usados para entender como você interage com o site.</p>
+        </label>
+        <label class="cookie-option">
+          <input type="checkbox" id="ad-cookies" />
+          Cookies de Publicidade
+          <p>Usados para exibir anúncios personalizados.</p>
+        </label>
+        <h3>Parceiros</h3>
+        <div class="vendors-list"></div>
+      </div>
+      <div class="modal-buttons">
+        <button id="save-cookies" class="btn-primary">Salvar Preferências</button>
+        <button id="cancel-cookies" class="btn-secondary">Cancelar</button>
+      </div>
+    </div>
+  </div>
   <div class="image-modal" id="imageModal" role="dialog" aria-modal="true">
     <div class="modal-backdrop"></div>
     <div class="modal-container">
@@ -254,4 +304,3 @@
   <script src="script.js"></script>
 </body>
 </html>
-
