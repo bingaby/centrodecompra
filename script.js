@@ -101,7 +101,6 @@ function loadConsent() {
     const { analytics, ads, vendors: vendorConsents, timestamp } = JSON.parse(consent);
     if (!isConsentExpired(timestamp)) {
       updateConsentStatus({ analytics, ads, vendors: vendorConsents });
-      document.getElementById('cookie-banner').style.display = 'none';
       return true;
     }
   }
@@ -117,6 +116,7 @@ function updateConsentStatus({ analytics, ads, vendors }) {
   };
   gtag('consent', 'update', consentStatus);
   loadVendorScripts(vendors);
+  console.log('Status de consentimento atualizado:', consentStatus);
 }
 
 // Função para carregar scripts de vendors apenas se consentidos
@@ -124,14 +124,13 @@ function loadVendorScripts(vendorConsents) {
   vendors.forEach(vendor => {
     if (vendor.consentRequired && vendorConsents[vendor.id]) {
       // Exemplo: carregar script do vendor dinamicamente
-      // Substitua por URLs reais dos scripts dos vendors, se aplicável
       if (vendor.id === 'googleads' && document.querySelector('ins.adsbygoogle')) {
         (adsbygoogle = window.adsbygoogle || []).push({});
+        console.log(`Script do vendor ${vendor.name} carregado`);
       }
-      // Adicione lógica específica para cada vendor, se necessário
+      // Adicione lógica específica para outros vendors, se necessário
     }
     if (vendor.usesOtherStorage && vendorConsents[vendor.id]) {
-      // Gerenciar localStorage ou sessionStorage, se necessário
       localStorage.setItem(`vendor_${vendor.id}_consent`, 'true');
     } else if (vendor.usesOtherStorage) {
       localStorage.removeItem(`vendor_${vendor.id}_consent`);
@@ -142,6 +141,10 @@ function loadVendorScripts(vendorConsents) {
 // Função para preencher a lista de vendors no modal
 function populateVendorsList() {
   const vendorsList = document.querySelector('.vendors-list');
+  if (!vendorsList) {
+    console.error('Lista de vendors não encontrada no DOM');
+    return;
+  }
   vendorsList.innerHTML = vendors.map(vendor => `
     <div class="vendor-item">
       <label>
@@ -155,8 +158,6 @@ function populateVendorsList() {
 
 // Função para inicializar o banner de cookies
 function initCookieBanner() {
-  if (loadConsent()) return;
-
   const banner = document.getElementById('cookie-banner');
   const modal = document.getElementById('cookie-modal');
   const acceptAllBtn = document.getElementById('accept-all-cookies');
@@ -165,9 +166,34 @@ function initCookieBanner() {
   const saveBtn = document.getElementById('save-cookies');
   const cancelBtn = document.getElementById('cancel-cookies');
 
+  // Verifica se todos os elementos necessários estão presentes
+  if (!banner || !modal || !acceptAllBtn || !rejectAllBtn || !manageBtn || !saveBtn || !cancelBtn) {
+    console.error('Elementos do banner de cookies não encontrados:', {
+      banner: !!banner,
+      modal: !!modal,
+      acceptAllBtn: !!acceptAllBtn,
+      rejectAllBtn: !!rejectAllBtn,
+      manageBtn: !!manageBtn,
+      saveBtn: !!saveBtn,
+      cancelBtn: !!cancelBtn
+    });
+    return;
+  }
+
+  // Carrega consentimento existente e oculta banner se válido
+  if (loadConsent()) {
+    console.log('Consentimento válido encontrado, ocultando banner');
+    banner.style.display = 'none';
+    return;
+  }
+
+  // Garante que o banner esteja visível inicialmente
+  console.log('Exibindo banner de cookies');
   banner.style.display = 'flex';
 
+  // Evento para "Aceitar Tudo"
   acceptAllBtn.addEventListener('click', () => {
+    console.log('Botão "Aceitar Tudo" clicado');
     const consent = {
       analytics: true,
       ads: true,
@@ -177,9 +203,13 @@ function initCookieBanner() {
     localStorage.setItem('cookie-consent', JSON.stringify(consent));
     updateConsentStatus(consent);
     banner.style.display = 'none';
+    console.log('Consentimento salvo:', consent);
+    console.log('Banner de cookies ocultado');
   });
 
+  // Evento para "Recusar Tudo"
   rejectAllBtn.addEventListener('click', () => {
+    console.log('Botão "Recusar Tudo" clicado');
     const consent = {
       analytics: false,
       ads: false,
@@ -189,14 +219,20 @@ function initCookieBanner() {
     localStorage.setItem('cookie-consent', JSON.stringify(consent));
     updateConsentStatus(consent);
     banner.style.display = 'none';
+    console.log('Consentimento salvo:', consent);
+    console.log('Banner de cookies ocultado');
   });
 
+  // Evento para "Gerenciar Opções"
   manageBtn.addEventListener('click', () => {
+    console.log('Botão "Gerenciar Opções" clicado');
     modal.style.display = 'flex';
     populateVendorsList();
   });
 
+  // Evento para "Salvar Preferências"
   saveBtn.addEventListener('click', () => {
+    console.log('Botão "Salvar Preferências" clicado');
     const consent = {
       analytics: document.getElementById('analytics-cookies').checked,
       ads: document.getElementById('ad-cookies').checked,
@@ -211,9 +247,13 @@ function initCookieBanner() {
     updateConsentStatus(consent);
     modal.style.display = 'none';
     banner.style.display = 'none';
+    console.log('Consentimento salvo:', consent);
+    console.log('Banner e modal ocultados');
   });
 
+  // Evento para "Cancelar"
   cancelBtn.addEventListener('click', () => {
+    console.log('Botão "Cancelar" clicado');
     modal.style.display = 'none';
   });
 }
@@ -439,11 +479,11 @@ function handleEscape(event) {
   const modal = document.getElementById("imageModal");
   const cookieModal = document.getElementById("cookie-modal");
   if (event.key === 'Escape') {
-    if (modal.classList.contains('active')) {
+    if (modal && modal.classList.contains('active')) {
       console.log('Modal de imagens fechado via ESC');
       modal.classList.remove('active');
     }
-    if (cookieModal.style.display === 'flex') {
+    if (cookieModal && cookieModal.style.display === 'flex') {
       console.log('Modal de cookies fechado via ESC');
       cookieModal.style.display = 'none';
     }
@@ -569,6 +609,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const buscaBtn = document.querySelector('.search-btn');
   const resetFilters = document.querySelector('.reset-filters');
   const retryLoad = document.querySelector('.retry-load');
+
+  if (!categoriesToggle || !closeSidebar || !sidebar || !overlay || !buscaInput || !buscaBtn || !resetFilters || !retryLoad) {
+    console.error('Elementos do DOM não encontrados:', {
+      categoriesToggle: !!categoriesToggle,
+      closeSidebar: !!closeSidebar,
+      sidebar: !!sidebar,
+      overlay: !!overlay,
+      buscaInput: !!buscaInput,
+      buscaBtn: !!buscaBtn,
+      resetFilters: !!resetFilters,
+      retryLoad: !!retryLoad
+    });
+    return;
+  }
 
   categoriesToggle.addEventListener('click', () => {
     sidebar.classList.toggle('active');
