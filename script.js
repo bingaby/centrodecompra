@@ -1,6 +1,6 @@
-const VERSION = "1.0.28";
+const VERSION = "1.0.29";
 const API_URL = 'https://minha-api-produtos.onrender.com'; // SUBSTITUA PELO URL REAL DA API
-const PLACEHOLDER_IMAGE = 'https://seusite.com/logos/placeholder.png'; // SUBSTITUA PELO FALLBACK REAL
+const PLACEHOLDER_IMAGE = 'https://via.placeholder.com/200?text=Placeholder';
 let currentImages = [];
 let currentImageIndex = 0;
 let currentPage = 1;
@@ -18,7 +18,7 @@ const vendors = [
   { name: "Quantcast", id: "quantcast", cookieDuration: 1825, data: ["IP addresses", "Device characteristics", "Device identifiers"], consentRequired: true, privacyPolicy: "https://www.quantcast.com/privacy/", usesOtherStorage: true }
 ];
 
-// Função para verificar se o consentimento expirou (1 ano)
+// Função para verificar se o consentimento expirou
 function isConsentExpired(consentDate) {
   if (!consentDate) return true;
   const date = new Date(consentDate);
@@ -153,6 +153,10 @@ function initCookieBanner() {
     banner.style.display = 'none';
     console.log('Consentimento salvo:', consent);
     console.log('Banner de cookies ocultado');
+    // Recarregar anúncios
+    if (typeof adsbygoogle !== 'undefined') {
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    }
   });
 
   rejectAllBtn.addEventListener('click', () => {
@@ -198,6 +202,10 @@ function initCookieBanner() {
     banner.style.display = 'none';
     console.log('Consentimento salvo:', consent);
     console.log('Banner e modal de cookies ocultados');
+    // Recarregar anúncios se consentimento de ads for dado
+    if (consent.ads && typeof adsbygoogle !== 'undefined') {
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    }
   });
 
   cancelBtn.addEventListener('click', () => {
@@ -210,6 +218,9 @@ function initCookieBanner() {
 // Função para verificar e substituir imagens quebradas
 function handleBrokenImages() {
   document.querySelectorAll('img').forEach(img => {
+    img.addEventListener('load', () => {
+      img.classList.add('loaded');
+    });
     img.onerror = () => {
       console.warn(`Imagem não carregada: ${img.src}`);
       img.src = PLACEHOLDER_IMAGE;
@@ -247,6 +258,28 @@ async function loadProducts(page = 1, category = currentCategory, store = curren
   mensagemVazia.classList.remove('active');
 
   try {
+    // Dados de teste (mock) para verificar renderização
+    const mockData = {
+      products: [
+        {
+          id: "test-1",
+          nome: "Produto de Teste",
+          descricao: "Descrição de teste",
+          preco: 99.99,
+          loja: "amazon",
+          imagens: ["https://via.placeholder.com/200"],
+          link: "https://exemplo.com"
+        }
+      ],
+      total: 1
+    };
+
+    // Comentar a linha abaixo para testar com dados reais
+    const data = mockData;
+    console.log('Usando dados de teste:', data);
+
+    // Descomentar as linhas abaixo para usar a API real
+    /*
     const params = new URLSearchParams({
       page: page.toString(),
       limit: productsPerPage.toString(),
@@ -270,16 +303,17 @@ async function loadProducts(page = 1, category = currentCategory, store = curren
 
     const data = await response.json();
     console.log('Resposta da API:', data);
+    */
 
     if (!data || typeof data !== 'object') {
-      throw new Error('Resposta da API inválida: formato inesperado');
+      throw new Error('Resposta inválida: formato inesperado');
     }
 
     allProducts = Array.isArray(data.products) ? data.products : [];
     const totalPages = Math.ceil((data.total || 0) / productsPerPage);
 
     if (allProducts.length === 0) {
-      console.warn('Nenhum produto retornado pela API');
+      console.warn('Nenhum produto retornado');
       mensagemVazia.classList.add('active');
     } else {
       allProducts.forEach(produto => {
@@ -536,7 +570,12 @@ function initFilters() {
 }
 
 // WebSocket para atualizações em tempo real
+socket.on('connect', () => {
+  console.log('Conectado ao WebSocket');
+});
+
 socket.on('product-update', (produto) => {
+  console.log('Produto atualizado:', produto);
   const index = allProducts.findIndex(p => p.id === produto.id);
   if (index !== -1) {
     allProducts[index] = produto;
@@ -545,13 +584,19 @@ socket.on('product-update', (produto) => {
 });
 
 socket.on('product-added', (produto) => {
+  console.log('Produto adicionado:', produto);
   allProducts.push(produto);
   loadProducts(currentPage);
 });
 
 socket.on('product-deleted', (id) => {
+  console.log('Produto deletado:', id);
   allProducts = allProducts.filter(p => p.id !== id);
   loadProducts(currentPage);
+});
+
+socket.on('error', (error) => {
+  console.error('Erro no WebSocket:', error);
 });
 
 // Inicialização
