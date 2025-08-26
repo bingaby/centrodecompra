@@ -1,4 +1,3 @@
-/* style.css */
 :root {
   --primary-color: #2b6cb0;
   --primary-hover: #2c5282;
@@ -544,7 +543,9 @@ body {
 }
 
 .image-modal.active {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .modal-backdrop {
@@ -558,27 +559,39 @@ body {
 
 .modal-container {
   position: relative;
-  max-width: 90%;
-  max-height: 80%;
-  margin: 5% auto;
+  max-width: 90vw;
+  max-height: 80vh;
+  margin: auto;
   background: var(--background-primary);
   border-radius: var(--radius-md);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .modal-carousel {
   position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
 .carousel-images {
   display: flex;
   transition: transform 0.3s ease;
+  width: 100%;
+  height: 100%;
 }
 
 .carousel-images img {
   width: 100%;
-  height: auto;
+  max-height: 80vh;
+  object-fit: contain;
   flex-shrink: 0;
+  display: block;
 }
 
 .carousel-btn {
@@ -590,6 +603,7 @@ body {
   border: none;
   padding: 10px;
   cursor: pointer;
+  z-index: 10;
 }
 
 .carousel-btn.prev { left: 10px; }
@@ -598,6 +612,7 @@ body {
 .carousel-dots {
   text-align: center;
   padding: 10px;
+  background: var(--background-primary);
 }
 
 .carrossel-dot {
@@ -623,17 +638,18 @@ body {
   border: none;
   padding: 5px;
   cursor: pointer;
+  z-index: 10;
 }
 
 /* Ad Container */
 .ad-container {
   margin: 20px auto;
   text-align: center;
-  min-height: 90px; /* Evita que atributos sejam exibidos como texto */
+  min-height: 90px;
 }
 
 .adsbygoogle[data-ad-status="unfilled"] {
-  display: none !important; /* Oculta anúncios não renderizados */
+  display: none !important;
 }
 
 /* Loading */
@@ -821,6 +837,11 @@ body {
   .produto-card .carrossel {
     height: 120px;
   }
+
+  .modal-container {
+    max-width: 95vw;
+    max-height: 85vh;
+  }
 }
 
 @media (max-width: 480px) {
@@ -843,5 +864,10 @@ body {
   .store-logo {
     width: 50px;
     height: 50px;
+  }
+
+  .modal-container {
+    max-width: 100vw;
+    max-height: 90vh;
   }
 }
