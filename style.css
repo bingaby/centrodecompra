@@ -376,6 +376,8 @@ body {
   height: 60px;
   object-fit: contain;
   margin-bottom: 0.5rem;
+  display: block;
+  background-color: var(--background-secondary); /* Fundo para imagens quebradas */
 }
 
 .store-icon {
@@ -446,8 +448,8 @@ body {
   position: relative;
   width: 100%;
   height: auto;
-  aspect-ratio: 4/3; /* Proporção para manter consistência */
-  background-color: var(--background-secondary); /* Preenche espaço vazio */
+  aspect-ratio: 4/3;
+  background-color: var(--background-secondary);
   overflow: hidden;
 }
 
@@ -460,8 +462,8 @@ body {
 .produto-card .carrossel-imagens img {
   width: 100%;
   height: 100%;
-  object-fit: contain; /* Evita corte, mantém proporção */
-  max-height: 150px; /* Limita altura máxima para consistência */
+  object-fit: contain;
+  max-height: 150px;
   flex-shrink: 0;
   cursor: pointer;
 }
@@ -846,6 +848,9 @@ body {
 .social-icon {
   width: 24px;
   height: 24px;
+  object-fit: contain;
+  display: block;
+  background-color: var(--background-secondary); /* Fundo para imagens quebradas */
 }
 
 .payment-methods {
@@ -857,6 +862,8 @@ body {
   width: 40px;
   height: 24px;
   object-fit: contain;
+  display: block;
+  background-color: var(--background-secondary); /* Fundo para imagens quebradas */
 }
 
 .footer-bottom {
@@ -942,6 +949,16 @@ body {
   .store-logo {
     width: 50px;
     height: 50px;
+  }
+
+  .social-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .payment-icon {
+    width: 32px;
+    height: 20px;
   }
 
   .modal-container {
