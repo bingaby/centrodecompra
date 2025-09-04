@@ -1,6 +1,6 @@
 {
-  "name": "Centro de Compras",
-  "short_name": "Compras",
+  "name": "Centro de Compra",
+  "short_name": "Compra",
   "description": "Ofertas com descontos reais em lojas como Amazon, Shein, Shopee e Magalu.",
   "start_url": "/index.html",
   "display": "standalone",
@@ -29,3 +29,4 @@
     }
   ]
 }
+
